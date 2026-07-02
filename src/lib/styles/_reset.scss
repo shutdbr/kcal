@@ -1,0 +1,29 @@
+// ─────────────────────────────────────────────
+// Global Reset & Base Typography
+// ─────────────────────────────────────────────
+
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu+Sans:ital,wght@0,100..800;1,100..800&display=swap');
+
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+html,
+body {
+	height: 100%;
+	width: 100%;
+	overflow: auto;
+	font-size: 62.5%; // 1rem = 10px
+	color: var(--color-text);
+	font-family: 'Ubuntu Sans', sans-serif;
+}
+
+input,
+nav,
+button,
+textarea,
+select {
+	font-family: inherit;
+}

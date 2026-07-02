@@ -1,0 +1,84 @@
+// ─────────────────────────────────────────────
+// Design Tokens  (inherited from kreabot)
+// ─────────────────────────────────────────────
+// All colors & spacing in one place.
+// To change the theme, edit ONLY this file.
+// ─────────────────────────────────────────────
+
+:root {
+	// ── Text ──
+	--color-text: #623a52;
+	--color-text-muted: #927f83;
+	--color-accent: #7c4b69;
+
+	// ── Borders ──
+	--color-border: #996a78;
+	--color-border-light: #b58392;
+	--color-border-card: #cfbcbc;
+	--color-border-divider: #f0e0e0;
+	--color-border-warm: #e0ccc4;
+
+	// ── Backgrounds ──
+	--color-bg: #f6eaea;
+	--color-bg-light: #fff8f8;
+	--color-bg-sidebar: #fdf5f3;
+	--color-bg-sidebar-end: #f8ece8;
+	--color-bg-header-start: #fff4f2;
+	--color-bg-header-end: #f0d4cc;
+	--color-bg-card-start: #ffffff;
+	--color-bg-card-end: #fffaf9;
+	--color-bg-warm-start: #f8ece8;
+	--color-bg-warm-end: #f0ddd6;
+
+	// ── Interactive states ──
+	--color-hover: rgba(150, 106, 120, 0.06);
+	--color-hover-medium: rgba(150, 106, 120, 0.08);
+	--color-active: rgba(150, 106, 120, 0.12);
+	--color-active-strong: rgba(150, 106, 120, 0.15);
+	--color-subtle: rgba(150, 106, 120, 0.1);
+
+	// ── Shadows ──
+	--shadow-card: 0 1px 3px rgba(144, 114, 114, 0.08);
+	--shadow-card-hover: 0 2px 6px rgba(144, 114, 114, 0.12);
+	--shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.5);
+	--shadow-inset-hover: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+
+	// ─────────────────────────────────────────
+	// Tracey-specific tokens
+	// ─────────────────────────────────────────
+
+	// ── Brand block ──
+	--color-brand-start: #cb8f8f;
+	--color-brand-end: #bd7f85;
+	--color-brand-text: #fff6f4;
+
+	// ── Hints bar ──
+	--color-hints-bar: #e88f8f;
+	--color-hints-bar-text: #fff6f4;
+
+	// ── Course type fills ──
+	--color-course-required: #ffffff; //  required → white
+	--color-course-elective: #f8dcda; //  elective → pinkish red
+	--color-course-audit: #d9f4e8; //     audit    → green
+	--color-course-elective-deep: #dfaeae;
+	--color-border-audit: #9fd4bd;
+
+	// ── Hint chip fills ──
+	--color-hint-warn: #f8c9c9;
+	--color-hint-info: #e7dee0;
+	--color-hint-good: #d9f4e8;
+
+	// ── Credit zones (trimester zoom) ──
+	--color-zone-min: #c5959b; //   first 12 credits — the minimum, darker
+	--color-zone-normal: #f3dfdf; // 13–20 — the normal load
+	--color-zone-over: #fdfafa; //   21–28 — overload, allowed twice
+	--color-zone-border: #b08f9b;
+
+	// ── Grid ──
+	--color-grid-cell: #e4dcdc;
+	--color-grid-cell-problem: #d3b7b7;
+	--color-drop-hint: rgba(150, 106, 120, 0.22);
+
+	// ── Backdrop ──
+	--color-backdrop: rgba(0, 0, 0, 0.3);
+}

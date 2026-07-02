@@ -1,0 +1,8 @@
+// ─────────────────────────────────────────────
+// Global Stylesheet Entry Point
+// ─────────────────────────────────────────────
+// Import order matters: variables → reset → (nothing else global)
+// Component styles live in their own <style> blocks.
+
+@use '$lib/styles/variables';
+@use '$lib/styles/reset';

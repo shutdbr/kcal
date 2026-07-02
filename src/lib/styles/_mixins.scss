@@ -1,0 +1,63 @@
+// ─────────────────────────────────────────────
+// Reusable Mixins
+// ─────────────────────────────────────────────
+// Use these in component <style> blocks via:
+//   @use '$lib/styles/mixins' as *;
+// ─────────────────────────────────────────────
+
+// Card surface with subtle top-shine
+@mixin card-shine {
+	box-shadow: var(--shadow-inset), var(--shadow-card);
+}
+
+@mixin card-shine-hover {
+	box-shadow: var(--shadow-inset-hover), var(--shadow-card-hover);
+}
+
+// Standard card container
+@mixin card {
+	padding: 1.6rem;
+	background: linear-gradient(to bottom, var(--color-bg-card-start) 0%, var(--color-bg-card-end) 100%);
+	border: 1px solid var(--color-border-card);
+	border-radius: 4px;
+	@include card-shine;
+}
+
+// Uppercase muted section label
+@mixin section-label {
+	font-size: 1.2rem;
+	font-weight: 600;
+	color: var(--color-text-muted);
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+
+// Empty state italic text
+@mixin empty-text {
+	font-size: 1.3rem;
+	color: var(--color-text-muted);
+	font-style: italic;
+}
+
+// Course card fill by type — apply on an element with data-type attr
+@mixin course-type-fill {
+	&[data-type='required'] {
+		background: var(--color-course-required);
+		border: 1px solid var(--color-border-card);
+	}
+	&[data-type='elective'] {
+		background: var(--color-course-elective);
+		border: 1px solid var(--color-course-elective-deep);
+	}
+	&[data-type='audit'] {
+		background: var(--color-course-audit);
+		border: 1px solid var(--color-border-audit);
+	}
+}
+
+// Responsive breakpoint
+@mixin mobile {
+	@media (max-width: 768px) {
+		@content;
+	}
+}

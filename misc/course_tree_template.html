@@ -1,0 +1,421 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Course prerequisite trees</title>
+<style>
+  :root {
+    --surface-1: #fcfcfb;
+    --page: #f9f9f7;
+    --ink: #0b0b0b;
+    --ink-2: #52514e;
+    --muted: #898781;
+    --grid: #e1e0d9;
+    --baseline: #c3c2b7;
+    --border: rgba(11,11,11,0.10);
+    --accent: #2a78d6;
+    --accent-wash: rgba(42,120,214,0.08);
+    --ext: #898781;
+    --ext-wash: rgba(137,135,129,0.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --surface-1: #1a1a19;
+      --page: #0d0d0d;
+      --ink: #ffffff;
+      --ink-2: #c3c2b7;
+      --muted: #898781;
+      --grid: #2c2c2a;
+      --baseline: #383835;
+      --border: rgba(255,255,255,0.10);
+      --accent: #3987e5;
+      --accent-wash: rgba(57,135,229,0.14);
+      --ext-wash: rgba(137,135,129,0.10);
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--ink);
+    font: 14px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  header {
+    padding: 20px 24px 0;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  h1 { font-size: 18px; margin: 0 0 2px; }
+  .sub { color: var(--ink-2); font-size: 13px; margin: 0; }
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+    padding: 14px 24px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  select {
+    font: inherit;
+    color: var(--ink);
+    background: var(--surface-1);
+    border: 1px solid var(--baseline);
+    border-radius: 8px;
+    padding: 6px 10px;
+    min-width: 320px;
+  }
+  .legend { display: flex; gap: 16px; align-items: center; color: var(--ink-2); font-size: 12px; flex-wrap: wrap; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .chip {
+    width: 14px; height: 14px; border-radius: 4px; display: inline-block;
+  }
+  .chip.subj { background: var(--accent-wash); border: 1.5px solid var(--accent); }
+  .chip.ext  { background: var(--ext-wash);   border: 1.5px solid var(--ext); }
+  .chip.stub { background: transparent;        border: 1.5px dashed var(--ext); }
+  .stats { color: var(--muted); font-size: 12px; margin-left: auto; }
+  .card {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin: 0 24px 20px;
+    max-width: 1352px;
+  }
+  @media (min-width: 1400px) { .card { margin-left: auto; margin-right: auto; } }
+  .scroller { overflow: auto; }
+  svg { display: block; }
+  .colhead { fill: var(--muted); font-size: 11px; letter-spacing: .04em; text-transform: uppercase; }
+  .node rect {
+    fill: var(--ext-wash);
+    stroke: var(--ext);
+    stroke-width: 1.25;
+    rx: 8;
+  }
+  .node.subj rect { fill: var(--accent-wash); stroke: var(--accent); stroke-width: 1.5; }
+  .node.stub rect { fill: transparent; stroke-dasharray: 4 3; }
+  .node .code { font-size: 12px; font-weight: 650; fill: var(--ink); }
+  .node .name { font-size: 11px; fill: var(--ink-2); }
+  .node { cursor: default; }
+  .edge { fill: none; stroke: var(--baseline); stroke-width: 1.5; }
+  .edge.hi { stroke: var(--accent); stroke-width: 2; }
+  .dim { opacity: .18; }
+  #tip {
+    position: fixed;
+    z-index: 10;
+    max-width: 340px;
+    background: var(--surface-1);
+    color: var(--ink);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    box-shadow: 0 4px 18px rgba(0,0,0,.18);
+    padding: 10px 12px;
+    font-size: 12px;
+    pointer-events: none;
+    display: none;
+  }
+  #tip .t-code { font-weight: 700; }
+  #tip .t-title { font-weight: 600; margin-bottom: 4px; }
+  #tip .t-meta { color: var(--ink-2); margin-bottom: 4px; }
+  #tip .t-pre { color: var(--ink-2); border-top: 1px solid var(--grid); padding-top: 6px; margin-top: 6px; }
+  #tip .t-pre b { color: var(--ink); font-weight: 600; }
+  .standalone {
+    padding: 14px 18px 18px;
+    border-top: 1px solid var(--grid);
+  }
+  .standalone h2 { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; margin: 0 0 10px; font-weight: 600; }
+  .pills { display: flex; flex-wrap: wrap; gap: 8px; }
+  .pill {
+    border: 1px solid var(--grid);
+    border-radius: 8px;
+    padding: 4px 10px;
+    font-size: 12px;
+    color: var(--ink-2);
+    background: var(--surface-1);
+  }
+  .pill b { color: var(--ink); font-weight: 650; }
+  .empty { padding: 40px; color: var(--muted); text-align: center; }
+  footer { max-width: 1400px; margin: 0 auto; padding: 0 24px 24px; color: var(--muted); font-size: 12px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Course prerequisite trees</h1>
+  <p class="sub">Pick a subject to see how its courses chain together — courses with no prerequisites start on the left, the courses they unlock follow to the right. Hover a course for details and its full chain.</p>
+</header>
+
+<div class="controls">
+  <select id="subject" aria-label="Subject"></select>
+  <div class="legend">
+    <span><i class="chip subj"></i> Subject course</span>
+    <span><i class="chip ext"></i> Other discipline</span>
+    <span><i class="chip stub"></i> Mentioned only (not in catalog)</span>
+  </div>
+  <div class="stats" id="stats"></div>
+</div>
+
+<div class="card">
+  <div class="scroller" id="scroller"></div>
+  <div class="standalone" id="standalone"></div>
+</div>
+
+<footer>Built from the trimester catalogs in <code>misc/*.csv</code> (2024&ndash;2026). Prerequisite links are parsed from the “Prerequisites to enrol” and “prerequisite for any future course” columns; free-text requirements that don’t name a course appear in the hover details instead of as links.</footer>
+
+<div id="tip"></div>
+
+<script>
+const DATA = /*__DATA__*/null;
+
+const SUBJECT_NAMES = {
+  BIOS: "Biological Sciences", BUSI: "Business Studies", CHEM: "Chemistry",
+  COMP: "Computer Science", DATA: "Data Science", ECON: "Economics",
+  ENVS: "Environmental Studies", HIST: "History", KCCS: "Krea Core (KCCS)",
+  LITT: "Literature", MATH: "Mathematics", PHIL: "Philosophy",
+  PHYS: "Physics", POLT: "Politics", PSYC: "Psychology",
+  SOCI: "Social Studies", ARTS: "Arts", IFMR: "IFMR / GSB", GLST: "Global Studies",
+};
+
+const courses = DATA.courses;
+const allEdges = DATA.edges;
+
+// ----- subject list -----
+const bySubject = {};
+for (const code in courses) {
+  const d = courses[code].discp;
+  (bySubject[d] ??= []).push(code);
+}
+const edgeCount = {};
+for (const [a, b] of allEdges) {
+  edgeCount[courses[a]?.discp] = (edgeCount[courses[a]?.discp] || 0) + 1;
+  const db = courses[b]?.discp;
+  if (db !== courses[a]?.discp) edgeCount[db] = (edgeCount[db] || 0) + 1;
+}
+const subjects = Object.keys(bySubject)
+  .filter(d => bySubject[d].some(c => !courses[c].stub))
+  .sort();
+
+const sel = document.getElementById("subject");
+for (const d of subjects) {
+  const o = document.createElement("option");
+  const n = bySubject[d].filter(c => !courses[c].stub).length;
+  o.value = d;
+  o.textContent = `${SUBJECT_NAMES[d] || d} (${d}) — ${n} courses`;
+  sel.appendChild(o);
+}
+const fromHash = decodeURIComponent(location.hash.slice(1));
+sel.value = subjects.includes(fromHash) ? fromHash : subjects.reduce((best, d) =>
+  (edgeCount[d] || 0) > (edgeCount[best] || 0) ? d : best, subjects[0]);
+sel.addEventListener("change", () => {
+  history.replaceState(null, "", "#" + sel.value);
+  render(sel.value);
+});
+
+// ----- graph helpers -----
+function subgraph(subj) {
+  const inSubj = new Set(bySubject[subj] || []);
+  const nodes = new Set(inSubj);
+  const edges = [];
+  for (const [a, b] of allEdges) {
+    if (inSubj.has(a) || inSubj.has(b)) { nodes.add(a); nodes.add(b); edges.push([a, b]); }
+  }
+  return { nodes: [...nodes], edges, inSubj };
+}
+
+function layer(nodes, edges) {
+  const preds = {}, succs = {};
+  nodes.forEach(n => { preds[n] = []; succs[n] = []; });
+  edges.forEach(([a, b]) => { preds[b].push(a); succs[a].push(b); });
+  // longest-path layering with cycle guard
+  const depth = {}, state = {};
+  function dfs(n, stack) {
+    if (state[n] === 2) return depth[n];
+    if (stack.has(n)) return 0; // cycle: break here
+    stack.add(n);
+    let d = 0;
+    for (const p of preds[n]) d = Math.max(d, dfs(p, stack) + 1);
+    stack.delete(n);
+    state[n] = 2;
+    depth[n] = d;
+    return d;
+  }
+  nodes.forEach(n => dfs(n, new Set()));
+  return { depth, preds, succs };
+}
+
+// ----- rendering -----
+const NW = 168, NH = 46, XGAP = 90, YGAP = 14, PAD = 24, HEAD = 34;
+const svgNS = "http://www.w3.org/2000/svg";
+const tip = document.getElementById("tip");
+let hoverState = null;
+
+function el(name, attrs, parent) {
+  const e = document.createElementNS(svgNS, name);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  if (parent) parent.appendChild(e);
+  return e;
+}
+
+function trunc(s, n) { return s.length > n ? s.slice(0, n - 1) + "…" : s; }
+
+function render(subj) {
+  const { nodes, edges, inSubj } = subgraph(subj);
+  const linked = new Set(edges.flat());
+  const shown = nodes.filter(n => linked.has(n));
+  const standalone = (bySubject[subj] || []).filter(n => !linked.has(n) && !courses[n].stub).sort();
+
+  const scroller = document.getElementById("scroller");
+  scroller.innerHTML = "";
+  document.getElementById("stats").textContent =
+    `${(bySubject[subj] || []).filter(c => !courses[c].stub).length} courses · ` +
+    `${edges.length} prerequisite links`;
+
+  renderStandalone(standalone, shown.length);
+  if (!shown.length) {
+    scroller.innerHTML = `<div class="empty">No prerequisite links recorded for this subject — every course can be taken directly.</div>`;
+    return;
+  }
+
+  const { depth, preds, succs } = layer(shown, edges.filter(([a, b]) => linked.has(a) && linked.has(b)));
+  const nLayers = Math.max(...shown.map(n => depth[n])) + 1;
+  const cols = Array.from({ length: nLayers }, () => []);
+  shown.forEach(n => cols[depth[n]].push(n));
+  cols.forEach(c => c.sort());
+
+  // barycenter passes to reduce crossings
+  const pos = {};
+  for (let it = 0; it < 4; it++) {
+    cols.forEach(c => c.forEach((n, i) => pos[n] = i));
+    const dir = it % 2 === 0 ? preds : succs;
+    for (const c of cols) {
+      c.sort((x, y) => {
+        const bx = dir[x].length ? dir[x].reduce((s, p) => s + (pos[p] ?? 0), 0) / dir[x].length : pos[x];
+        const by = dir[y].length ? dir[y].reduce((s, p) => s + (pos[p] ?? 0), 0) / dir[y].length : pos[y];
+        return bx - by || x.localeCompare(y);
+      });
+    }
+  }
+
+  const maxRows = Math.max(...cols.map(c => c.length));
+  const W = PAD * 2 + nLayers * NW + (nLayers - 1) * XGAP;
+  const H = HEAD + PAD * 2 + maxRows * NH + (maxRows - 1) * YGAP;
+  const svg = el("svg", { width: W, height: H, viewBox: `0 0 ${W} ${H}`, role: "img" });
+  svg.setAttribute("aria-label", `Prerequisite graph for ${SUBJECT_NAMES[subj] || subj}`);
+  scroller.appendChild(svg);
+
+  const xy = {};
+  cols.forEach((c, li) => {
+    const colH = c.length * NH + (c.length - 1) * YGAP;
+    const y0 = HEAD + PAD + (H - HEAD - PAD * 2 - colH) / 2;
+    const x = PAD + li * (NW + XGAP);
+    const label = li === 0 ? "Start here" : (li === nLayers - 1 ? "Furthest along" : `Level ${li + 1}`);
+    const t = el("text", { x: x + NW / 2, y: HEAD - 10, "text-anchor": "middle", class: "colhead" }, svg);
+    t.textContent = label;
+    c.forEach((n, i) => xy[n] = { x, y: y0 + i * (NH + YGAP) });
+  });
+
+  const edgeLayer = el("g", {}, svg);
+  const nodeLayer = el("g", {}, svg);
+  const edgeEls = [];
+
+  for (const [a, b] of edges) {
+    if (!xy[a] || !xy[b]) continue;
+    const x1 = xy[a].x + NW, y1 = xy[a].y + NH / 2;
+    const x2 = xy[b].x, y2 = xy[b].y + NH / 2;
+    const mx = (x1 + x2) / 2;
+    const p = el("path", {
+      d: `M ${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2 - 6} ${y2} l 6 0 m -7 -4 l 7 4 l -7 4`,
+      class: "edge",
+    }, edgeLayer);
+    edgeEls.push({ p, a, b });
+  }
+
+  const nodeEls = {};
+  for (const n of shown) {
+    const c = courses[n];
+    const g = el("g", {
+      class: "node" + (inSubj.has(n) ? " subj" : "") + (c.stub ? " stub" : ""),
+      transform: `translate(${xy[n].x},${xy[n].y})`,
+      tabindex: 0,
+    }, nodeLayer);
+    el("rect", { width: NW, height: NH, rx: 8 }, g);
+    const code = el("text", { x: 10, y: 18, class: "code" }, g);
+    code.textContent = n;
+    const name = el("text", { x: 10, y: 34, class: "name" }, g);
+    name.textContent = c.stub ? "(not in catalog)" : trunc(c.title, 26);
+    nodeEls[n] = g;
+    g.addEventListener("mouseenter", ev => highlight(n));
+    g.addEventListener("mousemove", ev => showTip(n, ev));
+    g.addEventListener("mouseleave", clearHighlight);
+    g.addEventListener("focus", ev => { highlight(n); const r = g.getBoundingClientRect(); showTip(n, { clientX: r.right, clientY: r.top }); });
+    g.addEventListener("blur", clearHighlight);
+  }
+
+  function chain(n) {
+    const keep = new Set([n]);
+    const walk = (m, dir) => (dir[m] || []).forEach(p => { if (!keep.has(p)) { keep.add(p); walk(p, dir); } });
+    walk(n, preds); walk(n, succs);
+    return keep;
+  }
+
+  function highlight(n) {
+    const keep = chain(n);
+    for (const m of shown) nodeEls[m].classList.toggle("dim", !keep.has(m));
+    for (const e of edgeEls) {
+      const on = keep.has(e.a) && keep.has(e.b);
+      e.p.classList.toggle("hi", on);
+      e.p.classList.toggle("dim", !on);
+    }
+  }
+  function clearHighlight() {
+    tip.style.display = "none";
+    for (const m of shown) nodeEls[m].classList.remove("dim");
+    for (const e of edgeEls) { e.p.classList.remove("hi", "dim"); }
+  }
+}
+
+function showTip(n, ev) {
+  const c = courses[n];
+  let html = `<div class="t-title"><span class="t-code">${n}</span> · ${escapeHtml(c.title)}</div>`;
+  const meta = [];
+  if (c.credits) meta.push(`${c.credits} credits`);
+  if (c.type) meta.push(escapeHtml(c.type));
+  if (c.terms?.length) meta.push("offered: " + c.terms.map(t => t.replace("_", " ")).join(", "));
+  if (meta.length) html += `<div class="t-meta">${meta.join(" · ")}</div>`;
+  if (c.stub) html += `<div class="t-meta">Referenced as a prerequisite but not found in these catalogs.</div>`;
+  if (c.prereq_text) html += `<div class="t-pre"><b>Prerequisites (as listed):</b> ${escapeHtml(trunc(c.prereq_text, 400))}</div>`;
+  tip.innerHTML = html;
+  tip.style.display = "block";
+  const pad = 14;
+  let x = ev.clientX + pad, y = ev.clientY + pad;
+  const r = tip.getBoundingClientRect();
+  if (x + r.width > innerWidth - 8) x = ev.clientX - r.width - pad;
+  if (y + r.height > innerHeight - 8) y = ev.clientY - r.height - pad;
+  tip.style.left = x + "px";
+  tip.style.top = y + "px";
+}
+
+function renderStandalone(list, hasGraph) {
+  const box = document.getElementById("standalone");
+  if (!list.length) { box.style.display = "none"; return; }
+  box.style.display = "";
+  box.innerHTML = `<h2>No prerequisites &amp; not required by another course (${list.length})</h2>`;
+  const pills = document.createElement("div");
+  pills.className = "pills";
+  for (const n of list) {
+    const p = document.createElement("span");
+    p.className = "pill";
+    p.innerHTML = `<b>${n}</b> ${escapeHtml(trunc(courses[n].title, 44))}`;
+    p.title = courses[n].title;
+    pills.appendChild(p);
+  }
+  box.appendChild(pills);
+}
+
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, m => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
+}
+
+render(sel.value);
+</script>
+</body>
+</html>
