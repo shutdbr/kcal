@@ -4,10 +4,17 @@ export type Course = {
 	code: string;
 	title: string;
 	faculty: string;
-	subject: string; // subject id, see SUBJECTS in data.ts
-	credits: number; // 2 or 4
-	offered: TrimNum[]; // which trimesters it runs (t1/t2/t3 pattern every year)
+	subject: string; // primary subject id (the canonical code's discipline), see SUBJECTS in data.ts
+	subjects: string[]; // every subject this course belongs to via its cross-listed codes (⊇ [subject])
+	codes: string[]; // all cross-listed codes for this one course, e.g. ['ARTS229','HIST235','LITT235']
+	codesBySubject: Record<string, string>; // subject id → the code that subject sees it under
+	credits: number;
+	required: boolean; // the university's own required/elective flag — anything not clearly elective is required
+	offered: TrimNum[]; // which trimesters it has run in, derived from terms taught
+	eligibleYears: number[]; // which of years 1-4 this is open to
 	prereqs: string[]; // course codes that must come in an EARLIER trimester
+	unlocks: string[]; // course codes this one is a prerequisite for
+	desc: string; // catalogue description, shown in the details bar
 	crosslist?: string; // course code this one is interchangeable with
 };
 
@@ -15,19 +22,24 @@ export type Subject = {
 	id: string;
 	label: string; // full name shown in sidebar
 	short: string; // short name shown as catalogue filter chip
+	majorable: boolean; // some subjects are only offered as minor/concentration
 };
 
 export type ProgrammeRole = 'major' | 'minor' | 'concentration';
 
 /** How the degree is structured — picked in the sidebar */
-export type StructureKind = 'double-major' | 'major-minor' | 'major-minor-conc';
+export type StructureKind = 'single-major' | 'double-major' | 'major-minor' | 'major-minor-conc';
 
 export type Programme = {
 	role: ProgrammeRole;
 	subject: string;
 };
 
-export type CourseType = 'required' | 'elective' | 'audit';
+// a course's role relative to your chosen major/minor. 'other' = anything
+// outside those requirements (a different department, or an in-department
+// course the programme doesn't list) — NOT automatically an audit; the
+// student marks audits themselves.
+export type CourseType = 'required' | 'elective' | 'other';
 
 export type HintKind = 'warn' | 'info' | 'good';
 

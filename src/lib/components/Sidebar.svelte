@@ -1,24 +1,30 @@
 <script lang="ts">
 	import type { Plan } from '$lib/plan.svelte';
-	import { SUBJECTS } from '$lib/data';
+	import { MAJOR_SUBJECTS, SUBJECTS } from '$lib/data';
 
 	let { plan }: { plan: Plan } = $props();
+
+	// changing the programme refills the grid with its ideal course order
+	const reseed = () => plan.seedRecommended();
 </script>
 
-<div class="brand">
-	<span class="brand-small">kreabot's</span>
-	<span class="brand-big">tracey</span>
-</div>
+<header class="col-header">
+	<h2><span class="brand-small">kreabot's</span> tracey</h2>
+	<button class="reset" title="reset everything back to the recommended plan" onclick={() => plan.reset()}>
+		reset
+	</button>
+</header>
 
 <div class="controls">
 	<label class="row">
 		<span class="row-label">4yup</span>
-		<input type="checkbox" class="tick" bind:checked={plan.fourYear} />
+		<input type="checkbox" class="tick" bind:checked={plan.fourYear} onchange={reseed} />
 	</label>
 
 	<label class="row">
 		<span class="row-label">plan</span>
-		<select bind:value={plan.structure}>
+		<select bind:value={plan.structure} onchange={reseed}>
+			<option value="single-major">single major</option>
 			<option value="double-major">double major</option>
 			<option value="major-minor">major + minor</option>
 			<option value="major-minor-conc">major + minor + conc.</option>
@@ -27,8 +33,8 @@
 
 	<label class="row">
 		<span class="row-label">major</span>
-		<select bind:value={plan.picks.major1}>
-			{#each SUBJECTS as s (s.id)}
+		<select bind:value={plan.picks.major1} onchange={reseed}>
+			{#each MAJOR_SUBJECTS as s (s.id)}
 				<option value={s.id}>{s.label}</option>
 			{/each}
 		</select>
@@ -37,16 +43,16 @@
 	{#if plan.structure === 'double-major'}
 		<label class="row">
 			<span class="row-label">major</span>
-			<select bind:value={plan.picks.major2}>
-				{#each SUBJECTS as s (s.id)}
+			<select bind:value={plan.picks.major2} onchange={reseed}>
+				{#each MAJOR_SUBJECTS as s (s.id)}
 					<option value={s.id}>{s.label}</option>
 				{/each}
 			</select>
 		</label>
-	{:else}
+	{:else if plan.structure !== 'single-major'}
 		<label class="row">
 			<span class="row-label">minor</span>
-			<select bind:value={plan.picks.minor}>
+			<select bind:value={plan.picks.minor} onchange={reseed}>
 				{#each SUBJECTS as s (s.id)}
 					<option value={s.id}>{s.label}</option>
 				{/each}
@@ -55,7 +61,7 @@
 		{#if plan.structure === 'major-minor-conc'}
 			<label class="row">
 				<span class="row-label">conc.</span>
-				<select bind:value={plan.picks.conc}>
+				<select bind:value={plan.picks.conc} onchange={reseed}>
 					{#each SUBJECTS as s (s.id)}
 						<option value={s.id}>{s.label}</option>
 					{/each}
@@ -68,23 +74,38 @@
 <style lang="scss">
 	@use '$lib/styles/mixins' as *;
 
-	.brand {
-		display: flex;
-		flex-direction: column;
-		padding: 1.6rem 2rem 1.8rem;
-		background: linear-gradient(to bottom, var(--color-brand-start), var(--color-brand-end));
-		color: var(--color-brand-text);
-		@include card-shine;
+	.col-header {
+		@include card-header;
+		border-bottom: 1px solid var(--color-border);
 
-		.brand-small {
-			font-size: 1.4rem;
-			font-weight: 700;
+		h2 {
+			font-size: 1.8rem;
+			font-weight: 600;
+			color: var(--color-text);
 		}
 
-		.brand-big {
-			font-size: 3rem;
+		// small reset tucked in the header corner
+		.reset {
+			margin-left: auto;
+			padding: 0.3rem 0.8rem;
+			font-size: 1.15rem;
+			font-weight: 600;
+			color: var(--color-text-muted);
+			background: var(--color-bg-light);
+			border: 1px solid var(--color-border-card);
+			border-radius: 3px;
+			cursor: pointer;
+
+			&:hover {
+				color: var(--color-text);
+				background: var(--color-hover-medium);
+			}
+		}
+
+		.brand-small {
+			font-size: 1.2rem;
 			font-weight: 400;
-			line-height: 1.1;
+			color: var(--color-text-muted);
 		}
 	}
 
@@ -93,7 +114,7 @@
 		flex-direction: column;
 		gap: 1rem;
 		padding: 1.6rem 1.4rem;
-		border-bottom: 1px solid var(--color-border-divider);
+		border-bottom: 1px solid var(--color-border-light);
 	}
 
 	.row {
@@ -110,6 +131,8 @@
 	}
 
 	select {
+		width: 100%;
+		min-width: 0; // long option labels must not push past the panel edge
 		font-size: 1.3rem;
 		color: var(--color-text);
 		padding: 0.4rem 0.6rem;

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Plan } from '$lib/plan.svelte';
-	import { TRIM_HARD_MAX, TRIM_MIN, TRIM_NORMAL_MAX, byCode } from '$lib/data';
+	import { TRIM_HARD_MAX, TRIM_MIN, byCode } from '$lib/data';
 
 	let { plan }: { plan: Plan } = $props();
 
@@ -8,50 +8,80 @@
 	let year = $derived(plan.zoom!.year);
 	let trim = $derived(plan.zoom!.trim);
 
-	// Each background cell = 1 credit. 4 columns × 7 rows = the 28-credit cap.
-	// First 12 darker (the minimum), up to 20 normal, 21–28 = overload zone.
-	const CELLS = Array.from({ length: TRIM_HARD_MAX }, (_, i) => i);
+	// Each background cell = 1 credit; the canvas is the 20-credit hard cap
+	// (4 columns × 5 rows). The 12-credit minimum reads as three 2×2 boxes —
+	// the exact footprint of the three 4-credit courses it takes to reach it.
+	const MIN_BOXES = Array.from({ length: TRIM_MIN / 4 }, (_, i) => i);
+	const REST_CELLS = Array.from({ length: TRIM_HARD_MAX - TRIM_MIN }, (_, i) => i);
+	const FREE_CELLS = Array.from({ length: TRIM_HARD_MAX }, (_, i) => i);
+
+	// year 1's t3 carries no credit minimum or maximum at all
+	let exempt = $derived(year === 1);
+
+	// a course covers exactly as many squares as it has credits:
+	// 4 → 2×2, 3 → 3×1, 2 → 2×1, 1 → 1×1
+	function spans(credits: number): { col: number; row: number } {
+		if (credits <= 3) return { col: Math.max(1, credits), row: 1 };
+		return { col: 2, row: Math.ceil(credits / 2) };
+	}
 
 	function drop(e: DragEvent) {
 		e.preventDefault();
+		plan.dragging = null;
 		const code = e.dataTransfer?.getData('text/plain');
 		if (code) plan.place(code, year, trim);
 	}
 
 	function dragstart(e: DragEvent, code: string) {
 		e.dataTransfer?.setData('text/plain', code);
+		plan.dragging = code;
 	}
 </script>
 
 <header>
 	<button class="back" onclick={() => (plan.zoom = null)}>← back</button>
 	<h1>Year {year}, Trimester {trim}</h1>
-	<span class="load">{plan.slotCredits(year, trim)} / {TRIM_NORMAL_MAX} credits</span>
+	<span class="load">
+		{plan.slotCredits(year, trim)}{exempt ? '' : ` / ${TRIM_HARD_MAX}`} credits
+	</span>
 </header>
 
 <div class="canvas" role="list" ondragover={(e) => e.preventDefault()} ondrop={drop}>
 	<div class="layer zones">
-		{#each CELLS as i (i)}
-			<div class="zone-cell" class:min={i < TRIM_MIN} class:normal={i >= TRIM_MIN && i < TRIM_NORMAL_MAX}></div>
-		{/each}
+		{#if exempt}
+			{#each FREE_CELLS as i (i)}
+				<div class="zone-cell"></div>
+			{/each}
+		{:else}
+			{#each MIN_BOXES as i (i)}
+				<div class="zone-box"></div>
+			{/each}
+			{#each REST_CELLS as i (i)}
+				<div class="zone-cell"></div>
+			{/each}
+		{/if}
 	</div>
 
 	<div class="layer courses">
 		{#each plan.slotCourses(year, trim) as code (code)}
 			{@const course = byCode(code)}
+			{@const span = spans(course.credits)}
 			<div
 				class="placed"
 				data-type={plan.courseType(code)}
 				class:flagged={plan.flaggedCodes.has(code)}
-				style="grid-column: span 2; grid-row: span {course.credits >= 4 ? 2 : 1};"
+				class:is-audit={plan.isAudit(code)}
+				style="grid-column: span {span.col}; grid-row: span {span.row};"
 				draggable="true"
 				role="listitem"
 				ondragstart={(e) => dragstart(e, code)}
+				ondragend={() => (plan.dragging = null)}
+				onclick={() => (plan.selected = course)}
 			>
 				<button class="x" aria-label="remove {code}" onclick={() => plan.remove(code)}>×</button>
-				<span class="code">{code}</span>
+				<span class="code">{plan.shownCode(code)}</span>
 				<span class="title">{course.title}</span>
-				<span class="faculty">{course.faculty}</span>
+				<span class="credits">{course.credits} cr</span>
 			</div>
 		{/each}
 	</div>
@@ -98,32 +128,35 @@
 
 	.canvas {
 		position: relative;
-		height: 63rem;
+		height: 46rem;
 		max-width: 76rem;
 		margin: 0 3.2rem 3.2rem;
+		border: 1px dashed var(--color-zone-border); // outer border follows the rounded corner
 		border-radius: 10px;
 		overflow: hidden;
 	}
 
+	// 20 one-credit cells: the hard cap (grid-template-rows must stay
+	// TRIM_HARD_MAX / 4 rows)
 	.layer {
 		position: absolute;
 		inset: 0;
 		display: grid;
 		grid-template-columns: repeat(4, 1fr);
-		grid-template-rows: repeat(7, 1fr);
+		grid-template-rows: repeat(5, 1fr);
 	}
 
 	.zone-cell {
-		background: var(--color-zone-over);
+		background: var(--color-zone-rest);
 		border: 1px dashed var(--color-zone-border);
+	}
 
-		&.min {
-			background: var(--color-zone-min);
-		}
-
-		&.normal {
-			background: var(--color-zone-normal);
-		}
+	// the minimum load, drawn as course-shaped 2×2 boxes
+	.zone-box {
+		grid-column: span 2;
+		grid-row: span 2;
+		background: var(--color-zone-min);
+		border: 1px dashed var(--color-zone-border);
 	}
 
 	.courses {
@@ -136,12 +169,18 @@
 		position: relative;
 		display: flex;
 		flex-direction: column;
+		min-width: 0;
 		margin: 0.7rem;
 		padding: 1.2rem 1.4rem;
 		border-radius: 8px;
 		cursor: grab;
+		transition: box-shadow 0.2s ease;
 		@include course-type-fill;
 		@include card-shine;
+
+		&:hover {
+			@include card-shine-hover;
+		}
 
 		.code {
 			font-size: 1.6rem;
@@ -150,11 +189,13 @@
 
 		.title {
 			font-size: 1.5rem;
+			overflow: hidden;
 		}
 
-		.faculty {
+		.credits {
 			margin-top: auto;
-			font-size: 1.4rem;
+			font-size: 1.2rem;
+			color: var(--color-text-muted);
 		}
 
 		&.flagged .code {

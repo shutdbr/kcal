@@ -6,49 +6,52 @@
 	let overallLeft = $derived(Math.max(0, plan.degreeTotal - plan.totalPlacedCredits));
 </script>
 
-<div class="hints-bar">HINTS</div>
+<div class="section">
+	<h3>information</h3>
 
-<div class="stats">
-	<div>total credits: {plan.degreeTotal}</div>
-	<div>credits left: {overallLeft}</div>
+	<div class="stats">
+		<div>total credits: {plan.degreeTotal}</div>
+		<div>credits left: {overallLeft}</div>
 
-	{#each plan.stats as s (s.role + s.subject)}
-		<div class="prog-name">{s.label}</div>
-		{#if s.role === 'major'}
-			<div>total credits: {s.totalCredits}</div>
-			<div>credits left: {s.creditsLeft}</div>
-			<div>required : {s.requiredDone}/{s.requiredNeeded}</div>
-		{:else}
-			<div class="muted">{s.role}</div>
-			<div>requirements: {s.totalCredits}</div>
-			<div>done: {s.totalCredits - s.creditsLeft}</div>
-		{/if}
-	{/each}
+		{#each plan.stats as s (s.role + s.subject)}
+			<div class="prog-name">{s.label}</div>
+			{#if s.role === 'major'}
+				<div>total credits: {s.totalCredits}</div>
+				<div>credits left: {s.creditsLeft}</div>
+				<div>required : {s.requiredDone}/{s.requiredNeeded}</div>
+			{:else}
+				<div class="muted">{s.role}</div>
+				<div>requirements: {s.totalCredits}</div>
+				<div>done: {s.totalCredits - s.creditsLeft}</div>
+			{/if}
+		{/each}
+	</div>
 </div>
 
-<div class="divider"></div>
+<div class="section">
+	<h3>hints</h3>
 
-<div class="chips">
-	{#each plan.hints as hint, i (hint.text + i)}
-		<div class="chip {hint.kind}">{hint.text}</div>
-	{/each}
+	<div class="chips">
+		{#each plan.hints as hint, i (hint.text + i)}
+			<div class="chip {hint.kind}">{hint.text}</div>
+		{/each}
+	</div>
 </div>
 
 <style lang="scss">
 	@use '$lib/styles/mixins' as *;
 
-	.hints-bar {
-		padding: 0.8rem 1.6rem;
-		background: var(--color-hints-bar);
-		color: var(--color-hints-bar-text);
-		font-size: 1.4rem;
-		font-weight: 700;
-		letter-spacing: 0.06em;
-		@include card-shine;
+	.section {
+		border-bottom: 1px solid var(--color-border-light);
+
+		h3 {
+			@include section-label;
+			padding: 1.2rem 1.6rem 0;
+		}
 	}
 
 	.stats {
-		padding: 1.4rem 1.6rem;
+		padding: 1rem 1.6rem 1.4rem;
 		font-size: 1.35rem;
 		line-height: 1.65;
 
@@ -61,11 +64,6 @@
 			color: var(--color-text-muted);
 			font-size: 1.2rem;
 		}
-	}
-
-	.divider {
-		margin: 0 1.6rem;
-		border-top: 2px dashed var(--color-border-divider);
 	}
 
 	.chips {

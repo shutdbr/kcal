@@ -8,6 +8,18 @@
 	// filter chips: one per distinct selected subject
 	let filterSubjects = $derived([...new Set(plan.selectedSubjects)]);
 
+	// which subject's code a cross-listed course should be shown under: the
+	// active filter if it pins one down, else the single programme subject it
+	// belongs to — otherwise leave it on its canonical code
+	function contextFor(subjects: string[]): string | undefined {
+		const checked = plan.filters.filter(
+			(f) => plan.selectedSubjects.includes(f) && subjects.includes(f)
+		);
+		if (checked.length === 1) return checked[0];
+		const inProgramme = plan.selectedSubjects.filter((s) => subjects.includes(s));
+		return inProgramme.length === 1 ? inProgramme[0] : undefined;
+	}
+
 	// dropping a course back on the catalogue removes it from the plan
 	function drop(e: DragEvent) {
 		e.preventDefault();
@@ -22,36 +34,42 @@
 	ondragover={(e) => e.preventDefault()}
 	ondrop={drop}
 >
-	<h2>catalogue</h2>
+	<header class="col-header">
+		<h2>catalogue</h2>
+	</header>
 
-	<input class="search" type="search" placeholder="search course" bind:value={plan.search} />
+	<div class="scroll">
+		<input class="search" type="search" placeholder="search course" bind:value={plan.search} />
 
-	<div class="filters">
-		{#each filterSubjects as id (id)}
-			<label class="filter">
-				<input
-					type="checkbox"
-					class="tick"
-					checked={plan.filters.includes(id)}
-					onchange={() => plan.toggleFilter(id)}
-				/>
-				<span>{subjectById(id).short}</span>
-			</label>
-		{/each}
-	</div>
+		<div class="filters">
+			{#each filterSubjects as id (id)}
+				<label class="filter">
+					<input
+						type="checkbox"
+						class="tick"
+						checked={plan.filters.includes(id)}
+						onchange={() => plan.toggleFilter(id)}
+					/>
+					<span>{subjectById(id).short}</span>
+				</label>
+			{/each}
+		</div>
 
-	<div class="cards" class:two-col={plan.zoom !== null}>
-		{#each plan.catalogue as course (course.code)}
-			{@const type = plan.courseType(course.code)}
-			<div class="cell" class:wide={plan.zoom !== null && type === 'required'}>
-				<CatalogueCard
-					{course}
-					{type}
-					placed={plan.placedCodes.has(course.code)}
-					detailed={plan.zoom !== null}
-				/>
-			</div>
-		{/each}
+		<div class="cards" class:two-col={plan.zoom !== null}>
+			{#each plan.catalogue as course (course.code)}
+				<!-- card width follows credits: a 4-credit course takes the full row, smaller ones half -->
+				<div class="cell" class:wide={plan.zoom !== null && course.credits >= 3}>
+					<CatalogueCard
+						{plan}
+						{course}
+						type={plan.courseType(course.code)}
+						placed={plan.placedCodes.has(course.code)}
+						detailed={plan.zoom !== null}
+						contextSubject={contextFor(course.subjects)}
+					/>
+				</div>
+			{/each}
+		</div>
 	</div>
 </div>
 
@@ -62,16 +80,31 @@
 		display: flex;
 		flex-direction: column;
 		height: 100%;
-		overflow-y: auto;
-		padding: 1.6rem 1.4rem 2.4rem;
+		min-height: 0;
+		overflow: hidden;
 		background: linear-gradient(to bottom, var(--color-bg-warm-start), var(--color-bg-warm-end));
 		border-right: 1px solid var(--color-border-warm);
 	}
 
-	h2 {
-		font-size: 2.6rem;
-		font-weight: 400;
-		margin-bottom: 1.2rem;
+	.col-header {
+		@include card-header;
+		border-bottom: 1px solid var(--color-border);
+		flex-shrink: 0;
+
+		h2 {
+			font-size: 1.8rem;
+			font-weight: 600;
+			color: var(--color-text);
+		}
+	}
+
+	.scroll {
+		display: flex;
+		flex-direction: column;
+		min-height: 0;
+		overflow-y: auto;
+		overflow-x: hidden;
+		padding: 1.6rem 1.4rem 2.4rem;
 	}
 
 	.search {
@@ -133,5 +166,6 @@
 
 	.cell {
 		display: grid; // so the card stretches
+		min-width: 0; // long titles ellipsize instead of widening the column
 	}
 </style>

@@ -1,0 +1,3584 @@
+{
+ "scraped_at": "2026-07-07T13:37:11.990199+00:00",
+ "subjects": {
+  "mathematics": {
+   "tracks": {
+    "4 Year Single Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Proofs and Ideas",
+        "Analysis 1",
+        "Analysis 2",
+        "Multivariable Calculus",
+        "Probability",
+        "Ordinary Differential Equations",
+        "Linear Algebra"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Algebra 1",
+        "Analysis 3",
+        "Complex Analysis",
+        "Algebra 2",
+        "Algebra 3",
+        "Topology 1",
+        "Analysis 4"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Measure and Integration",
+        "Statistics",
+        "Partial Differential Equations",
+        "Numerical Methods",
+        "Algebra 4",
+        "Topology 2",
+        "Geometry: Curves and Surfaces"
+       ]
+      }
+     ]
+    },
+    "4-Year Double Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Proofs and Ideas",
+        "Analysis 1",
+        "Analysis 2",
+        "Multivariable Calculus",
+        "Probability"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Ordinary Differential Equations",
+        "Linear Algebra",
+        "Algebra 1",
+        "Analysis 3",
+        "Complex Analysis"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Algebra 2",
+        "Algebra 3",
+        "Topology 1",
+        "Numerical Methods"
+       ]
+      }
+     ]
+    },
+    "3-Year Single Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Proofs and Ideas",
+        "Analysis 1",
+        "Analysis 2",
+        "Multivariable Calculus",
+        "Probability"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Ordinary Differential Equations",
+        "Linear Algebra",
+        "Algebra 1",
+        "Analysis 3",
+        "Complex Analysis"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Algebra 2",
+        "Algebra 3",
+        "Topology 1",
+        "Numerical Methods"
+       ]
+      }
+     ]
+    },
+    "3-Year Double Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Proofs and Ideas",
+        "Analysis 1",
+        "Analysis 2",
+        "Multivariable Calculus",
+        "Probability"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Ordinary Differential Equations",
+        "Linear Algebra",
+        "Algebra 1",
+        "Analysis 3",
+        "Complex Analysis"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Algebra 2",
+        "Algebra 3",
+        "Topology 1",
+        "Numerical Methods"
+       ]
+      }
+     ]
+    },
+    "4-Year Minor": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Proofs and Ideas",
+        "Analysis 1",
+        "Analysis 2",
+        "Linear Algebra"
+       ]
+      }
+     ]
+    },
+    "3-Year Minor": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Proofs and Ideas",
+        "Analysis 1",
+        "Analysis 2",
+        "Linear Algebra"
+       ]
+      }
+     ]
+    },
+    "3/4-Year Concentration": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Proofs and Ideas",
+        "Analysis 1",
+        "Analysis 2",
+        "Linear Algebra"
+       ]
+      }
+     ]
+    },
+    "Elective courses": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Fourier Analysis",
+        "Functional Analysis",
+        "Harmonic Analysis",
+        "Combinatorics",
+        "Algebraic Curves",
+        "Representation Theory",
+        "Number Theory",
+        "Group Cohomology"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Homological Algebra",
+        "Geometric Group Theory",
+        "Algebraic Topology",
+        "Differential Topology",
+        "Differential Geometry",
+        "Information Theory and Cryptography",
+        "Dynamical Systems",
+        "Writing and Communication in Mathematics"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Computational Methods in Mathematics",
+        "Mathematics: A Social History of Ideas",
+        "Ethics in Mathematics",
+        "Algorithms",
+        "Graph Theory",
+        "Mathematical Logic",
+        "Models of Computation",
+        "Mathematical Methods III"
+       ]
+      }
+     ]
+    }
+   },
+   "credit_tables": [
+    [
+     [
+      "",
+      "Credits needed to earn a Single Major in Mathematics",
+      "Credits needed to earn a Double Major in Mathematics",
+      "Credits needed to earn a Minor in Mathematics",
+      "Credits needed to earn a Concentration in Mathematics"
+     ],
+     [
+      "3-year programme",
+      "60",
+      "48",
+      "24",
+      "16"
+     ],
+     [
+      "4-year programme",
+      "80",
+      "64",
+      "32",
+      "16"
+     ]
+    ],
+    [
+     [
+      "",
+      "Single Major",
+      "",
+      "Double Major",
+      "",
+      "Minor",
+      "",
+      "Concentration",
+      ""
+     ],
+     [
+      "",
+      "Required",
+      "Elective",
+      "Required",
+      "Elective",
+      "Required",
+      "Elective",
+      "Required",
+      "Elective"
+     ],
+     [
+      "Three-year Programme",
+      "52",
+      "8",
+      "48",
+      "0",
+      "16",
+      "8",
+      "16",
+      "0"
+     ],
+     [
+      "Four-year Programme",
+      "68",
+      "12",
+      "52",
+      "12",
+      "16",
+      "16",
+      "16",
+      "0"
+     ]
+    ]
+   ],
+   "url": "https://krea.edu.in/sias/mathematics-at-krea/"
+  },
+  "political science": {
+   "tracks": {
+    "4-Year Single Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Comparative Politics I",
+        "Global Politics I",
+        "Indian Politics I",
+        "Methods I",
+        "Methods II",
+        "Political Imaginings from the Global South +",
+        "Political Theory I",
+        "Politics in Multiple Frames"
+       ]
+      },
+      {
+       "rule": "Any two of the following courses:",
+       "courses": [
+        "Indian Politics II",
+        "Comparative Politics II",
+        "Global Politics II",
+        "Political Theory II"
+       ]
+      },
+      {
+       "rule": "Any ten of the elective courses",
+       "courses": []
+      }
+     ]
+    },
+    "4-Year Double Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Comparative Politics I",
+        "Global Politics I",
+        "Indian Politics I",
+        "Methods I",
+        "Methods II",
+        "Political Imaginings from the Global South +",
+        "Political Theory I",
+        "Politics in Multiple Frames"
+       ]
+      },
+      {
+       "rule": "Any one of the following courses:",
+       "courses": [
+        "Indian Politics II",
+        "Comparative Politics II",
+        "Global Politics II",
+        "Political Theory II"
+       ]
+      },
+      {
+       "rule": "Any seven of the elective courses",
+       "courses": []
+      }
+     ]
+    },
+    "3-Year Single Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Comparative Politics I",
+        "Global Politics I",
+        "Indian Politics I",
+        "Methods I",
+        "Methods II",
+        "Political Imaginings from the Global South +",
+        "Political Theory I",
+        "Politics in Multiple Frames"
+       ]
+      },
+      {
+       "rule": "Any one of the following courses:",
+       "courses": [
+        "Indian Politics II",
+        "Comparative Politics II",
+        "Global Politics II",
+        "Political Theory II"
+       ]
+      },
+      {
+       "rule": "Any six of the elective courses",
+       "courses": []
+      }
+     ]
+    },
+    "3-Year Double Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Comparative Politics I",
+        "Global Politics I",
+        "Indian Politics I",
+        "Methods I",
+        "Methods II",
+        "Political Imaginings from the Global South +",
+        "Political Theory I",
+        "Politics in Multiple Frames"
+       ]
+      },
+      {
+       "rule": "Any four of the elective courses",
+       "courses": []
+      }
+     ]
+    },
+    "4-Year Minor": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Global Politics I or Comparative Politics I",
+        "Indian Politics I",
+        "Indian Politics II or Political Theory II",
+        "Political Theory I",
+        "Politics in Multiple Frames"
+       ]
+      },
+      {
+       "rule": "Any one of the following courses:",
+       "courses": [
+        "Comparative Politics II",
+        "Methods I",
+        "Methods II",
+        "Political Imaginings from the Global South"
+       ]
+      },
+      {
+       "rule": "Any two of the elective courses",
+       "courses": []
+      }
+     ]
+    },
+    "3-Year Minor": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Global Politics I or Comparative Politics I",
+        "Indian Politics I",
+        "Indian Politics II or Political Theory II",
+        "Political Theory I"
+       ]
+      },
+      {
+       "rule": "Any two of the elective courses",
+       "courses": []
+      }
+     ]
+    },
+    "3/4-Year Concentration section": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Indian Politics I",
+        "Political Theory I"
+       ]
+      },
+      {
+       "rule": "Any two of the elective courses",
+       "courses": []
+      }
+     ]
+    },
+    "Elective Courses": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "21st Century Decolonial Thought in Global Perspective",
+        "Caste in Critical Perspective: From Scriptural Order to Everyday Practice",
+        "Coping with Diversity and Conflict: A Global Survey of Strategies",
+        "Dalits, the State, and Development",
+        "Data Politics",
+        "Debating India: Key Deliberations in the Constituent Assembly of India",
+        "Democratic Theory: Global South Perspectives",
+        "Economics and Public Policy: An Introduction"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Gender, Culture, and Politics: Feminist Thought and Practices",
+        "Global Conflicts: Causes, Consequences, Solutions",
+        "Indian Foreign Policy",
+        "Indian Political Thought",
+        "Infrastructure Technologies and Planetary Politics",
+        "Introduction to Political Theory: Concepts and Conundrums",
+        "Philosophy of and Methodologies in the Social Sciences",
+        "Social and Political Thought: Intimations of Modernity"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Political Economy of Development",
+        "Politics and Theories of Urbanisation",
+        "Politics of the Body",
+        "South Asian Politics and International Relations",
+        "Texts on Interrogating Social Imaginaries",
+        "The ‘Strongman’ and the ‘Fakir’: Understanding the Contemporary Global Populist Phenomenon",
+        "What is a Minority? Concepts, Institutions and Politics in Postcolonial India"
+       ]
+      }
+     ]
+    }
+   },
+   "credit_tables": [
+    [
+     [
+      "",
+      "Credits needed to earn a Single Major in Politics",
+      "Credits needed to earn a Double Major in Politics",
+      "Credits needed to earn a Minor in Politics",
+      "Credits needed to earn a Concentration in Politics"
+     ],
+     [
+      "3-Year Programme",
+      "60",
+      "96",
+      "24",
+      "16"
+     ],
+     [
+      "4-Year Programme",
+      "80",
+      "128",
+      "32",
+      "16"
+     ]
+    ],
+    [
+     [
+      "",
+      "Single Major",
+      "",
+      "Minor",
+      "",
+      "Single Major",
+      "",
+      "Minor",
+      ""
+     ],
+     [
+      "",
+      "Required",
+      "Elective",
+      "Required",
+      "Elective",
+      "Required",
+      "Elective",
+      "Required",
+      "Elective"
+     ],
+     [
+      "3-Year Programme",
+      "36 credits",
+      "24 credits",
+      "32 credits",
+      "16 credits",
+      "16 credits",
+      "8 credits",
+      "8 credits",
+      "8 credits"
+     ],
+     [
+      "4-Year Programme",
+      "40 credits",
+      "40 credits",
+      "40 credits (Includes optional Capstone Project)",
+      "24 credits (Includes optional Capstone Project)",
+      "16 credits",
+      "16 credits",
+      "8 credits",
+      "8 credits"
+     ]
+    ]
+   ],
+   "url": "https://krea.edu.in/sias/politics-at-krea/"
+  },
+  "economics": {
+   "tracks": {
+    "4 Year Single Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Principles of Economics",
+        "Mathematical Methods for Economics – I",
+        "Statistics for Economics",
+        "Introduction to Statistical Programming",
+        "Microeconomics – I"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Macroeconomics – I",
+        "Econometrics – I",
+        "Microeconomics – II",
+        "Macroeconomics – II",
+        "History of Economic Thought"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Indian Economy",
+        "Microeconomics – III",
+        "Econometrics – II",
+        "Mathematical Methods for Economics – II",
+        "Macroeconomics – III"
+       ]
+      }
+     ]
+    },
+    "4 Year Double Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Principles of Economics",
+        "Mathematical Methods for Economics – I",
+        "Statistics for Economics",
+        "Introduction to Statistical Programming",
+        "Microeconomics – I"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Macroeconomics – I",
+        "Econometrics – I",
+        "Microeconomics – II",
+        "Macroeconomics – II",
+        "History of Economic Thought"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Indian Economy"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Microeconomics – III",
+        "Econometrics – II",
+        "Mathematical Methods for Economics – II",
+        "Macroeconomics – III"
+       ]
+      }
+     ]
+    },
+    "3-Year Single Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Principles of Economics",
+        "Mathematical Methods for Economics – I",
+        "Statistics for Economics",
+        "Introduction to Statistical Programming",
+        "Microeconomics – I",
+        "Macroeconomics – I",
+        "Econometrics – I",
+        "Microeconomics – II",
+        "Macroeconomics – II",
+        "History of Economic Thought",
+        "Indian Economy"
+       ]
+      }
+     ]
+    },
+    "3-Year Double Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Principles of Economics",
+        "Mathematical Methods for Economics – I",
+        "Statistics for Economics",
+        "Introduction to Statistical Programming",
+        "Microeconomics – I",
+        "Macroeconomics – I",
+        "Econometrics – I",
+        "Microeconomics – II",
+        "Macroeconomics – II"
+       ]
+      },
+      {
+       "rule": "Additionally, any one of the two listed",
+       "courses": [
+        "History of Economic Thought",
+        "Indian Economy"
+       ]
+      }
+     ]
+    },
+    "4-Year Minor": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Principles of Economics",
+        "Mathematical Methods for Economics – I",
+        "Statistics for Economics",
+        "Microeconomics – I",
+        "Macroeconomics – I",
+        "Microeconomics – II",
+        "Macroeconomics – II"
+       ]
+      },
+      {
+       "rule": "Any one of the two listed",
+       "courses": [
+        "History of Economic Thought",
+        "Indian Economy"
+       ]
+      }
+     ]
+    },
+    "3-Year Minor": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Principles of Economics",
+        "Mathematical Methods for Economics – I",
+        "Statistics for Economics",
+        "Microeconomics – I",
+        "Macroeconomics – I"
+       ]
+      },
+      {
+       "rule": "Any one of the two listed",
+       "courses": [
+        "History of Economic Thought",
+        "Indian Economy"
+       ]
+      }
+     ]
+    },
+    "3/4 -Year Concentration": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Principles of Economics",
+        "Mathematical Methods for Economics – I",
+        "Statistics for Economics",
+        "Microeconomics – I",
+        "Macroeconomics – I"
+       ]
+      }
+     ]
+    },
+    "Elective Courses": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Labour Economics",
+        "Health Economics",
+        "Development Economics",
+        "Introduction to Public Policy",
+        "Environmental Economics"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Ecological Economics",
+        "Institutions and Economic Outcomes",
+        "International Trade",
+        "Public Economics",
+        "Political Economy of Development"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Economics of Education",
+        "Mixed Methods in Impact Evaluation",
+        "Heterodox Contributions to Macroeconomics",
+        "Game Theory",
+        "Financial Inclusion"
+       ]
+      },
+      {
+       "rule": "Note : Elective offerings may vary by academic year. Prerequisites apply for advanced courses.",
+       "courses": []
+      }
+     ]
+    }
+   },
+   "credit_tables": [
+    [
+     [
+      "",
+      "Credits needed to earn a Single Major in Economics",
+      "Credits needed to earn a Double Major in Economics",
+      "Credits needed to earn a Minor in Economics",
+      "Credits needed to earn a Concentration in Economics"
+     ],
+     [
+      "3-Year Programme",
+      "60",
+      "48",
+      "24",
+      "16"
+     ],
+     [
+      "4-Year Programme",
+      "80",
+      "64",
+      "32",
+      "16"
+     ]
+    ],
+    [
+     [
+      "",
+      "Single Major",
+      "",
+      "Double Major",
+      "",
+      "Minor",
+      "",
+      "Concentration",
+      ""
+     ],
+     [
+      "",
+      "Required",
+      "Elective",
+      "Required",
+      "Elective",
+      "Required",
+      "Elective",
+      "Required",
+      "Elective"
+     ],
+     [
+      "3-Year Programme",
+      "44",
+      "16***",
+      "40",
+      "8***",
+      "24",
+      "0",
+      "16",
+      "0"
+     ],
+     [
+      "4-Year Programme",
+      "60",
+      "20*",
+      "52",
+      "12**",
+      "32",
+      "0",
+      "16",
+      "0"
+     ]
+    ]
+   ],
+   "url": "https://krea.edu.in/sias/economics-at-krea-2/"
+  },
+  "environmental studies": {
+   "tracks": {
+    "4 Year Single Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Tools and Methods",
+        "Introduction to Environmental Science",
+        "Environmental Communication",
+        "Climate Change",
+        "Introduction to Sustainability",
+        "Environment and Ethics",
+        "Ecology and Conservation Biology",
+        "Environmental History",
+        "Ecological Economics"
+       ]
+      }
+     ]
+    },
+    "4 Year Double Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Tools and Methods",
+        "Introduction to Environmental Science",
+        "Environmental Communication",
+        "Climate Change",
+        "Introduction to Sustainability",
+        "Environment and Ethics",
+        "Ecology and Conservation Biology",
+        "Environmental History",
+        "Ecological Economics"
+       ]
+      }
+     ]
+    },
+    "3-Year Single Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Tools and Methods",
+        "Introduction to Environmental Science",
+        "Environmental Communication",
+        "Climate Change",
+        "Introduction to Sustainability",
+        "Environment and Ethics",
+        "Ecology and Conservation Biology",
+        "Environmental History",
+        "Ecological Economics"
+       ]
+      }
+     ]
+    },
+    "3-Year Double Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Tools and Methods",
+        "Introduction to Environmental Science",
+        "Environmental Communication",
+        "Climate Change",
+        "Introduction to Sustainability",
+        "Environment and Ethics",
+        "Ecology and Conservation Biology",
+        "Environmental History",
+        "Ecological Economics"
+       ]
+      }
+     ]
+    },
+    "4-Year Minor": {
+     "groups": [
+      {
+       "rule": "Any 8 of the 9 courses",
+       "courses": [
+        "Tools and Methods",
+        "Introduction to Environmental Science",
+        "Environmental Communication",
+        "Climate Change",
+        "Introduction to Sustainability",
+        "Environment and Ethics",
+        "Ecology and Conservation Biology",
+        "Environmental History",
+        "Ecological Economics"
+       ]
+      }
+     ]
+    },
+    "3-Year Minor": {
+     "groups": [
+      {
+       "rule": "Any 6 of the 9 courses",
+       "courses": [
+        "Tools and Methods",
+        "Introduction to Environmental Science",
+        "Environmental Communication",
+        "Climate Change",
+        "Introduction to Sustainability",
+        "Environment and Ethics",
+        "Ecology and Conservation Biology",
+        "Environmental History",
+        "Ecological Economics"
+       ]
+      }
+     ]
+    },
+    "3/4 -Year Concentration": {
+     "groups": [
+      {
+       "rule": "Any 4 of the 9 courses",
+       "courses": [
+        "Tools and Methods",
+        "Introduction to Environmental Science",
+        "Environmental Communication",
+        "Climate Change",
+        "Introduction to Sustainability",
+        "Environment and Ethics",
+        "Ecology and Conservation Biology",
+        "Environmental History",
+        "Ecological Economics"
+       ]
+      }
+     ]
+    },
+    "Elective Courses": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Environmental Chemistry",
+        "Alternative Energy on a Finite Planet",
+        "Environmental Impact Assessment Laboratory",
+        "Animal Behaviour",
+        "Plant Anatomy and Physiology",
+        "Biostatistics",
+        "Global Change Biology",
+        "Advanced Topics in Sustainability:Planetary and Societal Boundaries"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Natural Hazards and Mitigation",
+        "Remote Sensing",
+        "Political Ecology of Biodiversity Conservation",
+        "Environmental Economics",
+        "Ecological Economics",
+        "Beasts, People, Wild Environments",
+        "Environmental Justice",
+        "Eco-feminism"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Agrarian Crisis and Indian Society",
+        "Development and Sustainability",
+        "Global Sustainability Transitions: Context and Scalability",
+        "Pan Asian Environmentalisms",
+        "Environmental Policy and Governance",
+        "Introduction to Geographical Information Systems (GIS)",
+        "Introduction to Environmental Toxicology"
+       ]
+      }
+     ]
+    }
+   },
+   "credit_tables": [
+    [
+     [
+      "",
+      "Credits needed to earn a Single Major in Environmental Studies",
+      "Credits needed to earn a Double Major in Environmental Studies",
+      "Credits needed to earn a Minor in Environmental Studies",
+      "Credits needed to earn a Concentration in Environmental Studies"
+     ],
+     [
+      "3-year programme",
+      "60",
+      "48",
+      "24",
+      "16"
+     ],
+     [
+      "4-year programme",
+      "80",
+      "64",
+      "32",
+      "16"
+     ]
+    ],
+    [
+     [
+      "",
+      "Single Major",
+      "",
+      "Double Major",
+      "",
+      "Minor",
+      "",
+      "Concentration",
+      ""
+     ],
+     [
+      "",
+      "Required",
+      "Elective",
+      "Required",
+      "Elective",
+      "Required",
+      "Elective",
+      "Required",
+      "Elective"
+     ],
+     [
+      "3-Year Programme",
+      "36",
+      "24",
+      "36",
+      "12",
+      "24",
+      "0",
+      "16",
+      "0"
+     ],
+     [
+      "4-Year Programme",
+      "36",
+      "44",
+      "36",
+      "28",
+      "32",
+      "0",
+      "16",
+      "0"
+     ]
+    ]
+   ],
+   "url": "https://krea.edu.in/sias/environmental-studies-at-krea/"
+  },
+  "sociology": {
+   "tracks": {
+    "4-Year Single Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Sociological and Anthropological Theory – I",
+        "Sociological and Anthropological Theory – II",
+        "Social Research Methods – Qualitative",
+        "Social Research Methods – Quantitative",
+        "Economy and Society",
+        "Introduction to Feminist Theory",
+        "Introduction to Political Sociology and Anthropology",
+        "Kinship, Family, and Community",
+        "Religion and Society in South Asia",
+        "Caste and Indigeneity Studies: Critical Perspectives from South Asia"
+       ]
+      }
+     ]
+    },
+    "4-Year Double Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Sociological and Anthropological Theory – I",
+        "Social Research Methods – Qualitative",
+        "Social Research Methods – Quantitative"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Sociological and Anthropological Theory – II",
+        "Economy and Society",
+        "Introduction to Feminist Theory",
+        "Introduction to Political Sociology and Anthropology",
+        "Kinship, Family, and Community",
+        "Religion and Society in South Asia",
+        "Caste and Indigeneity Studies: Critical Perspectives from South Asia"
+       ]
+      }
+     ]
+    },
+    "4-Year Minor": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Sociological and Anthropological Theory – I"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Economy and Society",
+        "Introduction to Feminist Theory",
+        "Introduction to Political Sociology and Anthropology",
+        "Kinship, Family, and Community",
+        "Religion and Society in South Asia",
+        "Caste and Indigeneity Studies: Critical Perspectives from South Asia"
+       ]
+      }
+     ]
+    },
+    "3-Year Single Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Sociological and Anthropological Theory – I",
+        "Sociological and Anthropological Theory – II",
+        "Social Research Methods – Qualitative",
+        "Social Research Methods – Quantitative",
+        "Economy and Society",
+        "Introduction to Feminist Theory",
+        "Introduction to Political Sociology and Anthropology",
+        "Kinship, Family, and Community",
+        "Religion and Society in South Asia",
+        "Caste and Indigeneity Studies: Critical Perspectives from South Asia"
+       ]
+      }
+     ]
+    },
+    "3-Year Double Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Sociological and Anthropological Theory – I",
+        "Social Research Methods – Qualitative",
+        "Social Research Methods – Quantitative"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Sociological and Anthropological Theory – II",
+        "Economy and Society",
+        "Introduction to Feminist Theory",
+        "Introduction to Political Sociology and Anthropology",
+        "Kinship, Family, and Community",
+        "Religion and Society in South Asia",
+        "Caste and Indigeneity Studies: Critical Perspectives from South Asia"
+       ]
+      }
+     ]
+    },
+    "3-Year Minor": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Sociological and Anthropological Theory – I"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Economy and Society",
+        "Introduction to Feminist Theory",
+        "Introduction to Political Sociology and Anthropology",
+        "Kinship, Family, and Community",
+        "Religion and Society in South Asia",
+        "Caste and Indigeneity Studies: Critical Perspectives from South Asia"
+       ]
+      }
+     ]
+    },
+    "3/4-Year Concentration": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Sociological and Anthropological Theory – I"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Economy and Society",
+        "Introduction to Feminist Theory",
+        "Introduction to Political Sociology and Anthropology",
+        "Kinship, Family, and Community",
+        "Religion and Society in South Asia",
+        "Caste and Indigeneity Studies: Critical Perspectives from South Asia"
+       ]
+      }
+     ]
+    },
+    "Elective courses": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Political Economy of Development",
+        "Media and the Public",
+        "Beasts, People and Wild Environments",
+        "Caste, Community, Coloniality: From Victimhood to Political Responsibility",
+        "Ethnography of Political Violence",
+        "Social Movements",
+        "Place and Space in Culture"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Capitalism: Essential Readings",
+        "The Urban Process",
+        "Law, Society, Abolitionism",
+        "Citizenship, Exclusion and Belonging in South Asia",
+        "Gender, Masculinity and the Languages of Grief",
+        "The Political Sociology of Globalization",
+        "The Social Construction of Nature"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Pan Asian Environmentalisms: a short history",
+        "Social Media & Society",
+        "Sociology and STS through Science Fiction",
+        "Social Conflict and Religious Division: Exploring Contemporary India",
+        "Global Mobilities: Borders, Ecology, and Development",
+        "Humiliation: Power, Subjectivity, and Social Life"
+       ]
+      },
+      {
+       "rule": "All required courses can also be taken as elective courses.",
+       "courses": []
+      }
+     ]
+    }
+   },
+   "credit_tables": [
+    [
+     [
+      "",
+      "Credits needed to earn a Single Major in Sociology and Social Anthropology",
+      "Credits needed to earn a Double Major in Sociology and Social Anthropology",
+      "Credits needed to earn a Minor in Sociology and Social Anthropology",
+      "Credits needed to earn a Concentration in Sociology and Social Anthropology"
+     ],
+     [
+      "3-Year Programme",
+      "60",
+      "48",
+      "24",
+      "16"
+     ],
+     [
+      "4-Year Programme",
+      "80",
+      "64",
+      "32",
+      "20"
+     ]
+    ],
+    [
+     [
+      "",
+      "Single Major",
+      "",
+      "Double Major",
+      "",
+      "Minor",
+      "",
+      "Concentration",
+      ""
+     ],
+     [
+      "",
+      "Required",
+      "Elective",
+      "Required",
+      "Elective",
+      "Required",
+      "Elective",
+      "Required",
+      "Elective"
+     ],
+     [
+      "3-Year Programme",
+      "40",
+      "20",
+      "32",
+      "16",
+      "16",
+      "8",
+      "16",
+      "0"
+     ],
+     [
+      "4-Year Programme",
+      "40",
+      "40",
+      "32",
+      "32",
+      "16",
+      "16",
+      "16",
+      "4"
+     ]
+    ]
+   ],
+   "url": "https://krea.edu.in/sias/sociology-and-anthropology-at-krea/"
+  },
+  "computer science": {
+   "tracks": {
+    "4 Year Single Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Introduction to Computation through Programming",
+        "Discrete Mathematics",
+        "Programs, Algorithms and Data Structures",
+        "Applied Linear Algebra",
+        "Introduction to Systems Programming",
+        "Design and Analysis of Algorithms",
+        "Calculus for Computing",
+        "Applied Probability and Statistics",
+        "Software Design Practical",
+        "Introduction to Machine Learning",
+        "Principles of Computer Systems",
+        "Principles of Programming Languages",
+        "Models of Computation"
+       ]
+      }
+     ]
+    },
+    "4 Year Double Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Introduction to Computation through Programming",
+        "Discrete Mathematics",
+        "Programs, Algorithms and Data Structures",
+        "Applied Linear Algebra",
+        "Introduction to Systems Programming",
+        "Design and Analysis of Algorithms",
+        "Calculus for Computing",
+        "Applied Probability and Statistics",
+        "Software Design Practical",
+        "Introduction to Machine Learning",
+        "Principles of Computer Systems",
+        "Principles of Programming Languages",
+        "Models of Computation"
+       ]
+      }
+     ]
+    },
+    "3-Year Single Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Introduction to Computation through Programming",
+        "Discrete Mathematics",
+        "Programs, Algorithms and Data Structures",
+        "Applied Linear Algebra",
+        "Introduction to Systems Programming",
+        "Design and Analysis of Algorithms",
+        "Calculus for Computing",
+        "Applied Probability and Statistics",
+        "Software Design Practical",
+        "Introduction to Machine Learning",
+        "Principles of Computer Systems",
+        "Principles of Programming Languages",
+        "Models of Computation"
+       ]
+      }
+     ]
+    },
+    "3-Year Double Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Introduction to Computation through Programming",
+        "Discrete Mathematics",
+        "Programs, Algorithms and Data Structures",
+        "Applied Linear Algebra",
+        "Introduction to Systems Programming",
+        "Design and Analysis of Algorithms",
+        "Calculus for Computing",
+        "Applied Probability and Statistics",
+        "Software Design Practical",
+        "Introduction to Machine Learning",
+        "Principles of Computer Systems",
+        "Principles of Programming Languages"
+       ]
+      }
+     ]
+    },
+    "4-Year Minor": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Introduction to Computation through Programming",
+        "Discrete Mathematics",
+        "Programs, Algorithms and Data Structures",
+        "Applied Linear Algebra",
+        "Introduction to Systems Programming",
+        "Design and Analysis of Algorithms"
+       ]
+      },
+      {
+       "rule": "Any 2 courses from the list below",
+       "courses": [
+        "Calculus for Computing",
+        "Applied Probability and Statistics",
+        "Software Design Practical",
+        "Introduction to Machine Learning",
+        "Principles of Computer Systems",
+        "Principles of Programming Languages",
+        "Models of Computation"
+       ]
+      }
+     ]
+    },
+    "3-Year Minor": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Introduction to Computation through Programming",
+        "Discrete Mathematics",
+        "Programs, Algorithms and Data Structures",
+        "Design and Analysis of Algorithms"
+       ]
+      },
+      {
+       "rule": "Any 2 courses from the list below",
+       "courses": [
+        "Calculus for Computing",
+        "Applied Probability and Statistics",
+        "Software Design Practical",
+        "Introduction to Machine Learning",
+        "Principles of Computer Systems",
+        "Principles of Programming Languages",
+        "Models of Computation"
+       ]
+      }
+     ]
+    },
+    "3/4 -Year Minor Concentration": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Introduction to Computation through Programming",
+        "Discrete Mathematics",
+        "Programs, Algorithms and Data Structures"
+       ]
+      },
+      {
+       "rule": "Any 2 courses from the list below",
+       "courses": [
+        "Calculus for Computing",
+        "Applied Probability and Statistics",
+        "Software Design Practical",
+        "Introduction to Machine Learning",
+        "Principles of Computer Systems",
+        "Principles of Programming Languages",
+        "Models of Computation"
+       ]
+      }
+     ]
+    },
+    "Elective Courses": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Algorithms of the Internet",
+        "Automated Reasoning",
+        "Algorithms for Social Choice",
+        "Computational Music",
+        "Computer Vision",
+        "Compiler Design",
+        "Database Management Systems",
+        "Data Mining",
+        "Deep Learning"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Digital Image Processing",
+        "Game Theory",
+        "Graph Theory",
+        "High Performance Computing",
+        "Linear and Integer Programming",
+        "Logic",
+        "Matching and Flow Algorithms",
+        "Natural Language Processing"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Networks and Security",
+        "Operating Systems",
+        "Principles of Artificial Intelligence",
+        "Principles of Machine Learning",
+        "Security: Technology, Privacy and Ethics",
+        "Type Systems and Alternative Semantics",
+        "Understanding Language: An Exploration of Chomskian Linguistic"
+       ]
+      }
+     ]
+    }
+   },
+   "credit_tables": [
+    [
+     [
+      "",
+      "Credits needed to earn a Single Major in Computer Science",
+      "Credits needed to earn a Double Major in Computer Science",
+      "Credits needed to earn a Minor in Computer Science",
+      "Credits needed to earn a Concentration in Computer Science"
+     ],
+     [
+      "3-year programme",
+      "60",
+      "48",
+      "24",
+      "16"
+     ],
+     [
+      "4-year programme",
+      "80",
+      "68",
+      "32",
+      "20"
+     ]
+    ],
+    [
+     [
+      "",
+      "Single Major",
+      "",
+      "Double Major",
+      "",
+      "Minor",
+      "",
+      "Concentration",
+      ""
+     ],
+     [
+      "Required",
+      "Elective",
+      "Required",
+      "Elective",
+      "Required",
+      "Elective",
+      "Required",
+      "Elective"
+     ],
+     [
+      "3-Year Programme",
+      "52",
+      "8",
+      "44",
+      "4",
+      "16",
+      "8",
+      "12",
+      "4"
+     ],
+     [
+      "4-Year Programme",
+      "52",
+      "28",
+      "52",
+      "16",
+      "24",
+      "8",
+      "12",
+      "8"
+     ]
+    ]
+   ],
+   "url": "https://krea.edu.in/sias/computer-science-at-krea/"
+  },
+  "literature": {
+   "tracks": {
+    "4-Year Single Major": {
+     "groups": [
+      {
+       "rule": "All seven required courses listed below:",
+       "courses": [
+        "Introduction to Literary Studies",
+        "Introduction to Creative Writing",
+        "Genre in Literature",
+        "Literary Movements",
+        "Out on a Quest: Writing the Literary Critical Essay",
+        "Make or Break?: The Literary Canon",
+        "Introduction to Translation"
+       ]
+      },
+      {
+       "rule": "And any 13 elective courses (including an optional Capstone project in lieu of 3 courses)",
+       "courses": []
+      }
+     ]
+    },
+    "4-Year Double Major": {
+     "groups": [
+      {
+       "rule": "All seven required courses listed below:",
+       "courses": [
+        "Introduction to Literary Studies",
+        "Introduction to Creative Writing",
+        "Genre in Literature",
+        "Literary Movements",
+        "Out on a Quest: Writing the Literary Critical Essay",
+        "Make or Break?: The Literary Canon",
+        "Introduction to Translation"
+       ]
+      },
+      {
+       "rule": "And any 9 elective courses (including an optional Capstone project in lieu of 3 courses)",
+       "courses": []
+      }
+     ]
+    },
+    "3-Year Single Major": {
+     "groups": [
+      {
+       "rule": "All seven required courses listed below:",
+       "courses": [
+        "Introduction to Literary Studies",
+        "Introduction to Creative Writing",
+        "Genre in Literature",
+        "Literary Movements",
+        "Out on a Quest: Writing the Literary Critical Essay",
+        "Make or Break?: The Literary Canon",
+        "Introduction to Translation"
+       ]
+      },
+      {
+       "rule": "And any 8 elective courses",
+       "courses": []
+      }
+     ]
+    },
+    "3-Year Double Major": {
+     "groups": [
+      {
+       "rule": "All seven required courses listed below:",
+       "courses": [
+        "Introduction to Literary Studies",
+        "Introduction to Creative Writing",
+        "Genre in Literature",
+        "Literary Movements",
+        "Out on a Quest: Writing the Literary Critical Essay",
+        "Make or Break?: The Literary Canon",
+        "Introduction to Translation"
+       ]
+      },
+      {
+       "rule": "And any 5 elective courses",
+       "courses": []
+      }
+     ]
+    },
+    "4-Year Minor": {
+     "groups": [
+      {
+       "rule": "All four required courses listed below:",
+       "courses": [
+        "Introduction to Literary Studies",
+        "Introduction to Creative Writing",
+        "Genre in Literature",
+        "Literary Movements",
+        "Out on a Quest: Writing the Literary Critical Essay",
+        "Make or Break?: The Literary Canon",
+        "Introduction to Translation"
+       ]
+      },
+      {
+       "rule": "And any 4 elective courses",
+       "courses": []
+      }
+     ]
+    },
+    "3-Year Minor": {
+     "groups": [
+      {
+       "rule": "All four required courses listed below:",
+       "courses": [
+        "Introduction to Literary Studies",
+        "Introduction to Creative Writing",
+        "Genre in Literature",
+        "Literary Movements",
+        "Out on a Quest: Writing the Literary Critical Essay",
+        "Make or Break?: The Literary Canon",
+        "Introduction to Translation"
+       ]
+      },
+      {
+       "rule": "And any 4 elective courses",
+       "courses": []
+      }
+     ]
+    },
+    "3/4-Year Concentration section": {
+     "groups": [
+      {
+       "rule": "Any four courses from the required courses listed below and the elective courses available in a separate tab.",
+       "courses": [
+        "Required Courses"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Introduction to Literary Studies",
+        "Introduction to Creative Writing",
+        "Genre in Literature",
+        "Literary Movements",
+        "Out on a Quest: Writing the Literary Critical Essay",
+        "Make or Break?: The Literary Canon",
+        "Introduction to Translation"
+       ]
+      }
+     ]
+    },
+    "Elective Courses": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Brief Encounters: The Short Story through Histories and Cultures",
+        "Eliot & Orthodoxy",
+        "Classical Greek Drama & Its Modern Adaptations",
+        "Advanced Creative Writing",
+        "Humour in the 20th Century",
+        "Android Dreams: Technological Imaginaries in Literature & Film",
+        "Fictions of History",
+        "Editing & Publishing",
+        "An Introduction to Poetry",
+        "Independent Research study",
+        "Capstone Thesis Project"
+       ]
+      }
+     ]
+    }
+   },
+   "credit_tables": [
+    [
+     [
+      "Programme",
+      "Credits required for a single major in Literature",
+      "Credits required for a double major",
+      "Credits required for a minor in Literature",
+      "Credits required for a concentration in Literature"
+     ],
+     [
+      "3-Year Programme",
+      "60",
+      "48",
+      "24",
+      "16"
+     ],
+     [
+      "4-Year Programme",
+      "80",
+      "64",
+      "32",
+      "16"
+     ]
+    ],
+    [
+     [
+      "",
+      "Single Major",
+      "",
+      "Double Major",
+      "",
+      "Minor",
+      "",
+      "Concentration"
+     ],
+     [
+      "",
+      "Required",
+      "Elective",
+      "Required",
+      "Elective",
+      "Required",
+      "Elective",
+      ""
+     ],
+     [
+      "3-Year Programme",
+      "28 credits",
+      "32 credits",
+      "28 credits",
+      "20 credits",
+      "16 credits",
+      "8 credits",
+      "16 credits"
+     ],
+     [
+      "4-Year Programme",
+      "28 credits",
+      "52 credits (includes an optional 12-credit capstone project in lieu of an equivalent number of electives)",
+      "28 credits",
+      "36 credits (includes an optional 12-credit capstone project in lieu of an equivalent number of electives)",
+      "16 credits",
+      "16 credits",
+      "16 credits"
+     ]
+    ]
+   ],
+   "url": "https://krea.edu.in/sias/literature-at-krea/"
+  },
+  "data science": {
+   "tracks": {
+    "4 Year Single Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Introduction to Data Science",
+        "Python for Data Science",
+        "Applied Statistics",
+        "Introduction to Statistical Learning",
+        "Introduction to Deep Learning",
+        "Data Management"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Data Structures and Algorithms",
+        "Mathematical Foundations of Data Science",
+        "Introduction to Linear Algebra",
+        "Introduction to Calculus",
+        "Responsible Artificial Intelligence"
+       ]
+      }
+     ]
+    },
+    "4 Year Double Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Introduction to Data Science",
+        "Python for Data Science",
+        "Applied Statistics",
+        "Introduction to Statistical Learning",
+        "Introduction to Deep Learning",
+        "Data Management"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Data Structures and Algorithms",
+        "Mathematical Foundations of Data Science",
+        "Introduction to Linear Algebra",
+        "Introduction to Calculus",
+        "Responsible Artificial Intelligence"
+       ]
+      }
+     ]
+    },
+    "3-Year Single Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Introduction to Data Science",
+        "Python for Data Science",
+        "Applied Statistics",
+        "Introduction to Statistical Learning",
+        "Introduction to Deep Learning",
+        "Data Management"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Data Structures and Algorithms",
+        "Mathematical Foundations of Data Science",
+        "Introduction to Linear Algebra",
+        "Introduction to Calculus",
+        "Responsible Artificial Intelligence"
+       ]
+      }
+     ]
+    },
+    "3-Year Double Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Introduction to Data Science",
+        "Python for Data Science",
+        "Applied Statistics",
+        "Introduction to Statistical Learning",
+        "Introduction to Deep Learning",
+        "Data Management"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Data Structures and Algorithms",
+        "Mathematical Foundations of Data Science",
+        "Introduction to Linear Algebra",
+        "Introduction to Calculus",
+        "Responsible Artificial Intelligence"
+       ]
+      }
+     ]
+    },
+    "4-Year Minor": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Python for Data Science",
+        "Mathematical Foundations of Data Science",
+        "Introduction to Linear Algebra",
+        "Data Structures and Algorithms",
+        "Applied Statistics",
+        "Introduction to Statistical Learning",
+        "Introduction to Deep Learning",
+        "Any data science or cross-listed elective (4 credits)"
+       ]
+      }
+     ]
+    },
+    "3-Year Minor": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Python for Data Science",
+        "Mathematical Foundations of Data Science",
+        "Data Structures and Algorithms",
+        "Applied Statistics",
+        "Introduction to Statistical Learning",
+        "Introduction to Deep Learning"
+       ]
+      }
+     ]
+    },
+    "3/4 -Year Concentration": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Python for Data Science",
+        "Mathematical Foundations of Data Science",
+        "Data Structures and Algorithms",
+        "Applied Statistics"
+       ]
+      }
+     ]
+    },
+    "Elective Courses": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Optimisation for Data Science",
+        "Natural Language Processing",
+        "Big Data Analytics",
+        "Geometry for Computer Vision",
+        "Numerical Methods for Data Science",
+        "Computer Vision"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Generative AI, Agentic AI and the importance of Responsible AI",
+        "Applied Dynamical Systems",
+        "Applied Cryptography",
+        "Advanced Statistics",
+        "Business Applications of AI"
+       ]
+      }
+     ]
+    }
+   },
+   "credit_tables": [
+    [
+     [
+      "",
+      "Credits needed to earn a Single Major in Data Science",
+      "Credits needed to earn a Double Major in Data Science",
+      "Credits needed to earn a Minor in Data Science",
+      "Credits needed to earn a Concentration in Data Science"
+     ],
+     [
+      "3-Year Programme",
+      "60",
+      "48",
+      "24",
+      "16"
+     ],
+     [
+      "4-Year Programme",
+      "80",
+      "64",
+      "32",
+      "16"
+     ]
+    ],
+    [
+     [
+      "",
+      "Single Major",
+      "",
+      "Double Major",
+      "",
+      "Minor",
+      "",
+      "Concentration",
+      ""
+     ],
+     [
+      "",
+      "Required",
+      "Elective",
+      "Required",
+      "Elective",
+      "Required",
+      "Elective",
+      "Required",
+      "Elective"
+     ],
+     [
+      "3-Year Programme",
+      "44",
+      "16",
+      "44",
+      "4",
+      "24",
+      "0",
+      "16",
+      "00"
+     ],
+     [
+      "4-Year Programme",
+      "44",
+      "36",
+      "44",
+      "20",
+      "28",
+      "4",
+      "16",
+      "00"
+     ]
+    ]
+   ],
+   "url": "https://krea.edu.in/sias/data-science-at-krea/"
+  },
+  "psychology": {
+   "tracks": {
+    "Overview": {
+     "groups": [
+      {
+       "rule": "Psychology, as a scientific discipline, is continuously evolving in response to emerging empirical evidence, methodological advancements, and interdisciplinary developments. To cover the vast expanse and rapidly growing landscape of psychological science, our curriculum is well equipped to match this growth.",
+       "courses": []
+      },
+      {
+       "rule": "Apart from the required courses that are mandatory for all students majoring in Psychology, we also offer a broad and diverse range of elective courses. From cognitive science to mental health, students are offered a blend of electives that allows them to choose their area of specialisation by the fourth year.",
+       "courses": []
+      },
+      {
+       "rule": "As students must engage with courses that deepen their understanding of biological mechanisms, cognition, and scientific methods driven by innovations in brain imaging, computational modelling, and cognitive theory, we offer courses in neuroscience and cognitive science. These courses enable students to apply biological, cognitive, and empirical principles to understand complex human behaviour, reinforcing foundational knowledge and empirical reasoning.",
+       "courses": []
+      },
+      {
+       "rule": "At the same time, the growing integration of big data, AI, digital tools, and human–computer interaction has expanded the discipline’s methodological boundaries. Electives in statistics, research design, cognitive science, data analytics, and computational approaches equip students with essential quantitative reasoning and analytical skills that align with modern psychological research and industry expectations.",
+       "courses": []
+      },
+      {
+       "rule": "Similarly, with mental health gaining unprecedented attention—especially after the pandemic—electives in counselling skills, psychoanalysis, motherhood, trauma, wellbeing, psychosocial support, disability and inclusion, etc., ensure that students develop ethical sensitivity, cultural competence, and applied skills essential for addressing real-world problems. These courses form key components of professional and sociocultural learning outcomes.",
+       "courses": []
+      },
+      {
+       "rule": "Further, the increasing relevance of psychology in workplaces—from organisational behaviour and leadership to consumer behaviour, user experience, and design thinking—necessitates course offerings that build communication, teamwork, problem-solving, and applied research capabilities. Moreover, psychology’s expanding intersections with public health, sustainability, economics, political science, philosophy, education, early childhood development, and digital media highlight the discipline’s inherently interdisciplinary nature.",
+       "courses": []
+      },
+      {
+       "rule": "Offering electives across these domains allows students to integrate diverse perspectives, think critically, and appreciate how psychological science operates within the real world. A wide range of courses, especially electives, is not just an academic requirement but a curriculum designed to prepare students for the multidimensional roles and emerging opportunities that define contemporary psychology.",
+       "courses": []
+      }
+     ]
+    },
+    "4-Year Single Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Introduction to Psychology",
+        "Statistics and Research Methods I",
+        "Statistics and Research Methods II",
+        "Qualitative Approaches to Psychology",
+        "Testing and Measurement in Psychology",
+        "Writing like a Psychologist",
+        "Brain and Behaviour",
+        "Cognitive Psychology",
+        "Developmental Psychology",
+        "Social Psychology",
+        "Introduction to Clinical Psychology",
+        "Introduction to Theories in Counselling"
+       ]
+      }
+     ]
+    },
+    "4-Year Double Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Introduction to Psychology",
+        "Statistics and Research Methods I",
+        "Statistics and Research Methods II",
+        "Qualitative Approaches to Psychology",
+        "Testing and Measurement in Psychology",
+        "Writing like a Psychologist",
+        "Brain and Behaviour",
+        "Cognitive Psychology",
+        "Developmental Psychology",
+        "Social Psychology",
+        "Introduction to Clinical Psychology",
+        "Introduction to Theories in Counselling"
+       ]
+      }
+     ]
+    },
+    "3-Year Single Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Introduction to Psychology",
+        "Statistics and Research Methods I",
+        "Statistics and Research Methods II",
+        "Qualitative Approaches to Psychology",
+        "Brain and Behaviour",
+        "Cognitive Psychology",
+        "Developmental Psychology",
+        "Social Psychology",
+        "Introduction to Clinical Psychology"
+       ]
+      }
+     ]
+    },
+    "3-Year Double Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Introduction to Psychology",
+        "Statistics and Research Methods I",
+        "Statistics and Research Methods II",
+        "Qualitative Approaches to Psychology",
+        "Brain and Behaviour",
+        "Cognitive Psychology",
+        "Developmental Psychology",
+        "Social Psychology",
+        "Introduction to Clinical Psychology"
+       ]
+      }
+     ]
+    },
+    "4-Year Minor": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Introduction to Psychology",
+        "Brain and Behaviour",
+        "Cognitive Psychology",
+        "Developmental Psychology",
+        "Social Psychology"
+       ]
+      }
+     ]
+    },
+    "3-Year Minor": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Introduction to Psychology",
+        "Brain and Behaviour",
+        "Cognitive Psychology",
+        "Developmental Psychology",
+        "Social Psychology"
+       ]
+      }
+     ]
+    },
+    "3/4 -Year Concentration": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Students get to select any courses from the required or elective course list."
+       ]
+      }
+     ]
+    },
+    "Elective Courses": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Thinking like a Psychologist",
+        "History and Systems of Psychology",
+        "Psychology of Gender and Sexuality",
+        "Culture, Cognition and Subjectivity"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Fundamentals of Psychophysics",
+        "Programming for Psychologists",
+        "Evolutionary Psychology",
+        "Psychology of Language",
+        "Advanced Psycholinguistics",
+        "Vision-ways of seeing",
+        "Embodied Cognition"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "A General Introduction to Psychoanalysis",
+        "Advanced Qualitative Research: Power, Politics, and Pleasure",
+        "Counselling Skills: from theory to practice",
+        "Psychology as Human Science",
+        "Critical Disabilities and Inclusion Studies"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Political Psychology: Leadership and Social Change",
+        "Psychology in Disaster Response and Humanitarian Interventions",
+        "Organisational Psychology",
+        "Health and Sports Psychology",
+        "Self and identity",
+        "Experimental Social Psychology"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Motherhood, Family, and Childcare in India",
+        "Theories of Development",
+        "Infancy and toddlerhood",
+        "Developmental Psychopathology",
+        "Early Childhood Development: Interventions, programmes, policies",
+        "Developmental environment and early child outcomes"
+       ]
+      }
+     ]
+    }
+   },
+   "credit_tables": [
+    [
+     [
+      "Graduation Requirements",
+      "3-Year Single Major",
+      "4-Year Double Major",
+      "3-Year Single Major",
+      "4-year Double Major",
+      "4-Year Minor",
+      "3-Year Minor",
+      "Concentration (Applicable to both 3- and 4-Year programmes)"
+     ],
+     [
+      "Total Credits",
+      "80",
+      "64",
+      "60",
+      "48",
+      "32",
+      "24",
+      "16"
+     ],
+     [
+      "Required Courses",
+      "48",
+      "48",
+      "36",
+      "36",
+      "20",
+      "20",
+      ""
+     ],
+     [
+      "Electives",
+      "32*",
+      "16*",
+      "24**",
+      "12**",
+      "12**",
+      "4**",
+      ""
+     ]
+    ]
+   ],
+   "url": "https://krea.edu.in/sias/psychology-at-krea/"
+  },
+  "physics": {
+   "tracks": {
+    "4-Year Double Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Mathematical Methods I",
+        "Mathematical Methods II",
+        "Classical Physics –Energy and Force I",
+        "Classical Physics – Energy and Force II",
+        "Classical Physics – Fields I",
+        "Classical Physics – Fields II"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Energy and Entropy",
+        "Electronics I",
+        "Electronics II",
+        "Classical Physics – Spacetime",
+        "Quantum Physics I",
+        "Computational Methods"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Statistical Physics",
+        "Waves and Oscillations",
+        "Optics I",
+        "Optics II",
+        "States of Matter",
+        "Subatomic Physics"
+       ]
+      }
+     ]
+    },
+    "4-Year Single Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Mathematical Methods I",
+        "Mathematical Methods II",
+        "Classical Physics –Energy and Force I",
+        "Classical Physics – Energy and Force II",
+        "Classical Physics – Fields I",
+        "Classical Physics – Fields II",
+        "Energy and Entropy"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Electronics I",
+        "Electronics II",
+        "Classical Physics – Spacetime",
+        "Quantum Physics I",
+        "Quantum Physics II",
+        "Computational Methods",
+        "Statistical Physics"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Waves and Oscillations",
+        "Optics I",
+        "Optics II",
+        "States of Matter",
+        "Subatomic Physics",
+        "Classical field theory"
+       ]
+      }
+     ]
+    },
+    "3-Year Double Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Mathematical Methods I",
+        "Mathematical Methods II",
+        "Classical Physics –Energy and Force I",
+        "Classical Physics – Energy and Force II",
+        "Classical Physics – Fields I",
+        "Classical Physics – Fields II"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Energy and Entropy",
+        "Electronics I",
+        "Electronics II",
+        "Classical Physics – Spacetime",
+        "Quantum Physics I",
+        "Computational Methods"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Statistical Physics",
+        "Waves and Oscillations",
+        "Optics I",
+        "Optics II",
+        "States of Matter",
+        "Subatomic Physics"
+       ]
+      }
+     ]
+    },
+    "3-Year Single Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Mathematical Methods I",
+        "Mathematical Methods II",
+        "Classical Physics –Energy and Force I",
+        "Classical Physics – Energy and Force II",
+        "Classical Physics – Fields I",
+        "Classical Physics – Fields II"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Energy and Entropy",
+        "Electronics I",
+        "Electronics II",
+        "Classical Physics – Spacetime",
+        "Quantum Physics I",
+        "Computational Methods"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Statistical Physics",
+        "Waves and Oscillations",
+        "Optics I",
+        "Optics II",
+        "States of Matter",
+        "Subatomic Physics"
+       ]
+      }
+     ]
+    },
+    "4-Year Minor": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Mathematical Methods I",
+        "Classical Physics –Energy and Force I",
+        "Classical Physics – Energy and Force II",
+        "Classical Physics – Fields I",
+        "Classical Physics – Fields II",
+        "Energy and Entropy",
+        "Classical Physics – Spacetime",
+        "Quantum Physics I"
+       ]
+      }
+     ]
+    },
+    "3-Year Minor": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Mathematical Methods I",
+        "Classical Physics –Energy and Force I",
+        "Classical Physics – Energy and Force II",
+        "Classical Physics – Fields I",
+        "Classical Physics – Fields II",
+        "Energy and Entropy",
+        "Classical Physics – Spacetime",
+        "Quantum Physics I"
+       ]
+      }
+     ]
+    },
+    "3/4 -Year Concentration": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Mathematical Methods I",
+        "Classical Physics –Energy and Force I",
+        "Classical Physics – Fields I",
+        "Energy and Entropy",
+        "Classical Physics – Spacetime",
+        "Quantum Physics I"
+       ]
+      }
+     ]
+    },
+    "Elective Courses": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Mechanical Properties of Matter",
+        "Nuclear Energy",
+        "Introduction to Particle Physics",
+        "Molecular Spectroscopy",
+        "General Relativity"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Quantum Optics",
+        "Quantum Information",
+        "Mathematical Methods III",
+        "Physics of Computation",
+        "Molecular Biophysics"
+       ]
+      },
+      {
+       "rule": "Any Physics course that is required for a 4-Year Double Major may be chosen as an elective for the Single Major or 3-Year majors or minor.",
+       "courses": []
+      }
+     ]
+    }
+   },
+   "credit_tables": [
+    [
+     [
+      "",
+      "Minimum credits required for graduation",
+      "Credits needed to earn a Single Major",
+      "Credits necessary to earn a Double Major",
+      "Credits needed to earn a Minor",
+      "Credits needed to earn a Concentration"
+     ],
+     [
+      "3-Year Programme (2023-26 onwards)",
+      "120",
+      "62",
+      "96",
+      "24",
+      "16"
+     ],
+     [
+      "4-Year Programme (2023-26 onwards)",
+      "160",
+      "82",
+      "128",
+      "32",
+      "16"
+     ]
+    ],
+    [
+     [
+      "",
+      "Single Major",
+      "",
+      "Double Major",
+      "",
+      "Minor",
+      "",
+      "Concentration",
+      ""
+     ],
+     [
+      "",
+      "Required",
+      "Elective",
+      "Required",
+      "Elective",
+      "Required",
+      "Elective",
+      "Required",
+      "Elective"
+     ],
+     [
+      "3-Year Programme (2023-26 onwards)",
+      "50 credits",
+      "12 credits",
+      "46 credits",
+      "2 credits",
+      "22 credits",
+      "2 credits",
+      "18 credits",
+      "0 credits"
+     ],
+     [
+      "4-Year Programme (2023-26 onwards)",
+      "58 credits",
+      "24 credits",
+      "50 credits",
+      "14 credits",
+      "22 credits",
+      "10 credits",
+      "18 credits",
+      "0 credits"
+     ]
+    ]
+   ],
+   "url": "https://krea.edu.in/sias/physics-at-krea/"
+  },
+  "chemistry": {
+   "tracks": {
+    "4 Year Double Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Physics for Chemists and Biologists",
+        "Mathematical Methods",
+        "General Chemistry",
+        "Energetics and Kinetics",
+        "Carbon Based Molecules",
+        "Atoms, Molecules and Elements",
+        "General Chemistry Lab"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Analytical Chemistry and Spectroscopy",
+        "Chemistry Across Periodic Table",
+        "Advanced Energetics and Kinetics and Materials",
+        "Inorganic Chemistry Lab",
+        "Making Carbon Based Molecules",
+        "Symmetry and Group Theory",
+        "Physical Chemistry Lab"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Coordination Chemistry",
+        "Organic Chemistry Lab",
+        "Organic Synthesis and Estimation Lab",
+        "Instrumental Methods of Analysis",
+        "Programming and Computational Chemistry Lab",
+        "Advanced Research (Capstone)",
+        "Seminar"
+       ]
+      }
+     ]
+    },
+    "3-Year Single Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Physics for Chemists and Biologists",
+        "Mathematical Methods",
+        "General Chemistry",
+        "Energetics and Kinetics",
+        "Carbon Based Molecules",
+        "Atoms, Molecules and Elements",
+        "General Chemistry Lab"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Analytical Chemistry and Spectroscopy",
+        "Chemistry Across Periodic Table",
+        "Advanced Energetics and Kinetics and Materials",
+        "Inorganic Chemistry Lab",
+        "Making Carbon Based Molecules",
+        "Symmetry and Group Theory"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Physical Chemistry Lab",
+        "Coordination Chemistry",
+        "Organic Chemistry Lab",
+        "Organic Synthesis and Estimation Lab",
+        "Instrumental Methods of Analysis",
+        "Programming and Computational Chemistry Lab"
+       ]
+      }
+     ]
+    },
+    "3-Year Double Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Physics for Chemists and Biologists",
+        "Mathematical Methods",
+        "General Chemistry",
+        "Energetics and Kinetics",
+        "Carbon Based Molecules",
+        "Atoms, Molecules and Elements"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "General Chemistry Lab",
+        "Analytical Chemistry and Spectroscopy",
+        "Chemistry Across Periodic Table",
+        "Advanced Energetics and Kinetics and Materials",
+        "Inorganic Chemistry Lab"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Making Carbon Based Molecules",
+        "Symmetry and Group Theory",
+        "Physical Chemistry Lab",
+        "Coordination Chemistry",
+        "Organic Chemistry Lab"
+       ]
+      }
+     ]
+    },
+    "4-Year Minor": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Energetics and Kinetics",
+        "Carbon Based Molecules",
+        "Atoms, Molecules and Elements",
+        "General Chemistry Lab",
+        "Analytical Chemistry and Spectroscopy",
+        "Chemistry Across Periodic Table",
+        "Inorganic Chemistry Lab"
+       ]
+      }
+     ]
+    },
+    "3-Year Minor": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Energetics and Kinetics",
+        "Carbon Based Molecules",
+        "Atoms, Molecules and Elements",
+        "General Chemistry Lab",
+        "Analytical Chemistry and Spectroscopy",
+        "Chemistry Across Periodic Table",
+        "Inorganic Chemistry Lab"
+       ]
+      }
+     ]
+    },
+    "3/4 -Year Concentration": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Carbon Based Molecules",
+        "Atoms, Molecules and Elements",
+        "General Chemistry Lab",
+        "Analytical Chemistry and Spectroscopy",
+        "Chemistry Across Periodic Table"
+       ]
+      }
+     ]
+    },
+    "Elective Courses": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Statistical Thermodynamics",
+        "Systems Biology",
+        "Electrochemistry",
+        "Spectroscopic Characterization of Molecules",
+        "Soft Matter"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Molecular Biophysics",
+        "Cheminformatics",
+        "Application of Group Theory",
+        "Molecular Modelling and Simulations– Biomolecules and Rational Drug Design",
+        "Advanced Spectroscopy"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Stereochemistry",
+        "Molecular Modelling and Simulation– Quantum Chemistry Approach",
+        "Advanced Inorganic Chemistry",
+        "Protein Folding and Dynamics",
+        "Advanced Analytical Chemistry"
+       ]
+      }
+     ]
+    }
+   },
+   "credit_tables": [
+    [
+     [
+      "",
+      "Credits needed to earn a Single Major in Chemistry",
+      "Credits needed to earn a Double Major in Chemistry",
+      "Credits needed to earn a Minor in Chemistry",
+      "Credits needed to earn a Concentration in Chemistry"
+     ],
+     [
+      "3-Year Programme",
+      "58",
+      "48",
+      "28",
+      "18"
+     ],
+     [
+      "4-Year Programme",
+      "80",
+      "60",
+      "32",
+      "18"
+     ]
+    ],
+    [
+     [
+      "",
+      "Single Major",
+      "",
+      "Double Major",
+      "",
+      "Minor",
+      "",
+      "Concentration",
+      ""
+     ],
+     [
+      "",
+      "Required",
+      "Elective",
+      "Required",
+      "Elective",
+      "Required",
+      "Elective",
+      "Required",
+      "Elective"
+     ],
+     [
+      "3-Year Programme",
+      "50",
+      "8",
+      "40",
+      "8",
+      "24",
+      "4",
+      "18",
+      "0"
+     ],
+     [
+      "4-Year Programme",
+      "68 (includes a 12- credit required Capstone project)",
+      "12",
+      "56",
+      "4",
+      "24",
+      "8",
+      "18",
+      "0"
+     ]
+    ]
+   ],
+   "url": "https://krea.edu.in/sias/chemistry-at-krea/"
+  },
+  "biology": {
+   "tracks": {
+    "4-Year Single Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Physics for Chemists and Biologists",
+        "Chemistry for Biologists",
+        "Life at Different Scales",
+        "Biochemistry",
+        "Ecology and Conservation Biology",
+        "Biostatistics",
+        "Form and Function"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Genetics",
+        "Evolution",
+        "Molecular and Cellular Biology",
+        "Microbiology",
+        "Biochemistry and Microbiology Lab",
+        "Genetics and Cell Biology Lab"
+       ]
+      }
+     ]
+    },
+    "4-Year Double Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Physics for Chemists and Biologists",
+        "Chemistry for Biologists",
+        "Life at Different Scales",
+        "Biochemistry",
+        "Ecology and Conservation Biology",
+        "Biostatistics",
+        "Form and Function"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Genetics",
+        "Evolution",
+        "Molecular and Cellular Biology",
+        "Microbiology",
+        "Biochemistry and Microbiology Lab",
+        "Genetics and Cell Biology Lab"
+       ]
+      }
+     ]
+    },
+    "3-Year Single Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Physics for Chemists and Biologists",
+        "Chemistry for Biologists",
+        "Life at Different Scales",
+        "Biochemistry",
+        "Ecology and Conservation Biology",
+        "Biostatistics",
+        "Form and Function"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Genetics",
+        "Evolution",
+        "Molecular and Cellular Biology",
+        "Microbiology",
+        "Biochemistry and Microbiology Lab",
+        "Genetics and Cell Biology Lab"
+       ]
+      }
+     ]
+    },
+    "3-Year Double Major": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Physics for Chemists and Biologists",
+        "Chemistry for Biologists",
+        "Life at Different Scales",
+        "Biochemistry",
+        "Ecology and Conservation Biology",
+        "Biostatistics",
+        "Form and Function"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Genetics",
+        "Evolution",
+        "Molecular and Cellular Biology",
+        "Microbiology",
+        "Biochemistry and Microbiology Lab",
+        "Genetics and Cell Biology Lab"
+       ]
+      }
+     ]
+    },
+    "4-Year Minor": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Physics for Chemists and Biologists",
+        "Chemistry for Biologists",
+        "Life at Different Scales",
+        "Biochemistry",
+        "Form and Function",
+        "Genetics",
+        "Evolution"
+       ]
+      }
+     ]
+    },
+    "3-Year Minor": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Life at Different Scales",
+        "Biochemistry",
+        "Form and Function",
+        "Genetics",
+        "Evolution"
+       ]
+      }
+     ]
+    },
+    "3/4 -Year Concentration": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Life at Different Scales",
+        "Biochemistry"
+       ]
+      }
+     ]
+    },
+    "Elective Courses": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Advanced Cell Biology",
+        "Animal Behaviour",
+        "Bioinformatics",
+        "Capstone",
+        "Developmental Biology",
+        "Global Change Biology"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Immunology",
+        "Mass Extinctions",
+        "Mathematical/ Quantitative Biology",
+        "Microbial Gene Regulation",
+        "Microbial Genomics",
+        "Molecular Biophysics"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Plant Anatomy and Physiology",
+        "Plant Diversity and Reproduction",
+        "Protein Folding and Dynamics",
+        "Systems Biology",
+        "The Quantified Self",
+        "Ways of Knowing: Instrumentation in Biology",
+        "Ways of Knowing: Methods and Communication",
+        "Independent Study/Directed Readings"
+       ]
+      }
+     ]
+    }
+   },
+   "credit_tables": [
+    [
+     [
+      "",
+      "Credits needed to earn a Single Major in Biological Sciences",
+      "Credits needed to earn a Double Major in Biological Sciences",
+      "Credits needed to earn a Minor in Biological Sciences",
+      "Credits needed to earn a Concentration in Biological Sciences"
+     ],
+     [
+      "3-Year Programme",
+      "64",
+      "48",
+      "24",
+      "16"
+     ],
+     [
+      "4-Year Programme",
+      "80",
+      "64",
+      "32",
+      "16"
+     ]
+    ],
+    [
+     [
+      "",
+      "Single Major",
+      "",
+      "Double Major",
+      "",
+      "Major",
+      "",
+      "Concentration",
+      ""
+     ],
+     [
+      "",
+      "Required",
+      "Elective",
+      "Required",
+      "Elective",
+      "Required",
+      "Elective",
+      "Required",
+      "Elective"
+     ],
+     [
+      "3-Year Programme",
+      "48",
+      "16",
+      "48",
+      "0",
+      "20",
+      "4",
+      "8",
+      "8"
+     ],
+     [
+      "4-Year Programme",
+      "48",
+      "32",
+      "48",
+      "16",
+      "28",
+      "4",
+      "8",
+      "8"
+     ]
+    ]
+   ],
+   "url": "https://krea.edu.in/sias/biological-sciences-at-krea/"
+  },
+  "history": {
+   "tracks": {
+    "4 Year Single Major": {
+     "groups": [
+      {
+       "rule": "Any three of the methodology courses below",
+       "courses": [
+        "The Historian’s Craft: Primary Sources and their Interpretations",
+        "Historical Reasoning",
+        "Indian Historiography",
+        "The New Science: History in the Age of AI",
+        "Advanced Indian Historiography"
+       ]
+      },
+      {
+       "rule": "Any three of the world history courses below",
+       "courses": [
+        "Ancient World",
+        "How We Became Modern: World History from 1500 to the Present",
+        "Winds of Change: Anticolonial Movements in the 19th and 20th Centuries",
+        "Economic History: Humans as Planetary Pilots",
+        "Urban Emergence"
+       ]
+      },
+      {
+       "rule": "All the Indian history courses below",
+       "courses": [
+        "The Rise of Civilizations in India",
+        "Sources of the Self: India in the Second Millennium AD",
+        "From Mughaliayah Saltanat to Sovereign Republic: India in Transition",
+        "India and the World"
+       ]
+      }
+     ]
+    },
+    "4-Year Double Major": {
+     "groups": [
+      {
+       "rule": "Any three of the methodology courses below",
+       "courses": [
+        "The Historian’s Craft: Primary Sources and their Interpretations",
+        "Historical Reasoning",
+        "Indian Historiography",
+        "The New Science: History in the Age of AI",
+        "Advanced Indian Historiography"
+       ]
+      },
+      {
+       "rule": "Any three of the world history courses below",
+       "courses": [
+        "Ancient World",
+        "How We Became Modern: World History from 1500 to the Present",
+        "Winds of Change: Anticolonial Movements in the 19th and 20th Centuries",
+        "Economic History: Humans as Planetary Pilots",
+        "Urban Emergence"
+       ]
+      },
+      {
+       "rule": "All the Indian history courses below",
+       "courses": [
+        "The Rise of Civilizations in India",
+        "Sources of the Self: India in the Second Millennium AD",
+        "From Mughaliayah Saltanat to Sovereign Republic: India in Transition",
+        "India and the World"
+       ]
+      }
+     ]
+    },
+    "3-Year Single Major": {
+     "groups": [
+      {
+       "rule": "Any three of the methodology courses below",
+       "courses": [
+        "The Historian’s Craft: Primary Sources and their Interpretations",
+        "Historical Reasoning",
+        "Indian Historiography",
+        "The New Science: History in the Age of AI",
+        "Advanced Indian Historiography"
+       ]
+      },
+      {
+       "rule": "Any three of the world history courses below",
+       "courses": [
+        "Ancient World",
+        "How We Became Modern: World History from 1500 to the Present",
+        "Winds of Change: Anticolonial Movements in the 19th and 20th Centuries",
+        "Economic History: Humans as Planetary Pilots",
+        "Urban Emergence"
+       ]
+      },
+      {
+       "rule": "All the Indian history courses below",
+       "courses": [
+        "The Rise of Civilizations in India",
+        "Sources of the Self: India in the Second Millennium AD",
+        "From Mughaliayah Saltanat to Sovereign Republic: India in Transition",
+        "India and the World"
+       ]
+      }
+     ]
+    },
+    "3-Year Double Major": {
+     "groups": [
+      {
+       "rule": "Any three of the methodology courses below",
+       "courses": [
+        "The Historian’s Craft: Primary Sources and their Interpretations",
+        "Historical Reasoning",
+        "Indian Historiography",
+        "The New Science: History in the Age of AI",
+        "Advanced Indian Historiography"
+       ]
+      },
+      {
+       "rule": "Any three of the world history courses below",
+       "courses": [
+        "Ancient World",
+        "How We Became Modern: World History from 1500 to the Present",
+        "Winds of Change: Anticolonial Movements in the 19th and 20th Centuries",
+        "Economic History: Humans as Planetary Pilots",
+        "Urban Emergence"
+       ]
+      },
+      {
+       "rule": "All the Indian history courses below",
+       "courses": [
+        "The Rise of Civilizations in India",
+        "Sources of the Self: India in the Second Millennium AD",
+        "From Mughaliayah Saltanat to Sovereign Republic: India in Transition",
+        "India and the World"
+       ]
+      }
+     ]
+    },
+    "4-Year Minor": {
+     "groups": [
+      {
+       "rule": "Any one of the methodology courses below",
+       "courses": [
+        "The Historian’s Craft: Primary Sources and their Interpretations",
+        "Historical Reasoning",
+        "Indian Historiography",
+        "The New Science: History in the Age of AI",
+        "Advanced Indian Historiography"
+       ]
+      },
+      {
+       "rule": "Any two of the world history courses below",
+       "courses": [
+        "Ancient World",
+        "How We Became Modern: World History from 1500 to the Present",
+        "Winds of Change: Anticolonial Movements in the 19th and 20th Centuries",
+        "Economic History: Humans as Planetary Pilots",
+        "Urban Emergence"
+       ]
+      },
+      {
+       "rule": "Any two of the Indian history courses below",
+       "courses": [
+        "The Rise of Civilizations in India",
+        "Sources of the Self: India in the Second Millennium AD",
+        "From Mughaliayah Saltanat to Sovereign Republic: India in Transition",
+        "India and the World"
+       ]
+      }
+     ]
+    },
+    "3-Year Minor": {
+     "groups": [
+      {
+       "rule": "Any one of the methodology courses below",
+       "courses": [
+        "The Historian’s Craft: Primary Sources and their Interpretations",
+        "Historical Reasoning",
+        "Indian Historiography",
+        "The New Science: History in the Age of AI",
+        "Advanced Indian Historiography"
+       ]
+      },
+      {
+       "rule": "Any two of the world history courses below",
+       "courses": [
+        "Ancient World",
+        "How We Became Modern: World History from 1500 to the Present",
+        "Winds of Change: Anticolonial Movements in the 19th and 20th Centuries",
+        "Economic History: Humans as Planetary Pilots",
+        "Urban Emergence"
+       ]
+      },
+      {
+       "rule": "Any two of the Indian history courses below",
+       "courses": [
+        "The Rise of Civilizations in India",
+        "Sources of the Self: India in the Second Millennium AD",
+        "From Mughaliayah Saltanat to Sovereign Republic: India in Transition",
+        "India and the World"
+       ]
+      }
+     ]
+    },
+    "3/4-Year Concentration": {
+     "groups": [
+      {
+       "rule": "Any one of the methodology courses below",
+       "courses": [
+        "The Historian’s Craft: Primary Sources and their Interpretations",
+        "Historical Reasoning",
+        "Indian Historiography",
+        "The New Science: History in the Age of AI",
+        "Advanced Indian Historiography"
+       ]
+      },
+      {
+       "rule": "Any one of the world history courses below",
+       "courses": [
+        "Ancient World",
+        "How We Became Modern: World History from 1500 to the Present",
+        "Winds of Change: Anticolonial Movements in the 19th and 20th Centuries",
+        "Economic History: Humans as Planetary Pilots",
+        "Urban Emergence"
+       ]
+      },
+      {
+       "rule": "Any two of the Indian history courses below",
+       "courses": [
+        "The Rise of Civilizations in India",
+        "Sources of the Self: India in the Second Millennium AD",
+        "From Mughaliayah Saltanat to Sovereign Republic: India in Transition",
+        "India and the World"
+       ]
+      }
+     ]
+    },
+    "Elective courses": {
+     "groups": [
+      {
+       "rule": null,
+       "courses": [
+        "Ramayana",
+        "Revolutions",
+        "Power and Powerlessness: Caste, Class and Gender in Indian History",
+        "Contemporary India – A History of India After Independence"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Science, History and Theatre (Upper Division Seminar)",
+        "Reading Food, Understanding Identity",
+        "Religious and Political Identities in Modern India",
+        "Maritime History"
+       ]
+      },
+      {
+       "rule": null,
+       "courses": [
+        "Environmental History",
+        "Moving Home: Migrations in Deep Time",
+        "Capitalism: Essential Readings",
+        "Religiosity, Spirituality and Ethics in Indian Religions"
+       ]
+      }
+     ]
+    }
+   },
+   "credit_tables": [
+    [
+     [
+      "",
+      "Credits needed to earn a Single Major in History",
+      "Credits needed to earn a Double Major in History",
+      "Credits needed to earn a Minor in History",
+      "Credits needed to earn a Concentration in History"
+     ],
+     [
+      "3-year programme",
+      "60",
+      "48",
+      "24",
+      "16"
+     ],
+     [
+      "4-year programme",
+      "80",
+      "64",
+      "32",
+      "16"
+     ]
+    ],
+    [
+     [
+      "",
+      "Single Major",
+      "",
+      "Double Major",
+      "",
+      "Minor",
+      "",
+      "Concentration",
+      ""
+     ],
+     [
+      "",
+      "Required",
+      "Elective",
+      "Required",
+      "Elective",
+      "Required",
+      "Elective",
+      "Required",
+      "Elective"
+     ],
+     [
+      "3-Year Programme",
+      "40",
+      "20",
+      "40",
+      "8",
+      "20",
+      "4",
+      "16",
+      "00"
+     ],
+     [
+      "4-Year Programme",
+      "40",
+      "40",
+      "40",
+      "24",
+      "20",
+      "12",
+      "16",
+      "00"
+     ]
+    ]
+   ],
+   "url": "https://krea.edu.in/sias/history-at-krea/"
+  }
+ }
+}

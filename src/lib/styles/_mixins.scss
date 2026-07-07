@@ -23,6 +23,20 @@
 	@include card-shine;
 }
 
+// Page header bar (matches sidebar header style) — shared with kreabot
+@mixin card-header {
+	display: flex;
+	align-items: center;
+	padding: 0 2.4rem;
+	height: 5.6rem;
+	flex-shrink: 0; // in a flex column, keep the fixed height instead of
+	                // shrinking to fit tall sibling content (the details
+	                // panel's height was wobbling as courses were selected)
+	background: linear-gradient(to bottom, var(--color-bg-header-start) 0%, var(--color-bg-header-end) 30%);
+	box-shadow: var(--shadow-card);
+	border-bottom: 1px solid var(--color-border);
+}
+
 // Uppercase muted section label
 @mixin section-label {
 	font-size: 1.2rem;
@@ -32,6 +46,15 @@
 	letter-spacing: 0.05em;
 }
 
+// Label → value info row — shared with kreabot
+@mixin info-row($label-width: 15.6rem) {
+	display: grid;
+	grid-template-columns: $label-width 1fr;
+	gap: 1rem;
+	font-size: 1.4rem;
+	color: var(--color-text);
+}
+
 // Empty state italic text
 @mixin empty-text {
 	font-size: 1.3rem;
@@ -39,7 +62,28 @@
 	font-style: italic;
 }
 
-// Course card fill by type — apply on an element with data-type attr
+// Sidebar nav link — shared with kreabot
+@mixin nav-link {
+	padding: 0.5rem 1.6rem;
+	color: var(--color-text);
+	text-decoration: none;
+	font-size: 1.3rem;
+	transition: background 0.2s ease;
+
+	&:hover {
+		background: var(--color-hover-medium);
+	}
+
+	&.active {
+		background: var(--color-active-strong);
+		font-weight: 600;
+		@include card-shine;
+	}
+}
+
+// Course card fill by type — apply on an element with data-type attr.
+// 'other' = anything outside your major/minor requirements (green); an
+// audit is a separate student-set flag layered on top (see .is-audit).
 @mixin course-type-fill {
 	&[data-type='required'] {
 		background: var(--color-course-required);
@@ -49,9 +93,15 @@
 		background: var(--color-course-elective);
 		border: 1px solid var(--color-course-elective-deep);
 	}
-	&[data-type='audit'] {
+	&[data-type='other'] {
 		background: var(--color-course-audit);
 		border: 1px solid var(--color-border-audit);
+	}
+	// student-marked audit: a dashed ring on top of the type colour
+	&.is-audit {
+		border-style: dashed;
+		border-width: 1.5px;
+		border-color: var(--color-accent);
 	}
 }
 
