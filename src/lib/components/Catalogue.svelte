@@ -55,16 +55,16 @@
 			{/each}
 		</div>
 
-		<div class="cards" class:two-col={plan.zoom !== null}>
+		<div class="cards">
 			{#each plan.catalogue as course (course.code)}
-				<!-- card width follows credits: a 4-credit course takes the full row, smaller ones half -->
-				<div class="cell" class:wide={plan.zoom !== null && course.credits >= 3}>
+				<!-- card width IS the credit weight: 4cr fills the row, 3cr ¾,
+				     2cr ½, 1cr ¼ — so they pack into rows of 4 (3+1, 2+2, …) -->
+				<div class="cell" style="grid-column: span {Math.min(4, Math.max(1, course.credits))};">
 					<CatalogueCard
 						{plan}
 						{course}
 						type={plan.courseType(course.code)}
 						placed={plan.placedCodes.has(course.code)}
-						detailed={plan.zoom !== null}
 						contextSubject={contextFor(course.subjects)}
 					/>
 				</div>
@@ -152,16 +152,9 @@
 
 	.cards {
 		display: grid;
-		grid-template-columns: 1fr;
+		grid-template-columns: repeat(4, 1fr); // one column per credit
+		grid-auto-flow: row dense; // a later small card backfills a half-empty row
 		gap: 1rem;
-
-		&.two-col {
-			grid-template-columns: 1fr 1fr;
-
-			.cell.wide {
-				grid-column: span 2;
-			}
-		}
 	}
 
 	.cell {

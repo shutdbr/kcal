@@ -41,7 +41,10 @@ export type Programme = {
 // student marks audits themselves.
 export type CourseType = 'required' | 'elective' | 'other';
 
-export type HintKind = 'warn' | 'info' | 'good';
+// warn = a hard error (prereq order, not offered) — red.
+// caution = a credit-count issue (under min / over cap / over total) — yellow.
+// info = neutral note, good = all-clear.
+export type HintKind = 'warn' | 'caution' | 'info' | 'good';
 
 export type Hint = {
 	kind: HintKind;

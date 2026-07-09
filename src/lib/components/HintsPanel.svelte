@@ -84,6 +84,10 @@
 			background: var(--color-hint-warn);
 		}
 
+		&.caution {
+			background: var(--color-hint-caution);
+		}
+
 		&.info {
 			background: var(--color-hint-info);
 		}

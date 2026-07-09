@@ -177,17 +177,40 @@ export class Plan {
 	// Topology 1) must be taken too, so it reads as required.
 	programmeSets = $derived.by(() =>
 		this.programmes.map((p) => {
-			const required = new Set<string>();
-			const queue = [...requiredSetFor(p.subject, p.role, this.fourYear, this.isDouble)];
+			// start from the stated required core, THEN close over prerequisites
+			// — but a prereq whose interchangeable partner is already required
+			// (COMP321 needs MATH191, and COMP201 ⇄ MATH191 is already in) is
+			// already satisfied, so it must not be added as a separate course.
+			// `required` = what reads as required (white); `requiredAll` also
+			// carries cross-department prereqs for the credit budget.
+			const required = new Set(requiredSetFor(p.subject, p.role, this.fourYear, this.isDouble));
+			const requiredAll = new Set(required);
+			// the degree's stated required-credit figure — prereqs only fill
+			// the budget up to it, so a course's biology prereq (BIOS201 for an
+			// env-studies major) doesn't inflate the requirement past the table
+			const cap = requiredCreditsFor(p.subject, p.role, this.fourYear, this.isDouble);
+			let sum = [...requiredAll].reduce((s, c) => s + byCode(c).credits, 0);
+			const queue = [...required];
 			while (queue.length) {
 				const code = queue.pop()!;
-				if (required.has(code)) continue;
-				required.add(code);
-				queue.push(...byCode(code).prereqs.filter((pre) => reachableIn(pre, this.fourYear)));
+				for (const pre of byCode(code).prereqs) {
+					if (!reachableIn(pre, this.fourYear) || requiredAll.has(pre)) continue;
+					const sub = byCode(pre).crosslist;
+					if (sub && requiredAll.has(sub)) continue;
+					if (cap !== undefined && sum + byCode(pre).credits > cap) continue;
+					requiredAll.add(pre);
+					sum += byCode(pre).credits;
+					queue.push(pre);
+					// it only READS as required (white) if it's a course of this
+					// subject — a cross-department prereq stays a green 'other'
+					// support course (it's on the site's list nowhere)
+					if (byCode(pre).subjects.includes(p.subject)) required.add(pre);
+				}
 			}
 			return {
 				subject: p.subject,
 				required,
+				requiredAll,
 				// 'choose N from' pools — required choices, coloured as required
 				pick: new Set(pickSetFor(p.subject, p.role, this.fourYear, this.isDouble)),
 				elective: new Set(electiveSetFor(p.subject, p.role, this.fourYear, this.isDouble))
@@ -335,10 +358,20 @@ export class Plan {
 			return undefined;
 		};
 
-		// the departments' published pathways first, where they exist
+		// the required set for every programme (already capped at the credit
+		// table's required figure), unioned — the default plan seeds exactly
+		// these, so the elective credits the table allows stay OPEN for the
+		// student to fill (maths: 52 required placed, 8 left — not pre-filled)
+		const requiredUnion = new Set(
+			this.programmes.flatMap((prog) => requiredSetFor(prog.subject, prog.role, this.fourYear, this.isDouble))
+		);
+
+		// the departments' published pathways first, where they exist — but
+		// only for the courses that are actually required, so a pathway's
+		// recommended electives (maths Topology 1) aren't force-placed
 		for (const prog of this.programmes) {
 			for (const { year, trim, code } of recommendedFor(prog.subject, prog.role, this.fourYear, this.isDouble)) {
-				if (pos.has(code)) continue;
+				if (pos.has(code) || !requiredUnion.has(code)) continue;
 				// the published grid itself is not always feasible (it lists
 				// MATH427 alongside its prerequisite MATH303) — never place a
 				// course at or before a prerequisite already on the grid
@@ -355,23 +388,49 @@ export class Plan {
 			}
 		}
 
-		// everything the programmes require that the pathways didn't place —
-		// ONE greedy earliest-fit pass over all programmes together, so one
-		// major's course never lands before a prerequisite the other major
-		// requires (envs' BIOS241 must wait for biology's BIOS201)
-		const remaining = new Set(
-			this.programmes
-				.flatMap((prog) => requiredSetFor(prog.subject, prog.role, this.fourYear, this.isDouble))
-				.filter((code) => hasCode(code) && !pos.has(code))
-		);
+		// a placed course, or one about to be scheduled, counts its
+		// interchangeable substitute as itself (COMP201 satisfies a MATH191
+		// prereq, and vice-versa)
+		const sub = (code: string) => (hasCode(code) ? byCode(code).crosslist : undefined);
+
+		// Everything the programmes require that the pathways didn't place,
+		// PLUS the prerequisites those courses depend on (the 1-credit tools
+		// courses, BIOS207 which the required BIOS228 needs, …). Building the
+		// closure up front and scheduling it in ONE prereq-ordered pass is
+		// what keeps a pulled-in prereq ordered after ITS OWN prereqs — the
+		// old separate "pull in prerequisites" loop dropped them into the
+		// earliest free slot and put BIOS207 ahead of BIOS201.
+		const remaining = new Set(requiredUnion);
+		for (const code of [...remaining]) {
+			const stack = hasCode(code) ? [...byCode(code).prereqs] : [];
+			while (stack.length) {
+				const pre = stack.pop()!;
+				if (!hasCode(pre) || remaining.has(pre) || !reachableIn(pre, this.fourYear)) continue;
+				const s = sub(pre);
+				if (s && remaining.has(s)) continue; // a substitute already covers it
+				remaining.add(pre);
+				stack.push(...byCode(pre).prereqs);
+			}
+		}
+		for (const code of [...remaining]) if (!hasCode(code) || pos.has(code)) remaining.delete(code);
+
+		// greedy earliest-fit over all programmes together; foundational
+		// courses (the ones that unlock the most) go first so prereqs land
+		// before their dependents
 		let progress = true;
 		while (remaining.size && progress) {
 			progress = false;
-			for (const code of [...remaining]) {
+			const order = [...remaining].sort((a, b) => byCode(b).unlocks.length - byCode(a).unlocks.length);
+			for (const code of order) {
 				const course = byCode(code);
-				// wait until the prereqs that are also on the list have been placed
-				if (course.prereqs.some((p) => remaining.has(p))) continue;
-				const after = Math.max(0, ...course.prereqs.map((p) => pos.get(p) ?? 0));
+				// wait until every prereq we're also scheduling (or its
+				// substitute) has been placed
+				const preReady = course.prereqs.every((p) => !(remaining.has(p) || (sub(p) ? remaining.has(sub(p)!) : false)));
+				if (!preReady) continue;
+				const after = Math.max(
+					0,
+					...course.prereqs.map((p) => Math.max(pos.get(p) ?? 0, sub(p) ? (pos.get(sub(p)!) ?? 0) : 0))
+				);
 				// and stay strictly before any already-placed dependent
 				const before = Math.min(Infinity, ...course.unlocks.map((u) => pos.get(u) ?? Infinity));
 				const slot = findSlot(code, after, before);
@@ -379,27 +438,6 @@ export class Plan {
 				// placed or unplaceable — either way it's off the list
 				remaining.delete(code);
 				progress = true;
-			}
-		}
-
-		// pull in prerequisites the programme lists don't mention (e.g. the
-		// 1-credit tools courses) so the default plan starts without warnings
-		let added = true;
-		while (added) {
-			added = false;
-			const needed = new Map<string, number>(); // prereq -> earliest dependent's order
-			for (const [code, order] of pos) {
-				for (const pre of byCode(code).prereqs) {
-					if (pos.has(pre) || !hasCode(pre)) continue;
-					needed.set(pre, Math.min(needed.get(pre) ?? Infinity, order));
-				}
-			}
-			for (const [pre, before] of needed) {
-				const slot = findSlot(pre, 0, before);
-				if (slot) {
-					put(pre, slot.y, slot.t);
-					added = true;
-				}
 			}
 		}
 
@@ -435,7 +473,9 @@ export class Plan {
 				const c = this.slotCredits(year, trim);
 				if (c < TRIM_MIN) {
 					hints.push({
-						kind: 'warn',
+						// a credit-count issue is a caution (yellow), not a hard
+						// error — you top a light trimester up with other courses
+						kind: 'caution',
 						text: `Y${year} T${trim} is under the ${TRIM_MIN}-credit minimum (${c}/${TRIM_MIN})`,
 						codes: []
 					});
@@ -502,11 +542,12 @@ export class Plan {
 			if (!course.crosslist) continue;
 			const other = byCode(course.crosslist);
 			if (pos.has(other.code)) {
-				// avoid emitting the pair twice
+				// avoid emitting the pair twice. Having both is redundant, not
+				// wrong — a note, not an error.
 				if (p.code < other.code) {
 					hints.push({
-						kind: 'warn',
-						text: `${p.code} and ${other.code} are crosslisted — you only need one`,
+						kind: 'info',
+						text: `${p.code} and ${other.code} are interchangeable — you only need one`,
 						codes: [p.code, other.code]
 					});
 				}
@@ -528,8 +569,8 @@ export class Plan {
 				const credits = this.slotCredits(year, trim);
 				if (credits > TRIM_HARD_MAX) {
 					hints.push({
-						kind: 'warn',
-						text: `Y${year} T${trim} is over the ${TRIM_HARD_MAX}-credit cap`,
+						kind: 'caution',
+						text: `Y${year} T${trim} is over the ${TRIM_HARD_MAX}-credit cap (${credits}/${TRIM_HARD_MAX})`,
 						codes: this.slotCourses(year, trim)
 					});
 				} else if (credits > TRIM_NORMAL_MAX) {
@@ -539,7 +580,7 @@ export class Plan {
 		}
 		if (heavy.length > HEAVY_TRIMS_ALLOWED) {
 			hints.push({
-				kind: 'warn',
+				kind: 'caution',
 				text: `only ${HEAVY_TRIMS_ALLOWED} trimesters in your whole tenure may go over ${TRIM_NORMAL_MAX} credits — you have ${heavy.length}`,
 				codes: heavy.flatMap((h) => this.slotCourses(h.year, h.trim))
 			});
@@ -547,7 +588,7 @@ export class Plan {
 			for (const h of heavy) {
 				hints.push({
 					kind: 'info',
-					text: `Y${h.year} T${h.trim} is a heavy trimester (${h.credits}/${TRIM_HARD_MAX})`,
+					text: `Y${h.year} T${h.trim} is a heavy trimester (${h.credits}/${TRIM_HARD_MAX}) — ${HEAVY_TRIMS_ALLOWED} allowed`,
 					codes: []
 				});
 			}
@@ -571,7 +612,7 @@ export class Plan {
 		// law 5 — degree credit total
 		if (this.totalPlacedCredits > this.degreeTotal) {
 			hints.push({
-				kind: 'warn',
+				kind: 'caution',
 				text: `you will exceed the required total credits (${this.totalPlacedCredits}/${this.degreeTotal})`,
 				codes: []
 			});
@@ -595,10 +636,11 @@ export class Plan {
 			const total = creditsFor(prog.subject, prog.role, this.fourYear, this.isDouble);
 			const sets = this.programmeSets[i];
 			// everything that satisfies the required structure — the fixed
-			// core CLOSED over prereqs plus the choice pools, i.e. exactly
-			// the courses that read as 'required' on the grid. A prereq the
-			// plan forces (COMP212 for the CS core) must count as done.
-			const structure = new Set([...sets.required, ...sets.pick]);
+			// core closed over prereqs (incl. a cross-department prereq that
+			// fills the credit budget, like BIOS201 for env studies) plus the
+			// choice pools. requiredAll (not required) so those support courses
+			// still count toward the degree's required credits.
+			const structure = new Set([...sets.requiredAll, ...sets.pick]);
 			// credits that count toward this programme: its own department's
 			// courses plus anything its structure/electives pull in from
 			// other departments (MATH230 counts toward computer science)

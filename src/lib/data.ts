@@ -264,7 +264,35 @@ export function requiredSetFor(subject: string, role: ProgrammeRole, fourYear: b
 		}
 		return resolvable;
 	};
-	return pick().filter((code) => reachableIn(code, fourYear));
+	const list = pick().filter((code) => reachableIn(code, fourYear));
+	// The Programme-Structure course list routinely OVER-lists what the
+	// degree actually requires: maths lists 14 "required" courses (56 cr)
+	// while its own Graduation-Requirements table says required = 52. Trust
+	// the table — keep the foundational courses (lowest-numbered) up to that
+	// credit figure; the tail (Topology 1, …) is really a pick-your-own
+	// elective. This is what leaves 8 credits of elective room, not 0.
+	const cap = requiredCreditsFor(subject, role, fourYear, isDouble);
+	if (cap === undefined) return list;
+	const out: string[] = [];
+	let sum = 0;
+	for (const code of [...list].sort((a, b) => courseLevel(a) - courseLevel(b) || a.localeCompare(b))) {
+		if (sum + byCode(code).credits > cap) continue;
+		out.push(code);
+		sum += byCode(code).credits;
+	}
+	return out.length ? out : list;
+}
+
+/** required courses the credit-table cap pushed out of requiredSetFor —
+ *  they still count for the subject, just as electives you choose */
+function requiredOverflowFor(subject: string, role: ProgrammeRole, fourYear: boolean, isDouble: boolean): string[] {
+	const cap = requiredCreditsFor(subject, role, fourYear, isDouble);
+	if (cap === undefined) return [];
+	const kept = new Set(requiredSetFor(subject, role, fourYear, isDouble));
+	const exact = (reqSubjects[subject]?.required_codes?.[reqKey(role, fourYear, isDouble)] ?? []).filter((code) =>
+		index.has(code)
+	);
+	return exact.filter((code) => !kept.has(code) && reachableIn(code, fourYear));
 }
 
 /** the 'choose N from' pools for the exact programme variant — these
@@ -281,11 +309,13 @@ export function pickSetFor(subject: string, role: ProgrammeRole, fourYear: boole
 /** the elective pool for the exact programme variant, same sourcing as
  *  requiredSetFor — the all-variants union when the page has no exact list */
 export function electiveSetFor(subject: string, role: ProgrammeRole, fourYear: boolean, isDouble: boolean): string[] {
+	// the required courses the cap moved out (maths Topology 1) join the pool
+	const overflow = requiredOverflowFor(subject, role, fourYear, isDouble);
 	const exact = (reqSubjects[subject]?.elective_codes?.[reqKey(role, fourYear, isDouble)] ?? []).filter((code) =>
 		index.has(code)
 	);
-	if (exact.length) return exact;
-	return [...(electiveBySubject.get(subject) ?? [])].filter((code) => index.has(code));
+	if (exact.length) return [...new Set([...overflow, ...exact])];
+	return [...new Set([...overflow, ...[...(electiveBySubject.get(subject) ?? [])].filter((code) => index.has(code))])];
 }
 
 /**

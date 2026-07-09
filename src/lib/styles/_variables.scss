@@ -58,7 +58,8 @@
 	--color-border-audit: #9fd4bd;
 
 	// ── Hint chip fills ──
-	--color-hint-warn: #f2d7d7;
+	--color-hint-warn: #f2d7d7; //   red    — a hard error
+	--color-hint-caution: #f6e7c2; // yellow — a credit-count issue (more/less than allowed)
 	--color-hint-info: #e7dee0;
 	--color-hint-good: #e0efe4;
 

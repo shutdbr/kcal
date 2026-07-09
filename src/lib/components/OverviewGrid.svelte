@@ -38,7 +38,6 @@
 				class:locked
 				class:problem={plan.slotHasProblem(y, t)}
 				class:can-drop={plan.dragging !== null && plan.canDrop(plan.dragging, y, t)}
-				class:no-drop={plan.dragging !== null && !plan.canDrop(plan.dragging, y, t)}
 				role="button"
 				tabindex={locked ? -1 : 0}
 				aria-label="open year {y} trimester {t}"
@@ -154,14 +153,12 @@
 			background: var(--color-grid-cell-problem);
 		}
 
-		// while dragging: mint where the course fits, gently faded where it doesn't
+		// while dragging: mint where the course fits cleanly. A course CAN be
+		// dropped anywhere unlocked (the hints flag a bad trimester) — so a
+		// slot it doesn't fit is left looking normal, not forbidden.
 		&.can-drop {
 			background: var(--color-course-audit);
 			outline-color: var(--color-border-audit);
-		}
-
-		&.no-drop {
-			opacity: 0.6;
 		}
 
 		&.locked {
