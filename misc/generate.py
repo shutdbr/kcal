@@ -429,7 +429,7 @@ def build():
                     for k, v in sorted(nodes.items())},
         "edges": [list(e) for e in edges],
     }
-    template = open(os.path.join(TRACEY_ROOT, "course_tree_template.html"),
+    template = open(os.path.join(HERE, "course_tree_template.html"),
                     encoding="utf-8").read()
     out = template.replace("/*__DATA__*/null", json.dumps(tree_data, ensure_ascii=False))
     out_path = os.path.join(TRACEY_ROOT, "course-tree.html")

@@ -56,6 +56,16 @@
 </script>
 
 <div class="board-bar">
+	<!-- one obvious switch: whose plan is on the grid right now -->
+	<div class="view-toggle" role="group" aria-label="which plan is shown">
+		<button class:active={!plan.idealView} onclick={() => plan.idealView && plan.toggleIdealView()}>
+			your plan
+		</button>
+		<button class:active={plan.idealView} onclick={() => !plan.idealView && plan.toggleIdealView()}>
+			✧ ideal path
+		</button>
+	</div>
+
 	<label class="titles-toggle">
 		<input type="checkbox" class="tick" bind:checked={plan.showTitles} />
 		<span>show course titles</span>
@@ -159,6 +169,27 @@
 			</div>
 		{/each}
 	{/each}
+</div>
+
+<div class="save-row">
+	{#if plan.idealView}
+		<!-- previewing: the only decision is whether to take this path -->
+		<button class="save" onclick={() => plan.adoptIdeal()}>
+			✧ use this plan
+		</button>
+		<span class="save-note">just looking — switch back to “your plan” and nothing has changed</span>
+	{:else if plan.unsaved}
+		<button class="save" transition:fly={{ y: 8, duration: 180 }} onclick={() => plan.savePlan()}>
+			<svg class="save-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+				<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+				<polyline points="17 21 17 13 7 13 7 21" />
+				<polyline points="7 3 7 8 15 8" />
+			</svg>
+			save plan
+		</button>
+	{:else}
+		<span class="save-note">✓ plan saved</span>
+	{/if}
 </div>
 
 {#if plan.flash}
@@ -403,6 +434,41 @@
 		border-bottom: 1px solid var(--color-border-divider);
 	}
 
+	// the your-plan ⇄ ideal-path segmented switch
+	.view-toggle {
+		display: flex;
+		border: 1px solid var(--color-border-card);
+		border-radius: 4px;
+		overflow: hidden;
+		@include card-shine;
+
+		button {
+			padding: 0.6rem 1.4rem;
+			font-size: 1.35rem;
+			font-weight: 600;
+			color: var(--color-text-muted);
+			background: var(--color-bg-light);
+			border: none;
+			cursor: pointer;
+			transition:
+				background 0.15s ease,
+				color 0.15s ease;
+
+			&:hover {
+				color: var(--color-text);
+			}
+
+			&.active {
+				color: #fff;
+				background: var(--color-accent);
+			}
+		}
+
+		button + button {
+			border-left: 1px solid var(--color-border-card);
+		}
+	}
+
 	.titles-toggle {
 		display: flex;
 		align-items: center;
@@ -427,6 +493,59 @@
 				border-color: #7c1010;
 			}
 		}
+	}
+
+	// under the grid: the save button when there's something to save, a quiet
+	// "✓ plan saved" otherwise, and "use this plan" while previewing the ideal
+	.save-row {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 0.8rem;
+		min-height: 6rem;
+		padding: 0 3.2rem 3.2rem;
+	}
+
+	.save-note {
+		font-size: 1.3rem;
+		color: var(--color-text-muted);
+	}
+
+	.save {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		min-width: 22rem;
+		justify-content: center;
+		padding: 1rem 2.8rem;
+		font-size: 1.5rem;
+		font-weight: 600;
+		color: var(--color-text);
+		background: linear-gradient(to bottom, var(--color-bg-card-start) 0%, var(--color-bg-card-end) 100%);
+		border: 1px solid var(--color-border-card);
+		border-radius: 4px;
+		cursor: pointer;
+		@include card-shine;
+		transition:
+			transform 0.15s ease,
+			box-shadow 0.15s ease,
+			background 0.15s ease;
+
+		&:hover {
+			transform: translateY(-1px);
+			background: var(--color-bg-light);
+			@include card-shine-hover;
+		}
+
+		&:active {
+			transform: none;
+		}
+	}
+
+	.save-icon {
+		width: 1.7rem;
+		height: 1.7rem;
+		color: var(--color-accent);
 	}
 
 	.legend {

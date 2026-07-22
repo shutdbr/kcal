@@ -14,3 +14,6 @@ misc/.scrape_cache/
 !.env.example
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+
+# local assistant/editor state
+.claude/

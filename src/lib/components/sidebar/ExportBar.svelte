@@ -37,11 +37,11 @@
 </script>
 
 <div class="export-bar">
-	<button class="action" onclick={exportPlan} title="download your plan as a file">
-		⤓ export plan
+	<button class="action" onclick={exportPlan} title="download your plan as a file — a backup, or to move it to another device">
+		⤓ download plan
 	</button>
-	<button class="action" onclick={() => fileInput.click()} title="load a previously exported plan">
-		⤒ import
+	<button class="action" onclick={() => fileInput.click()} title="load a plan file you downloaded earlier">
+		⤒ load plan
 	</button>
 	<input
 		class="file"

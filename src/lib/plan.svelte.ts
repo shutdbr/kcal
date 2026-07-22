@@ -16,6 +16,8 @@ import {
 	TRIM_HARD_MAX,
 	TRIM_MIN,
 	TRIM_NORMAL_MAX,
+	MAJOR_SUBJECTS,
+	PROGRAMME_SUBJECTS,
 	Y1_CORE_MAX,
 	byCode,
 	canAudit,
@@ -49,6 +51,24 @@ const TRIMS: TrimNum[] = [1, 2, 3];
 
 const STORAGE_KEY = 'tracey-plan';
 
+// a placements record with fresh arrays, so a kept snapshot can never be
+// mutated through the live grid (remove() rewrites placements[key] in place)
+const copyPlacements = (p: Record<SlotKey, string[]>): Record<SlotKey, string[]> =>
+	Object.fromEntries(Object.entries(p).map(([k, v]) => [k, [...v]]));
+
+// same courses in the same slots (order within a slot doesn't matter) —
+// drives the "you have unsaved changes" save button
+const samePlacements = (a: Record<SlotKey, string[]>, b: Record<SlotKey, string[]> | null): boolean => {
+	if (!b) return false;
+	const keys = new Set([...Object.keys(a), ...Object.keys(b)]);
+	for (const k of keys) {
+		const av = [...(a[k] ?? [])].sort();
+		const bv = [...(b[k] ?? [])].sort();
+		if (av.length !== bv.length || av.some((c, i) => c !== bv[i])) return false;
+	}
+	return true;
+};
+
 export class Plan {
 	// ── raw state ──
 	fourYear = $state(true);
@@ -59,6 +79,9 @@ export class Plan {
 	placements = $state<Record<SlotKey, string[]>>({});
 	audited = $state<string[]>([]); // codes the student has marked as audits
 	showTitles = $state(false); // grid chips show titles instead of codes
+	idealView = $state(false); // grid is previewing the recommended path, not the student's plan
+	#idealStash: Record<SlotKey, string[]> | null = null; // the real plan, kept safe during the preview
+	savedPlacements = $state<Record<SlotKey, string[]> | null>(null); // the explicit save-button checkpoint
 	zoom = $state<{ year: number; trim: TrimNum } | null>(null);
 	search = $state('');
 	filters = $state<string[]>([]); // checked catalogue subject filters
@@ -83,7 +106,10 @@ export class Plan {
 			localStorage.setItem(
 				STORAGE_KEY,
 				JSON.stringify({
-					placements: this.placements,
+					// never persist the ideal-path preview — the stashed real
+					// plan is what a reload should bring back
+					placements: this.#idealStash ?? this.placements,
+					saved: this.savedPlacements,
 					audited: this.audited,
 					fourYear: this.fourYear,
 					structure: this.structure,
@@ -121,22 +147,31 @@ export class Plan {
 			if (ok(pick)) this.picks[k] = pick as string;
 		}
 		if (Array.isArray(parsed.filters)) this.filters = parsed.filters.filter(isSubject);
-		if (parsed.placements && typeof parsed.placements === 'object') {
-			const placements: Record<SlotKey, string[]> = {};
-			for (const [key, codes] of Object.entries(parsed.placements)) {
-				const { year, trim } = parseSlot(key);
-				if (![1, 2, 3, 4].includes(year) || ![1, 2, 3].includes(trim)) continue;
-				if (!Array.isArray(codes)) continue;
-				let valid = codes.filter((c): c is string => typeof c === 'string' && hasCode(c));
-				// year-1 t1/t2 hold only foundation courses (an over-max slot
-				// is kept as-is — the hints flag it rather than dropping data)
-				if (this.coreOnly(year, trim)) valid = valid.filter(isCore);
-				if (valid.length) placements[key] = valid;
-			}
-			this.placements = placements;
-		}
+		const placements = this.#cleanPlacements(parsed.placements);
+		if (placements) this.placements = placements;
+		const saved = this.#cleanPlacements((parsed as { saved?: unknown }).saved);
+		if (saved) this.savedPlacements = saved;
 		if (Array.isArray(parsed.audited))
 			this.audited = parsed.audited.filter((c: unknown): c is string => typeof c === 'string' && hasCode(c));
+		this.ensureDistinctPicks();
+	}
+
+	/** validate a raw placements object against the current catalogue —
+	 *  null when it isn't one at all */
+	#cleanPlacements(raw: unknown): Record<SlotKey, string[]> | null {
+		if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null;
+		const placements: Record<SlotKey, string[]> = {};
+		for (const [key, codes] of Object.entries(raw)) {
+			const { year, trim } = parseSlot(key);
+			if (![1, 2, 3, 4].includes(year) || ![1, 2, 3].includes(trim)) continue;
+			if (!Array.isArray(codes)) continue;
+			let valid = codes.filter((c): c is string => typeof c === 'string' && hasCode(c));
+			// year-1 t1/t2 hold only foundation courses (an over-max slot
+			// is kept as-is — the hints flag it rather than dropping data)
+			if (this.coreOnly(year, trim)) valid = valid.filter(isCore);
+			if (valid.length) placements[key] = valid;
+		}
+		return placements;
 	}
 
 	/** the whole plan as pretty JSON — what the export button downloads */
@@ -149,6 +184,7 @@ export class Plan {
 				structure: this.structure,
 				picks: this.picks,
 				placements: this.placements,
+				saved: this.savedPlacements,
 				audited: this.audited
 			},
 			null,
@@ -422,7 +458,59 @@ export class Plan {
 		this.showTitles = false;
 		this.selected = null;
 		this.zoom = null;
+		this.idealView = false;
+		this.#idealStash = null;
 		this.seedRecommended();
+	}
+
+	/** true while the grid differs from the last save — shows the save button */
+	unsaved = $derived(!this.idealView && !samePlacements(this.placements, this.savedPlacements));
+
+	/** the save button: keep the current grid as your plan (persists locally) */
+	savePlan() {
+		this.savedPlacements = copyPlacements(this.placements);
+		this.#setFlash('plan saved ✓');
+	}
+
+	/** flip between your plan and a preview of the recommended path. Your
+	 *  plan comes back exactly as you left it — the preview never touches it. */
+	toggleIdealView() {
+		if (this.idealView) {
+			if (this.#idealStash) this.placements = this.#idealStash;
+			this.#idealStash = null;
+			this.idealView = false;
+		} else {
+			this.#idealStash = this.placements;
+			this.seedRecommended();
+			this.idealView = true;
+		}
+	}
+
+	/** while previewing: take the ideal path as your own plan */
+	adoptIdeal() {
+		if (!this.idealView) return;
+		this.#idealStash = null;
+		this.idealView = false;
+		this.#setFlash('the ideal path is now your plan — hit save to keep it');
+	}
+
+	/** no two active roles may point at the same subject — after a pick or
+	 *  structure change, later roles bump off a collision (minor = cs when
+	 *  the major just became cs → the minor moves to the first free subject) */
+	ensureDistinctPicks() {
+		const active: (keyof typeof this.picks)[] = ['major1'];
+		if (this.structure === 'double-major') active.push('major2');
+		if (this.structure === 'major-minor' || this.structure === 'major-minor-conc') active.push('minor');
+		if (this.structure === 'major-minor-conc') active.push('conc');
+		const taken = new Set<string>();
+		for (const k of active) {
+			const pool = k === 'major1' || k === 'major2' ? MAJOR_SUBJECTS : PROGRAMME_SUBJECTS;
+			if (taken.has(this.picks[k])) {
+				const free = pool.find((s) => !taken.has(s.id));
+				if (free) this.picks[k] = free.id;
+			}
+			taken.add(this.picks[k]);
+		}
 	}
 
 	/**

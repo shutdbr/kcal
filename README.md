@@ -22,10 +22,19 @@ what's really on offer.
   programme's required courses, spread sensibly across the years and ordered so
   prerequisites always come first. Departments that publish a recommended
   pathway (e.g. mathematics) use it verbatim.
-- **The "laws."** Live hints for: the 12-credit trimester minimum, the 18-credit
-  normal cap and 20-credit hard cap (allowed above 18 only twice in a degree),
-  prerequisite ordering, courses placed in a trimester or year they aren't
-  offered in, the audit limit, and the total-credit target.
+- **The "laws."** Live hints for: the 12-credit trimester minimum, the
+  16-credit recommended load and 20-credit hard cap (additional-load terms
+  allowed only twice in a degree), prerequisite ordering, courses placed in a
+  trimester or year they aren't offered in, the audit rules, the total-credit
+  target, and the 128/176-credit programme ceilings — all per the ERP Course
+  Drop Form guidelines.
+- **The foundation core.** The twelve KCCS common-curriculum courses (3 credits
+  each) are first-class citizens with their own colour: year 1 T1/T2 accept
+  only them (four per trimester), the rest spread across years 1–2, and
+  Engaging with the Environment sits in year 3. The `kccs` catalogue filter
+  shows the core on its own.
+- **Export / import.** Download your plan as a JSON file and load it back
+  later or on another machine (it also autosaves to `localStorage`).
 - **Drag and drop** a course anywhere on the grid (it snaps to the nearest
   slot), or into a zoomed single-trimester view that draws each course at its
   true credit footprint. Courses fly between the catalogue and the grid.
@@ -71,7 +80,7 @@ src/
 │  ├─ transitions.ts          # the shared catalogue⇄grid crossfade
 │  ├─ data/                   # generated JSON (courses, requirements, department, programme)
 │  ├─ components/
-│  │  ├─ sidebar/             # Sidebar (programme pickers), HintsPanel (stats · choices · hints)
+│  │  ├─ sidebar/             # Sidebar (programme pickers), HintsPanel (stats · choices · hints), ExportBar
 │  │  ├─ catalogue/           # Catalogue (search + filters), CatalogueCard
 │  │  ├─ board/               # OverviewGrid (the year×trimester grid), TrimesterZoom
 │  │  └─ details/             # DetailsPanel (selected-course info)
@@ -124,15 +133,18 @@ constants at the top of `data.ts`:
 
 | Rule | Value |
 | --- | --- |
-| Trimester minimum | 12 credits |
-| Trimester normal max | 18 credits |
-| Trimester hard cap | 20 credits (allowed above 18 only twice per degree) |
-| Audits | 2 per degree |
-| Year 1 T1/T2 | fixed core — nothing can be placed |
+| Trimester minimum | 12 credits (full-time status) |
+| Trimester recommended load | 16 credits |
+| Trimester hard cap | 20 credits (16–20 "additional load" terms allowed only twice per degree) |
+| Total credits | at most 128 (3-year) / 176 (4-year) |
+| Foundation core | all 12 KCCS courses required, 3 credits each; years 1–2 except Engaging with the Environment (year 3) |
+| Year 1 T1/T2 | KCCS foundation courses only, max 4 per trimester |
+| Audits | 2 per degree; 2- or 4-credit courses only; never KCCS/391/490/491 |
 
-Credit-load issues are advisory (yellow) — you top a light trimester up with
-common-curriculum courses this planner doesn't model. Hard errors (prerequisite
-order, a course not offered in that trimester) are red.
+Credit-load issues are advisory (yellow) — a light trimester is something you
+fix by adding courses, not an impossible plan. Hard errors (prerequisite order,
+a course not offered in that trimester, a non-core course in year 1 T1/T2) are
+red.
 
 ---
 

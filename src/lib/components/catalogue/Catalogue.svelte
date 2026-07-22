@@ -39,7 +39,8 @@
 		<h2>catalogue</h2>
 	</header>
 
-	<div class="scroll">
+	<!-- search + filters stay put while the cards scroll underneath -->
+	<div class="controls">
 		<div class="search-box">
 			<input class="search" type="search" placeholder="search course" bind:value={plan.search} />
 			{#if plan.search}
@@ -62,7 +63,9 @@
 				</label>
 			{/each}
 		</div>
+	</div>
 
+	<div class="scroll">
 		<div class="cards">
 			{#each plan.catalogue as course (course.code)}
 				<!-- card width IS the credit weight: 4cr fills the row, 2cr ½,
@@ -109,13 +112,18 @@
 		}
 	}
 
+	.controls {
+		flex-shrink: 0;
+		padding: 1.6rem 1.4rem 0;
+	}
+
 	.scroll {
 		display: flex;
 		flex-direction: column;
 		min-height: 0;
 		overflow-y: auto;
 		overflow-x: hidden;
-		padding: 1.6rem 1.4rem 2.4rem;
+		padding: 0.4rem 1.4rem 2.4rem;
 	}
 
 	.search-box {

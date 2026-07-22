@@ -5,15 +5,21 @@
 	let { plan }: { plan: Plan } = $props();
 
 	// switching the programme does NOT touch the grid — everything the
-	// student placed stays put and just recolours for the new requirements;
-	// the reset button is the only thing that reseeds the recommended plan
+	// student placed stays put and just recolours for the new requirements
+
+	// a subject already claimed by an earlier role disappears from the later
+	// roles' lists (cs major → no cs minor); changing an earlier role onto a
+	// later one's subject bumps the later pick instead (ensureDistinctPicks)
+	const distinct = () => plan.ensureDistinctPicks();
+	let major2Opts = $derived(MAJOR_SUBJECTS.filter((s) => s.id !== plan.picks.major1));
+	let minorOpts = $derived(PROGRAMME_SUBJECTS.filter((s) => s.id !== plan.picks.major1));
+	let concOpts = $derived(
+		PROGRAMME_SUBJECTS.filter((s) => s.id !== plan.picks.major1 && s.id !== plan.picks.minor)
+	);
 </script>
 
 <header class="col-header">
 	<h2><span class="brand-small">kreabot's</span> tracey</h2>
-	<button class="reset" title="reset everything back to the recommended plan" onclick={() => plan.reset()}>
-		reset
-	</button>
 </header>
 
 <div class="controls">
@@ -24,7 +30,7 @@
 
 	<label class="row">
 		<span class="row-label">plan</span>
-		<select bind:value={plan.structure}>
+		<select bind:value={plan.structure} onchange={distinct}>
 			<option value="single-major">single major</option>
 			<option value="double-major">double major</option>
 			<option value="major-minor">major + minor</option>
@@ -34,7 +40,7 @@
 
 	<label class="row">
 		<span class="row-label">major</span>
-		<select bind:value={plan.picks.major1}>
+		<select bind:value={plan.picks.major1} onchange={distinct}>
 			{#each MAJOR_SUBJECTS as s (s.id)}
 				<option value={s.id}>{s.label}</option>
 			{/each}
@@ -44,8 +50,8 @@
 	{#if plan.structure === 'double-major'}
 		<label class="row">
 			<span class="row-label">major</span>
-			<select bind:value={plan.picks.major2}>
-				{#each MAJOR_SUBJECTS as s (s.id)}
+			<select bind:value={plan.picks.major2} onchange={distinct}>
+				{#each major2Opts as s (s.id)}
 					<option value={s.id}>{s.label}</option>
 				{/each}
 			</select>
@@ -53,8 +59,8 @@
 	{:else if plan.structure !== 'single-major'}
 		<label class="row">
 			<span class="row-label">minor</span>
-			<select bind:value={plan.picks.minor}>
-				{#each PROGRAMME_SUBJECTS as s (s.id)}
+			<select bind:value={plan.picks.minor} onchange={distinct}>
+				{#each minorOpts as s (s.id)}
 					<option value={s.id}>{s.label}</option>
 				{/each}
 			</select>
@@ -62,8 +68,8 @@
 		{#if plan.structure === 'major-minor-conc'}
 			<label class="row">
 				<span class="row-label">conc.</span>
-				<select bind:value={plan.picks.conc}>
-					{#each PROGRAMME_SUBJECTS as s (s.id)}
+				<select bind:value={plan.picks.conc} onchange={distinct}>
+					{#each concOpts as s (s.id)}
 						<option value={s.id}>{s.label}</option>
 					{/each}
 				</select>
@@ -83,24 +89,6 @@
 			font-size: 1.8rem;
 			font-weight: 600;
 			color: var(--color-text);
-		}
-
-		// small reset tucked in the header corner
-		.reset {
-			margin-left: auto;
-			padding: 0.3rem 0.8rem;
-			font-size: 1.15rem;
-			font-weight: 600;
-			color: var(--color-text-muted);
-			background: var(--color-bg-light);
-			border: 1px solid var(--color-border-card);
-			border-radius: 3px;
-			cursor: pointer;
-
-			&:hover {
-				color: var(--color-text);
-				background: var(--color-hover-medium);
-			}
 		}
 
 		.brand-small {
