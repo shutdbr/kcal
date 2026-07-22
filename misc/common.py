@@ -127,10 +127,17 @@ def fuzzy_tokens_ok(nt_a, nt_b):
     ta = Counter(w for w in nt_a.split() if w not in _STOP)
     tb = Counter(w for w in nt_b.split() if w not in _STOP)
     da, db = list((ta - tb).elements()), list((tb - ta).elements())
+    # a numeric token is a sequence marker (Roman numerals are normalised to
+    # digits upstream): "Indian Politics I" -> "... 1", "... II" -> "... 2".
+    # These must match EXACTLY — never as near-typos — or a required "Part I"
+    # course silently resolves to its "Part II" sibling. So a digit only pairs
+    # with the identical digit (which would already have cancelled out), and a
+    # leftover unequal digit blocks the fuzzy match.
     pairs = sorted(
         ((_lev(x, y), x, y) for x in da for y in db
-         if _lev(x, y) <= 2 or x.startswith(y) or y.startswith(x)
-         or _common_prefix(x, y) >= 5),
+         if not (x.isdigit() or y.isdigit())
+         and (_lev(x, y) <= 2 or x.startswith(y) or y.startswith(x)
+              or _common_prefix(x, y) >= 5)),
     )
     for _, x, y in pairs:
         if x in da and y in db:

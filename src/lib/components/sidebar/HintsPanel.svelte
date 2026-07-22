@@ -28,6 +28,33 @@
 	</div>
 </div>
 
+{#if plan.choices.length}
+	<div class="section">
+		<h3>choices</h3>
+
+		<div class="choices">
+			{#each plan.choices as prog (prog.role + prog.label)}
+				{#each prog.groups as group, gi (group.rule + gi)}
+					<div class="choice">
+						<div class="choice-rule">
+							choose {group.pick}{plan.choices.length > 1 ? ` · ${prog.label}` : ''}
+						</div>
+						{#if group.courses.length}
+							<ul class="choice-list">
+								{#each group.courses as course (course.title)}
+									<li class:missing={!course.code}>{course.title}</li>
+								{/each}
+							</ul>
+						{:else}
+							<div class="choice-note">{group.rule}</div>
+						{/if}
+					</div>
+				{/each}
+			{/each}
+		</div>
+	</div>
+{/if}
+
 <div class="section">
 	<h3>hints</h3>
 
@@ -64,6 +91,45 @@
 			color: var(--color-text-muted);
 			font-size: 1.2rem;
 		}
+	}
+
+	.choices {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		padding: 1.2rem 1.6rem;
+	}
+
+	.choice-rule {
+		font-size: 1.25rem;
+		font-weight: 700;
+		color: var(--color-text);
+		text-transform: capitalize;
+	}
+
+	.choice-list {
+		margin: 0.4rem 0 0;
+		padding-left: 1.6rem;
+		font-size: 1.2rem;
+		line-height: 1.5;
+		color: var(--color-text);
+
+		li {
+			list-style: disc;
+		}
+
+		// a course the university lists but no term has taught yet — dimmed,
+		// so it reads as "offered on paper, not on the plan"
+		li.missing {
+			color: var(--color-text-muted);
+			font-style: italic;
+		}
+	}
+
+	.choice-note {
+		font-size: 1.2rem;
+		line-height: 1.4;
+		color: var(--color-text-muted);
 	}
 
 	.chips {

@@ -56,6 +56,8 @@
 	--color-course-audit: #d9f4e8; //     audit    → green
 	--color-course-elective-deep: #dfaeae;
 	--color-border-audit: #9fd4bd;
+	--color-course-core: #e4e6f5; //      foundation core (KCCS) → soft periwinkle
+	--color-course-core-deep: #b4bade;
 
 	// ── Hint chip fills ──
 	--color-hint-warn: #f2d7d7; //   red    — a hard error
@@ -67,6 +69,14 @@
 	--color-zone-min: #dcb9be; //  the 12-credit minimum boxes — tinted, but light
 	--color-zone-rest: #faf3f3; // everything past the minimum, uniform
 	--color-zone-border: #b08f9b;
+
+	// ── Programme accent (multi-programme plans) ──
+	// a thin left stripe telling apart which chosen programme a course belongs
+	// to on a double major / major+minor / +concentration. Muted on purpose —
+	// the required/elective/other fill stays the primary signal.
+	--color-prog-0: #8f6f9e; //  first major   — muted plum
+	--color-prog-1: #5f9a8a; //  minor / 2nd   — muted teal
+	--color-prog-2: #bd925a; //  concentration — muted amber
 
 	// ── Grid ──
 	--color-grid-cell: #e4dcdc;

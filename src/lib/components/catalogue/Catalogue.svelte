@@ -5,8 +5,9 @@
 
 	let { plan }: { plan: Plan } = $props();
 
-	// filter chips: one per distinct selected subject
-	let filterSubjects = $derived([...new Set(plan.selectedSubjects)]);
+	// filter chips: one per distinct selected subject, plus the foundation
+	// core — always on offer, whatever the programmes are
+	let filterSubjects = $derived([...new Set([...plan.selectedSubjects, 'core'])]);
 
 	// which subject's code a cross-listed course should be shown under: the
 	// active filter if it pins one down, else the single programme subject it
@@ -39,11 +40,18 @@
 	</header>
 
 	<div class="scroll">
-		<input class="search" type="search" placeholder="search course" bind:value={plan.search} />
+		<div class="search-box">
+			<input class="search" type="search" placeholder="search course" bind:value={plan.search} />
+			{#if plan.search}
+				<button class="clear-search" aria-label="clear search" onclick={() => (plan.search = '')}>
+					×
+				</button>
+			{/if}
+		</div>
 
 		<div class="filters">
 			{#each filterSubjects as id (id)}
-				<label class="filter">
+				<label class="filter" class:core={id === 'core'}>
 					<input
 						type="checkbox"
 						class="tick"
@@ -57,9 +65,12 @@
 
 		<div class="cards">
 			{#each plan.catalogue as course (course.code)}
-				<!-- card width IS the credit weight: 4cr fills the row, 3cr ¾,
-				     2cr ½, 1cr ¼ — so they pack into rows of 4 (3+1, 2+2, …) -->
-				<div class="cell" style="grid-column: span {Math.min(4, Math.max(1, course.credits))};">
+				<!-- card width IS the credit weight: 4cr fills the row, 2cr ½,
+				     1cr ¼ — so they pack into rows of 4 (2+2, 2+1+1, …). A 3cr
+				     course (the KCCS foundation set) also takes the full row:
+				     span-3 cards would strand a dead quarter-column beside
+				     every one of them, since nothing 1cr sits nearby to fill it -->
+				<div class="cell" style="grid-column: span {course.credits >= 3 ? 4 : Math.max(1, course.credits)};">
 					<CatalogueCard
 						{plan}
 						{course}
@@ -107,8 +118,14 @@
 		padding: 1.6rem 1.4rem 2.4rem;
 	}
 
+	.search-box {
+		position: relative;
+		display: flex;
+	}
+
 	.search {
-		padding: 0.8rem 1rem;
+		width: 100%;
+		padding: 0.8rem 3rem 0.8rem 1rem; // right padding reserves the × corner
 		font-size: 1.4rem;
 		color: var(--color-text);
 		background: var(--color-bg-card-start);
@@ -118,6 +135,36 @@
 
 		&::placeholder {
 			color: var(--color-text-muted);
+		}
+
+		// the button covers clearing — hide any native duplicate ×
+		&::-webkit-search-cancel-button {
+			display: none;
+		}
+	}
+
+	.clear-search {
+		position: absolute;
+		top: 50%;
+		right: 0.6rem;
+		transform: translateY(-50%);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 2rem;
+		height: 2rem;
+		padding: 0;
+		background: none;
+		border: none;
+		border-radius: 3px;
+		font-size: 1.7rem;
+		line-height: 1;
+		color: var(--color-text-muted);
+		cursor: pointer;
+
+		&:hover {
+			color: var(--color-text);
+			background: var(--color-hover-medium);
 		}
 	}
 
@@ -133,6 +180,14 @@
 		gap: 0.5rem;
 		font-size: 1.4rem;
 		cursor: pointer;
+
+		// kccs is a different beast (all-or-nothing core view) — set it
+		// apart from the subject chips with a gap and a divider
+		&.core {
+			margin-left: auto;
+			padding-left: 1.4rem;
+			border-left: 1px solid var(--color-border-card);
+		}
 	}
 
 	.tick {

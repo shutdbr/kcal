@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { Plan } from '$lib/plan.svelte';
-	import Sidebar from '$lib/components/Sidebar.svelte';
-	import HintsPanel from '$lib/components/HintsPanel.svelte';
-	import Catalogue from '$lib/components/Catalogue.svelte';
-	import OverviewGrid from '$lib/components/OverviewGrid.svelte';
-	import TrimesterZoom from '$lib/components/TrimesterZoom.svelte';
-	import DetailsPanel from '$lib/components/DetailsPanel.svelte';
+	import Sidebar from '$lib/components/sidebar/Sidebar.svelte';
+	import HintsPanel from '$lib/components/sidebar/HintsPanel.svelte';
+	import ExportBar from '$lib/components/sidebar/ExportBar.svelte';
+	import Catalogue from '$lib/components/catalogue/Catalogue.svelte';
+	import OverviewGrid from '$lib/components/board/OverviewGrid.svelte';
+	import TrimesterZoom from '$lib/components/board/TrimesterZoom.svelte';
+	import DetailsPanel from '$lib/components/details/DetailsPanel.svelte';
 
 	const plan = new Plan();
 </script>
@@ -18,6 +19,7 @@
 	<aside class="rail">
 		<Sidebar {plan} />
 		<HintsPanel {plan} />
+		<ExportBar {plan} />
 	</aside>
 
 	<Catalogue {plan} />

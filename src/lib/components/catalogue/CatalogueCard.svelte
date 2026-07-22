@@ -2,6 +2,7 @@
 	import type { Plan } from '$lib/plan.svelte';
 	import type { Course, CourseType } from '$lib/types';
 	import { codeFor } from '$lib/data';
+	import { sendCourse, receiveCourse } from '$lib/transitions';
 
 	let {
 		plan,
@@ -33,34 +34,20 @@
 
 	function dragstart(e: DragEvent) {
 		e.dataTransfer?.setData('text/plain', course.code);
+		if (e.dataTransfer) e.dataTransfer.effectAllowed = 'move';
 		plan.dragging = course.code;
 	}
 </script>
 
-<div
-	class="card"
-	class:placed
-	class:compact
-	data-type={type}
-	draggable={!placed}
-	role="listitem"
-	ondragstart={dragstart}
-	ondragend={() => (plan.dragging = null)}
-	onclick={() => (plan.selected = course)}
-	title={compact ? `${shownCode} — ${course.title}` : placed ? `${shownCode} is already on your plan` : `drag ${shownCode} onto the grid`}
->
-	<span class="code">
-		{shownCode}
-		{#if alsoCodes.length && !compact}
-			<span class="xlist" title="cross-listed as {alsoCodes.join(', ')}">
-				⇄ {xlistShown.join(' · ')}{xlistExtra > 0 ? ` +${xlistExtra}` : ''}
-			</span>
+{#if placed}
+	<!-- a course already on the grid leaves a dashed placeholder; the ↩ button
+	     lifts it back off, which flies it home to this slot (see the grid's
+	     out:sendCourse) -->
+	<div class="card placed" class:compact title="{shownCode} is already on your plan">
+		<span class="code">{shownCode}</span>
+		{#if !compact}
+			<span class="title">{course.title}</span>
 		{/if}
-	</span>
-	{#if !compact}
-		<span class="title">{course.title}</span>
-	{/if}
-	{#if placed}
 		<button
 			class="unplace"
 			aria-label="take {shownCode} back off the grid"
@@ -72,8 +59,36 @@
 		>
 			↩
 		</button>
-	{/if}
-</div>
+	</div>
+{:else}
+	<div
+		class="card"
+		class:compact
+		class:dragging={plan.dragging === course.code}
+		data-type={type}
+		data-prog={plan.accentOf(course.code)}
+		draggable="true"
+		role="listitem"
+		in:receiveCourse={{ key: course.code }}
+		out:sendCourse={{ key: course.code }}
+		ondragstart={dragstart}
+		ondragend={() => (plan.dragging = null)}
+		onclick={() => (plan.selected = course)}
+		title={compact ? `${shownCode} — ${course.title}` : `drag ${shownCode} onto the grid`}
+	>
+		<span class="code">
+			{shownCode}
+			{#if alsoCodes.length && !compact}
+				<span class="xlist" title="cross-listed as {alsoCodes.join(', ')}">
+					⇄ {xlistShown.join(' · ')}{xlistExtra > 0 ? ` +${xlistExtra}` : ''}
+				</span>
+			{/if}
+		</span>
+		{#if !compact}
+			<span class="title">{course.title}</span>
+		{/if}
+	</div>
+{/if}
 
 <style lang="scss">
 	@use '$lib/styles/mixins' as *;
@@ -87,12 +102,28 @@
 		padding: 1rem 1.2rem;
 		border-radius: 4px;
 		cursor: grab;
-		transition: box-shadow 0.2s ease;
+		transition:
+			transform 0.15s ease,
+			opacity 0.15s ease,
+			box-shadow 0.2s ease;
 		@include course-type-fill;
 		@include card-shine;
+		@include programme-accent;
 
 		&:hover {
+			transform: translateY(-2px);
 			@include card-shine-hover;
+		}
+
+		&:active {
+			cursor: grabbing;
+		}
+
+		// the source of an in-flight drag fades, so the cursor ghost reads as
+		// the course being picked up out of the catalogue
+		&.dragging {
+			opacity: 0.4;
+			transform: scale(0.98);
 		}
 
 		&.placed {
@@ -101,6 +132,10 @@
 			box-shadow: none;
 			color: var(--color-text-muted);
 			cursor: default;
+
+			&:hover {
+				transform: none;
+			}
 		}
 
 		// 1-credit courses are a quarter-row wide — just the code, centred,
@@ -178,10 +213,15 @@
 		border: 1px solid var(--color-border-card);
 		border-radius: 3px;
 		cursor: pointer;
+		transition:
+			transform 0.15s ease,
+			background 0.15s ease,
+			color 0.15s ease;
 
 		&:hover {
 			color: var(--color-text);
 			background: var(--color-hover-medium);
+			transform: scale(1.12);
 		}
 	}
 </style>

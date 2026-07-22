@@ -6,13 +6,21 @@
 import { browser } from '$app/environment';
 import {
 	AUDIT_LIMIT,
+	CORE_COURSES,
+	CORE_CREDITS,
 	COURSES,
 	SUBJECTS,
 	HEAVY_TRIMS_ALLOWED,
+	MAX_TOTAL_3YR,
+	MAX_TOTAL_4YR,
 	TRIM_HARD_MAX,
 	TRIM_MIN,
 	TRIM_NORMAL_MAX,
+	Y1_CORE_MAX,
 	byCode,
+	canAudit,
+	isCore,
+	choiceGroupsFor,
 	creditsFor,
 	creditsOfCodes,
 	electiveSetFor,
@@ -66,35 +74,7 @@ export class Plan {
 		if (!browser) return;
 		try {
 			const raw = localStorage.getItem(STORAGE_KEY);
-			if (raw) {
-				const parsed = JSON.parse(raw);
-				if (typeof parsed.fourYear === 'boolean') this.fourYear = parsed.fourYear;
-				if (['single-major', 'double-major', 'major-minor', 'major-minor-conc'].includes(parsed.structure))
-					this.structure = parsed.structure;
-				// older saves stored subject codes ("BUSI") — only accept current ids,
-				// and majors additionally must be subjects offered as a major
-				const isSubject = (v: unknown) => SUBJECTS.some((s) => s.id === v);
-				const isMajor = (v: unknown) => SUBJECTS.some((s) => s.id === v && s.majorable);
-				for (const k of Object.keys(this.picks) as (keyof typeof this.picks)[]) {
-					const ok = k === 'major1' || k === 'major2' ? isMajor : isSubject;
-					if (ok(parsed.picks?.[k])) this.picks[k] = parsed.picks[k];
-				}
-				if (Array.isArray(parsed.filters)) this.filters = parsed.filters.filter(isSubject);
-				if (parsed.placements && typeof parsed.placements === 'object') {
-					const placements: Record<SlotKey, string[]> = {};
-					for (const [key, codes] of Object.entries(parsed.placements)) {
-						const { year, trim } = parseSlot(key);
-						if (![1, 2, 3, 4].includes(year) || ![1, 2, 3].includes(trim)) continue;
-						if (this.locked(year, trim)) continue;
-						if (!Array.isArray(codes)) continue;
-						const valid = codes.filter((c): c is string => typeof c === 'string' && hasCode(c));
-						if (valid.length) placements[key] = valid;
-					}
-					this.placements = placements;
-				}
-				if (Array.isArray(parsed.audited))
-					this.audited = parsed.audited.filter((c: unknown): c is string => typeof c === 'string' && hasCode(c));
-			}
+			if (raw) this.applySave(JSON.parse(raw));
 		} catch {
 			// bad save → keep the seed
 		}
@@ -114,8 +94,85 @@ export class Plan {
 		});
 	}
 
-	/** first-year T1/T2 are fixed core courses — nothing can be placed there */
-	locked(year: number, trim: TrimNum): boolean {
+	/** validate + apply a saved/imported plan object. Shared by the
+	 *  localStorage restore and the import button — everything is checked
+	 *  against the current catalogue, so a stale save can't break the app. */
+	private applySave(parsed: {
+		fourYear?: unknown;
+		structure?: unknown;
+		picks?: Record<string, unknown>;
+		filters?: unknown;
+		placements?: unknown;
+		audited?: unknown;
+	}) {
+		if (typeof parsed.fourYear === 'boolean') this.fourYear = parsed.fourYear;
+		if (
+			typeof parsed.structure === 'string' &&
+			['single-major', 'double-major', 'major-minor', 'major-minor-conc'].includes(parsed.structure)
+		)
+			this.structure = parsed.structure as StructureKind;
+		// older saves stored subject codes ("BUSI") — only accept current ids,
+		// and majors additionally must be subjects offered as a major
+		const isSubject = (v: unknown) => SUBJECTS.some((s) => s.id === v);
+		const isMajor = (v: unknown) => SUBJECTS.some((s) => s.id === v && s.majorable);
+		for (const k of Object.keys(this.picks) as (keyof typeof this.picks)[]) {
+			const ok = k === 'major1' || k === 'major2' ? isMajor : isSubject;
+			const pick = parsed.picks?.[k];
+			if (ok(pick)) this.picks[k] = pick as string;
+		}
+		if (Array.isArray(parsed.filters)) this.filters = parsed.filters.filter(isSubject);
+		if (parsed.placements && typeof parsed.placements === 'object') {
+			const placements: Record<SlotKey, string[]> = {};
+			for (const [key, codes] of Object.entries(parsed.placements)) {
+				const { year, trim } = parseSlot(key);
+				if (![1, 2, 3, 4].includes(year) || ![1, 2, 3].includes(trim)) continue;
+				if (!Array.isArray(codes)) continue;
+				let valid = codes.filter((c): c is string => typeof c === 'string' && hasCode(c));
+				// year-1 t1/t2 hold only foundation courses (an over-max slot
+				// is kept as-is — the hints flag it rather than dropping data)
+				if (this.coreOnly(year, trim)) valid = valid.filter(isCore);
+				if (valid.length) placements[key] = valid;
+			}
+			this.placements = placements;
+		}
+		if (Array.isArray(parsed.audited))
+			this.audited = parsed.audited.filter((c: unknown): c is string => typeof c === 'string' && hasCode(c));
+	}
+
+	/** the whole plan as pretty JSON — what the export button downloads */
+	exportJSON(): string {
+		return JSON.stringify(
+			{
+				app: 'tracey',
+				exported: new Date().toISOString(),
+				fourYear: this.fourYear,
+				structure: this.structure,
+				picks: this.picks,
+				placements: this.placements,
+				audited: this.audited
+			},
+			null,
+			2
+		);
+	}
+
+	/** load a previously exported plan; returns an error message, or null on success */
+	importJSON(raw: string): string | null {
+		try {
+			const parsed = JSON.parse(raw);
+			if (!parsed || typeof parsed !== 'object') return 'that file is not a tracey plan';
+			this.applySave(parsed);
+			this.selected = null;
+			this.zoom = null;
+			return null;
+		} catch {
+			return 'could not read that file — is it a tracey plan export?';
+		}
+	}
+
+	/** first-year t1/t2 belong to the foundation core: ONLY common-core
+	 *  (KCCS) courses may sit there, at most Y1_CORE_MAX per trimester */
+	coreOnly(year: number, trim: TrimNum): boolean {
 		return year === 1 && trim !== 3;
 	}
 
@@ -149,9 +206,11 @@ export class Plan {
 	selectedSubjects = $derived(this.programmes.map((p) => p.subject));
 	isDouble = $derived(this.structure === 'double-major');
 	// the degree total is the sum of whatever each chosen major/minor/concentration
-	// actually requires (from programme.json), not a flat university-wide number
+	// actually requires (from programme.json), not a flat university-wide number —
+	// plus the foundation core every student completes on top
 	degreeTotal = $derived(
-		this.programmes.reduce((sum, p) => sum + creditsFor(p.subject, p.role, this.fourYear, this.isDouble), 0)
+		this.programmes.reduce((sum, p) => sum + creditsFor(p.subject, p.role, this.fourYear, this.isDouble), 0) +
+			CORE_CREDITS
 	);
 
 	// ── derived: placements ──
@@ -195,8 +254,7 @@ export class Plan {
 				const code = queue.pop()!;
 				for (const pre of byCode(code).prereqs) {
 					if (!reachableIn(pre, this.fourYear) || requiredAll.has(pre)) continue;
-					const sub = byCode(pre).crosslist;
-					if (sub && requiredAll.has(sub)) continue;
+					if (byCode(pre).substitutes?.some((s) => requiredAll.has(s))) continue;
 					if (cap !== undefined && sum + byCode(pre).credits > cap) continue;
 					requiredAll.add(pre);
 					sum += byCode(pre).credits;
@@ -223,6 +281,7 @@ export class Plan {
 	// stated requirement — is 'other', NOT an audit. Audits are a separate
 	// flag the student sets.
 	courseType(code: string): CourseType {
+		if (isCore(code)) return 'core'; // the foundation curriculum — everyone's requirement
 		const c = byCode(code);
 		let role: CourseType = 'other';
 		for (const s of this.programmeSets) {
@@ -234,6 +293,36 @@ export class Plan {
 			if (c.codes.some((x) => s.elective.has(x)) || c.subjects.includes(s.subject)) role = 'elective';
 		}
 		return role;
+	}
+
+	// true once more than one programme is on the plan — the grid then carries a
+	// subtle per-programme accent so a double major / major+minor can tell which
+	// requirement a course belongs to
+	multiProgramme = $derived(this.programmes.length > 1);
+
+	/** which chosen programme (by index) a course counts toward — drives the
+	 *  subtle accent stripe. -1 when it belongs to none of them. A course is
+	 *  attributed to the first programme whose requirement or department it is
+	 *  part of, so the accents stay stable and each course wears one colour. */
+	programmeOf(code: string): number {
+		const c = byCode(code);
+		for (let i = 0; i < this.programmeSets.length; i++) {
+			const s = this.programmeSets[i];
+			if (
+				c.codes.some((x) => s.required.has(x) || s.pick.has(x) || s.elective.has(x)) ||
+				c.subjects.includes(s.subject)
+			)
+				return i;
+		}
+		return -1;
+	}
+
+	/** the accent index to stamp on a chip/card: the programme it belongs to,
+	 *  but only while several programmes share the plan (otherwise no accent) */
+	accentOf(code: string): number | undefined {
+		if (!this.multiProgramme) return undefined;
+		const i = this.programmeOf(code);
+		return i >= 0 ? i : undefined;
 	}
 
 	isAudit(code: string): boolean {
@@ -270,20 +359,23 @@ export class Plan {
 		return this.slotCourses(year, trim).reduce((sum, code) => sum + byCode(code).credits, 0);
 	}
 
-	// ── the drop laws: locked slots, trimester offering, eligible years, prereq order ──
+	// ── the drop laws: core-only slots, trimester offering, eligible years, prereq order ──
 	canDrop(code: string, year: number, trim: TrimNum): boolean {
-		if (this.locked(year, trim)) return false;
+		// year-1 t1/t2: any foundation course drops anywhere here, always —
+		// the max-4 rule is soft (the hints police it), nothing else applies
+		if (this.coreOnly(year, trim)) return isCore(code);
 		const course = byCode(code);
 		// no term info → allow anywhere
 		if (course.offered.length && !course.offered.includes(trim)) return false;
 		// a 300-level course must not light up a year-2 slot
 		if (course.eligibleYears.length && !course.eligibleYears.includes(year)) return false;
 		// placed prereqs must stay strictly earlier (unplaced ones only warn);
-		// a substitute (MATH191 ⇄ COMP201) placed earlier satisfies it too
+		// a substitute (Proofs&Ideas ⇄ Discrete Maths ⇄ Maths Foundations)
+		// placed earlier satisfies it too
 		const order = year * 10 + trim;
 		for (const pre of course.prereqs) {
-			const sub = hasCode(pre) ? byCode(pre).crosslist : undefined;
-			const ats = this.placed.filter((p) => p.code === pre || p.code === sub);
+			const subs = hasCode(pre) ? (byCode(pre).substitutes ?? []) : [];
+			const ats = this.placed.filter((p) => p.code === pre || subs.includes(p.code));
 			if (ats.length && !ats.some((at) => at.year * 10 + at.trim < order)) return false;
 		}
 		return true;
@@ -291,9 +383,18 @@ export class Plan {
 
 	// ── actions ──
 	place(code: string, year: number, trim: TrimNum) {
-		if (this.locked(year, trim)) {
-			this.#setFlash(`year 1 t${trim} is fixed — nothing can be placed there`);
+		if (this.coreOnly(year, trim) && !isCore(code)) {
+			this.#setFlash(`year 1 t${trim} takes foundation (KCCS) courses only`);
 			return;
+		}
+		// a 5th foundation course IS taken (so t1⇄t2 shuffles and retake
+		// planning stay fluid even when both slots are full) — the hints
+		// flag the over-max slot until it's resolved
+		if (
+			this.coreOnly(year, trim) &&
+			this.slotCourses(year, trim).filter((c) => c !== code).length >= Y1_CORE_MAX
+		) {
+			this.#setFlash(`year 1 t${trim} is over the ${Y1_CORE_MAX}-course max now — move one out`);
 		}
 		// a slot the course isn't offered in (or open to) still takes the
 		// drop — the hints call it out instead of the drop bouncing
@@ -342,21 +443,70 @@ export class Plan {
 			pos.set(code, y * 10 + t);
 		};
 
-		// earliest slot that satisfies lock, eligibility, offering, ordering and load
-		const findSlot = (code: string, after: number, before = Infinity): { y: number; t: TrimNum } | undefined => {
+		// A valid slot (lock, eligibility, offering, ordering, load all OK).
+		// `spread` picks between two objectives:
+		//   • spread=false → EARLIEST slot. Used for a course that still has
+		//     dependents to place, so a prereq chain stays feasible (a t1-only
+		//     course whose dependent is also t1-only must not land in the last
+		//     year, or the dependent has nowhere to go).
+		//   • spread=true → EMPTIEST slot (tie-break earliest). Used for a leaf
+		//     course, so the required load fans out across the years — one or
+		//     two per trimester — instead of stacking into year 2.
+		const findSlot = (
+			code: string,
+			after: number,
+			before = Infinity,
+			spread = true
+		): { y: number; t: TrimNum } | undefined => {
 			const course = byCode(code);
+			let best: { y: number; t: TrimNum } | undefined;
+			let bestKey = [Infinity, Infinity];
 			for (const y of this.years) {
 				for (const t of TRIMS) {
-					if (this.locked(y, t)) continue;
+					// year-1 t1/t2 are reserved for the foundation core (seeded below)
+					if (this.coreOnly(y, t)) continue;
 					if (course.eligibleYears.length && !course.eligibleYears.includes(y)) continue;
 					if (course.offered.length && !course.offered.includes(t)) continue;
-					if (y * 10 + t <= after || y * 10 + t >= before) continue;
-					if (load(y, t) + course.credits > TRIM_NORMAL_MAX) continue;
-					return { y, t };
+					const order = y * 10 + t;
+					if (order <= after || order >= before) continue;
+					const l = load(y, t);
+					if (l + course.credits > TRIM_NORMAL_MAX) continue;
+					// primary/secondary sort key: by load then order when spreading,
+					// by order then load when packing a chain in early
+					const key = spread ? [l, order] : [order, l];
+					if (key[0] < bestKey[0] || (key[0] === bestKey[0] && key[1] < bestKey[1])) {
+						best = { y, t };
+						bestKey = key;
+					}
 				}
 			}
-			return undefined;
+			return best;
 		};
+
+		// ── the foundation core seeds first ──
+		// year-1 t1/t2 take ONLY these (4 per trimester), the rest fan into
+		// y1 t3 / year 2, and the year-3-only Engaging with the Environment
+		// lands in year 3. Most-constrained first (fewest offered trimesters),
+		// so the t1-only courses claim y1 t1 before the flexible ones fill it.
+		const coreSlots: { y: number; t: TrimNum }[] = this.years.flatMap((y) =>
+			TRIMS.map((t) => ({ y, t: t as TrimNum }))
+		);
+		const cores = [...CORE_COURSES].sort(
+			(a, b) => (a.offered.length || TRIMS.length) - (b.offered.length || TRIMS.length)
+		);
+		for (const course of cores) {
+			for (const { y, t } of coreSlots) {
+				if (course.eligibleYears.length && !course.eligibleYears.includes(y)) continue;
+				if (course.offered.length && !course.offered.includes(t)) continue;
+				if (this.coreOnly(y, t)) {
+					if ((placements[slotKey(y, t)] ?? []).length >= Y1_CORE_MAX) continue;
+				} else if (load(y, t) + course.credits > TRIM_NORMAL_MAX) {
+					continue;
+				}
+				put(course.code, y, t);
+				break;
+			}
+		}
 
 		// the required set for every programme (already capped at the credit
 		// table's required figure), unioned — the default plan seeds exactly
@@ -376,10 +526,10 @@ export class Plan {
 				// MATH427 alongside its prerequisite MATH303) — never place a
 				// course at or before a prerequisite already on the grid
 				const after = Math.max(0, ...byCode(code).prereqs.map((p) => pos.get(p) ?? 0));
-				if (this.years.includes(year) && !this.locked(year, trim) && year * 10 + trim > after) {
+				if (this.years.includes(year) && !this.coreOnly(year, trim) && year * 10 + trim > after) {
 					put(code, year, trim);
 				} else {
-					// pathway claims a fixed/invisible slot (e.g. MATH191 in
+					// pathway claims a core-only/invisible slot (e.g. MATH191 in
 					// y1 t1) or one that breaks prereq order — tuck it into
 					// the earliest slot that actually works
 					const slot = findSlot(code, after);
@@ -388,10 +538,10 @@ export class Plan {
 			}
 		}
 
-		// a placed course, or one about to be scheduled, counts its
-		// interchangeable substitute as itself (COMP201 satisfies a MATH191
-		// prereq, and vice-versa)
-		const sub = (code: string) => (hasCode(code) ? byCode(code).crosslist : undefined);
+		// a placed course, or one about to be scheduled, counts any of its
+		// interchangeable substitutes as itself (Discrete Maths or Maths
+		// Foundations satisfies a Proofs-and-Ideas prereq, and vice-versa)
+		const subs = (code: string): string[] => (hasCode(code) ? (byCode(code).substitutes ?? []) : []);
 
 		// Everything the programmes require that the pathways didn't place,
 		// PLUS the prerequisites those courses depend on (the 1-credit tools
@@ -406,8 +556,14 @@ export class Plan {
 			while (stack.length) {
 				const pre = stack.pop()!;
 				if (!hasCode(pre) || remaining.has(pre) || !reachableIn(pre, this.fourYear)) continue;
-				const s = sub(pre);
-				if (s && remaining.has(s)) continue; // a substitute already covers it
+				if (subs(pre).some((s) => remaining.has(s))) continue; // a substitute already covers it
+				// only pull in a prereq from one of the student's OWN departments.
+				// A cross-department prereq (the computer-science courses behind a
+				// data-science requirement, biology's BIOS201 behind an env-studies
+				// course) isn't on the programme's list — seeding it buries the plan
+				// in green 'other' support courses. The prereq LAW still flags the
+				// ordering if the student chooses to add it.
+				if (!byCode(pre).subjects.some((subj) => this.selectedSubjects.includes(subj))) continue;
 				remaining.add(pre);
 				stack.push(...byCode(pre).prereqs);
 			}
@@ -423,17 +579,23 @@ export class Plan {
 			const order = [...remaining].sort((a, b) => byCode(b).unlocks.length - byCode(a).unlocks.length);
 			for (const code of order) {
 				const course = byCode(code);
-				// wait until every prereq we're also scheduling (or its
-				// substitute) has been placed
-				const preReady = course.prereqs.every((p) => !(remaining.has(p) || (sub(p) ? remaining.has(sub(p)!) : false)));
+				// wait until every prereq we're also scheduling (or one of its
+				// substitutes) has been placed
+				const preReady = course.prereqs.every(
+					(p) => !(remaining.has(p) || subs(p).some((s) => remaining.has(s)))
+				);
 				if (!preReady) continue;
 				const after = Math.max(
 					0,
-					...course.prereqs.map((p) => Math.max(pos.get(p) ?? 0, sub(p) ? (pos.get(sub(p)!) ?? 0) : 0))
+					...course.prereqs.map((p) => Math.max(pos.get(p) ?? 0, ...subs(p).map((s) => pos.get(s) ?? 0)))
 				);
 				// and stay strictly before any already-placed dependent
 				const before = Math.min(Infinity, ...course.unlocks.map((u) => pos.get(u) ?? Infinity));
-				const slot = findSlot(code, after, before);
+				// a course that still has a dependent to schedule is packed in as
+				// early as possible (keeping the chain feasible); a leaf course
+				// fans out to the emptiest trimester
+				const hasDownstream = course.unlocks.some((u) => remaining.has(u));
+				const slot = findSlot(code, after, before, !hasDownstream);
 				if (slot) put(code, slot.y, slot.t);
 				// placed or unplaceable — either way it's off the list
 				remaining.delete(code);
@@ -445,9 +607,15 @@ export class Plan {
 	}
 
 	toggleFilter(subjectId: string) {
-		this.filters = this.filters.includes(subjectId)
-			? this.filters.filter((f) => f !== subjectId)
-			: [...this.filters, subjectId];
+		if (this.filters.includes(subjectId)) {
+			this.filters = this.filters.filter((f) => f !== subjectId);
+			return;
+		}
+		// the foundation-core view is exclusive: checking kccs clears the
+		// subject filters, checking any subject clears kccs — you browse
+		// either the core or your programmes' departments, never a mix
+		this.filters =
+			subjectId === 'core' ? ['core'] : [...this.filters.filter((f) => f !== 'core'), subjectId];
 	}
 
 	#setFlash(msg: string) {
@@ -465,11 +633,10 @@ export class Plan {
 		// law 0 — every trimester of the tenure must reach the minimum
 		// credits (not just the one being zoomed — the default plan should
 		// already own up to its thin trimesters). Year 1 is exempt: t1/t2
-		// are the fixed core and t3 carries no min or max at all.
+		// are the foundation core and t3 carries no min or max at all.
 		for (const year of this.years) {
 			if (year === 1) continue;
 			for (const trim of TRIMS) {
-				if (this.locked(year, trim)) continue;
 				const c = this.slotCredits(year, trim);
 				if (c < TRIM_MIN) {
 					hints.push({
@@ -483,18 +650,52 @@ export class Plan {
 			}
 		}
 
+		// law 0.5 — the foundation core: all twelve KCCS courses must be on
+		// the plan (year-1 t1/t2 only ever hold them, max 4 each — the drop
+		// laws enforce that; a stale save could still break it, so check too)
+		const missingCore = CORE_COURSES.filter((c) => !this.placedCodes.has(c.code));
+		if (missingCore.length) {
+			hints.push({
+				kind: 'caution',
+				text: `${missingCore.length} foundation course${missingCore.length === 1 ? '' : 's'} still to place: ${missingCore
+					.map((c) => c.code)
+					.join(', ')}`,
+				codes: missingCore.map((c) => c.code)
+			});
+		} else {
+			hints.push({ kind: 'good', text: 'all foundation courses are on the plan', codes: [] });
+		}
+		for (const trim of [1, 2] as TrimNum[]) {
+			const codes = this.slotCourses(1, trim);
+			const nonCore = codes.filter((c) => !isCore(c));
+			if (nonCore.length) {
+				hints.push({
+					kind: 'warn',
+					text: `year 1 t${trim} can only hold foundation (KCCS) courses`,
+					codes: nonCore
+				});
+			}
+			if (codes.length > Y1_CORE_MAX) {
+				hints.push({
+					kind: 'warn',
+					text: `year 1 t${trim} can hold at most ${Y1_CORE_MAX} foundation courses (${codes.length}/${Y1_CORE_MAX})`,
+					codes
+				});
+			}
+		}
+
 		// law 1 — prerequisites must come in an earlier trimester. A placed
 		// substitute (MATH191 ⇄ COMP201) satisfies the prerequisite too.
 		for (const p of this.placed) {
 			const course = byCode(p.code);
 			for (const pre of course.prereqs) {
-				const sub = hasCode(pre) ? byCode(pre).crosslist : undefined;
-				const placedAt = [pos.get(pre), sub ? pos.get(sub) : undefined].filter((x) => x !== undefined);
+				const subs = hasCode(pre) ? (byCode(pre).substitutes ?? []) : [];
+				const placedAt = [pos.get(pre), ...subs.map((s) => pos.get(s))].filter((x) => x !== undefined);
 				const prePos = placedAt.length ? placedAt.reduce((a, b) => (a.order <= b.order ? a : b)) : undefined;
 				if (!prePos) {
 					hints.push({
 						kind: 'warn',
-						text: `${p.code} requires prerequisite ${pre}${sub ? ` (or ${sub})` : ''}`,
+						text: `${p.code} requires prerequisite ${pre}${subs.length ? ` (or ${subs.join('/')})` : ''}`,
 						codes: [p.code, pre]
 					});
 				} else if (prePos.order === p.year * 10 + p.trim) {
@@ -536,27 +737,29 @@ export class Plan {
 			}
 		}
 
-		// law 2 — crosslisted courses are interchangeable
+		// law 2 — substitute courses are interchangeable (Proofs and Ideas,
+		// Discrete Mathematics, Mathematical Foundations of Data Science)
 		for (const p of this.placed) {
 			const course = byCode(p.code);
-			if (!course.crosslist) continue;
-			const other = byCode(course.crosslist);
-			if (pos.has(other.code)) {
-				// avoid emitting the pair twice. Having both is redundant, not
-				// wrong — a note, not an error.
-				if (p.code < other.code) {
+			for (const otherCode of course.substitutes ?? []) {
+				const other = byCode(otherCode);
+				if (pos.has(other.code)) {
+					// both placed — redundant, not wrong. Emit once per pair
+					// (the lower code speaks) so a 3-way group isn't noisy.
+					if (p.code < other.code) {
+						hints.push({
+							kind: 'info',
+							text: `${p.code} and ${other.code} are interchangeable — you only need one`,
+							codes: [p.code, other.code]
+						});
+					}
+				} else if (this.courseType(other.code) === 'required') {
 					hints.push({
 						kind: 'info',
-						text: `${p.code} and ${other.code} are interchangeable — you only need one`,
+						text: `you can switch ${p.code} ${course.title} for ${other.code}`,
 						codes: [p.code, other.code]
 					});
 				}
-			} else if (this.courseType(other.code) === 'required') {
-				hints.push({
-					kind: 'info',
-					text: `you can switch ${p.code} ${course.title} for ${other.code}`,
-					codes: [p.code, other.code]
-				});
 			}
 		}
 
@@ -594,7 +797,17 @@ export class Plan {
 			}
 		}
 
-		// law 4 — audits are limited (only the ones the student marked)
+		// law 4 — audits are limited (only the ones the student marked), and
+		// the drop form excludes KCCS / 391 / 490 / 491 and any course that
+		// isn't 2 or 4 credits from being audited at all
+		const badAudits = this.audited.filter((code) => !canAudit(code));
+		if (badAudits.length) {
+			hints.push({
+				kind: 'warn',
+				text: `${badAudits.join(', ')} can not be audited — audits must be 2- or 4-credit courses, never KCCS/391/490/491`,
+				codes: badAudits
+			});
+		}
 		const audits = this.placed.filter((p) => this.audited.includes(p.code));
 		if (audits.length > AUDIT_LIMIT) {
 			hints.push({
@@ -609,8 +822,16 @@ export class Plan {
 			hints.push({ kind: 'good', text: `${left} audit${left === 1 ? '' : 's'} remaining`, codes: [] });
 		}
 
-		// law 5 — degree credit total
-		if (this.totalPlacedCredits > this.degreeTotal) {
+		// law 5 — degree credit total, and the drop form's hard ceiling on
+		// extra credits (128 for a 3-year tenure, 176 for a 4-year one)
+		const tenureCap = this.fourYear ? MAX_TOTAL_4YR : MAX_TOTAL_3YR;
+		if (this.totalPlacedCredits > tenureCap) {
+			hints.push({
+				kind: 'warn',
+				text: `total credits exceed the ${tenureCap}-credit ceiling for the ${this.fourYear ? 'four' : 'three'}-year programme (${this.totalPlacedCredits}/${tenureCap})`,
+				codes: []
+			});
+		} else if (this.totalPlacedCredits > this.degreeTotal) {
 			hints.push({
 				kind: 'caution',
 				text: `you will exceed the required total credits (${this.totalPlacedCredits}/${this.degreeTotal})`,
@@ -677,6 +898,19 @@ export class Plan {
 		})
 	);
 
+	// ── choice pools per programme (history's "any three of…" groups) ──
+	// the website's 'choose N from' groups the seeded required core can't make
+	// for the student — shown in the sidebar so the choices are visible
+	choices = $derived.by(() =>
+		this.programmes
+			.map((prog) => ({
+				role: prog.role,
+				label: subjectById(prog.subject).label,
+				groups: choiceGroupsFor(prog.subject, prog.role, this.fourYear, this.isDouble)
+			}))
+			.filter((p) => p.groups.length)
+	);
+
 	// ── catalogue (filtered + sorted) ──
 	catalogue: Course[] = $derived.by(() => {
 		let list = COURSES;
@@ -684,11 +918,15 @@ export class Plan {
 			const trim = this.zoom.trim;
 			list = list.filter((c) => c.offered.includes(trim));
 		}
-		const checked = this.filters.filter((f) => this.selectedSubjects.includes(f));
+		// the foundation-core filter is always available, on top of whatever
+		// subjects the chosen programmes bring — but its courses only show
+		// while it's checked, so the everyday browse stays your departments
+		const checked = this.filters.filter((f) => f === 'core' || this.selectedSubjects.includes(f));
+		if (!checked.includes('core')) list = list.filter((c) => c.subject !== 'core');
 		if (checked.length > 0) list = list.filter((c) => c.subjects.some((s) => checked.includes(s)));
 		const q = this.search.trim().toLowerCase();
 		if (q) list = list.filter((c) => c.code.toLowerCase().includes(q) || c.title.toLowerCase().includes(q));
-		const rank: Record<CourseType, number> = { required: 0, elective: 1, other: 2 };
+		const rank: Record<CourseType, number> = { core: 0, required: 1, elective: 2, other: 3 };
 		return [...list].sort(
 			(a, b) => rank[this.courseType(a.code)] - rank[this.courseType(b.code)] || a.code.localeCompare(b.code)
 		);

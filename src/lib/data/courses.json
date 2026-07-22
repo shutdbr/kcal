@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-07-07T14:10:32.111143+00:00",
+ "generated_at": "2026-07-22T11:41:52.807505+00:00",
  "source_files": [
   "24_T1.csv",
   "24_T2.csv",
@@ -825,7 +825,11 @@
    "required_for": "Yes",
    "prereq_text": "Scientific Reasoning (KCCS121-SCR), Data Analytics (KCCS124-DAN), Mathematical Reasoning (KCCS102-MR)",
    "description": "Based upon selected case studies, this course covers notions of scale from building blocks of life to biomes, organisational levels and integration of biological units, and the primacy of description. We start with Aristotelian classification and proceed through Early Modern natural philosophy and natural history to the discipline of biology itself in the present day. We consider the development of particular philosophies and forms of technology from the 17th to 19th centuries and corresponding development of elements of biology at different points in time, including such concepts as biogeography, ecology, evolution, cell biology, genetics, anatomy, and physiology, even as theological holds over the subject begin to waver.",
-   "prereqs": [],
+   "prereqs": [
+    "KCCS102",
+    "KCCS121",
+    "KCCS124"
+   ],
    "unlocks": [
     "BIOS207",
     "BIOS217",
@@ -837,7 +841,6 @@
     "BIOS232",
     "BIOS235",
     "BIOS236",
-    "BIOS241",
     "BIOS307",
     "BIOS401"
    ]
@@ -1232,7 +1235,9 @@
    "prereq_text": "Life at Different Scales (BIOS201), Scientific Reasoning (KCCS121-SCR), Data Analytics (KCCS124-DAN)",
    "description": "How did life first arise on Planet Earth 4 billion years ago? In this course, which comprises both organismal and molecular evolution, we will begin with early theories of evolution that lead up to Darwin and Wallace's theory of natural selection. We thus gain insight into the process of scientific inquiry that resulted in one of the most important theories in the biological sciences, before concluding by integrating it with Mendel's theory of genetics referred to as the Evolutionary Synthesis. The course will look at the evidence of macro and micro evolutionary processes, and the evolution of plants and animals to understand the basis of the diversity of living organisms on Earth. Through numerous examples, students will learn about adaptive strategies at the level of individual organisms that may underlie evolutionary changes at the level of a population. At a molecular level, we trace the evolution of life, starting from self-replicating molecules, to the RNA world, to the evolution of cellular components. Along the way we will discuss the role played by the constituent molecules of life. We will discuss the origin of the field of molecular genetics from the Evolutionary Synthesis, bringing the disparate fields of evolutionary biology and genetics together. We will discuss the development and employment of the molecular clock and the salience of neutral mutations in establishing relatedness among organisms, using such markers as mitochondrial, chloroplast, ribosomal and nuclear genetic material, aided considerably by such technological advancements as protein electrophoresis, leading to the amplification of DNA using the polymerase chain reaction (PCR) for whole genome sequencing. This course will briefly discuss how the sequence information comes together with the current computational power to draw the phylogenetic tree of life.",
    "prereqs": [
-    "BIOS201"
+    "BIOS201",
+    "KCCS121",
+    "KCCS124"
    ],
    "unlocks": [
     "BIOS235",
@@ -1326,7 +1331,10 @@
    "required_for": "Required courses for major",
    "prereq_text": "Data Analytics (DAN)",
    "description": "This course will equip students broadly interested in the biological sciences and allied disciplines to develop fundamental skills for managing, exploring and analyzing data, and interpreting and communicating findings. The course provides a hands-on learning experience using data from multiple fields of study to master basic statistical tools widely used in the discipline and become familiar with the range of advanced quantitative tools to inform avenues for further specialization. The course will introduce students to basic and advanced programming techniques in R, which is rapidly becoming the programming language of choice for biostatistical applications, and will train them in using R to carry out common statistical analyses. In addition to imparting skills to quantify single variables and relationships between multiple variables, the course will use real-world datasets to help students learn how to deal with noisy data, uncertainty of findings and ethical concerns that are common to the discipline.",
-   "prereqs": [],
+   "prereqs": [
+    "KCCS121",
+    "KCCS124"
+   ],
    "unlocks": []
   },
   "BIOS228": {
@@ -1538,7 +1546,9 @@
    "prereq_text": "Writing and Oral Comprehenshion (WOC); Scientific Reasoning (SCR); Life at Different Scales (BIOS201)",
    "description": "This offering, the other of a two-part course, will use a seminar-style format to expose students to literature in the biological sciences to serve three important and interconnected purposes. The selected pieces of work will expose students to forms of inquiry used in the biological sciences to produce new knowledge and to advance the discipline. Students will also learn multiple types of communication in the discipline. Finally, students will learn to assess critically the work and findings reported in the primary literature. The course will bridge the gap between simplified concepts in standard biology textbooks and the rigour, complexity and uncertainty of findings in the primary literature, including, among others, journals and theses.",
    "prereqs": [
-    "BIOS201"
+    "BIOS201",
+    "KCCS101",
+    "KCCS121"
    ],
    "unlocks": []
   },
@@ -1674,7 +1684,8 @@
    "prereq_text": "Scientific Reasoning and Data Analytics",
    "description": "This course covers the fundamental principles of ecology and ecosystem dynamics, relating these with evolutionary processes and introducing concepts of disturbance and resilience. The focus is on the principles of life, how it functions at the population, community and ecosystem levels, relating these with adaptations to unique environmental conditions. This course will be split into four interrelated modules. The first module, population ecology, will deal with the fundamental concepts of habitat and niche, population dynamics (e.g., population growth and regulation) and population structure (e.g., metapopulations). The second module, community ecology, will focus on species interactions (e.g., interspecific competition, predation and mutualism), the nature of communities (e.g., community structure and function). The third module, ecosystem ecology, will take a in depth look at ecosystem structure and function (e.g., energy flow and nutrient cycling), ecosystem dynamics (e.g., ecological succession) and major concepts related to biogeography (e.g., the theory of island biogeography and the major biogeographical zones of India). The final module, conservation biology, will bring together the previous modules and show how the field of conservation biology has harnessed the principles of ecology to manage biodiversity. The course will focus on the principles of conservation (e.g., the design and management of protected areas), ecological restoration and will conclude with some important case studies, frorm India and across the globe, that showcase various conservation/management strategies.",
    "prereqs": [
-    "BIOS201"
+    "KCCS121",
+    "KCCS124"
    ],
    "unlocks": [
     "BIOS409"
@@ -2008,7 +2019,8 @@
    "description": "We are living in what many consider to be a unique period of time in the history of planet Earth, the Anthropocene era, wherein humans are modifying Earth’s environment through myriad pathways, including the burning of fossil fuels, overexploitation of natural resources and large-scale changes in patterns of land-use. These changes have major consequences for ecological systems at multiple levels of biological organization from the individual and population to the community and ecosystem. This course will not only focus on the mechanisms through which humans are altering the air, water and land of planet Earth, but also to apply concepts from ecological and evolutionary biology theory to understand how these changes are likely to impact life on Earth. Students will learn to critically evaluate the primary scientific literature related to the field of global change biology, and also to address specific questions through the graphical and/or statistical analyses of real-world data. The course will pay particular attention to the most critical crises associated with anthropogenic global change, and also on how these changes can impact health and well-being of humans through various mechanisms ranging from reduced access to ecosystem services (e.g., clean air and water) to the increased risk of emergence of novel diseases (e.g., COVID-19).",
    "prereqs": [
     "BIOS224",
-    "BIOS241"
+    "BIOS241",
+    "KCCS124"
    ],
    "unlocks": []
   },
@@ -4544,7 +4556,7 @@
    "codes_by_subject": {
     "computer science": "COMP201"
    },
-   "title": "Discrete Mathematics (formerly: Mathematical Foundations of Computer Science I: Discrete Mathematics)",
+   "title": "Discrete Mathematics",
    "subject": "computer science",
    "subjects": [
     "computer science"
@@ -4578,6 +4590,7 @@
     "BIOS307",
     "COMP208",
     "COMP321",
+    "COMP330",
     "COMP340"
    ]
   },
@@ -4849,9 +4862,7 @@
    "required_for": "Elective course CS Majors/M/C",
    "prereq_text": "COMP313",
    "description": "This beginner-level deep learning course is\n designed for 3rd- and 4th-year students and can also serve as a fresh\n introduction to modern machine learning. It provides a thorough\n foundation in core concepts by beginning with classical methods such as\n regression and classification, and then building naturally towards shallow\n and deep neural networks.\n The course begins with regression through a simple curve-fitting\n example, introducing key ideas such as error functions, regularization,\n and the bias–variance trade-off. Regression and classification are then\n presented as single-layer networks, highlighting linear models,\n discriminant functions, and generative vs. discriminative classifiers.\n \n These methods motivate the shift from fixed basis functions to learning\n representations directly from data, naturally leading to neural networks.\n Students are then introduced to deep neural networks, with a focus on\n gradient descent, backpropagation, and regularization. The course\n concludes with an introduction to Convolutional Neural Networks (CNNs)\n and their practical applications",
-   "prereqs": [
-    "COMP313"
-   ],
+   "prereqs": [],
    "unlocks": []
   },
   "COMP305": {
@@ -5063,7 +5074,6 @@
     "COMP305"
    ],
    "unlocks": [
-    "COMP246",
     "COMP343",
     "COMP347"
    ]
@@ -5149,6 +5159,49 @@
    "prereq_text": "",
    "description": "This course will provide an overview of\na. Computer networks, architecture of the Internet, and a detailed discussion on some of the important protocols and algorithms associated with the transport and network layers\nb. Fundamental principles of network communication security and some important cryptographic techniques",
    "prereqs": [],
+   "unlocks": []
+  },
+  "COMP330": {
+   "code": "COMP330",
+   "codes": [
+    "COMP330",
+    "MATH330"
+   ],
+   "codes_by_subject": {
+    "computer science": "COMP330",
+    "mathematics": "MATH330"
+   },
+   "title": "Logic",
+   "subject": "computer science",
+   "subjects": [
+    "computer science",
+    "mathematics"
+   ],
+   "discipline": "COMP",
+   "credits": 4,
+   "type": "Elective",
+   "faculty": [
+    {
+     "email": "prathamesh.h@krea.edu.in",
+     "name": "Prathamesh T V H",
+     "id": "prathamesh-t-v-h"
+    }
+   ],
+   "terms": [
+    "26_T1"
+   ],
+   "eligible_years": [
+    3,
+    4
+   ],
+   "eligible_msc": false,
+   "eligible_phd": false,
+   "required_for": "N",
+   "prereq_text": "COMP201",
+   "description": "Formal logic has played a key role in development of modern computer science, with applications ranging from architecture, databases, verification to AI and theory of computation. This course will introduce students to proofs and techniques of soundness, completeness and provability in the formal systems. Formal systems introduced in the course include (but are not restricted to) propositional and predicate calculus. It will additionally include some of the resolution theorems from proof theory, which are essential to understand automated theorem proving.",
+   "prereqs": [
+    "COMP201"
+   ],
    "unlocks": []
   },
   "COMP331": {
@@ -5608,7 +5661,7 @@
    "codes_by_subject": {
     "computer science": "COMP350"
    },
-   "title": "Software Design Practical (Formerly: Group Design Practical)",
+   "title": "Software Design Practical",
    "subject": "computer science",
    "subjects": [
     "computer science"
@@ -6639,9 +6692,7 @@
    "required_for": "",
    "prereq_text": "DATA302",
    "description": "This course provides a comprehensive introduction to Natural Language Processing\n (NLP), covering foundational concepts, classical machine learning techniques, and\n modern deep learning architectures. Students will learn practical methods for text\n preprocessing, feature extraction, and building NLP models for applications like text\n classification, translation, and summarization. The course also explores real-world\n applications of NLP in domains such as finance, cybersecurity, and healthcare,\n equipping learners with skills to implement and evaluate advanced NLP systems",
-   "prereqs": [
-    "DATA302"
-   ],
+   "prereqs": [],
    "unlocks": []
   },
   "DATA243": {
@@ -6849,7 +6900,6 @@
     "MATH230"
    ],
    "unlocks": [
-    "DATA242",
     "DATA303"
    ]
   },
@@ -8279,7 +8329,7 @@
    "codes_by_subject": {
     "economics": "ECON341"
    },
-   "title": "Economics Through Games (Formerly know as \"Game Theory - ECON327\")",
+   "title": "Economics Through Games",
    "subject": "economics",
    "subjects": [
     "economics"
@@ -8655,7 +8705,7 @@
     "political science": "POLT221",
     "sociology": "SOCL242"
    },
-   "title": "Political Ecology of Biodiversity Conservation (Formerly known as Political Ecology)",
+   "title": "Political Ecology of Biodiversity Conservation",
    "subject": "environmental studies",
    "subjects": [
     "environmental studies",
@@ -9975,7 +10025,7 @@
    "codes_by_subject": {
     "history": "HIST339"
    },
-   "title": "Food and Power (formerly Reading Food, Understanding Identities)",
+   "title": "Food and Power",
    "subject": "history",
    "subjects": [
     "history"
@@ -10325,6 +10375,512 @@
    "prereqs": [],
    "unlocks": []
   },
+  "KCCS101": {
+   "code": "KCCS101",
+   "codes": [
+    "KCCS101"
+   ],
+   "codes_by_subject": {
+    "core": "KCCS101"
+   },
+   "title": "Writing and Oral Communication",
+   "subject": "core",
+   "subjects": [
+    "core"
+   ],
+   "discipline": "KCCS",
+   "credits": 3,
+   "type": "Required",
+   "faculty": [
+    {
+     "email": "",
+     "name": "TBD",
+     "id": null
+    }
+   ],
+   "terms": [
+    "24_T1",
+    "24_T2",
+    "24_T3",
+    "25_T1",
+    "25_T2",
+    "25_T3",
+    "26_T1"
+   ],
+   "eligible_years": [
+    1,
+    2
+   ],
+   "eligible_msc": false,
+   "eligible_phd": false,
+   "required_for": "N",
+   "prereq_text": "",
+   "description": "-",
+   "prereqs": [],
+   "unlocks": [
+    "BIOS232"
+   ]
+  },
+  "KCCS102": {
+   "code": "KCCS102",
+   "codes": [
+    "KCCS102"
+   ],
+   "codes_by_subject": {
+    "core": "KCCS102"
+   },
+   "title": "Mathematical Reasoning",
+   "subject": "core",
+   "subjects": [
+    "core"
+   ],
+   "discipline": "KCCS",
+   "credits": 3,
+   "type": "Required",
+   "faculty": [
+    {
+     "email": "",
+     "name": "TBD",
+     "id": null
+    }
+   ],
+   "terms": [
+    "24_T1",
+    "26_T1"
+   ],
+   "eligible_years": [
+    1,
+    2
+   ],
+   "eligible_msc": false,
+   "eligible_phd": false,
+   "required_for": "N",
+   "prereq_text": "",
+   "description": "",
+   "prereqs": [],
+   "unlocks": [
+    "BIOS201"
+   ]
+  },
+  "KCCS103": {
+   "code": "KCCS103",
+   "codes": [
+    "KCCS103"
+   ],
+   "codes_by_subject": {
+    "core": "KCCS103"
+   },
+   "title": "Creative Expression",
+   "subject": "core",
+   "subjects": [
+    "core"
+   ],
+   "discipline": "KCCS",
+   "credits": 3,
+   "type": "Required",
+   "faculty": [
+    {
+     "email": "",
+     "name": "TBD",
+     "id": null
+    }
+   ],
+   "terms": [
+    "24_T1",
+    "24_T2",
+    "25_T1",
+    "25_T2",
+    "26_T1"
+   ],
+   "eligible_years": [
+    1,
+    2
+   ],
+   "eligible_msc": false,
+   "eligible_phd": false,
+   "required_for": "N",
+   "prereq_text": "",
+   "description": "-",
+   "prereqs": [],
+   "unlocks": []
+  },
+  "KCCS121": {
+   "code": "KCCS121",
+   "codes": [
+    "KCCS121"
+   ],
+   "codes_by_subject": {
+    "core": "KCCS121"
+   },
+   "title": "Scientific Reasoning",
+   "subject": "core",
+   "subjects": [
+    "core"
+   ],
+   "discipline": "KCCS",
+   "credits": 3,
+   "type": "Required",
+   "faculty": [
+    {
+     "email": "",
+     "name": "Multiple",
+     "id": null
+    }
+   ],
+   "terms": [
+    "24_T2",
+    "25_T1",
+    "25_T2"
+   ],
+   "eligible_years": [
+    1,
+    2
+   ],
+   "eligible_msc": false,
+   "eligible_phd": false,
+   "required_for": "Required for all the first years",
+   "prereq_text": "",
+   "description": "-",
+   "prereqs": [],
+   "unlocks": [
+    "BIOS201",
+    "BIOS224",
+    "BIOS227",
+    "BIOS232",
+    "BIOS241"
+   ]
+  },
+  "KCCS122": {
+   "code": "KCCS122",
+   "codes": [
+    "KCCS122"
+   ],
+   "codes_by_subject": {
+    "core": "KCCS122"
+   },
+   "title": "Exploring the Social and the Historical",
+   "subject": "core",
+   "subjects": [
+    "core"
+   ],
+   "discipline": "KCCS",
+   "credits": 3,
+   "type": "Required",
+   "faculty": [
+    {
+     "email": "",
+     "name": "TBD",
+     "id": null
+    }
+   ],
+   "terms": [
+    "24_T1",
+    "26_T1"
+   ],
+   "eligible_years": [
+    1,
+    2
+   ],
+   "eligible_msc": false,
+   "eligible_phd": false,
+   "required_for": "N",
+   "prereq_text": "",
+   "description": "",
+   "prereqs": [],
+   "unlocks": []
+  },
+  "KCCS123": {
+   "code": "KCCS123",
+   "codes": [
+    "KCCS123"
+   ],
+   "codes_by_subject": {
+    "core": "KCCS123"
+   },
+   "title": "Philosophical Perspectives Across Cultures",
+   "subject": "core",
+   "subjects": [
+    "core"
+   ],
+   "discipline": "KCCS",
+   "credits": 3,
+   "type": "Required",
+   "faculty": [
+    {
+     "email": "",
+     "name": "TBD",
+     "id": null
+    }
+   ],
+   "terms": [
+    "24_T1",
+    "24_T2",
+    "25_T1",
+    "25_T2",
+    "26_T1"
+   ],
+   "eligible_years": [
+    1,
+    2
+   ],
+   "eligible_msc": false,
+   "eligible_phd": false,
+   "required_for": "N",
+   "prereq_text": "",
+   "description": "-",
+   "prereqs": [],
+   "unlocks": [
+    "PHIL240"
+   ]
+  },
+  "KCCS124": {
+   "code": "KCCS124",
+   "codes": [
+    "KCCS124"
+   ],
+   "codes_by_subject": {
+    "core": "KCCS124"
+   },
+   "title": "Data Analytics",
+   "subject": "core",
+   "subjects": [
+    "core"
+   ],
+   "discipline": "KCCS",
+   "credits": 3,
+   "type": "Required",
+   "faculty": [
+    {
+     "email": "",
+     "name": "Multiple",
+     "id": null
+    }
+   ],
+   "terms": [
+    "24_T2",
+    "24_T3",
+    "25_T1",
+    "25_T2",
+    "25_T3"
+   ],
+   "eligible_years": [
+    1,
+    2
+   ],
+   "eligible_msc": false,
+   "eligible_phd": false,
+   "required_for": "Required for all the first years",
+   "prereq_text": "",
+   "description": "-",
+   "prereqs": [],
+   "unlocks": [
+    "BIOS201",
+    "BIOS224",
+    "BIOS227",
+    "BIOS241",
+    "BIOS409"
+   ]
+  },
+  "KCCS131": {
+   "code": "KCCS131",
+   "codes": [
+    "KCCS131"
+   ],
+   "codes_by_subject": {
+    "core": "KCCS131"
+   },
+   "title": "Literature and the Arts",
+   "subject": "core",
+   "subjects": [
+    "core"
+   ],
+   "discipline": "KCCS",
+   "credits": 3,
+   "type": "Required",
+   "faculty": [
+    {
+     "email": "",
+     "name": "Multiple",
+     "id": null
+    }
+   ],
+   "terms": [
+    "24_T3",
+    "25_T3"
+   ],
+   "eligible_years": [
+    1,
+    2
+   ],
+   "eligible_msc": false,
+   "eligible_phd": false,
+   "required_for": "-",
+   "prereq_text": "",
+   "description": "-",
+   "prereqs": [],
+   "unlocks": []
+  },
+  "KCCS132": {
+   "code": "KCCS132",
+   "codes": [
+    "KCCS132"
+   ],
+   "codes_by_subject": {
+    "core": "KCCS132"
+   },
+   "title": "Ethics",
+   "subject": "core",
+   "subjects": [
+    "core"
+   ],
+   "discipline": "KCCS",
+   "credits": 3,
+   "type": "Required",
+   "faculty": [
+    {
+     "email": "",
+     "name": "Multiple",
+     "id": null
+    }
+   ],
+   "terms": [
+    "24_T3",
+    "25_T3"
+   ],
+   "eligible_years": [
+    1,
+    2
+   ],
+   "eligible_msc": false,
+   "eligible_phd": false,
+   "required_for": "-",
+   "prereq_text": "",
+   "description": "-",
+   "prereqs": [],
+   "unlocks": []
+  },
+  "KCCS133": {
+   "code": "KCCS133",
+   "codes": [
+    "KCCS133"
+   ],
+   "codes_by_subject": {
+    "core": "KCCS133"
+   },
+   "title": "Design Thinking",
+   "subject": "core",
+   "subjects": [
+    "core"
+   ],
+   "discipline": "KCCS",
+   "credits": 3,
+   "type": "Required",
+   "faculty": [
+    {
+     "email": "",
+     "name": "TBD",
+     "id": null
+    }
+   ],
+   "terms": [
+    "24_T1",
+    "24_T2",
+    "25_T1",
+    "25_T2",
+    "26_T1"
+   ],
+   "eligible_years": [
+    1,
+    2
+   ],
+   "eligible_msc": false,
+   "eligible_phd": false,
+   "required_for": "N",
+   "prereq_text": "",
+   "description": "-",
+   "prereqs": [],
+   "unlocks": []
+  },
+  "KCCS134": {
+   "code": "KCCS134",
+   "codes": [
+    "KCCS134"
+   ],
+   "codes_by_subject": {
+    "core": "KCCS134"
+   },
+   "title": "Introduction to Computational Thinking",
+   "subject": "core",
+   "subjects": [
+    "core"
+   ],
+   "discipline": "KCCS",
+   "credits": 3,
+   "type": "Required",
+   "faculty": [
+    {
+     "email": "",
+     "name": "Multiple",
+     "id": null
+    }
+   ],
+   "terms": [
+    "24_T2",
+    "24_T3",
+    "25_T1",
+    "25_T2",
+    "25_T3"
+   ],
+   "eligible_years": [
+    1,
+    2
+   ],
+   "eligible_msc": false,
+   "eligible_phd": false,
+   "required_for": "Required for all the first years",
+   "prereq_text": "",
+   "description": "-",
+   "prereqs": [],
+   "unlocks": []
+  },
+  "KCCS190": {
+   "code": "KCCS190",
+   "codes": [
+    "KCCS190"
+   ],
+   "codes_by_subject": {
+    "core": "KCCS190"
+   },
+   "title": "Engaging with the Environment",
+   "subject": "core",
+   "subjects": [
+    "core"
+   ],
+   "discipline": "KCCS",
+   "credits": 3,
+   "type": "Required",
+   "faculty": [
+    {
+     "email": "",
+     "name": "Multiple",
+     "id": null
+    }
+   ],
+   "terms": [
+    "24_T3",
+    "25_T3"
+   ],
+   "eligible_years": [
+    3
+   ],
+   "eligible_msc": false,
+   "eligible_phd": false,
+   "required_for": "-",
+   "prereq_text": "",
+   "description": "-",
+   "prereqs": [],
+   "unlocks": []
+  },
   "LITT201": {
    "code": "LITT201",
    "codes": [
@@ -10333,7 +10889,7 @@
    "codes_by_subject": {
     "literature": "LITT201"
    },
-   "title": "Introduction to Literary Studies (previously Literary Methods)",
+   "title": "Introduction to Literary Studies",
    "subject": "literature",
    "subjects": [
     "literature"
@@ -10909,7 +11465,7 @@
    "codes_by_subject": {
     "literature": "LITT316"
    },
-   "title": "Introduction to Translation (previously Translation)",
+   "title": "Introduction to Translation",
    "subject": "literature",
    "subjects": [
     "literature"
@@ -11965,7 +12521,7 @@
    "codes_by_subject": {
     "mathematics": "MATH303"
    },
-   "title": "Analysis III (Formerly: MATH301)",
+   "title": "Analysis III",
    "subject": "mathematics",
    "subjects": [
     "mathematics"
@@ -13287,7 +13843,9 @@
    "required_for": "",
    "prereq_text": "KCCS123",
    "description": "How do we reason about reason? Are there underlying principles that can connect reasoning about philosophical abstractions, legal and politics argument, analysis of texts, scientific and social scientific theorisations, solving puzzles and writing mathematical proofs? Can we make precise what we mean by reason or codify what we mean by a reasonable argument? How have philosophers lent meaning to make sense of the human quest to discover the laws of reason?\n\nThis course attempts to trace the long standing intellectual project of identifying the laws of deductive reasoning. We begin with historical attempts and philosophical underpinnings underlying these attempts, before diving deep into contemporary formal frameworks that fall under the aegis of logic.\n\nIn the process, we use precise formulations of deductive reasoning using symbolic abstractions which enables us to answer the following questions:\n\nHow do we ensure that a set of sentences are mutually consistent?\nHow do we make sense of paradoxes?\nHow do we ensure that deductive arguments are logically sound?\nWhat can and cannot be deduced from a given collection of statements?\nHow do we reason precisely when confronted with ambiguities such as knowledge or lack of it, and belief and contingency?\n\nWe further extend our set of questions to attempt to answer the following questions about the method of reasoning itself:\n\nWhat kind of statements are amenable to formal deductive reasoning?\nWhat is the nature of the relationship between reasoning and language?\nHow do we reason within a given formal reasoning system as well as about a given formal reasoning system?\n\nThe course intends to provide access to ideas and contemporary vocabulary which will enable to deploy logic as a means to reason within philosophy, as well as enable pursuit logic and philosophy of logic as philosophical disciplines. Further it will bring alive challenges which makes the process of sound reasoning difficult even for sophisticated Artificial Intelligence tools today.",
-   "prereqs": [],
+   "prereqs": [
+    "KCCS123"
+   ],
    "unlocks": []
   },
   "PHIL303": {
@@ -15592,49 +16150,6 @@
     "POLT412"
    ]
   },
-  "POLT205": {
-   "code": "POLT205",
-   "codes": [
-    "POLT205"
-   ],
-   "codes_by_subject": {
-    "political science": "POLT205"
-   },
-   "title": "Global Politics in the 21st Century (An Introduction)",
-   "subject": "political science",
-   "subjects": [
-    "political science"
-   ],
-   "discipline": "POLT",
-   "credits": 4,
-   "type": "Required",
-   "faculty": [
-    {
-     "email": "swarna.rajagopalan@krea.edu.in",
-     "name": "Swarna Rajagopalan",
-     "id": "swarna-rajagopalan"
-    }
-   ],
-   "terms": [
-    "24_T3"
-   ],
-   "eligible_years": [
-    2,
-    3,
-    4
-   ],
-   "eligible_msc": false,
-   "eligible_phd": false,
-   "required_for": "Required for Politics",
-   "prereq_text": "",
-   "description": "This course offers a general introduction to global politics by combining historical insights, conceptual tools and empirical accounts connected to international issues. The course begins with a brief historical review of political formations and conceptual overview of international relations. Contemporary issues of identity, inclusion, justice and welfare are examined in subsequent weeks, complicating traditional academic perspectives by considering real world debates and cases. Writing exercises, individual and group research projects and informed, structured discussions will be supplemented by lectures as needed.",
-   "prereqs": [],
-   "unlocks": [
-    "POLT308",
-    "POLT316",
-    "POLT412"
-   ]
-  },
   "POLT207": {
    "code": "POLT207",
    "codes": [
@@ -15643,7 +16158,7 @@
    "codes_by_subject": {
     "political science": "POLT207"
    },
-   "title": "Global Politics I (Formerly known as POLT205 - Global Politics in the 21st Century (An Introduction))",
+   "title": "Global Politics I",
    "subject": "political science",
    "subjects": [
     "political science"
@@ -15673,6 +16188,7 @@
    "description": "This course offers a general introduction to global politics by combining historical insights, conceptual tools and empirical accounts connected to international issues. The course begins with a brief historical review of political formations and conceptual overview of international relations. Contemporary issues of identity, inclusion, justice and welfare are examined in subsequent weeks, complicating traditional academic perspectives by considering real world debates and cases. Writing exercises, individual and group research projects and informed, structured discussions will be supplemented by lectures as needed.",
    "prereqs": [],
    "unlocks": [
+    "POLT308",
     "POLT316",
     "POLT412"
    ]
@@ -15804,7 +16320,7 @@
    "description": "How do we make sense of global politics in an era where the state appears at once both durable and highly permeable and interconnected, when the increasing power of corporations and media transcend national borders, and when the structures that determine our collective political life appear to be both institutionally obdurate and physically unsustainable?\nThis course builds on POLT 205 Global Politics I (formerly titled Global Politics in the 21st Century: An Introduction), focusing on contemporary challenges and systemic perspectives that have been developed to help us grasp the structures, agents, and mechanisms of global political order. We begin with an engagement with genealogies of how “the global” emerges as a domain and frame of systemic analysis, as distinct from the idea of the “international”. We move to three major conceptual domains in which global politics is theorised: structures and institutions of global democracy, governance, representation, and participation; changes in the temporalities and frameworks of conflict and its resolution – from new modes of warfare to new regimes of global justice; and the ways in which movements and flows – of people, commodities, capital, knowledge, ideas, identities, and solidarities – shape and restructure global politics.\nThroughout this course, we will grapple with the question of how to identify and theorise changes, as well as to see the durable dynamics underlying changing systems, on a global scale.",
    "prereqs": [
     "POLT203",
-    "POLT205"
+    "POLT207"
    ],
    "unlocks": []
   },
@@ -15937,9 +16453,7 @@
    "required_for": "Required for Politics",
    "prereq_text": "",
    "description": "This course is based on the conviction that theoretical concepts are indispensable to fully\n comprehend political realities and the ways in which they change. How do concepts emerge and\n develop, and what are the elements constitutive of their connection to empirical realities?\n Although abstract, political concepts are often deployed for the purpose of supporting as well as\n contesting concrete social arrangements, ideological positions, and institutions. They also act as\n necessary scaffold for alternative imaginings of political futures. This course is reading-intensive,\n and will pay close attention to the architecture of concepts as well as to their complex, and\n often conflicting, social mobilization. It is a course that highlights the connection between\n theory and practice, and explores new ways of doing political theory in our troubled and\n agonistic times.",
-   "prereqs": [
-    "POLT317"
-   ],
+   "prereqs": [],
    "unlocks": []
   },
   "POLT316": {
@@ -15983,7 +16497,6 @@
    "prereq_text": "POLT205 OR POLT207",
    "description": "This course is designed as an analytical, contextualised introduction to Indian foreign policy and strategic thinking. The course is designed to enable students to follow contemporary debates in an informed and critical way, and from multiple points of view. Traditionally, this topic is taught through a historical approach and an overview of bilateral relationships. This course will merge that with elements from foreign policy analysis courses, that is, by including themes such as the influence of domestic politics and non-political issues. It will begin with a contextualising historical overview and then briefly examine contributing factors that shape thinking and policy on India’s external relations before looking specifically at key relationships and important policy areas.",
    "prereqs": [
-    "POLT205",
     "POLT207"
    ],
    "unlocks": []
@@ -16025,9 +16538,7 @@
    "prereq_text": "",
    "description": "The study of politics is much more than the study of the state. It involves the examination and engagement with the social and political structures, concepts, ideas and values. Thus, concepts like equality, liberty, rights, justice, sovereignty, power, democracy, modernity, nationalism, identity, state, legitimacy and dissent become central to the discipline of politics. Political Theory I exposes the students to some of these concepts. However, the course on Political Theory II will engage with the remaining concepts through the ongoing debates around some of the concepts like sovereignty, power, nationalism, democracy, identity and modernity. The engagement with these debates bring to the surface how certain concepts complicate or simplify the understanding and applicability of other concepts in a polity. The engagement with these concepts manifests in political action. Political action aims at either preservation or change guided by the thought of better or worse. This is deeply embedded in finding the good or the right driven by what starts as a question and ends with knowledge. Thus, political theory is driven towards the pursuit of knowledge for the good of society, polity, people and collectives exhibited in the establishment of order and resolution of contestation or conflict. The engagements with ongoing debates enhances this pursuit of knowledge which is deeply embedded in explanatory wisdom for the truth. Thus, the course will engage with such a quest for knowledge while resolving ongoing contestations, conflicts and debates that aim at generating consent and acceptance for an ordered polity. The course will be anchored to the challenges to state and sovereignty, contestations over power and legitimacy, debate around dissent safeguarding democracy or democracy being dissent, paradox of modernity and identity and the elusiveness of nationalism. It is through a critical engagement and coherent analysis of the concepts and the ongoing debates and challenges around them that the course will enrich political theory and the discipline of politics as it will create the knowledge of the whole by putting the parts together.",
    "prereqs": [],
-   "unlocks": [
-    "POLT313"
-   ]
+   "unlocks": []
   },
   "POLT325": {
    "code": "POLT325",
@@ -16437,7 +16948,6 @@
    "description": "The people of South Asia are bound by history and a common destiny, as they inhabit what Barry Buzan termed as a ‘security complex.’ That is, millennia of intersecting stories and a more recent shared colonial experience have brought them to their separate post-colonial journeys as modern states and societies. The course will review structures and issues of politics in each South Asian state (Afghanistan, Bangladesh, Bhutan, India, Maldives, Nepal, Pakistan, and Sri Lanka), as well as conflict and cooperation between the states.",
    "prereqs": [
     "POLT204",
-    "POLT205",
     "POLT207"
    ],
    "unlocks": []
@@ -16848,7 +17358,7 @@
    "codes_by_subject": {
     "psychology": "PSYC205"
    },
-   "title": "Statistics & Research Methods I (Formerly know as \"Statistics for Psychologists\")",
+   "title": "Statistics & Research Methods I",
    "subject": "psychology",
    "subjects": [
     "psychology"
@@ -17739,44 +18249,6 @@
    "prereqs": [],
    "unlocks": []
   },
-  "PSYC345": {
-   "code": "PSYC345",
-   "codes": [
-    "PSYC345"
-   ],
-   "codes_by_subject": {
-    "psychology": "PSYC345"
-   },
-   "title": "Culture and Subjectivity",
-   "subject": "psychology",
-   "subjects": [
-    "psychology"
-   ],
-   "discipline": "PSYC",
-   "credits": 4,
-   "type": "Elective",
-   "faculty": [
-    {
-     "email": "",
-     "name": "Ranjini Krishnan (VF)",
-     "id": null
-    }
-   ],
-   "terms": [
-    "24_T3"
-   ],
-   "eligible_years": [
-    3,
-    4
-   ],
-   "eligible_msc": false,
-   "eligible_phd": false,
-   "required_for": "Elective course for Psychology Major/Minor",
-   "prereq_text": "",
-   "description": "This course is an attempt to understand the complex relationship between culture and psychology wherein the question of subjectivity comes as the conduit. The course begins with an introduction to the culture question as it is posed by post-colonial studies. Then it presents the history of the discipline as a culture question where the ‘Two Cultures’ of Psychology is introduced. This conceptual history helps to see the many layers of culture question at hand, thus interrogating ethno-psychology or problematic renditions of cultural psychology. The cultural historical approach by Vygotsky is explained as a productive instance of culture–psychology interaction. The historical subject and the discursive formations around subject production are explained and these insights are used to explain ‘Psychologization’ one of the significant aspects of contemporary psychological culture. The course delves deep into the psychoanalytic culture. It introduces the knotted subject of culture through psychoanalytic registers and offers a feminist critique of the same. It also presents a concrete Indian cultural context in psychological theory building while addressing the clinical and the caste relations.The course also touches upon some of the emerging registers of subjectivity such as psychiatry, faith healing, neurodivergence.",
-   "prereqs": [],
-   "unlocks": []
-  },
   "PSYC348": {
    "code": "PSYC348",
    "codes": [
@@ -17785,7 +18257,7 @@
    "codes_by_subject": {
     "psychology": "PSYC348"
    },
-   "title": "Culture, Cognition, and Subjectivity:  Psychological Worlds Across Contexts (Formerly: PSYC345 Culture and Subjectivity)",
+   "title": "Culture, Cognition, and Subjectivity:  Psychological Worlds Across Contexts",
    "subject": "psychology",
    "subjects": [
     "psychology"
@@ -17940,7 +18412,7 @@
    "codes_by_subject": {
     "psychology": "PSYC432"
    },
-   "title": "Counselling Skills: putting theories into practice (Formerly known as 'Helping Skills')",
+   "title": "Counselling Skills: putting theories into practice",
    "subject": "psychology",
    "subjects": [
     "psychology"
@@ -18545,7 +19017,7 @@
     "political science": "POLT215",
     "psychology": "PSYC215"
    },
-   "title": "Introduction to Feminist Theory (Formerly known as \"Gender, Culture and Politics: Feminist Thought and Practices-SOCL206|POLT215\")",
+   "title": "Introduction to Feminist Theory",
    "subject": "sociology",
    "subjects": [
     "philosophy",

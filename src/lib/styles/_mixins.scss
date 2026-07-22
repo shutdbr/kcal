@@ -89,6 +89,12 @@
 		background: var(--color-course-required);
 		border: 1px solid var(--color-border-card);
 	}
+	// the KCCS foundation core — its own colour so the twelve university-wide
+	// requirements never read as one of your programme's courses
+	&[data-type='core'] {
+		background: var(--color-course-core);
+		border: 1px solid var(--color-course-core-deep);
+	}
 	&[data-type='elective'] {
 		background: var(--color-course-elective);
 		border: 1px solid var(--color-course-elective-deep);
@@ -102,6 +108,32 @@
 		border-style: dashed;
 		border-width: 1.5px;
 		border-color: var(--color-accent);
+	}
+}
+
+// Subtle per-programme accent — a thin coloured bar down the left edge of a
+// course chip/card, keyed by the `data-prog` index (0/1/2). Only present on a
+// multi-programme plan (the attribute is omitted otherwise), so a single major
+// stays unmarked. Apply on a position:relative element.
+@mixin programme-accent {
+	&[data-prog]::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 0;
+		bottom: 0;
+		width: 3px;
+		border-radius: 3px 0 0 3px;
+		background: var(--prog-accent, transparent);
+	}
+	&[data-prog='0'] {
+		--prog-accent: var(--color-prog-0);
+	}
+	&[data-prog='1'] {
+		--prog-accent: var(--color-prog-1);
+	}
+	&[data-prog='2'] {
+		--prog-accent: var(--color-prog-2);
 	}
 }
 

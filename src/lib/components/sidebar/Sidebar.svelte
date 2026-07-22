@@ -1,11 +1,12 @@
 <script lang="ts">
 	import type { Plan } from '$lib/plan.svelte';
-	import { MAJOR_SUBJECTS, SUBJECTS } from '$lib/data';
+	import { MAJOR_SUBJECTS, PROGRAMME_SUBJECTS } from '$lib/data';
 
 	let { plan }: { plan: Plan } = $props();
 
-	// changing the programme refills the grid with its ideal course order
-	const reseed = () => plan.seedRecommended();
+	// switching the programme does NOT touch the grid — everything the
+	// student placed stays put and just recolours for the new requirements;
+	// the reset button is the only thing that reseeds the recommended plan
 </script>
 
 <header class="col-header">
@@ -18,12 +19,12 @@
 <div class="controls">
 	<label class="row">
 		<span class="row-label">4yup</span>
-		<input type="checkbox" class="tick" bind:checked={plan.fourYear} onchange={reseed} />
+		<input type="checkbox" class="tick" bind:checked={plan.fourYear} />
 	</label>
 
 	<label class="row">
 		<span class="row-label">plan</span>
-		<select bind:value={plan.structure} onchange={reseed}>
+		<select bind:value={plan.structure}>
 			<option value="single-major">single major</option>
 			<option value="double-major">double major</option>
 			<option value="major-minor">major + minor</option>
@@ -33,7 +34,7 @@
 
 	<label class="row">
 		<span class="row-label">major</span>
-		<select bind:value={plan.picks.major1} onchange={reseed}>
+		<select bind:value={plan.picks.major1}>
 			{#each MAJOR_SUBJECTS as s (s.id)}
 				<option value={s.id}>{s.label}</option>
 			{/each}
@@ -43,7 +44,7 @@
 	{#if plan.structure === 'double-major'}
 		<label class="row">
 			<span class="row-label">major</span>
-			<select bind:value={plan.picks.major2} onchange={reseed}>
+			<select bind:value={plan.picks.major2}>
 				{#each MAJOR_SUBJECTS as s (s.id)}
 					<option value={s.id}>{s.label}</option>
 				{/each}
@@ -52,8 +53,8 @@
 	{:else if plan.structure !== 'single-major'}
 		<label class="row">
 			<span class="row-label">minor</span>
-			<select bind:value={plan.picks.minor} onchange={reseed}>
-				{#each SUBJECTS as s (s.id)}
+			<select bind:value={plan.picks.minor}>
+				{#each PROGRAMME_SUBJECTS as s (s.id)}
 					<option value={s.id}>{s.label}</option>
 				{/each}
 			</select>
@@ -61,8 +62,8 @@
 		{#if plan.structure === 'major-minor-conc'}
 			<label class="row">
 				<span class="row-label">conc.</span>
-				<select bind:value={plan.picks.conc} onchange={reseed}>
-					{#each SUBJECTS as s (s.id)}
+				<select bind:value={plan.picks.conc}>
+					{#each PROGRAMME_SUBJECTS as s (s.id)}
 						<option value={s.id}>{s.label}</option>
 					{/each}
 				</select>

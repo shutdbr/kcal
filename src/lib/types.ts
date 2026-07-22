@@ -15,7 +15,7 @@ export type Course = {
 	prereqs: string[]; // course codes that must come in an EARLIER trimester
 	unlocks: string[]; // course codes this one is a prerequisite for
 	desc: string; // catalogue description, shown in the details bar
-	crosslist?: string; // course code this one is interchangeable with
+	substitutes?: string[]; // separate courses that satisfy the same requirement/prereq (interchangeable, but NOT cross-listed under one code)
 };
 
 export type Subject = {
@@ -35,11 +35,12 @@ export type Programme = {
 	subject: string;
 };
 
-// a course's role relative to your chosen major/minor. 'other' = anything
-// outside those requirements (a different department, or an in-department
-// course the programme doesn't list) — NOT automatically an audit; the
-// student marks audits themselves.
-export type CourseType = 'required' | 'elective' | 'other';
+// a course's role relative to your chosen major/minor. 'core' = the KCCS
+// foundation (common core) curriculum everyone must complete. 'other' =
+// anything outside those requirements (a different department, or an
+// in-department course the programme doesn't list) — NOT automatically an
+// audit; the student marks audits themselves.
+export type CourseType = 'core' | 'required' | 'elective' | 'other';
 
 // warn = a hard error (prereq order, not offered) — red.
 // caution = a credit-count issue (under min / over cap / over total) — yellow.

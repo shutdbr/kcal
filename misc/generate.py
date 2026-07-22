@@ -35,11 +35,12 @@ ROMAN = {"i": "1", "ii": "2", "iii": "3", "iv": "4", "v": "5", "vi": "6"}
 
 # Course-code prefix -> full subject name, matching the keys used in
 # kreabot's department.json / programme.json / SUBJECTS list. KCCS is
-# the university-wide foundation curriculum, handled separately (not
-# a browsable "subject" in either app). Any prefix not in this map is
-# left unmapped and surfaced in review_flags instead of guessed at,
-# so a new department showing up in a future CSV doesn't get silently
-# dropped or misfiled.
+# the university-wide foundation (common core) curriculum — mapped to
+# the pseudo-subject "core" so tracey can place and colour it, but it
+# is not a major/minor. Any prefix not in this map is left unmapped
+# and surfaced in review_flags instead of guessed at, so a new
+# department showing up in a future CSV doesn't get silently dropped
+# or misfiled.
 DISCIPLINE_TO_SUBJECT = {
     "ARTS": "arts",
     "BIO": "biology", "BIOS": "biology",
@@ -50,6 +51,7 @@ DISCIPLINE_TO_SUBJECT = {
     "ECON": "economics",
     "ENVS": "environmental studies",
     "HIST": "history",
+    "KCCS": "core",
     "LIT": "literature", "LITT": "literature",
     "MATH": "mathematics",
     "PHIL": "philosophy",
@@ -58,7 +60,30 @@ DISCIPLINE_TO_SUBJECT = {
     "PSYC": "psychology", "PSYCH": "psychology",
     "SOCL": "sociology",
 }
-EXCLUDED_DISCIPLINES = {"KCCS"}
+EXCLUDED_DISCIPLINES = set()
+
+# The KCCS foundation courses' own CSV rows are the least consistent in the
+# whole catalog — credits/eligibility cells vary or are blank per term, the
+# same course is titled three different ways, and 25_T3 typos "Enviroment".
+# The rules themselves are fixed university policy: every foundation course
+# is 3 credits and required, taken in years 1-2 — except Engaging with the
+# Environment, which is a year-3 course.
+CORE_TITLES = {
+    "KCCS101": "Writing and Oral Communication",
+    "KCCS102": "Mathematical Reasoning",
+    "KCCS103": "Creative Expression",
+    "KCCS121": "Scientific Reasoning",
+    "KCCS122": "Exploring the Social and the Historical",
+    "KCCS123": "Philosophical Perspectives Across Cultures",
+    "KCCS124": "Data Analytics",
+    "KCCS131": "Literature and the Arts",
+    "KCCS132": "Ethics",
+    "KCCS133": "Design Thinking",
+    "KCCS134": "Introduction to Computational Thinking",
+    "KCCS190": "Engaging with the Environment",
+}
+CORE_CREDITS = 3
+CORE_YEAR3 = {"KCCS190"}
 
 
 def norm_title(t):
@@ -308,7 +333,37 @@ def build():
         for code in parse_codes(ftext, prefixes):
             if code != canon:
                 edges.add((canon, courses.get(code, {}).get("canon", code)))
-    edges = sorted(e for e in edges if e[0] != e[1])
+    # Prereq edges the term CSVs over-state — the krea subject pages list these
+    # as *recommended*, not hard prerequisites (the real gates are common-
+    # curriculum courses we don't model). Drop them so the course isn't pulled
+    # onto a plan as a forced requirement. (prereq, dependent) by canonical
+    # code; kept in sync with SOFT_PREREQS in tracey/src/lib/data.ts.
+    SOFT_PREREQS = {
+        ("BIOS201", "BIOS241"),   # Ecology & Conservation: Life at Different Scales is recommended, not required
+        ("POLT317", "POLT313"),   # backwards source row: "Political Theory II" is listed as a prereq FOR the intro course
+    }
+    edges = sorted(e for e in edges if e[0] != e[1] and e not in SOFT_PREREQS)
+
+    # A course can't require a HIGHER-level course of its OWN department: a
+    # 200-level intro (COMP246 Deep Learning) listing a 300-level course
+    # (COMP313 Machine Learning), or DATA242 listing DATA302, is a backwards
+    # source row. Only cross-LEVEL inversions are dropped — same-band oddities
+    # (a 2xx citing another 2xx) aren't reliably backwards, since numbering
+    # within a level isn't strictly sequential; fix those by hand in
+    # SOFT_PREREQS if a specific one is wrong.
+    def _disc(code):
+        m = re.match(r"[A-Z]+", code)
+        return m.group(0) if m else ""
+
+    def _level(code):
+        m = re.search(r"\d", code)
+        return int(m.group(0)) if m else 0
+
+    dropped_inversions = [e for e in edges if _disc(e[0]) == _disc(e[1]) and _level(e[0]) > _level(e[1])]
+    edges = [e for e in edges if e not in set(dropped_inversions)]
+    if dropped_inversions:
+        print(f"dropped {len(dropped_inversions)} backwards cross-level prereq(s): "
+              + ", ".join(f"{a}->{b}" for a, b in dropped_inversions))
 
     # canonical entries only, with all aliases attached
     nodes = {c["canon"]: c for c in courses.values() if c["code"] == c["canon"]}
@@ -326,6 +381,43 @@ def build():
                     "required_for": "", "prereq_text": "", "desc": "", "stub": True,
                 }
 
+    # ── renamed courses: fold an old code into its successor ──────────
+    # A renumbered course keeps its OLD code as a separate taught row from an
+    # earlier term and names the new one "(Formerly known as OLDCODE ...)":
+    # Global Politics I (POLT207) was POLT205, Culture, Cognition... (PSYC348)
+    # was PSYC345. Left alone, the catalogue shows the course twice and a
+    # prereq that still cites the old code can never be satisfied. Merge the
+    # old code away and remap its prerequisite edges onto the surviving one.
+    FORMER_RE = re.compile(
+        r"former(?:ly)?(?:\s+known\s+as)?[:\s]*\(?([A-Z]{3,4})\s*-?\s*(\d{3})", re.I)
+    rename = {}
+    for canon, c in nodes.items():
+        m = FORMER_RE.search(c["title"])
+        if m and (m.group(1) + m.group(2)) != canon:
+            rename[m.group(1) + m.group(2)] = canon
+
+    def _final(code):
+        seen = set()
+        while code in rename and code not in seen:
+            seen.add(code)
+            code = rename[code]
+        return code
+    rename = {old: _final(new) for old, new in rename.items()}
+    if rename:
+        edges = sorted({(rename.get(a, a), rename.get(b, b)) for a, b in edges})
+        edges = [e for e in edges if e[0] != e[1]]
+        for old in rename:
+            nodes.pop(old, None)
+        print(f"merged {len(rename)} renamed code(s): "
+              + ", ".join(f"{o}->{n}" for o, n in sorted(rename.items())))
+
+    # tidy display titles: drop a trailing "(formerly/previously ...)" note so
+    # the catalogue reads cleanly ("Global Politics I", not "... (Formerly
+    # known as POLT205 - Global Politics in the 21st Century ...)")
+    CLEAN_TITLE_RE = re.compile(r"\s*\((?:formerly|previously)\b.*$", re.I)
+    for c in nodes.values():
+        c["title"] = CLEAN_TITLE_RE.sub("", c["title"]).strip()
+
     n_linked = len({c for e in edges for c in e})
     print(f"{len(nodes)} courses, {len(edges)} prerequisite edges, "
           f"{n_linked} courses in trees, {len(prefixes)} disciplines")
@@ -337,7 +429,7 @@ def build():
                     for k, v in sorted(nodes.items())},
         "edges": [list(e) for e in edges],
     }
-    template = open(os.path.join(HERE, "course_tree_template.html"),
+    template = open(os.path.join(TRACEY_ROOT, "course_tree_template.html"),
                     encoding="utf-8").read()
     out = template.replace("/*__DATA__*/null", json.dumps(tree_data, ensure_ascii=False))
     out_path = os.path.join(TRACEY_ROOT, "course-tree.html")
@@ -465,6 +557,11 @@ def build():
         eligible_years = sorted(c["eligible_years"])
         type_parts = {p.strip() for p in c["type"].split("|") if p.strip()}
         course_type = type_parts.pop() if len(type_parts) == 1 else c["type"]
+        if c["discipline"] == "KCCS":
+            credits = CORE_CREDITS
+            course_type = "Required"
+            eligible_years = [3] if code in CORE_YEAR3 else [1, 2]
+            c["title"] = CORE_TITLES.get(code, c["title"])
         num_match = re.match(r"^" + re.escape(c["discipline"]) + r"(\d{3})", c["code"])
         if num_match and num_match.group(1)[0] >= "3" and 1 in eligible_years:
             review_flags.append({

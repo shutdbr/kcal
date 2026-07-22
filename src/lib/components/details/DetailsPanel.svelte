@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Plan } from '$lib/plan.svelte';
-	import { byCode, hasCode } from '$lib/data';
+	import { byCode, canAudit, hasCode } from '$lib/data';
 
 	let { plan }: { plan: Plan } = $props();
 
@@ -40,14 +40,19 @@
 		</div>
 
 		{#if plan.placedCodes.has(c.code)}
-			<label class="d-audit">
-				<input
-					type="checkbox"
-					checked={plan.isAudit(c.code)}
-					onchange={() => plan.toggleAudit(c.code)}
-				/>
-				<span>I'm taking this as an audit</span>
-			</label>
+			{#if canAudit(c.code)}
+				<label class="d-audit">
+					<input
+						type="checkbox"
+						checked={plan.isAudit(c.code)}
+						onchange={() => plan.toggleAudit(c.code)}
+					/>
+					<span>I'm taking this as an audit</span>
+				</label>
+			{:else}
+				<!-- drop-form rule: audits are 2/4-credit courses, never KCCS/391/490/491 -->
+				<p class="d-no-audit">this course can't be taken as an audit</p>
+			{/if}
 		{/if}
 
 		{#if c.prereqs.length}
@@ -181,6 +186,10 @@
 		font-size: 1.2rem;
 		font-style: italic;
 		color: var(--color-text-muted);
+	}
+
+	.d-no-audit {
+		@include empty-text;
 	}
 
 	.d-chips {

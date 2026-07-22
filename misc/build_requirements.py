@@ -61,6 +61,26 @@ PREFIX_RE = re.compile(r"^(?:%s)\s+" % "|".join(re.escape(p) for p in PREFIXES),
 TITLE_OVERRIDES = {
     # catalogued under that term's theme, "Genre (Shakespeare on Screen)"
     ("literature", "genre in literature"): "LITT208",
+    # site names the course plainly; the catalog adds a discipline suffix
+    ("environmental studies", "tools and methods"): "ENVS206",  # ... in Environmental Studies
+    # site uses a compact/synonymous title the matcher can't reach cleanly
+    ("psychology", "qualitative approaches to psychology"): "PSYC208",  # Introduction to Qualitative Approaches in Psychology
+    ("psychology", "introduction to theories in counselling"): "PSYC437",  # Introduction to Counselling Theories
+    ("physics", "waves and oscillations"): "PHYS226",  # Oscillations and Waves
+    ("physics", "classical field theory"): "PHYS401",  # Fundamentals of Classical Field Theory
+    ("chemistry", "coordination chemistry"): "CHEM219",  # Coordination and Bio-inorganic Chemistry
+    ("sociology", "social research methods qualitative"): "SOCL304",  # Qualitative Methods: ...
+    ("sociology", "social research methods quantitative"): "SOCL355",  # Quantitative Research Methods ...
+    ("sociology", "introduction to political sociology and anthropology"): "SOCL305",  # Introduction to Political Anthropology
+    ("sociology", "sociological and anthropological theory 1"): "SOCL306",  # Introduction to Sociological and Anthropological Thought
+    # site's required core lists the "I" course; the catalog names the intro
+    # course differently, and the "II" sibling belongs to the pick pool
+    ("political science", "indian politics 1"): "POLT202",  # Understanding Indian Politics
+    ("political science", "political theory 1"): "POLT313",  # Introduction to Political Theory: Concepts and Conundrums
+    # the politics core lists its two methodology courses as bare "Methods
+    # I/II" — they're the cross-listed research-methods courses
+    ("political science", "methods 1"): "SOCL304",  # Qualitative Methods: Researching the Social, Political and the Historical (POLT306)
+    ("political science", "methods 2"): "SOCL355",  # Quantitative Research Methods in Humanities and Social Sciences (POLT355)
 }
 
 PTYPES = [  # order matters: "double major" before "major" substring checks
@@ -77,8 +97,11 @@ PTYPES = [  # order matters: "double major" before "major" substring checks
 HEADINGS = {
     "required courses", "required course", "elective courses",
     "elective course", "electives", "elective", "required",
-    "core courses", "tools and methods", "list of electives",
+    "core courses", "list of electives",
     "required course work", "required coursework",
+    # NB: "tools and methods" is NOT a heading — it's a real environmental-
+    # studies course (ENVS206, "Tools and Methods in Environmental Studies");
+    # see TITLE_OVERRIDES.
 }
 
 
@@ -485,7 +508,26 @@ def build_subject(subject, scraped, resolver, catalog, alias2canon, subj_titles)
             if extra_rules:
                 rule = ". ".join(filter(None, [rule] + extra_rules))
             groups.append({"rule": rule, "pick": parse_pick(rule), "_items": items})
-        tracks_out[tname] = {"groups": groups}
+
+        # a "choose N from the courses below" heading sometimes scrapes into its
+        # OWN group, separated from the course list that follows it (literature's
+        # concentration: "Any four courses from the required courses …" then the
+        # seven courses in the next group). Reattach the orphan pick rule to that
+        # following course group so its courses read as a choice pool, not a
+        # fixed required core. A generic "any N elective courses" pool has no
+        # following course group and is left as-is.
+        merged, carry = [], None
+        for g in groups:
+            if carry and g["_items"] and not g["pick"]:
+                g = {**g, "rule": carry["rule"], "pick": carry["pick"]}
+                carry = None
+            if g["pick"] and not g["_items"]:
+                carry = g
+                continue
+            merged.append(g)
+        if carry:
+            merged.append(carry)
+        tracks_out[tname] = {"groups": merged}
 
     # a code claimed by two different site titles is ambiguous; if exactly
     # one of the claimants is a required-core course, let it keep the code

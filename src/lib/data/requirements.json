@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-07-07T14:10:32.327920+00:00",
+ "generated_at": "2026-07-22T11:41:53.231942+00:00",
  "sources": {
   "programme_structure_and_credits": "scraped_programmes.json (krea.edu.in/sias pages)",
   "course_metadata": "courses.json (term CSVs)"
@@ -224,7 +224,15 @@
    },
    "pick_codes": {},
    "elective_codes": {
-    "minor_3yr": [
+    "single_major_4yr": [
+     "COMP321",
+     "DATA237",
+     "MATH342",
+     "MATH346",
+     "MATH352",
+     "PHYS303"
+    ],
+    "single_major_3yr": [
      "COMP321",
      "DATA237",
      "MATH342",
@@ -248,15 +256,7 @@
      "MATH352",
      "PHYS303"
     ],
-    "single_major_4yr": [
-     "COMP321",
-     "DATA237",
-     "MATH342",
-     "MATH346",
-     "MATH352",
-     "PHYS303"
-    ],
-    "concentration": [
+    "minor_3yr": [
      "COMP321",
      "DATA237",
      "MATH342",
@@ -272,7 +272,7 @@
      "MATH352",
      "PHYS303"
     ],
-    "single_major_3yr": [
+    "concentration": [
      "COMP321",
      "DATA237",
      "MATH342",
@@ -2892,78 +2892,142 @@
    ],
    "required_codes": {
     "single_major_4yr": [
+     "POLT202",
      "POLT203",
      "POLT204",
      "POLT207",
-     "POLT309",
      "POLT311",
-     "POLT317"
+     "POLT313",
+     "SOCL304",
+     "SOCL355"
     ],
     "double_major_4yr": [
+     "POLT202",
      "POLT203",
      "POLT204",
      "POLT207",
-     "POLT309",
      "POLT311",
-     "POLT317"
+     "POLT313",
+     "SOCL304",
+     "SOCL355"
     ],
     "single_major_3yr": [
+     "POLT202",
      "POLT203",
      "POLT204",
      "POLT207",
-     "POLT309",
      "POLT311",
-     "POLT317"
+     "POLT313",
+     "SOCL304",
+     "SOCL355"
     ],
     "double_major_3yr": [
+     "POLT202",
      "POLT203",
      "POLT204",
      "POLT207",
-     "POLT309",
      "POLT311",
-     "POLT317"
+     "POLT313",
+     "SOCL304",
+     "SOCL355"
     ],
     "minor_4yr": [
+     "POLT202",
      "POLT203",
      "POLT204",
      "POLT207",
      "POLT309",
+     "POLT313",
      "POLT317"
     ],
     "minor_3yr": [
+     "POLT202",
      "POLT204",
      "POLT207",
      "POLT309",
+     "POLT313",
      "POLT317"
     ],
     "concentration": [
-     "POLT309",
-     "POLT317"
+     "POLT202",
+     "POLT313"
     ]
    },
    "pick_codes": {
     "single_major_4yr": [
      "POLT307",
-     "POLT308"
+     "POLT308",
+     "POLT309",
+     "POLT317"
     ],
     "double_major_4yr": [
      "POLT307",
-     "POLT308"
+     "POLT308",
+     "POLT309",
+     "POLT317"
     ],
     "single_major_3yr": [
      "POLT307",
-     "POLT308"
+     "POLT308",
+     "POLT309",
+     "POLT317"
     ],
     "minor_4yr": [
      "POLT307",
-     "POLT311"
+     "POLT311",
+     "SOCL304",
+     "SOCL355"
     ]
    },
    "elective_codes": {
+    "single_major_4yr": [
+     "ECON326",
+     "POLT301",
+     "POLT316",
+     "POLT325",
+     "POLT327",
+     "POLT334",
+     "POLT337",
+     "POLT338",
+     "POLT339",
+     "POLT412",
+     "POLT416",
+     "POLT431",
+     "SOCL205"
+    ],
+    "single_major_3yr": [
+     "ECON326",
+     "POLT301",
+     "POLT316",
+     "POLT325",
+     "POLT327",
+     "POLT334",
+     "POLT337",
+     "POLT338",
+     "POLT339",
+     "POLT412",
+     "POLT416",
+     "POLT431",
+     "SOCL205"
+    ],
     "minor_3yr": [
      "ECON326",
      "POLT301",
-     "POLT313",
+     "POLT316",
+     "POLT325",
+     "POLT327",
+     "POLT334",
+     "POLT337",
+     "POLT338",
+     "POLT339",
+     "POLT412",
+     "POLT416",
+     "POLT431",
+     "SOCL205"
+    ],
+    "double_major_4yr": [
+     "ECON326",
+     "POLT301",
      "POLT316",
      "POLT325",
      "POLT327",
@@ -2979,7 +3043,6 @@
     "double_major_3yr": [
      "ECON326",
      "POLT301",
-     "POLT313",
      "POLT316",
      "POLT325",
      "POLT327",
@@ -2995,55 +3058,6 @@
     "minor_4yr": [
      "ECON326",
      "POLT301",
-     "POLT313",
-     "POLT316",
-     "POLT325",
-     "POLT327",
-     "POLT334",
-     "POLT337",
-     "POLT338",
-     "POLT339",
-     "POLT412",
-     "POLT416",
-     "POLT431",
-     "SOCL205"
-    ],
-    "double_major_4yr": [
-     "ECON326",
-     "POLT301",
-     "POLT313",
-     "POLT316",
-     "POLT325",
-     "POLT327",
-     "POLT334",
-     "POLT337",
-     "POLT338",
-     "POLT339",
-     "POLT412",
-     "POLT416",
-     "POLT431",
-     "SOCL205"
-    ],
-    "single_major_3yr": [
-     "ECON326",
-     "POLT301",
-     "POLT313",
-     "POLT316",
-     "POLT325",
-     "POLT327",
-     "POLT334",
-     "POLT337",
-     "POLT338",
-     "POLT339",
-     "POLT412",
-     "POLT416",
-     "POLT431",
-     "SOCL205"
-    ],
-    "single_major_4yr": [
-     "ECON326",
-     "POLT301",
-     "POLT313",
      "POLT316",
      "POLT325",
      "POLT327",
@@ -3059,7 +3073,6 @@
     "concentration": [
      "ECON326",
      "POLT301",
-     "POLT313",
      "POLT316",
      "POLT325",
      "POLT327",
@@ -3134,16 +3147,15 @@
         },
         {
          "title": "Indian Politics I",
-         "code": "POLT309",
-         "match": "inexact",
-         "catalog_title": "Indian Politics II",
+         "code": "POLT202",
+         "match": "override",
+         "catalog_title": "Understanding Indian Politics",
          "crosslisted_with": [],
          "credits": 4,
          "type": "Required",
          "terms": [
-          "24_T2",
-          "25_T1",
-          "25_T2"
+          "24_T1",
+          "26_T1"
          ],
          "eligible_years": [
           2,
@@ -3154,21 +3166,70 @@
          "eligible_phd": false,
          "faculty": [
           {
-           "email": "shilpi.singh@krea.edu.in",
-           "name": "Shilpi Singh",
-           "id": "shilpi-singh"
+           "email": "sambaiah.gundimeda@krea.edu.in",
+           "name": "Sambaiah Gundimeda",
+           "id": "sambaiah-gundimeda"
           }
          ]
         },
         {
          "title": "Methods I",
-         "code": null,
-         "match": null
+         "code": "SOCL304",
+         "match": "override",
+         "catalog_title": "Qualitative Methods: Researching the Social, Political and the Historical",
+         "crosslisted_with": [
+          "HIST301",
+          "POLT306"
+         ],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T2",
+          "25_T3"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "arani.basu@krea.edu.in",
+           "name": "Arani Basu",
+           "id": "arani-basu"
+          }
+         ]
         },
         {
          "title": "Methods II",
-         "code": null,
-         "match": null
+         "code": "SOCL355",
+         "match": "override",
+         "catalog_title": "Quantitative Research Methods in Humanities and Social Sciences",
+         "crosslisted_with": [
+          "POLT355"
+         ],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "25_T3",
+          "26_T1"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": true,
+         "faculty": [
+          {
+           "email": "sumit.mishra@krea.edu.in",
+           "name": "Sumit Mishra",
+           "id": null
+          }
+         ]
         },
         {
          "title": "Political Imaginings from the Global South +",
@@ -3200,17 +3261,21 @@
         },
         {
          "title": "Political Theory I",
-         "code": "POLT317",
-         "match": "inexact",
-         "catalog_title": "Political Theory II",
-         "crosslisted_with": [],
+         "code": "POLT313",
+         "match": "override",
+         "catalog_title": "Introduction to Political Theory: Concepts and Conundrums",
+         "crosslisted_with": [
+          "PHIL313",
+          "SOCL313"
+         ],
          "credits": 4,
          "type": "Required",
          "terms": [
-          "24_T1",
-          "26_T1"
+          "24_T3",
+          "25_T3"
          ],
          "eligible_years": [
+          2,
           3,
           4
          ],
@@ -3218,9 +3283,9 @@
          "eligible_phd": false,
          "faculty": [
           {
-           "email": "shilpi.singh@krea.edu.in",
-           "name": "Shilpi Singh",
-           "id": "shilpi-singh"
+           "email": "bishnu.mohapatra@krea.edu.in",
+           "name": "Bishnu Mohapatra",
+           "id": "bishnu-mohapatra"
           }
          ]
         },
@@ -3430,16 +3495,15 @@
         },
         {
          "title": "Indian Politics I",
-         "code": "POLT309",
-         "match": "inexact",
-         "catalog_title": "Indian Politics II",
+         "code": "POLT202",
+         "match": "override",
+         "catalog_title": "Understanding Indian Politics",
          "crosslisted_with": [],
          "credits": 4,
          "type": "Required",
          "terms": [
-          "24_T2",
-          "25_T1",
-          "25_T2"
+          "24_T1",
+          "26_T1"
          ],
          "eligible_years": [
           2,
@@ -3450,21 +3514,70 @@
          "eligible_phd": false,
          "faculty": [
           {
-           "email": "shilpi.singh@krea.edu.in",
-           "name": "Shilpi Singh",
-           "id": "shilpi-singh"
+           "email": "sambaiah.gundimeda@krea.edu.in",
+           "name": "Sambaiah Gundimeda",
+           "id": "sambaiah-gundimeda"
           }
          ]
         },
         {
          "title": "Methods I",
-         "code": null,
-         "match": null
+         "code": "SOCL304",
+         "match": "override",
+         "catalog_title": "Qualitative Methods: Researching the Social, Political and the Historical",
+         "crosslisted_with": [
+          "HIST301",
+          "POLT306"
+         ],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T2",
+          "25_T3"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "arani.basu@krea.edu.in",
+           "name": "Arani Basu",
+           "id": "arani-basu"
+          }
+         ]
         },
         {
          "title": "Methods II",
-         "code": null,
-         "match": null
+         "code": "SOCL355",
+         "match": "override",
+         "catalog_title": "Quantitative Research Methods in Humanities and Social Sciences",
+         "crosslisted_with": [
+          "POLT355"
+         ],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "25_T3",
+          "26_T1"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": true,
+         "faculty": [
+          {
+           "email": "sumit.mishra@krea.edu.in",
+           "name": "Sumit Mishra",
+           "id": null
+          }
+         ]
         },
         {
          "title": "Political Imaginings from the Global South +",
@@ -3496,17 +3609,21 @@
         },
         {
          "title": "Political Theory I",
-         "code": "POLT317",
-         "match": "inexact",
-         "catalog_title": "Political Theory II",
-         "crosslisted_with": [],
+         "code": "POLT313",
+         "match": "override",
+         "catalog_title": "Introduction to Political Theory: Concepts and Conundrums",
+         "crosslisted_with": [
+          "PHIL313",
+          "SOCL313"
+         ],
          "credits": 4,
          "type": "Required",
          "terms": [
-          "24_T1",
-          "26_T1"
+          "24_T3",
+          "25_T3"
          ],
          "eligible_years": [
+          2,
           3,
           4
          ],
@@ -3514,9 +3631,9 @@
          "eligible_phd": false,
          "faculty": [
           {
-           "email": "shilpi.singh@krea.edu.in",
-           "name": "Shilpi Singh",
-           "id": "shilpi-singh"
+           "email": "bishnu.mohapatra@krea.edu.in",
+           "name": "Bishnu Mohapatra",
+           "id": "bishnu-mohapatra"
           }
          ]
         },
@@ -3726,16 +3843,15 @@
         },
         {
          "title": "Indian Politics I",
-         "code": "POLT309",
-         "match": "inexact",
-         "catalog_title": "Indian Politics II",
+         "code": "POLT202",
+         "match": "override",
+         "catalog_title": "Understanding Indian Politics",
          "crosslisted_with": [],
          "credits": 4,
          "type": "Required",
          "terms": [
-          "24_T2",
-          "25_T1",
-          "25_T2"
+          "24_T1",
+          "26_T1"
          ],
          "eligible_years": [
           2,
@@ -3746,21 +3862,70 @@
          "eligible_phd": false,
          "faculty": [
           {
-           "email": "shilpi.singh@krea.edu.in",
-           "name": "Shilpi Singh",
-           "id": "shilpi-singh"
+           "email": "sambaiah.gundimeda@krea.edu.in",
+           "name": "Sambaiah Gundimeda",
+           "id": "sambaiah-gundimeda"
           }
          ]
         },
         {
          "title": "Methods I",
-         "code": null,
-         "match": null
+         "code": "SOCL304",
+         "match": "override",
+         "catalog_title": "Qualitative Methods: Researching the Social, Political and the Historical",
+         "crosslisted_with": [
+          "HIST301",
+          "POLT306"
+         ],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T2",
+          "25_T3"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "arani.basu@krea.edu.in",
+           "name": "Arani Basu",
+           "id": "arani-basu"
+          }
+         ]
         },
         {
          "title": "Methods II",
-         "code": null,
-         "match": null
+         "code": "SOCL355",
+         "match": "override",
+         "catalog_title": "Quantitative Research Methods in Humanities and Social Sciences",
+         "crosslisted_with": [
+          "POLT355"
+         ],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "25_T3",
+          "26_T1"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": true,
+         "faculty": [
+          {
+           "email": "sumit.mishra@krea.edu.in",
+           "name": "Sumit Mishra",
+           "id": null
+          }
+         ]
         },
         {
          "title": "Political Imaginings from the Global South +",
@@ -3792,17 +3957,21 @@
         },
         {
          "title": "Political Theory I",
-         "code": "POLT317",
-         "match": "inexact",
-         "catalog_title": "Political Theory II",
-         "crosslisted_with": [],
+         "code": "POLT313",
+         "match": "override",
+         "catalog_title": "Introduction to Political Theory: Concepts and Conundrums",
+         "crosslisted_with": [
+          "PHIL313",
+          "SOCL313"
+         ],
          "credits": 4,
          "type": "Required",
          "terms": [
-          "24_T1",
-          "26_T1"
+          "24_T3",
+          "25_T3"
          ],
          "eligible_years": [
+          2,
           3,
           4
          ],
@@ -3810,9 +3979,9 @@
          "eligible_phd": false,
          "faculty": [
           {
-           "email": "shilpi.singh@krea.edu.in",
-           "name": "Shilpi Singh",
-           "id": "shilpi-singh"
+           "email": "bishnu.mohapatra@krea.edu.in",
+           "name": "Bishnu Mohapatra",
+           "id": "bishnu-mohapatra"
           }
          ]
         },
@@ -4022,16 +4191,15 @@
         },
         {
          "title": "Indian Politics I",
-         "code": "POLT309",
-         "match": "inexact",
-         "catalog_title": "Indian Politics II",
+         "code": "POLT202",
+         "match": "override",
+         "catalog_title": "Understanding Indian Politics",
          "crosslisted_with": [],
          "credits": 4,
          "type": "Required",
          "terms": [
-          "24_T2",
-          "25_T1",
-          "25_T2"
+          "24_T1",
+          "26_T1"
          ],
          "eligible_years": [
           2,
@@ -4042,21 +4210,70 @@
          "eligible_phd": false,
          "faculty": [
           {
-           "email": "shilpi.singh@krea.edu.in",
-           "name": "Shilpi Singh",
-           "id": "shilpi-singh"
+           "email": "sambaiah.gundimeda@krea.edu.in",
+           "name": "Sambaiah Gundimeda",
+           "id": "sambaiah-gundimeda"
           }
          ]
         },
         {
          "title": "Methods I",
-         "code": null,
-         "match": null
+         "code": "SOCL304",
+         "match": "override",
+         "catalog_title": "Qualitative Methods: Researching the Social, Political and the Historical",
+         "crosslisted_with": [
+          "HIST301",
+          "POLT306"
+         ],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T2",
+          "25_T3"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "arani.basu@krea.edu.in",
+           "name": "Arani Basu",
+           "id": "arani-basu"
+          }
+         ]
         },
         {
          "title": "Methods II",
-         "code": null,
-         "match": null
+         "code": "SOCL355",
+         "match": "override",
+         "catalog_title": "Quantitative Research Methods in Humanities and Social Sciences",
+         "crosslisted_with": [
+          "POLT355"
+         ],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "25_T3",
+          "26_T1"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": true,
+         "faculty": [
+          {
+           "email": "sumit.mishra@krea.edu.in",
+           "name": "Sumit Mishra",
+           "id": null
+          }
+         ]
         },
         {
          "title": "Political Imaginings from the Global South +",
@@ -4088,17 +4305,21 @@
         },
         {
          "title": "Political Theory I",
-         "code": "POLT317",
-         "match": "inexact",
-         "catalog_title": "Political Theory II",
-         "crosslisted_with": [],
+         "code": "POLT313",
+         "match": "override",
+         "catalog_title": "Introduction to Political Theory: Concepts and Conundrums",
+         "crosslisted_with": [
+          "PHIL313",
+          "SOCL313"
+         ],
          "credits": 4,
          "type": "Required",
          "terms": [
-          "24_T1",
-          "26_T1"
+          "24_T3",
+          "25_T3"
          ],
          "eligible_years": [
+          2,
           3,
           4
          ],
@@ -4106,9 +4327,9 @@
          "eligible_phd": false,
          "faculty": [
           {
-           "email": "shilpi.singh@krea.edu.in",
-           "name": "Shilpi Singh",
-           "id": "shilpi-singh"
+           "email": "bishnu.mohapatra@krea.edu.in",
+           "name": "Bishnu Mohapatra",
+           "id": "bishnu-mohapatra"
           }
          ]
         },
@@ -4213,16 +4434,15 @@
         },
         {
          "title": "Indian Politics I",
-         "code": "POLT309",
-         "match": "inexact",
-         "catalog_title": "Indian Politics II",
+         "code": "POLT202",
+         "match": "override",
+         "catalog_title": "Understanding Indian Politics",
          "crosslisted_with": [],
          "credits": 4,
          "type": "Required",
          "terms": [
-          "24_T2",
-          "25_T1",
-          "25_T2"
+          "24_T1",
+          "26_T1"
          ],
          "eligible_years": [
           2,
@@ -4233,9 +4453,9 @@
          "eligible_phd": false,
          "faculty": [
           {
-           "email": "shilpi.singh@krea.edu.in",
-           "name": "Shilpi Singh",
-           "id": "shilpi-singh"
+           "email": "sambaiah.gundimeda@krea.edu.in",
+           "name": "Sambaiah Gundimeda",
+           "id": "sambaiah-gundimeda"
           }
          ]
         },
@@ -4298,17 +4518,21 @@
         },
         {
          "title": "Political Theory I",
-         "code": "POLT317",
-         "match": "inexact",
-         "catalog_title": "Political Theory II",
-         "crosslisted_with": [],
+         "code": "POLT313",
+         "match": "override",
+         "catalog_title": "Introduction to Political Theory: Concepts and Conundrums",
+         "crosslisted_with": [
+          "PHIL313",
+          "SOCL313"
+         ],
          "credits": 4,
          "type": "Required",
          "terms": [
-          "24_T1",
-          "26_T1"
+          "24_T3",
+          "25_T3"
          ],
          "eligible_years": [
+          2,
           3,
           4
          ],
@@ -4316,9 +4540,9 @@
          "eligible_phd": false,
          "faculty": [
           {
-           "email": "shilpi.singh@krea.edu.in",
-           "name": "Shilpi Singh",
-           "id": "shilpi-singh"
+           "email": "bishnu.mohapatra@krea.edu.in",
+           "name": "Bishnu Mohapatra",
+           "id": "bishnu-mohapatra"
           }
          ]
         },
@@ -4382,13 +4606,62 @@
         },
         {
          "title": "Methods I",
-         "code": null,
-         "match": null
+         "code": "SOCL304",
+         "match": "override",
+         "catalog_title": "Qualitative Methods: Researching the Social, Political and the Historical",
+         "crosslisted_with": [
+          "HIST301",
+          "POLT306"
+         ],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T2",
+          "25_T3"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "arani.basu@krea.edu.in",
+           "name": "Arani Basu",
+           "id": "arani-basu"
+          }
+         ]
         },
         {
          "title": "Methods II",
-         "code": null,
-         "match": null
+         "code": "SOCL355",
+         "match": "override",
+         "catalog_title": "Quantitative Research Methods in Humanities and Social Sciences",
+         "crosslisted_with": [
+          "POLT355"
+         ],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "25_T3",
+          "26_T1"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": true,
+         "faculty": [
+          {
+           "email": "sumit.mishra@krea.edu.in",
+           "name": "Sumit Mishra",
+           "id": null
+          }
+         ]
         },
         {
          "title": "Political Imaginings from the Global South",
@@ -4492,16 +4765,15 @@
         },
         {
          "title": "Indian Politics I",
-         "code": "POLT309",
-         "match": "inexact",
-         "catalog_title": "Indian Politics II",
+         "code": "POLT202",
+         "match": "override",
+         "catalog_title": "Understanding Indian Politics",
          "crosslisted_with": [],
          "credits": 4,
          "type": "Required",
          "terms": [
-          "24_T2",
-          "25_T1",
-          "25_T2"
+          "24_T1",
+          "26_T1"
          ],
          "eligible_years": [
           2,
@@ -4512,9 +4784,9 @@
          "eligible_phd": false,
          "faculty": [
           {
-           "email": "shilpi.singh@krea.edu.in",
-           "name": "Shilpi Singh",
-           "id": "shilpi-singh"
+           "email": "sambaiah.gundimeda@krea.edu.in",
+           "name": "Sambaiah Gundimeda",
+           "id": "sambaiah-gundimeda"
           }
          ]
         },
@@ -4577,17 +4849,21 @@
         },
         {
          "title": "Political Theory I",
-         "code": "POLT317",
-         "match": "inexact",
-         "catalog_title": "Political Theory II",
-         "crosslisted_with": [],
+         "code": "POLT313",
+         "match": "override",
+         "catalog_title": "Introduction to Political Theory: Concepts and Conundrums",
+         "crosslisted_with": [
+          "PHIL313",
+          "SOCL313"
+         ],
          "credits": 4,
          "type": "Required",
          "terms": [
-          "24_T1",
-          "26_T1"
+          "24_T3",
+          "25_T3"
          ],
          "eligible_years": [
+          2,
           3,
           4
          ],
@@ -4595,9 +4871,9 @@
          "eligible_phd": false,
          "faculty": [
           {
-           "email": "shilpi.singh@krea.edu.in",
-           "name": "Shilpi Singh",
-           "id": "shilpi-singh"
+           "email": "bishnu.mohapatra@krea.edu.in",
+           "name": "Bishnu Mohapatra",
+           "id": "bishnu-mohapatra"
           }
          ]
         }
@@ -4618,16 +4894,15 @@
        "courses": [
         {
          "title": "Indian Politics I",
-         "code": "POLT309",
-         "match": "inexact",
-         "catalog_title": "Indian Politics II",
+         "code": "POLT202",
+         "match": "override",
+         "catalog_title": "Understanding Indian Politics",
          "crosslisted_with": [],
          "credits": 4,
          "type": "Required",
          "terms": [
-          "24_T2",
-          "25_T1",
-          "25_T2"
+          "24_T1",
+          "26_T1"
          ],
          "eligible_years": [
           2,
@@ -4638,25 +4913,29 @@
          "eligible_phd": false,
          "faculty": [
           {
-           "email": "shilpi.singh@krea.edu.in",
-           "name": "Shilpi Singh",
-           "id": "shilpi-singh"
+           "email": "sambaiah.gundimeda@krea.edu.in",
+           "name": "Sambaiah Gundimeda",
+           "id": "sambaiah-gundimeda"
           }
          ]
         },
         {
          "title": "Political Theory I",
-         "code": "POLT317",
-         "match": "inexact",
-         "catalog_title": "Political Theory II",
-         "crosslisted_with": [],
+         "code": "POLT313",
+         "match": "override",
+         "catalog_title": "Introduction to Political Theory: Concepts and Conundrums",
+         "crosslisted_with": [
+          "PHIL313",
+          "SOCL313"
+         ],
          "credits": 4,
          "type": "Required",
          "terms": [
-          "24_T1",
-          "26_T1"
+          "24_T3",
+          "25_T3"
          ],
          "eligible_years": [
+          2,
           3,
           4
          ],
@@ -4664,9 +4943,9 @@
          "eligible_phd": false,
          "faculty": [
           {
-           "email": "shilpi.singh@krea.edu.in",
-           "name": "Shilpi Singh",
-           "id": "shilpi-singh"
+           "email": "bishnu.mohapatra@krea.edu.in",
+           "name": "Bishnu Mohapatra",
+           "id": "bishnu-mohapatra"
           }
          ]
         }
@@ -5171,14 +5450,6 @@
      }
     },
     {
-     "title": "Methods I",
-     "suggestion": null
-    },
-    {
-     "title": "Methods II",
-     "suggestion": null
-    },
-    {
      "title": "Philosophy of and Methodologies in the Social Sciences",
      "suggestion": null
     },
@@ -5419,7 +5690,49 @@
     ]
    },
    "elective_codes": {
+    "single_major_4yr": [
+     "ECON311",
+     "ECON312",
+     "ECON321",
+     "ECON327",
+     "ECON328",
+     "ECON329",
+     "ECON330",
+     "ECON332",
+     "ECON333",
+     "ECON335",
+     "ECON336",
+     "SOCL205"
+    ],
+    "single_major_3yr": [
+     "ECON311",
+     "ECON312",
+     "ECON321",
+     "ECON327",
+     "ECON328",
+     "ECON329",
+     "ECON330",
+     "ECON332",
+     "ECON333",
+     "ECON335",
+     "ECON336",
+     "SOCL205"
+    ],
     "minor_3yr": [
+     "ECON311",
+     "ECON312",
+     "ECON321",
+     "ECON327",
+     "ECON328",
+     "ECON329",
+     "ECON330",
+     "ECON332",
+     "ECON333",
+     "ECON335",
+     "ECON336",
+     "SOCL205"
+    ],
+    "double_major_4yr": [
      "ECON311",
      "ECON312",
      "ECON321",
@@ -5448,48 +5761,6 @@
      "SOCL205"
     ],
     "minor_4yr": [
-     "ECON311",
-     "ECON312",
-     "ECON321",
-     "ECON327",
-     "ECON328",
-     "ECON329",
-     "ECON330",
-     "ECON332",
-     "ECON333",
-     "ECON335",
-     "ECON336",
-     "SOCL205"
-    ],
-    "double_major_4yr": [
-     "ECON311",
-     "ECON312",
-     "ECON321",
-     "ECON327",
-     "ECON328",
-     "ECON329",
-     "ECON330",
-     "ECON332",
-     "ECON333",
-     "ECON335",
-     "ECON336",
-     "SOCL205"
-    ],
-    "single_major_3yr": [
-     "ECON311",
-     "ECON312",
-     "ECON321",
-     "ECON327",
-     "ECON328",
-     "ECON329",
-     "ECON330",
-     "ECON332",
-     "ECON333",
-     "ECON335",
-     "ECON336",
-     "SOCL205"
-    ],
-    "single_major_4yr": [
      "ECON311",
      "ECON312",
      "ECON321",
@@ -8228,6 +8499,7 @@
      "BIOS241",
      "ECON332",
      "ENVS204",
+     "ENVS206",
      "ENVS216",
      "ENVS221",
      "ENVS235",
@@ -8238,6 +8510,7 @@
      "BIOS241",
      "ECON332",
      "ENVS204",
+     "ENVS206",
      "ENVS216",
      "ENVS221",
      "ENVS235",
@@ -8248,6 +8521,7 @@
      "BIOS241",
      "ECON332",
      "ENVS204",
+     "ENVS206",
      "ENVS216",
      "ENVS221",
      "ENVS235",
@@ -8258,6 +8532,7 @@
      "BIOS241",
      "ECON332",
      "ENVS204",
+     "ENVS206",
      "ENVS216",
      "ENVS221",
      "ENVS235",
@@ -8270,6 +8545,7 @@
      "BIOS241",
      "ECON332",
      "ENVS204",
+     "ENVS206",
      "ENVS216",
      "ENVS221",
      "ENVS235",
@@ -8280,6 +8556,7 @@
      "BIOS241",
      "ECON332",
      "ENVS204",
+     "ENVS206",
      "ENVS216",
      "ENVS221",
      "ENVS235",
@@ -8290,6 +8567,7 @@
      "BIOS241",
      "ECON332",
      "ENVS204",
+     "ENVS206",
      "ENVS216",
      "ENVS221",
      "ENVS235",
@@ -8298,66 +8576,6 @@
     ]
    },
    "elective_codes": {
-    "minor_3yr": [
-     "BIOS227",
-     "BIOS235",
-     "BIOS401",
-     "BIOS409",
-     "ECON312",
-     "ENVS242",
-     "ENVS245",
-     "ENVS302",
-     "ENVS310",
-     "ENVS328",
-     "ENVS333",
-     "ENVS337",
-     "ENVS346",
-     "ENVS422",
-     "ENVS426",
-     "ENVS433",
-     "SOCL218",
-     "SOCL325"
-    ],
-    "double_major_3yr": [
-     "BIOS227",
-     "BIOS235",
-     "BIOS401",
-     "BIOS409",
-     "ECON312",
-     "ENVS242",
-     "ENVS245",
-     "ENVS302",
-     "ENVS310",
-     "ENVS328",
-     "ENVS333",
-     "ENVS337",
-     "ENVS346",
-     "ENVS422",
-     "ENVS426",
-     "ENVS433",
-     "SOCL218",
-     "SOCL325"
-    ],
-    "minor_4yr": [
-     "BIOS227",
-     "BIOS235",
-     "BIOS401",
-     "BIOS409",
-     "ECON312",
-     "ENVS242",
-     "ENVS245",
-     "ENVS302",
-     "ENVS310",
-     "ENVS328",
-     "ENVS333",
-     "ENVS337",
-     "ENVS346",
-     "ENVS422",
-     "ENVS426",
-     "ENVS433",
-     "SOCL218",
-     "SOCL325"
-    ],
     "single_major_4yr": [
      "BIOS227",
      "BIOS235",
@@ -8378,7 +8596,47 @@
      "SOCL218",
      "SOCL325"
     ],
-    "concentration": [
+    "double_major_3yr": [
+     "BIOS227",
+     "BIOS235",
+     "BIOS401",
+     "BIOS409",
+     "ECON312",
+     "ENVS242",
+     "ENVS245",
+     "ENVS302",
+     "ENVS310",
+     "ENVS328",
+     "ENVS333",
+     "ENVS337",
+     "ENVS346",
+     "ENVS422",
+     "ENVS426",
+     "ENVS433",
+     "SOCL218",
+     "SOCL325"
+    ],
+    "single_major_3yr": [
+     "BIOS227",
+     "BIOS235",
+     "BIOS401",
+     "BIOS409",
+     "ECON312",
+     "ENVS242",
+     "ENVS245",
+     "ENVS302",
+     "ENVS310",
+     "ENVS328",
+     "ENVS333",
+     "ENVS337",
+     "ENVS346",
+     "ENVS422",
+     "ENVS426",
+     "ENVS433",
+     "SOCL218",
+     "SOCL325"
+    ],
+    "minor_3yr": [
      "BIOS227",
      "BIOS235",
      "BIOS401",
@@ -8418,7 +8676,27 @@
      "SOCL218",
      "SOCL325"
     ],
-    "single_major_3yr": [
+    "concentration": [
+     "BIOS227",
+     "BIOS235",
+     "BIOS401",
+     "BIOS409",
+     "ECON312",
+     "ENVS242",
+     "ENVS245",
+     "ENVS302",
+     "ENVS310",
+     "ENVS328",
+     "ENVS333",
+     "ENVS337",
+     "ENVS346",
+     "ENVS422",
+     "ENVS426",
+     "ENVS433",
+     "SOCL218",
+     "SOCL325"
+    ],
+    "minor_4yr": [
      "BIOS227",
      "BIOS235",
      "BIOS401",
@@ -8446,6 +8724,32 @@
        "rule": null,
        "pick": null,
        "courses": [
+        {
+         "title": "Tools and Methods",
+         "code": "ENVS206",
+         "match": "override",
+         "catalog_title": "Tools and Methods in Environmental Studies",
+         "crosslisted_with": [],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T1",
+          "26_T1"
+         ],
+         "eligible_years": [
+          2,
+          3
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "bharath.sundaram@krea.edu.in",
+           "name": "Bharath Sundaram",
+           "id": "bharath-sundaram"
+          }
+         ]
+        },
         {
          "title": "Introduction to Environmental Science",
          "code": "ENVS235",
@@ -8677,6 +8981,32 @@
        "pick": null,
        "courses": [
         {
+         "title": "Tools and Methods",
+         "code": "ENVS206",
+         "match": "override",
+         "catalog_title": "Tools and Methods in Environmental Studies",
+         "crosslisted_with": [],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T1",
+          "26_T1"
+         ],
+         "eligible_years": [
+          2,
+          3
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "bharath.sundaram@krea.edu.in",
+           "name": "Bharath Sundaram",
+           "id": "bharath-sundaram"
+          }
+         ]
+        },
+        {
          "title": "Introduction to Environmental Science",
          "code": "ENVS235",
          "match": "exact",
@@ -8906,6 +9236,32 @@
        "rule": null,
        "pick": null,
        "courses": [
+        {
+         "title": "Tools and Methods",
+         "code": "ENVS206",
+         "match": "override",
+         "catalog_title": "Tools and Methods in Environmental Studies",
+         "crosslisted_with": [],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T1",
+          "26_T1"
+         ],
+         "eligible_years": [
+          2,
+          3
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "bharath.sundaram@krea.edu.in",
+           "name": "Bharath Sundaram",
+           "id": "bharath-sundaram"
+          }
+         ]
+        },
         {
          "title": "Introduction to Environmental Science",
          "code": "ENVS235",
@@ -9137,6 +9493,32 @@
        "pick": null,
        "courses": [
         {
+         "title": "Tools and Methods",
+         "code": "ENVS206",
+         "match": "override",
+         "catalog_title": "Tools and Methods in Environmental Studies",
+         "crosslisted_with": [],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T1",
+          "26_T1"
+         ],
+         "eligible_years": [
+          2,
+          3
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "bharath.sundaram@krea.edu.in",
+           "name": "Bharath Sundaram",
+           "id": "bharath-sundaram"
+          }
+         ]
+        },
+        {
          "title": "Introduction to Environmental Science",
          "code": "ENVS235",
          "match": "exact",
@@ -9366,6 +9748,32 @@
        "rule": "Any 8 of the 9 courses",
        "pick": 8,
        "courses": [
+        {
+         "title": "Tools and Methods",
+         "code": "ENVS206",
+         "match": "override",
+         "catalog_title": "Tools and Methods in Environmental Studies",
+         "crosslisted_with": [],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T1",
+          "26_T1"
+         ],
+         "eligible_years": [
+          2,
+          3
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "bharath.sundaram@krea.edu.in",
+           "name": "Bharath Sundaram",
+           "id": "bharath-sundaram"
+          }
+         ]
+        },
         {
          "title": "Introduction to Environmental Science",
          "code": "ENVS235",
@@ -9597,6 +10005,32 @@
        "pick": 6,
        "courses": [
         {
+         "title": "Tools and Methods",
+         "code": "ENVS206",
+         "match": "override",
+         "catalog_title": "Tools and Methods in Environmental Studies",
+         "crosslisted_with": [],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T1",
+          "26_T1"
+         ],
+         "eligible_years": [
+          2,
+          3
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "bharath.sundaram@krea.edu.in",
+           "name": "Bharath Sundaram",
+           "id": "bharath-sundaram"
+          }
+         ]
+        },
+        {
          "title": "Introduction to Environmental Science",
          "code": "ENVS235",
          "match": "exact",
@@ -9826,6 +10260,32 @@
        "rule": "Any 4 of the 9 courses",
        "pick": 4,
        "courses": [
+        {
+         "title": "Tools and Methods",
+         "code": "ENVS206",
+         "match": "override",
+         "catalog_title": "Tools and Methods in Environmental Studies",
+         "crosslisted_with": [],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T1",
+          "26_T1"
+         ],
+         "eligible_years": [
+          2,
+          3
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "bharath.sundaram@krea.edu.in",
+           "name": "Bharath Sundaram",
+           "id": "bharath-sundaram"
+          }
+         ]
+        },
         {
          "title": "Introduction to Environmental Science",
          "code": "ENVS235",
@@ -10756,20 +11216,30 @@
     "single_major_4yr": [
      "SOCL206",
      "SOCL211",
+     "SOCL304",
+     "SOCL305",
+     "SOCL306",
      "SOCL328",
      "SOCL335",
+     "SOCL355",
      "SOCL406"
     ],
     "double_major_4yr": [
      "SOCL206",
      "SOCL211",
+     "SOCL304",
+     "SOCL305",
+     "SOCL306",
      "SOCL328",
      "SOCL335",
+     "SOCL355",
      "SOCL406"
     ],
     "minor_4yr": [
      "SOCL206",
      "SOCL211",
+     "SOCL305",
+     "SOCL306",
      "SOCL328",
      "SOCL335",
      "SOCL406"
@@ -10777,20 +11247,30 @@
     "single_major_3yr": [
      "SOCL206",
      "SOCL211",
+     "SOCL304",
+     "SOCL305",
+     "SOCL306",
      "SOCL328",
      "SOCL335",
+     "SOCL355",
      "SOCL406"
     ],
     "double_major_3yr": [
      "SOCL206",
      "SOCL211",
+     "SOCL304",
+     "SOCL305",
+     "SOCL306",
      "SOCL328",
      "SOCL335",
+     "SOCL355",
      "SOCL406"
     ],
     "minor_3yr": [
      "SOCL206",
      "SOCL211",
+     "SOCL305",
+     "SOCL306",
      "SOCL328",
      "SOCL335",
      "SOCL406"
@@ -10798,6 +11278,8 @@
     "concentration": [
      "SOCL206",
      "SOCL211",
+     "SOCL305",
+     "SOCL306",
      "SOCL328",
      "SOCL335",
      "SOCL406"
@@ -10805,63 +11287,6 @@
    },
    "pick_codes": {},
    "elective_codes": {
-    "minor_3yr": [
-     "ENVS433",
-     "SOCL205",
-     "SOCL213",
-     "SOCL218",
-     "SOCL225",
-     "SOCL236",
-     "SOCL257",
-     "SOCL337",
-     "SOCL338",
-     "SOCL340",
-     "SOCL345",
-     "SOCL346",
-     "SOCL347",
-     "SOCL348",
-     "SOCL349",
-     "SOCL352",
-     "SOCL411"
-    ],
-    "minor_4yr": [
-     "ENVS433",
-     "SOCL205",
-     "SOCL213",
-     "SOCL218",
-     "SOCL225",
-     "SOCL236",
-     "SOCL257",
-     "SOCL337",
-     "SOCL338",
-     "SOCL340",
-     "SOCL345",
-     "SOCL346",
-     "SOCL347",
-     "SOCL348",
-     "SOCL349",
-     "SOCL352",
-     "SOCL411"
-    ],
-    "double_major_3yr": [
-     "ENVS433",
-     "SOCL205",
-     "SOCL213",
-     "SOCL218",
-     "SOCL225",
-     "SOCL236",
-     "SOCL257",
-     "SOCL337",
-     "SOCL338",
-     "SOCL340",
-     "SOCL345",
-     "SOCL346",
-     "SOCL347",
-     "SOCL348",
-     "SOCL349",
-     "SOCL352",
-     "SOCL411"
-    ],
     "single_major_4yr": [
      "ENVS433",
      "SOCL205",
@@ -10881,7 +11306,64 @@
      "SOCL352",
      "SOCL411"
     ],
-    "concentration": [
+    "single_major_3yr": [
+     "ENVS433",
+     "SOCL205",
+     "SOCL213",
+     "SOCL218",
+     "SOCL225",
+     "SOCL236",
+     "SOCL257",
+     "SOCL337",
+     "SOCL338",
+     "SOCL340",
+     "SOCL345",
+     "SOCL346",
+     "SOCL347",
+     "SOCL348",
+     "SOCL349",
+     "SOCL352",
+     "SOCL411"
+    ],
+    "double_major_3yr": [
+     "ENVS433",
+     "SOCL205",
+     "SOCL213",
+     "SOCL218",
+     "SOCL225",
+     "SOCL236",
+     "SOCL257",
+     "SOCL337",
+     "SOCL338",
+     "SOCL340",
+     "SOCL345",
+     "SOCL346",
+     "SOCL347",
+     "SOCL348",
+     "SOCL349",
+     "SOCL352",
+     "SOCL411"
+    ],
+    "minor_4yr": [
+     "ENVS433",
+     "SOCL205",
+     "SOCL213",
+     "SOCL218",
+     "SOCL225",
+     "SOCL236",
+     "SOCL257",
+     "SOCL337",
+     "SOCL338",
+     "SOCL340",
+     "SOCL345",
+     "SOCL346",
+     "SOCL347",
+     "SOCL348",
+     "SOCL349",
+     "SOCL352",
+     "SOCL411"
+    ],
+    "minor_3yr": [
      "ENVS433",
      "SOCL205",
      "SOCL213",
@@ -10919,7 +11401,7 @@
      "SOCL352",
      "SOCL411"
     ],
-    "single_major_3yr": [
+    "concentration": [
      "ENVS433",
      "SOCL205",
      "SOCL213",
@@ -10948,8 +11430,31 @@
        "courses": [
         {
          "title": "Sociological and Anthropological Theory – I",
-         "code": null,
-         "match": null
+         "code": "SOCL306",
+         "match": "override",
+         "catalog_title": "Introduction to Sociological and Anthropological Thought",
+         "crosslisted_with": [],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T2",
+          "25_T1",
+          "25_T2"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "shiv.issar@krea.edu.in",
+           "name": "Shiv Issar",
+           "id": "shiv-issar"
+          }
+         ]
         },
         {
          "title": "Sociological and Anthropological Theory – II",
@@ -10958,13 +11463,62 @@
         },
         {
          "title": "Social Research Methods – Qualitative",
-         "code": null,
-         "match": null
+         "code": "SOCL304",
+         "match": "override",
+         "catalog_title": "Qualitative Methods: Researching the Social, Political and the Historical",
+         "crosslisted_with": [
+          "HIST301",
+          "POLT306"
+         ],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T2",
+          "25_T3"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "arani.basu@krea.edu.in",
+           "name": "Arani Basu",
+           "id": "arani-basu"
+          }
+         ]
         },
         {
          "title": "Social Research Methods – Quantitative",
-         "code": null,
-         "match": null
+         "code": "SOCL355",
+         "match": "override",
+         "catalog_title": "Quantitative Research Methods in Humanities and Social Sciences",
+         "crosslisted_with": [
+          "POLT355"
+         ],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "25_T3",
+          "26_T1"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": true,
+         "faculty": [
+          {
+           "email": "sumit.mishra@krea.edu.in",
+           "name": "Sumit Mishra",
+           "id": null
+          }
+         ]
         },
         {
          "title": "Economy and Society",
@@ -11025,8 +11579,33 @@
         },
         {
          "title": "Introduction to Political Sociology and Anthropology",
-         "code": null,
-         "match": null
+         "code": "SOCL305",
+         "match": "override",
+         "catalog_title": "Introduction to Political Anthropology",
+         "crosslisted_with": [
+          "HIST305",
+          "POLT305"
+         ],
+         "credits": 4,
+         "type": "Required|Elective|Elective",
+         "terms": [
+          "24_T1",
+          "25_T3"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "gowhar.fazili@krea.edu.in",
+           "name": "Gowhar Fazili",
+           "id": "gowhar-fazili"
+          }
+         ]
         },
         {
          "title": "Kinship, Family, and Community",
@@ -11126,18 +11705,90 @@
        "courses": [
         {
          "title": "Sociological and Anthropological Theory – I",
-         "code": null,
-         "match": null
+         "code": "SOCL306",
+         "match": "override",
+         "catalog_title": "Introduction to Sociological and Anthropological Thought",
+         "crosslisted_with": [],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T2",
+          "25_T1",
+          "25_T2"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "shiv.issar@krea.edu.in",
+           "name": "Shiv Issar",
+           "id": "shiv-issar"
+          }
+         ]
         },
         {
          "title": "Social Research Methods – Qualitative",
-         "code": null,
-         "match": null
+         "code": "SOCL304",
+         "match": "override",
+         "catalog_title": "Qualitative Methods: Researching the Social, Political and the Historical",
+         "crosslisted_with": [
+          "HIST301",
+          "POLT306"
+         ],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T2",
+          "25_T3"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "arani.basu@krea.edu.in",
+           "name": "Arani Basu",
+           "id": "arani-basu"
+          }
+         ]
         },
         {
          "title": "Social Research Methods – Quantitative",
-         "code": null,
-         "match": null
+         "code": "SOCL355",
+         "match": "override",
+         "catalog_title": "Quantitative Research Methods in Humanities and Social Sciences",
+         "crosslisted_with": [
+          "POLT355"
+         ],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "25_T3",
+          "26_T1"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": true,
+         "faculty": [
+          {
+           "email": "sumit.mishra@krea.edu.in",
+           "name": "Sumit Mishra",
+           "id": null
+          }
+         ]
         }
        ]
       },
@@ -11209,8 +11860,33 @@
         },
         {
          "title": "Introduction to Political Sociology and Anthropology",
-         "code": null,
-         "match": null
+         "code": "SOCL305",
+         "match": "override",
+         "catalog_title": "Introduction to Political Anthropology",
+         "crosslisted_with": [
+          "HIST305",
+          "POLT305"
+         ],
+         "credits": 4,
+         "type": "Required|Elective|Elective",
+         "terms": [
+          "24_T1",
+          "25_T3"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "gowhar.fazili@krea.edu.in",
+           "name": "Gowhar Fazili",
+           "id": "gowhar-fazili"
+          }
+         ]
         },
         {
          "title": "Kinship, Family, and Community",
@@ -11310,8 +11986,31 @@
        "courses": [
         {
          "title": "Sociological and Anthropological Theory – I",
-         "code": null,
-         "match": null
+         "code": "SOCL306",
+         "match": "override",
+         "catalog_title": "Introduction to Sociological and Anthropological Thought",
+         "crosslisted_with": [],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T2",
+          "25_T1",
+          "25_T2"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "shiv.issar@krea.edu.in",
+           "name": "Shiv Issar",
+           "id": "shiv-issar"
+          }
+         ]
         }
        ]
       },
@@ -11378,8 +12077,33 @@
         },
         {
          "title": "Introduction to Political Sociology and Anthropology",
-         "code": null,
-         "match": null
+         "code": "SOCL305",
+         "match": "override",
+         "catalog_title": "Introduction to Political Anthropology",
+         "crosslisted_with": [
+          "HIST305",
+          "POLT305"
+         ],
+         "credits": 4,
+         "type": "Required|Elective|Elective",
+         "terms": [
+          "24_T1",
+          "25_T3"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "gowhar.fazili@krea.edu.in",
+           "name": "Gowhar Fazili",
+           "id": "gowhar-fazili"
+          }
+         ]
         },
         {
          "title": "Kinship, Family, and Community",
@@ -11479,8 +12203,31 @@
        "courses": [
         {
          "title": "Sociological and Anthropological Theory – I",
-         "code": null,
-         "match": null
+         "code": "SOCL306",
+         "match": "override",
+         "catalog_title": "Introduction to Sociological and Anthropological Thought",
+         "crosslisted_with": [],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T2",
+          "25_T1",
+          "25_T2"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "shiv.issar@krea.edu.in",
+           "name": "Shiv Issar",
+           "id": "shiv-issar"
+          }
+         ]
         },
         {
          "title": "Sociological and Anthropological Theory – II",
@@ -11489,13 +12236,62 @@
         },
         {
          "title": "Social Research Methods – Qualitative",
-         "code": null,
-         "match": null
+         "code": "SOCL304",
+         "match": "override",
+         "catalog_title": "Qualitative Methods: Researching the Social, Political and the Historical",
+         "crosslisted_with": [
+          "HIST301",
+          "POLT306"
+         ],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T2",
+          "25_T3"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "arani.basu@krea.edu.in",
+           "name": "Arani Basu",
+           "id": "arani-basu"
+          }
+         ]
         },
         {
          "title": "Social Research Methods – Quantitative",
-         "code": null,
-         "match": null
+         "code": "SOCL355",
+         "match": "override",
+         "catalog_title": "Quantitative Research Methods in Humanities and Social Sciences",
+         "crosslisted_with": [
+          "POLT355"
+         ],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "25_T3",
+          "26_T1"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": true,
+         "faculty": [
+          {
+           "email": "sumit.mishra@krea.edu.in",
+           "name": "Sumit Mishra",
+           "id": null
+          }
+         ]
         },
         {
          "title": "Economy and Society",
@@ -11556,8 +12352,33 @@
         },
         {
          "title": "Introduction to Political Sociology and Anthropology",
-         "code": null,
-         "match": null
+         "code": "SOCL305",
+         "match": "override",
+         "catalog_title": "Introduction to Political Anthropology",
+         "crosslisted_with": [
+          "HIST305",
+          "POLT305"
+         ],
+         "credits": 4,
+         "type": "Required|Elective|Elective",
+         "terms": [
+          "24_T1",
+          "25_T3"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "gowhar.fazili@krea.edu.in",
+           "name": "Gowhar Fazili",
+           "id": "gowhar-fazili"
+          }
+         ]
         },
         {
          "title": "Kinship, Family, and Community",
@@ -11657,18 +12478,90 @@
        "courses": [
         {
          "title": "Sociological and Anthropological Theory – I",
-         "code": null,
-         "match": null
+         "code": "SOCL306",
+         "match": "override",
+         "catalog_title": "Introduction to Sociological and Anthropological Thought",
+         "crosslisted_with": [],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T2",
+          "25_T1",
+          "25_T2"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "shiv.issar@krea.edu.in",
+           "name": "Shiv Issar",
+           "id": "shiv-issar"
+          }
+         ]
         },
         {
          "title": "Social Research Methods – Qualitative",
-         "code": null,
-         "match": null
+         "code": "SOCL304",
+         "match": "override",
+         "catalog_title": "Qualitative Methods: Researching the Social, Political and the Historical",
+         "crosslisted_with": [
+          "HIST301",
+          "POLT306"
+         ],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T2",
+          "25_T3"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "arani.basu@krea.edu.in",
+           "name": "Arani Basu",
+           "id": "arani-basu"
+          }
+         ]
         },
         {
          "title": "Social Research Methods – Quantitative",
-         "code": null,
-         "match": null
+         "code": "SOCL355",
+         "match": "override",
+         "catalog_title": "Quantitative Research Methods in Humanities and Social Sciences",
+         "crosslisted_with": [
+          "POLT355"
+         ],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "25_T3",
+          "26_T1"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": true,
+         "faculty": [
+          {
+           "email": "sumit.mishra@krea.edu.in",
+           "name": "Sumit Mishra",
+           "id": null
+          }
+         ]
         }
        ]
       },
@@ -11740,8 +12633,33 @@
         },
         {
          "title": "Introduction to Political Sociology and Anthropology",
-         "code": null,
-         "match": null
+         "code": "SOCL305",
+         "match": "override",
+         "catalog_title": "Introduction to Political Anthropology",
+         "crosslisted_with": [
+          "HIST305",
+          "POLT305"
+         ],
+         "credits": 4,
+         "type": "Required|Elective|Elective",
+         "terms": [
+          "24_T1",
+          "25_T3"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "gowhar.fazili@krea.edu.in",
+           "name": "Gowhar Fazili",
+           "id": "gowhar-fazili"
+          }
+         ]
         },
         {
          "title": "Kinship, Family, and Community",
@@ -11841,8 +12759,31 @@
        "courses": [
         {
          "title": "Sociological and Anthropological Theory – I",
-         "code": null,
-         "match": null
+         "code": "SOCL306",
+         "match": "override",
+         "catalog_title": "Introduction to Sociological and Anthropological Thought",
+         "crosslisted_with": [],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T2",
+          "25_T1",
+          "25_T2"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "shiv.issar@krea.edu.in",
+           "name": "Shiv Issar",
+           "id": "shiv-issar"
+          }
+         ]
         }
        ]
       },
@@ -11909,8 +12850,33 @@
         },
         {
          "title": "Introduction to Political Sociology and Anthropology",
-         "code": null,
-         "match": null
+         "code": "SOCL305",
+         "match": "override",
+         "catalog_title": "Introduction to Political Anthropology",
+         "crosslisted_with": [
+          "HIST305",
+          "POLT305"
+         ],
+         "credits": 4,
+         "type": "Required|Elective|Elective",
+         "terms": [
+          "24_T1",
+          "25_T3"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "gowhar.fazili@krea.edu.in",
+           "name": "Gowhar Fazili",
+           "id": "gowhar-fazili"
+          }
+         ]
         },
         {
          "title": "Kinship, Family, and Community",
@@ -12010,8 +12976,31 @@
        "courses": [
         {
          "title": "Sociological and Anthropological Theory – I",
-         "code": null,
-         "match": null
+         "code": "SOCL306",
+         "match": "override",
+         "catalog_title": "Introduction to Sociological and Anthropological Thought",
+         "crosslisted_with": [],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T2",
+          "25_T1",
+          "25_T2"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "shiv.issar@krea.edu.in",
+           "name": "Shiv Issar",
+           "id": "shiv-issar"
+          }
+         ]
         }
        ]
       },
@@ -12078,8 +13067,33 @@
         },
         {
          "title": "Introduction to Political Sociology and Anthropology",
-         "code": null,
-         "match": null
+         "code": "SOCL305",
+         "match": "override",
+         "catalog_title": "Introduction to Political Anthropology",
+         "crosslisted_with": [
+          "HIST305",
+          "POLT305"
+         ],
+         "credits": 4,
+         "type": "Required|Elective|Elective",
+         "terms": [
+          "24_T1",
+          "25_T3"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "gowhar.fazili@krea.edu.in",
+           "name": "Gowhar Fazili",
+           "id": "gowhar-fazili"
+          }
+         ]
         },
         {
          "title": "Kinship, Family, and Community",
@@ -12701,30 +13715,8 @@
      "suggestion": null
     },
     {
-     "title": "Introduction to Political Sociology and Anthropology",
-     "suggestion": {
-      "code": "SOCL305",
-      "title": "Introduction to Political Anthropology"
-     }
-    },
-    {
      "title": "Law, Society, Abolitionism",
      "suggestion": null
-    },
-    {
-     "title": "Social Research Methods – Qualitative",
-     "suggestion": null
-    },
-    {
-     "title": "Social Research Methods – Quantitative",
-     "suggestion": null
-    },
-    {
-     "title": "Sociological and Anthropological Theory – I",
-     "suggestion": {
-      "code": "SOCL306",
-      "title": "Introduction to Sociological and Anthropological Thought"
-     }
     },
     {
      "title": "Sociological and Anthropological Theory – II",
@@ -12963,60 +13955,10 @@
     ]
    },
    "elective_codes": {
-    "minor_3yr": [
+    "single_major_4yr": [
      "COMP306",
      "COMP322",
-     "COMP331",
-     "COMP332",
-     "COMP334",
-     "COMP335",
-     "COMP340",
-     "COMP413",
-     "COMP422",
-     "COMP433",
-     "DATA231",
-     "DATA242",
-     "DATA303",
-     "ECON327",
-     "MATH342"
-    ],
-    "double_major_3yr": [
-     "COMP306",
-     "COMP322",
-     "COMP331",
-     "COMP332",
-     "COMP334",
-     "COMP335",
-     "COMP340",
-     "COMP413",
-     "COMP422",
-     "COMP433",
-     "DATA231",
-     "DATA242",
-     "DATA303",
-     "ECON327",
-     "MATH342"
-    ],
-    "minor_4yr": [
-     "COMP306",
-     "COMP322",
-     "COMP331",
-     "COMP332",
-     "COMP334",
-     "COMP335",
-     "COMP340",
-     "COMP413",
-     "COMP422",
-     "COMP433",
-     "DATA231",
-     "DATA242",
-     "DATA303",
-     "ECON327",
-     "MATH342"
-    ],
-    "double_major_4yr": [
-     "COMP306",
-     "COMP322",
+     "COMP330",
      "COMP331",
      "COMP332",
      "COMP334",
@@ -13034,6 +13976,7 @@
     "single_major_3yr": [
      "COMP306",
      "COMP322",
+     "COMP330",
      "COMP331",
      "COMP332",
      "COMP334",
@@ -13048,9 +13991,64 @@
      "ECON327",
      "MATH342"
     ],
-    "single_major_4yr": [
+    "minor_3yr": [
      "COMP306",
      "COMP322",
+     "COMP330",
+     "COMP331",
+     "COMP332",
+     "COMP334",
+     "COMP335",
+     "COMP340",
+     "COMP413",
+     "COMP422",
+     "COMP433",
+     "DATA231",
+     "DATA242",
+     "DATA303",
+     "ECON327",
+     "MATH342"
+    ],
+    "double_major_4yr": [
+     "COMP306",
+     "COMP322",
+     "COMP330",
+     "COMP331",
+     "COMP332",
+     "COMP334",
+     "COMP335",
+     "COMP340",
+     "COMP413",
+     "COMP422",
+     "COMP433",
+     "DATA231",
+     "DATA242",
+     "DATA303",
+     "ECON327",
+     "MATH342"
+    ],
+    "double_major_3yr": [
+     "COMP306",
+     "COMP322",
+     "COMP330",
+     "COMP331",
+     "COMP332",
+     "COMP334",
+     "COMP335",
+     "COMP340",
+     "COMP413",
+     "COMP422",
+     "COMP433",
+     "DATA231",
+     "DATA242",
+     "DATA303",
+     "ECON327",
+     "MATH342"
+    ],
+    "minor_4yr": [
+     "COMP306",
+     "COMP322",
+     "COMP330",
      "COMP331",
      "COMP332",
      "COMP334",
@@ -13068,6 +14066,7 @@
     "concentration": [
      "COMP306",
      "COMP322",
+     "COMP330",
      "COMP331",
      "COMP332",
      "COMP334",
@@ -15475,8 +16474,29 @@
         },
         {
          "title": "Logic",
-         "code": null,
-         "match": null
+         "code": "COMP330",
+         "match": "exact",
+         "crosslisted_with": [
+          "MATH330"
+         ],
+         "credits": 4,
+         "type": "Elective",
+         "terms": [
+          "26_T1"
+         ],
+         "eligible_years": [
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "prathamesh.h@krea.edu.in",
+           "name": "Prathamesh T V H",
+           "id": "prathamesh-t-v-h"
+          }
+         ]
         },
         {
          "title": "Matching and Flow Algorithms",
@@ -15726,10 +16746,6 @@
      }
     },
     {
-     "title": "Logic",
-     "suggestion": null
-    },
-    {
      "title": "Operating Systems",
      "suggestion": null
     },
@@ -15914,7 +16930,9 @@
      "LITT241",
      "LITT301",
      "LITT316"
-    ],
+    ]
+   },
+   "pick_codes": {
     "concentration": [
      "LITT201",
      "LITT206",
@@ -15925,9 +16943,16 @@
      "LITT316"
     ]
    },
-   "pick_codes": {},
    "elective_codes": {
-    "minor_3yr": [
+    "single_major_4yr": [
+     "LITT205",
+     "LITT224",
+     "LITT232",
+     "LITT326",
+     "LITT335",
+     "LITT431"
+    ],
+    "single_major_3yr": [
      "LITT205",
      "LITT224",
      "LITT232",
@@ -15951,15 +16976,7 @@
      "LITT335",
      "LITT431"
     ],
-    "single_major_4yr": [
-     "LITT205",
-     "LITT224",
-     "LITT232",
-     "LITT326",
-     "LITT335",
-     "LITT431"
-    ],
-    "concentration": [
+    "minor_3yr": [
      "LITT205",
      "LITT224",
      "LITT232",
@@ -15975,7 +16992,7 @@
      "LITT335",
      "LITT431"
     ],
-    "single_major_3yr": [
+    "concentration": [
      "LITT205",
      "LITT224",
      "LITT232",
@@ -17256,11 +18273,6 @@
       {
        "rule": "Any four courses from the required courses listed below and the elective courses available in a separate tab.",
        "pick": 4,
-       "courses": []
-      },
-      {
-       "rule": null,
-       "pick": null,
        "courses": [
         {
          "title": "Introduction to Literary Studies",
@@ -17888,7 +18900,16 @@
    },
    "pick_codes": {},
    "elective_codes": {
-    "minor_3yr": [
+    "single_major_4yr": [
+     "COMP332",
+     "DATA236",
+     "DATA237",
+     "DATA238",
+     "DATA239",
+     "DATA242",
+     "DATA244"
+    ],
+    "single_major_3yr": [
      "COMP332",
      "DATA236",
      "DATA237",
@@ -17915,16 +18936,7 @@
      "DATA242",
      "DATA244"
     ],
-    "single_major_4yr": [
-     "COMP332",
-     "DATA236",
-     "DATA237",
-     "DATA238",
-     "DATA239",
-     "DATA242",
-     "DATA244"
-    ],
-    "concentration": [
+    "minor_3yr": [
      "COMP332",
      "DATA236",
      "DATA237",
@@ -17942,7 +18954,7 @@
      "DATA242",
      "DATA244"
     ],
-    "single_major_3yr": [
+    "concentration": [
      "COMP332",
      "DATA236",
      "DATA237",
@@ -20060,30 +21072,35 @@
      "PSYC203",
      "PSYC204",
      "PSYC205",
+     "PSYC208",
      "PSYC210",
      "PSYC304",
      "PSYC307",
      "PSYC327",
      "PSYC334",
-     "PSYC340"
+     "PSYC340",
+     "PSYC437"
     ],
     "double_major_4yr": [
      "PSYC201",
      "PSYC203",
      "PSYC204",
      "PSYC205",
+     "PSYC208",
      "PSYC210",
      "PSYC304",
      "PSYC307",
      "PSYC327",
      "PSYC334",
-     "PSYC340"
+     "PSYC340",
+     "PSYC437"
     ],
     "single_major_3yr": [
      "PSYC201",
      "PSYC203",
      "PSYC204",
      "PSYC205",
+     "PSYC208",
      "PSYC210",
      "PSYC304",
      "PSYC327",
@@ -20094,6 +21111,7 @@
      "PSYC203",
      "PSYC204",
      "PSYC205",
+     "PSYC208",
      "PSYC210",
      "PSYC304",
      "PSYC327",
@@ -20116,7 +21134,25 @@
    },
    "pick_codes": {},
    "elective_codes": {
-    "minor_3yr": [
+    "single_major_4yr": [
+     "PSYC226",
+     "PSYC233",
+     "PSYC236",
+     "PSYC238",
+     "PSYC239",
+     "PSYC326",
+     "PSYC333",
+     "PSYC335",
+     "PSYC341",
+     "PSYC348",
+     "PSYC417",
+     "PSYC432",
+     "PSYC434",
+     "PSYC438",
+     "PSYC442",
+     "PSYC443"
+    ],
+    "single_major_3yr": [
      "PSYC226",
      "PSYC233",
      "PSYC236",
@@ -20170,7 +21206,7 @@
      "PSYC442",
      "PSYC443"
     ],
-    "single_major_4yr": [
+    "minor_3yr": [
      "PSYC226",
      "PSYC233",
      "PSYC236",
@@ -20189,24 +21225,6 @@
      "PSYC443"
     ],
     "double_major_4yr": [
-     "PSYC226",
-     "PSYC233",
-     "PSYC236",
-     "PSYC238",
-     "PSYC239",
-     "PSYC326",
-     "PSYC333",
-     "PSYC335",
-     "PSYC341",
-     "PSYC348",
-     "PSYC417",
-     "PSYC432",
-     "PSYC434",
-     "PSYC438",
-     "PSYC442",
-     "PSYC443"
-    ],
-    "single_major_3yr": [
      "PSYC226",
      "PSYC233",
      "PSYC236",
@@ -20355,8 +21373,35 @@
         },
         {
          "title": "Qualitative Approaches to Psychology",
-         "code": null,
-         "match": null
+         "code": "PSYC208",
+         "match": "override",
+         "catalog_title": "Introduction to Qualitative Approaches in Psychology",
+         "crosslisted_with": [],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T3",
+          "25_T3"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "akanksha.adya@krea.edu.in",
+           "name": "Akanksha Adya",
+           "id": "akanksha-adya"
+          },
+          {
+           "email": "rakshi.rath@krea.edu.in",
+           "name": "Rakshi Rath",
+           "id": "rakshi-rath"
+          }
+         ]
         },
         {
          "title": "Testing and Measurement in Psychology",
@@ -20546,8 +21591,31 @@
         },
         {
          "title": "Introduction to Theories in Counselling",
-         "code": null,
-         "match": null
+         "code": "PSYC437",
+         "match": "override",
+         "catalog_title": "Introduction to Counselling Theories",
+         "crosslisted_with": [],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T2",
+          "25_T1",
+          "25_T2",
+          "26_T1"
+         ],
+         "eligible_years": [
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "soumya.madabhushi@krea.edu.in",
+           "name": "Soumya Madabhushi",
+           "id": null
+          }
+         ]
         }
        ]
       }
@@ -20643,8 +21711,35 @@
         },
         {
          "title": "Qualitative Approaches to Psychology",
-         "code": null,
-         "match": null
+         "code": "PSYC208",
+         "match": "override",
+         "catalog_title": "Introduction to Qualitative Approaches in Psychology",
+         "crosslisted_with": [],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T3",
+          "25_T3"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "akanksha.adya@krea.edu.in",
+           "name": "Akanksha Adya",
+           "id": "akanksha-adya"
+          },
+          {
+           "email": "rakshi.rath@krea.edu.in",
+           "name": "Rakshi Rath",
+           "id": "rakshi-rath"
+          }
+         ]
         },
         {
          "title": "Testing and Measurement in Psychology",
@@ -20834,8 +21929,31 @@
         },
         {
          "title": "Introduction to Theories in Counselling",
-         "code": null,
-         "match": null
+         "code": "PSYC437",
+         "match": "override",
+         "catalog_title": "Introduction to Counselling Theories",
+         "crosslisted_with": [],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T2",
+          "25_T1",
+          "25_T2",
+          "26_T1"
+         ],
+         "eligible_years": [
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "soumya.madabhushi@krea.edu.in",
+           "name": "Soumya Madabhushi",
+           "id": null
+          }
+         ]
         }
        ]
       }
@@ -20931,8 +22049,35 @@
         },
         {
          "title": "Qualitative Approaches to Psychology",
-         "code": null,
-         "match": null
+         "code": "PSYC208",
+         "match": "override",
+         "catalog_title": "Introduction to Qualitative Approaches in Psychology",
+         "crosslisted_with": [],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T3",
+          "25_T3"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "akanksha.adya@krea.edu.in",
+           "name": "Akanksha Adya",
+           "id": "akanksha-adya"
+          },
+          {
+           "email": "rakshi.rath@krea.edu.in",
+           "name": "Rakshi Rath",
+           "id": "rakshi-rath"
+          }
+         ]
         },
         {
          "title": "Brain and Behaviour",
@@ -21165,8 +22310,35 @@
         },
         {
          "title": "Qualitative Approaches to Psychology",
-         "code": null,
-         "match": null
+         "code": "PSYC208",
+         "match": "override",
+         "catalog_title": "Introduction to Qualitative Approaches in Psychology",
+         "crosslisted_with": [],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T3",
+          "25_T3"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "akanksha.adya@krea.edu.in",
+           "name": "Akanksha Adya",
+           "id": "akanksha-adya"
+          },
+          {
+           "email": "rakshi.rath@krea.edu.in",
+           "name": "Rakshi Rath",
+           "id": "rakshi-rath"
+          }
+         ]
         },
         {
          "title": "Brain and Behaviour",
@@ -21649,7 +22821,7 @@
          "title": "Culture, Cognition and Subjectivity",
          "code": "PSYC348",
          "match": "inexact",
-         "catalog_title": "Culture, Cognition, and Subjectivity:  Psychological Worlds Across Contexts (Formerly: PSYC345 Culture and Subjectivity)",
+         "catalog_title": "Culture, Cognition, and Subjectivity:  Psychological Worlds Across Contexts",
          "crosslisted_with": [],
          "credits": 4,
          "type": "Elective",
@@ -21834,7 +23006,7 @@
          "title": "Counselling Skills: from theory to practice",
          "code": "PSYC432",
          "match": "inexact",
-         "catalog_title": "Counselling Skills: putting theories into practice (Formerly known as 'Helping Skills')",
+         "catalog_title": "Counselling Skills: putting theories into practice",
          "crosslisted_with": [],
          "credits": 4,
          "type": "Elective",
@@ -22172,13 +23344,6 @@
      "suggestion": null
     },
     {
-     "title": "Introduction to Theories in Counselling",
-     "suggestion": {
-      "code": "PSYC437",
-      "title": "Introduction to Counselling Theories"
-     }
-    },
-    {
      "title": "Psychology in Disaster Response and Humanitarian Interventions",
      "suggestion": {
       "code": "PSYC430",
@@ -22190,13 +23355,6 @@
      "suggestion": {
       "code": "PSYC237",
       "title": "Psychology of Self & Identity"
-     }
-    },
-    {
-     "title": "Qualitative Approaches to Psychology",
-     "suggestion": {
-      "code": "PSYC208",
-      "title": "Introduction to Qualitative Approaches in Psychology"
      }
     },
     {
@@ -22363,6 +23521,7 @@
      "PHYS223",
      "PHYS224",
      "PHYS225",
+     "PHYS226",
      "PHYS227",
      "PHYS231",
      "PHYS236",
@@ -22382,6 +23541,7 @@
      "PHYS223",
      "PHYS224",
      "PHYS225",
+     "PHYS226",
      "PHYS227",
      "PHYS231",
      "PHYS236",
@@ -22390,7 +23550,8 @@
      "PHYS327",
      "PHYS331",
      "PHYS341",
-     "PHYS345"
+     "PHYS345",
+     "PHYS401"
     ],
     "double_major_3yr": [
      "PHYS201",
@@ -22402,6 +23563,7 @@
      "PHYS223",
      "PHYS224",
      "PHYS225",
+     "PHYS226",
      "PHYS227",
      "PHYS231",
      "PHYS236",
@@ -22421,6 +23583,7 @@
      "PHYS223",
      "PHYS224",
      "PHYS225",
+     "PHYS226",
      "PHYS227",
      "PHYS231",
      "PHYS236",
@@ -22461,7 +23624,7 @@
    },
    "pick_codes": {},
    "elective_codes": {
-    "minor_3yr": [
+    "single_major_4yr": [
      "BIOS306",
      "PHYS228",
      "PHYS251",
@@ -22485,6 +23648,18 @@
      "PHYS438",
      "PHYS443"
     ],
+    "single_major_3yr": [
+     "BIOS306",
+     "PHYS228",
+     "PHYS251",
+     "PHYS253",
+     "PHYS303",
+     "PHYS350",
+     "PHYS360",
+     "PHYS361",
+     "PHYS438",
+     "PHYS443"
+    ],
     "minor_4yr": [
      "BIOS306",
      "PHYS228",
@@ -22497,19 +23672,7 @@
      "PHYS438",
      "PHYS443"
     ],
-    "single_major_4yr": [
-     "BIOS306",
-     "PHYS228",
-     "PHYS251",
-     "PHYS253",
-     "PHYS303",
-     "PHYS350",
-     "PHYS360",
-     "PHYS361",
-     "PHYS438",
-     "PHYS443"
-    ],
-    "concentration": [
+    "minor_3yr": [
      "BIOS306",
      "PHYS228",
      "PHYS251",
@@ -22533,7 +23696,7 @@
      "PHYS438",
      "PHYS443"
     ],
-    "single_major_3yr": [
+    "concentration": [
      "BIOS306",
      "PHYS228",
      "PHYS251",
@@ -22911,8 +24074,28 @@
         },
         {
          "title": "Waves and Oscillations",
-         "code": null,
-         "match": null
+         "code": "PHYS226",
+         "match": "override",
+         "catalog_title": "Oscillations and Waves",
+         "crosslisted_with": [],
+         "credits": 2,
+         "type": "Required",
+         "terms": [
+          "26_T1"
+         ],
+         "eligible_years": [
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "tanmoy.chakrabarty@krea.edu.in",
+           "name": "Tanmoy Chakrabarty",
+           "id": "tanmoy-chakrabarty"
+          }
+         ]
         },
         {
          "title": "Optics I",
@@ -23413,8 +24596,28 @@
        "courses": [
         {
          "title": "Waves and Oscillations",
-         "code": null,
-         "match": null
+         "code": "PHYS226",
+         "match": "override",
+         "catalog_title": "Oscillations and Waves",
+         "crosslisted_with": [],
+         "credits": 2,
+         "type": "Required",
+         "terms": [
+          "26_T1"
+         ],
+         "eligible_years": [
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "tanmoy.chakrabarty@krea.edu.in",
+           "name": "Tanmoy Chakrabarty",
+           "id": "tanmoy-chakrabarty"
+          }
+         ]
         },
         {
          "title": "Optics I",
@@ -23519,8 +24722,28 @@
         },
         {
          "title": "Classical field theory",
-         "code": null,
-         "match": null
+         "code": "PHYS401",
+         "match": "override",
+         "catalog_title": "Fundamentals of Classical Field Theory",
+         "crosslisted_with": [],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T1",
+          "26_T1"
+         ],
+         "eligible_years": [
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "sushant.raut@krea.edu.in",
+           "name": "Sushant Kumar Raut",
+           "id": "sushant-kumar-raut"
+          }
+         ]
         }
        ]
       }
@@ -23890,8 +25113,28 @@
         },
         {
          "title": "Waves and Oscillations",
-         "code": null,
-         "match": null
+         "code": "PHYS226",
+         "match": "override",
+         "catalog_title": "Oscillations and Waves",
+         "crosslisted_with": [],
+         "credits": 2,
+         "type": "Required",
+         "terms": [
+          "26_T1"
+         ],
+         "eligible_years": [
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "tanmoy.chakrabarty@krea.edu.in",
+           "name": "Tanmoy Chakrabarty",
+           "id": "tanmoy-chakrabarty"
+          }
+         ]
         },
         {
          "title": "Optics I",
@@ -24362,8 +25605,28 @@
         },
         {
          "title": "Waves and Oscillations",
-         "code": null,
-         "match": null
+         "code": "PHYS226",
+         "match": "override",
+         "catalog_title": "Oscillations and Waves",
+         "crosslisted_with": [],
+         "credits": 2,
+         "type": "Required",
+         "terms": [
+          "26_T1"
+         ],
+         "eligible_years": [
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "tanmoy.chakrabarty@krea.edu.in",
+           "name": "Tanmoy Chakrabarty",
+           "id": "tanmoy-chakrabarty"
+          }
+         ]
         },
         {
          "title": "Optics I",
@@ -25371,19 +26634,7 @@
     }
    },
    "review": [],
-   "not_yet_offered": [
-    {
-     "title": "Classical field theory",
-     "suggestion": {
-      "code": "PHYS601",
-      "title": "Fundamentals of Classical Field Theory"
-     }
-    },
-    {
-     "title": "Waves and Oscillations",
-     "suggestion": null
-    }
-   ]
+   "not_yet_offered": []
   },
   "chemistry": {
    "subject": "chemistry",
@@ -25523,6 +26774,7 @@
      "CHEM216",
      "CHEM217",
      "CHEM218",
+     "CHEM219",
      "CHEM220",
      "CHEM222",
      "CHEM306",
@@ -25542,6 +26794,7 @@
      "CHEM216",
      "CHEM217",
      "CHEM218",
+     "CHEM219",
      "CHEM220",
      "CHEM222",
      "CHEM306",
@@ -25561,6 +26814,7 @@
      "CHEM216",
      "CHEM217",
      "CHEM218",
+     "CHEM219",
      "CHEM220",
      "CHEM222",
      "CHEM306",
@@ -25594,7 +26848,7 @@
    },
    "pick_codes": {},
    "elective_codes": {
-    "minor_3yr": [
+    "single_major_3yr": [
      "BIOS306",
      "BIOS432",
      "CHEM214",
@@ -25642,7 +26896,7 @@
      "CHEM433",
      "CHEM621"
     ],
-    "concentration": [
+    "minor_3yr": [
      "BIOS306",
      "BIOS432",
      "CHEM214",
@@ -25674,7 +26928,7 @@
      "CHEM433",
      "CHEM621"
     ],
-    "single_major_3yr": [
+    "concentration": [
      "BIOS306",
      "BIOS432",
      "CHEM214",
@@ -26065,8 +27319,29 @@
        "courses": [
         {
          "title": "Coordination Chemistry",
-         "code": null,
-         "match": null
+         "code": "CHEM219",
+         "match": "override",
+         "catalog_title": "Coordination and Bio-inorganic Chemistry",
+         "crosslisted_with": [],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T3",
+          "25_T3"
+         ],
+         "eligible_years": [
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "raghu.ganesh@krea.edu.in",
+           "name": "Raghu V M Ganesh",
+           "id": "raghu-v-m-ganesh"
+          }
+         ]
         },
         {
          "title": "Organic Chemistry Lab",
@@ -26554,8 +27829,29 @@
         },
         {
          "title": "Coordination Chemistry",
-         "code": null,
-         "match": null
+         "code": "CHEM219",
+         "match": "override",
+         "catalog_title": "Coordination and Bio-inorganic Chemistry",
+         "crosslisted_with": [],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T3",
+          "25_T3"
+         ],
+         "eligible_years": [
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "raghu.ganesh@krea.edu.in",
+           "name": "Raghu V M Ganesh",
+           "id": "raghu-v-m-ganesh"
+          }
+         ]
         },
         {
          "title": "Organic Chemistry Lab",
@@ -27033,8 +28329,29 @@
         },
         {
          "title": "Coordination Chemistry",
-         "code": null,
-         "match": null
+         "code": "CHEM219",
+         "match": "override",
+         "catalog_title": "Coordination and Bio-inorganic Chemistry",
+         "crosslisted_with": [],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T3",
+          "25_T3"
+         ],
+         "eligible_years": [
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "raghu.ganesh@krea.edu.in",
+           "name": "Raghu V M Ganesh",
+           "id": "raghu-v-m-ganesh"
+          }
+         ]
         },
         {
          "title": "Organic Chemistry Lab",
@@ -27994,13 +29311,6 @@
      }
     },
     {
-     "title": "Coordination Chemistry",
-     "suggestion": {
-      "code": "CHEM326",
-      "title": "Food Chemistry"
-     }
-    },
-    {
      "title": "Mathematical Methods",
      "suggestion": null
     },
@@ -28220,7 +29530,22 @@
    },
    "pick_codes": {},
    "elective_codes": {
-    "minor_3yr": [
+    "single_major_4yr": [
+     "BIOS222",
+     "BIOS223",
+     "BIOS231",
+     "BIOS232",
+     "BIOS235",
+     "BIOS236",
+     "BIOS306",
+     "BIOS331",
+     "BIOS347",
+     "BIOS401",
+     "BIOS409",
+     "BIOS432",
+     "CHEM225"
+    ],
+    "single_major_3yr": [
      "BIOS222",
      "BIOS223",
      "BIOS231",
@@ -28265,22 +29590,7 @@
      "BIOS432",
      "CHEM225"
     ],
-    "single_major_4yr": [
-     "BIOS222",
-     "BIOS223",
-     "BIOS231",
-     "BIOS232",
-     "BIOS235",
-     "BIOS236",
-     "BIOS306",
-     "BIOS331",
-     "BIOS347",
-     "BIOS401",
-     "BIOS409",
-     "BIOS432",
-     "CHEM225"
-    ],
-    "concentration": [
+    "minor_3yr": [
      "BIOS222",
      "BIOS223",
      "BIOS231",
@@ -28310,7 +29620,7 @@
      "BIOS432",
      "CHEM225"
     ],
-    "single_major_3yr": [
+    "concentration": [
      "BIOS222",
      "BIOS223",
      "BIOS231",
@@ -30763,7 +32073,34 @@
     ]
    },
    "elective_codes": {
+    "single_major_4yr": [
+     "ENVS216",
+     "HIST318",
+     "HIST330",
+     "HIST334",
+     "HIST336",
+     "HIST343",
+     "SOCL338"
+    ],
+    "single_major_3yr": [
+     "ENVS216",
+     "HIST318",
+     "HIST330",
+     "HIST334",
+     "HIST336",
+     "HIST343",
+     "SOCL338"
+    ],
     "minor_3yr": [
+     "ENVS216",
+     "HIST318",
+     "HIST330",
+     "HIST334",
+     "HIST336",
+     "HIST343",
+     "SOCL338"
+    ],
+    "double_major_4yr": [
      "ENVS216",
      "HIST318",
      "HIST330",
@@ -30782,33 +32119,6 @@
      "SOCL338"
     ],
     "minor_4yr": [
-     "ENVS216",
-     "HIST318",
-     "HIST330",
-     "HIST334",
-     "HIST336",
-     "HIST343",
-     "SOCL338"
-    ],
-    "double_major_4yr": [
-     "ENVS216",
-     "HIST318",
-     "HIST330",
-     "HIST334",
-     "HIST336",
-     "HIST343",
-     "SOCL338"
-    ],
-    "single_major_3yr": [
-     "ENVS216",
-     "HIST318",
-     "HIST330",
-     "HIST334",
-     "HIST336",
-     "HIST343",
-     "SOCL338"
-    ],
-    "single_major_4yr": [
      "ENVS216",
      "HIST318",
      "HIST330",

@@ -3,6 +3,12 @@ node_modules
 /build
 /.svelte-kit
 /package
+
+# generated data-pipeline artifacts (rebuilt by misc/*.py)
+/course-tree.html
+misc/__pycache__/
+misc/.scrape_cache/
+*.pyc
 .env
 .env.*
 !.env.example

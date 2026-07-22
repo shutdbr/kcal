@@ -1,6 +1,9 @@
 <script lang="ts">
 	import type { Plan } from '$lib/plan.svelte';
 	import { TRIM_HARD_MAX, TRIM_MIN, byCode } from '$lib/data';
+	import { flip } from 'svelte/animate';
+	import { fly } from 'svelte/transition';
+	import { sendCourse, receiveCourse } from '$lib/transitions';
 
 	let { plan }: { plan: Plan } = $props();
 
@@ -34,6 +37,7 @@
 
 	function dragstart(e: DragEvent, code: string) {
 		e.dataTransfer?.setData('text/plain', code);
+		if (e.dataTransfer) e.dataTransfer.effectAllowed = 'move';
 		plan.dragging = code;
 	}
 </script>
@@ -71,9 +75,14 @@
 				data-type={plan.courseType(code)}
 				class:flagged={plan.flaggedCodes.has(code)}
 				class:is-audit={plan.isAudit(code)}
+				class:dragging={plan.dragging === code}
+				data-prog={plan.accentOf(code)}
 				style="grid-column: span {span.col}; grid-row: span {span.row};"
 				draggable="true"
 				role="listitem"
+				animate:flip={{ duration: 220 }}
+				in:receiveCourse={{ key: code }}
+				out:sendCourse={{ key: code }}
 				ondragstart={(e) => dragstart(e, code)}
 				ondragend={() => (plan.dragging = null)}
 				onclick={() => (plan.selected = course)}
@@ -88,7 +97,7 @@
 </div>
 
 {#if plan.flash}
-	<div class="flash">{plan.flash}</div>
+	<div class="flash" transition:fly={{ y: 12, duration: 220 }}>{plan.flash}</div>
 {/if}
 
 <style lang="scss">
@@ -174,12 +183,26 @@
 		padding: 1.2rem 1.4rem;
 		border-radius: 8px;
 		cursor: grab;
-		transition: box-shadow 0.2s ease;
+		transition:
+			transform 0.15s ease,
+			opacity 0.15s ease,
+			box-shadow 0.2s ease;
 		@include course-type-fill;
 		@include card-shine;
+		@include programme-accent;
 
 		&:hover {
+			transform: translateY(-2px);
 			@include card-shine-hover;
+		}
+
+		&:active {
+			cursor: grabbing;
+		}
+
+		// the source of an in-flight drag fades back while the cursor carries it
+		&.dragging {
+			opacity: 0.35;
 		}
 
 		.code {
