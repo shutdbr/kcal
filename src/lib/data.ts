@@ -44,9 +44,12 @@ type RawProgramme = {
 // arts, business studies and philosophy are only offered as minors/concentrations.
 // 'core' is the KCCS foundation curriculum — a pseudo-subject so its courses
 // can be browsed and placed; never a major/minor (see PROGRAMME_SUBJECTS).
+// 'open' is the open minor — no declared subject, any courses the other
+// programmes don't claim count toward it.
 export const SUBJECTS: Subject[] = [
 	{ id: 'arts', label: 'arts', short: 'arts', majorable: false },
 	{ id: 'core', label: 'foundation core', short: 'kccs', majorable: false },
+	{ id: 'open', label: 'open minor', short: 'open', majorable: false },
 	{ id: 'biology', label: 'biology', short: 'bios', majorable: true },
 	{ id: 'business studies', label: 'business studies', short: 'busi', majorable: false },
 	{ id: 'chemistry', label: 'chemistry', short: 'chem', majorable: true },
@@ -67,8 +70,11 @@ export const SUBJECTS: Subject[] = [
 export const MAJOR_SUBJECTS: Subject[] = SUBJECTS.filter((s) => s.majorable);
 
 // what the minor/concentration pickers offer — every real subject, but not
-// the foundation-core pseudo-subject
-export const PROGRAMME_SUBJECTS: Subject[] = SUBJECTS.filter((s) => s.id !== 'core');
+// the foundation-core pseudo-subject or the open minor (the sidebar offers
+// that separately, for the minor slot only)
+export const PROGRAMME_SUBJECTS: Subject[] = SUBJECTS.filter((s) => s.id !== 'core' && s.id !== 'open');
+export const OPEN_MINOR: Subject = SUBJECTS.find((s) => s.id === 'open')!;
+export const OPEN_MINOR_CREDITS = 24; // nominal minor-sized allowance of free courses
 
 // ── The laws' numbers — straight from the ERP Course Drop Form
 //    guidelines; university-wide, not per-subject ──
@@ -473,6 +479,8 @@ export const creditsOfCodes = (codes: string[]): number =>
 	codes.reduce((sum, code) => sum + (index.get(code)?.credits ?? 0), 0);
 
 export function creditsFor(subject: string, role: ProgrammeRole, fourYear: boolean, isDouble: boolean): number {
+	// the open minor has no subject page — it's a fixed-size basket of free courses
+	if (subject === 'open') return role === 'minor' ? OPEN_MINOR_CREDITS : 0;
 	// prefer the subject's real total from the scraped credit table
 	// (chemistry's single major is 58, not a flat 60)
 	const web = webCreditsFor(subject, role, fourYear, isDouble);

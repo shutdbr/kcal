@@ -28,11 +28,23 @@
 		return { col: 2, row: Math.ceil(credits / 2) };
 	}
 
+	let canvasEl: HTMLDivElement;
+
+	// a drop pins the course to the canvas cell under the cursor — it can sit
+	// anywhere in the 4×5 credit grid, like on paper (clamped so its credit
+	// footprint stays inside)
 	function drop(e: DragEvent) {
 		e.preventDefault();
 		plan.dragging = null;
 		const code = e.dataTransfer?.getData('text/plain');
-		if (code) plan.place(code, year, trim);
+		if (!code) return;
+		plan.place(code, year, trim);
+		if (!canvasEl) return;
+		const r = canvasEl.getBoundingClientRect();
+		const span = spans(byCode(code).credits);
+		const col = Math.min(4 - span.col, Math.max(0, Math.floor(((e.clientX - r.left) / r.width) * 4)));
+		const row = Math.min(5 - span.row, Math.max(0, Math.floor(((e.clientY - r.top) / r.height) * 5)));
+		plan.zoomPos[code] = row * 4 + col;
 	}
 
 	function dragstart(e: DragEvent, code: string) {
@@ -50,7 +62,7 @@
 	</span>
 </header>
 
-<div class="canvas" role="list" ondragover={(e) => e.preventDefault()} ondrop={drop}>
+<div class="canvas" role="list" bind:this={canvasEl} ondragover={(e) => e.preventDefault()} ondrop={drop}>
 	<div class="layer zones">
 		{#if exempt}
 			{#each FREE_CELLS as i (i)}
@@ -70,6 +82,7 @@
 		{#each plan.slotCourses(year, trim) as code (code)}
 			{@const course = byCode(code)}
 			{@const span = spans(course.credits)}
+			{@const cell = plan.zoomPos[code]}
 			<div
 				class="placed"
 				data-type={plan.courseType(code)}
@@ -77,7 +90,9 @@
 				class:is-audit={plan.isAudit(code)}
 				class:dragging={plan.dragging === code}
 				data-prog={plan.accentOf(code)}
-				style="grid-column: span {span.col}; grid-row: span {span.row};"
+				style={cell !== undefined
+					? `grid-column: ${(cell % 4) + 1} / span ${span.col}; grid-row: ${Math.floor(cell / 4) + 1} / span ${span.row};`
+					: `grid-column: span ${span.col}; grid-row: span ${span.row};`}
 				draggable="true"
 				role="listitem"
 				animate:flip={{ duration: 220 }}

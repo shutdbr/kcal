@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Plan } from '$lib/plan.svelte';
-	import { MAJOR_SUBJECTS, PROGRAMME_SUBJECTS } from '$lib/data';
+	import { MAJOR_SUBJECTS, OPEN_MINOR, PROGRAMME_SUBJECTS } from '$lib/data';
 
 	let { plan }: { plan: Plan } = $props();
 
@@ -12,7 +12,8 @@
 	// later one's subject bumps the later pick instead (ensureDistinctPicks)
 	const distinct = () => plan.ensureDistinctPicks();
 	let major2Opts = $derived(MAJOR_SUBJECTS.filter((s) => s.id !== plan.picks.major1));
-	let minorOpts = $derived(PROGRAMME_SUBJECTS.filter((s) => s.id !== plan.picks.major1));
+	// the open minor (free courses, no declared subject) leads the minor list
+	let minorOpts = $derived([OPEN_MINOR, ...PROGRAMME_SUBJECTS.filter((s) => s.id !== plan.picks.major1)]);
 	let concOpts = $derived(
 		PROGRAMME_SUBJECTS.filter((s) => s.id !== plan.picks.major1 && s.id !== plan.picks.minor)
 	);

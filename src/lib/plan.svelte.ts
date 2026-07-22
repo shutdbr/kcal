@@ -51,23 +51,6 @@ const TRIMS: TrimNum[] = [1, 2, 3];
 
 const STORAGE_KEY = 'tracey-plan';
 
-// a placements record with fresh arrays, so a kept snapshot can never be
-// mutated through the live grid (remove() rewrites placements[key] in place)
-const copyPlacements = (p: Record<SlotKey, string[]>): Record<SlotKey, string[]> =>
-	Object.fromEntries(Object.entries(p).map(([k, v]) => [k, [...v]]));
-
-// same courses in the same slots (order within a slot doesn't matter) —
-// drives the "you have unsaved changes" save button
-const samePlacements = (a: Record<SlotKey, string[]>, b: Record<SlotKey, string[]> | null): boolean => {
-	if (!b) return false;
-	const keys = new Set([...Object.keys(a), ...Object.keys(b)]);
-	for (const k of keys) {
-		const av = [...(a[k] ?? [])].sort();
-		const bv = [...(b[k] ?? [])].sort();
-		if (av.length !== bv.length || av.some((c, i) => c !== bv[i])) return false;
-	}
-	return true;
-};
 
 export class Plan {
 	// ── raw state ──
@@ -81,7 +64,9 @@ export class Plan {
 	showTitles = $state(false); // grid chips show titles instead of codes
 	idealView = $state(false); // grid is previewing the recommended path, not the student's plan
 	#idealStash: Record<SlotKey, string[]> | null = null; // the real plan, kept safe during the preview
-	savedPlacements = $state<Record<SlotKey, string[]> | null>(null); // the explicit save-button checkpoint
+	// where a course sits on the zoomed credit canvas (cell index 0-19, 4 per
+	// row) — set when the student drops it on a specific spot; absent = packed
+	zoomPos = $state<Record<string, number>>({});
 	zoom = $state<{ year: number; trim: TrimNum } | null>(null);
 	search = $state('');
 	filters = $state<string[]>([]); // checked catalogue subject filters
@@ -109,7 +94,7 @@ export class Plan {
 					// never persist the ideal-path preview — the stashed real
 					// plan is what a reload should bring back
 					placements: this.#idealStash ?? this.placements,
-					saved: this.savedPlacements,
+					zoomPos: this.zoomPos,
 					audited: this.audited,
 					fourYear: this.fourYear,
 					structure: this.structure,
@@ -149,8 +134,14 @@ export class Plan {
 		if (Array.isArray(parsed.filters)) this.filters = parsed.filters.filter(isSubject);
 		const placements = this.#cleanPlacements(parsed.placements);
 		if (placements) this.placements = placements;
-		const saved = this.#cleanPlacements((parsed as { saved?: unknown }).saved);
-		if (saved) this.savedPlacements = saved;
+		const rawPos = (parsed as { zoomPos?: unknown }).zoomPos;
+		if (rawPos && typeof rawPos === 'object' && !Array.isArray(rawPos)) {
+			const pos: Record<string, number> = {};
+			for (const [code, cell] of Object.entries(rawPos)) {
+				if (hasCode(code) && typeof cell === 'number' && cell >= 0 && cell < 20) pos[code] = cell;
+			}
+			this.zoomPos = pos;
+		}
 		if (Array.isArray(parsed.audited))
 			this.audited = parsed.audited.filter((c: unknown): c is string => typeof c === 'string' && hasCode(c));
 		this.ensureDistinctPicks();
@@ -172,38 +163,6 @@ export class Plan {
 			if (valid.length) placements[key] = valid;
 		}
 		return placements;
-	}
-
-	/** the whole plan as pretty JSON — what the export button downloads */
-	exportJSON(): string {
-		return JSON.stringify(
-			{
-				app: 'tracey',
-				exported: new Date().toISOString(),
-				fourYear: this.fourYear,
-				structure: this.structure,
-				picks: this.picks,
-				placements: this.placements,
-				saved: this.savedPlacements,
-				audited: this.audited
-			},
-			null,
-			2
-		);
-	}
-
-	/** load a previously exported plan; returns an error message, or null on success */
-	importJSON(raw: string): string | null {
-		try {
-			const parsed = JSON.parse(raw);
-			if (!parsed || typeof parsed !== 'object') return 'that file is not a tracey plan';
-			this.applySave(parsed);
-			this.selected = null;
-			this.zoom = null;
-			return null;
-		} catch {
-			return 'could not read that file — is it a tracey plan export?';
-		}
 	}
 
 	/** first-year t1/t2 belong to the foundation core: ONLY common-core
@@ -446,6 +405,7 @@ export class Plan {
 				if (this.placements[key].length === 0) delete this.placements[key];
 			}
 		}
+		delete this.zoomPos[code]; // off the plan → its canvas spot is forgotten
 	}
 
 	clearSlot(year: number, trim: TrimNum) {
@@ -461,15 +421,6 @@ export class Plan {
 		this.idealView = false;
 		this.#idealStash = null;
 		this.seedRecommended();
-	}
-
-	/** true while the grid differs from the last save — shows the save button */
-	unsaved = $derived(!this.idealView && !samePlacements(this.placements, this.savedPlacements));
-
-	/** the save button: keep the current grid as your plan (persists locally) */
-	savePlan() {
-		this.savedPlacements = copyPlacements(this.placements);
-		this.#setFlash('plan saved ✓');
 	}
 
 	/** flip between your plan and a preview of the recommended path. Your
@@ -491,7 +442,7 @@ export class Plan {
 		if (!this.idealView) return;
 		this.#idealStash = null;
 		this.idealView = false;
-		this.#setFlash('the ideal path is now your plan — hit save to keep it');
+		this.#setFlash('the ideal path is now your plan');
 	}
 
 	/** no two active roles may point at the same subject — after a pick or
@@ -944,6 +895,35 @@ export class Plan {
 		this.programmes.map((prog, i) => {
 			const total = creditsFor(prog.subject, prog.role, this.fourYear, this.isDouble);
 			const sets = this.programmeSets[i];
+			// the open minor has no course list of its own — any placed course
+			// that isn't foundation core and that no OTHER chosen programme
+			// claims counts toward it ("just do random courses")
+			if (prog.subject === 'open') {
+				const placedCredits = this.placed
+					.map((p) => byCode(p.code))
+					.filter((c) => !isCore(c.code))
+					.filter(
+						(c) =>
+							!this.programmes.some((other, j) => {
+								if (j === i) return false;
+								const os = this.programmeSets[j];
+								return (
+									c.subjects.includes(other.subject) ||
+									c.codes.some((x) => os.requiredAll.has(x) || os.pick.has(x) || os.elective.has(x))
+								);
+							})
+					)
+					.reduce((s, c) => s + c.credits, 0);
+				return {
+					role: prog.role,
+					subject: prog.subject,
+					label: 'open minor',
+					totalCredits: total,
+					creditsLeft: Math.max(0, total - placedCredits),
+					requiredDone: 0,
+					requiredNeeded: 0
+				};
+			}
 			// everything that satisfies the required structure — the fixed
 			// core closed over prereqs (incl. a cross-department prereq that
 			// fills the credit budget, like BIOS201 for env studies) plus the

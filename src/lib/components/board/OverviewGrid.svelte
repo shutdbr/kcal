@@ -178,17 +178,8 @@
 			✧ use this plan
 		</button>
 		<span class="save-note">just looking — switch back to “your plan” and nothing has changed</span>
-	{:else if plan.unsaved}
-		<button class="save" transition:fly={{ y: 8, duration: 180 }} onclick={() => plan.savePlan()}>
-			<svg class="save-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-				<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
-				<polyline points="17 21 17 13 7 13 7 21" />
-				<polyline points="7 3 7 8 15 8" />
-			</svg>
-			save plan
-		</button>
 	{:else}
-		<span class="save-note">✓ plan saved</span>
+		<span class="save-note">✓ your plan saves automatically</span>
 	{/if}
 </div>
 
@@ -542,11 +533,6 @@
 		}
 	}
 
-	.save-icon {
-		width: 1.7rem;
-		height: 1.7rem;
-		color: var(--color-accent);
-	}
 
 	.legend {
 		display: flex;

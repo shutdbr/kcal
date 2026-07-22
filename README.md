@@ -33,8 +33,9 @@ what's really on offer.
   only them (four per trimester), the rest spread across years 1–2, and
   Engaging with the Environment sits in year 3. The `kccs` catalogue filter
   shows the core on its own.
-- **Export / import.** Download your plan as a JSON file and load it back
-  later or on another machine (it also autosaves to `localStorage`).
+- **Your plan vs the ideal path.** One switch flips between your own plan
+  (autosaved locally as you edit) and a read-only preview of the recommended
+  path — with a single "use this plan" button to adopt it.
 - **Drag and drop** a course anywhere on the grid (it snaps to the nearest
   slot), or into a zoomed single-trimester view that draws each course at its
   true credit footprint. Courses fly between the catalogue and the grid.

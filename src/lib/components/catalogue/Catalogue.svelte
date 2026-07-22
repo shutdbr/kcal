@@ -6,8 +6,11 @@
 	let { plan }: { plan: Plan } = $props();
 
 	// filter chips: one per distinct selected subject, plus the foundation
-	// core — always on offer, whatever the programmes are
-	let filterSubjects = $derived([...new Set([...plan.selectedSubjects, 'core'])]);
+	// core — always on offer, whatever the programmes are. The open minor
+	// has no courses of its own, so it gets no chip.
+	let filterSubjects = $derived([
+		...new Set([...plan.selectedSubjects.filter((s) => s !== 'open'), 'core'])
+	]);
 
 	// which subject's code a cross-listed course should be shown under: the
 	// active filter if it pins one down, else the single programme subject it
