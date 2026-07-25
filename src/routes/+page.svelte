@@ -113,6 +113,8 @@
 	.board {
 		overflow-y: auto;
 		min-height: 0;
+		// the middle column is its own cool zone — a very pale blue-grey field
+		background: var(--color-bg-board-page);
 
 		@include mobile {
 			overflow-y: visible;

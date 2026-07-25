@@ -66,6 +66,32 @@
 {/if}
 
 <div class="controls">
+	<!-- whose plan is on the grid — a plain radio pair reads clearer than a
+	     segmented switch. Disabled (not hidden) in grade view, since grades
+	     apply to your own plan only. -->
+	<div class="plan-view" class:disabled={plan.gradeMode} role="radiogroup" aria-label="which plan is shown">
+		<label class="pv-opt">
+			<input
+				type="radio"
+				name="plan-view"
+				checked={!plan.referenceView}
+				disabled={plan.gradeMode}
+				onchange={() => plan.referenceView && plan.toggleReferenceView()}
+			/>
+			<span>your plan</span>
+		</label>
+		<label class="pv-opt">
+			<input
+				type="radio"
+				name="plan-view"
+				checked={plan.referenceView}
+				disabled={plan.gradeMode}
+				onchange={() => !plan.referenceView && plan.toggleReferenceView()}
+			/>
+			<span>reference plan</span>
+		</label>
+	</div>
+
 	<label class="row" title="4-year degree — uncheck for the 3-year track">
 		<span class="row-label">4-year</span>
 		<input type="checkbox" class="tick" bind:checked={plan.fourYear} />
@@ -224,6 +250,37 @@
 		border-bottom: 1px solid var(--color-border-light);
 	}
 
+	.plan-view {
+		display: flex;
+		gap: 1.6rem;
+		padding-bottom: 1rem;
+		border-bottom: 1px solid var(--color-border-divider);
+	}
+
+	.pv-opt {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 1.35rem;
+		color: var(--color-text);
+		cursor: pointer;
+
+		input {
+			accent-color: var(--color-accent);
+			cursor: pointer;
+		}
+	}
+
+	// grade view locks the choice to your own plan — clearly greyed, not-allowed
+	.plan-view.disabled {
+		opacity: 0.35;
+
+		.pv-opt,
+		.pv-opt input {
+			cursor: not-allowed;
+		}
+	}
+
 	.row {
 		display: grid;
 		grid-template-columns: 5.4rem 1fr;
@@ -237,6 +294,7 @@
 		color: var(--color-text);
 	}
 
+	// plain flat dropdowns — no gloss, no shadow
 	select {
 		width: 100%;
 		min-width: 0; // long option labels must not push past the panel edge
@@ -247,12 +305,6 @@
 		border: 1px solid var(--color-border-card);
 		border-radius: 5px;
 		cursor: pointer;
-		@include glossy;
-		// keep the lit face, drop only the outer shadow
-		box-shadow: var(--shadow-inset);
-		&:hover {
-			box-shadow: var(--shadow-inset-hover);
-		}
 	}
 
 	.tick {

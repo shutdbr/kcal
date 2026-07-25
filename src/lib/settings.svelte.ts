@@ -13,21 +13,21 @@ const STORAGE_KEY = 'tracey-settings';
 
 export type ThemeChoice = 'light' | 'dark' | 'system';
 
-/** the app is built on a 10px rem base — text size just moves that base,
- *  so every rem in the stylesheet scales with it */
+/** the app's rem base is responsive (see _reset.scss); each text size is a
+ *  multiplier on it, applied through the --text-scale custom property */
 export const TEXT_SIZES = [
-	{ id: 'small', label: 'small', pct: '56.25%' },
-	{ id: 'normal', label: 'normal', pct: '62.5%' },
-	{ id: 'large', label: 'large', pct: '68.75%' },
-	{ id: 'huge', label: 'huge', pct: '75%' }
+	{ id: 'small', label: 'small', scale: 0.9 },
+	{ id: 'normal', label: 'normal', scale: 1 },
+	{ id: 'large', label: 'large', scale: 1.1 },
+	{ id: 'huge', label: 'huge', scale: 1.2 }
 ] as const;
 
 export type TextSize = (typeof TEXT_SIZES)[number]['id'];
 
-const pctFor = (id: TextSize) => TEXT_SIZES.find((s) => s.id === id)?.pct ?? '62.5%';
+const scaleFor = (id: TextSize) => TEXT_SIZES.find((s) => s.id === id)?.scale ?? 1;
 
 class Settings {
-	theme = $state<ThemeChoice>('system');
+	theme = $state<ThemeChoice>('light');
 	textSize = $state<TextSize>('normal');
 	/** what the OS is asking for — tracked so 'system' stays live */
 	systemDark = $state(false);
@@ -77,7 +77,7 @@ class Settings {
 	#apply() {
 		if (!browser) return;
 		document.documentElement.dataset.theme = this.resolved;
-		document.documentElement.style.fontSize = pctFor(this.textSize);
+		document.documentElement.style.setProperty('--text-scale', String(scaleFor(this.textSize)));
 	}
 
 	#persist() {

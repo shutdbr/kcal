@@ -6,11 +6,13 @@
 	import { fly } from 'svelte/transition';
 	import { sendCourse, receiveCourse } from '$lib/transitions';
 	import CreditRules from './CreditRules.svelte';
+	import GradesPanel from '../grades/GradesPanel.svelte';
 
 	let { plan }: { plan: Plan } = $props();
 
 	let gridEl: HTMLDivElement;
 	let showCredits = $state(false);
+	let showGrades = $state(false);
 
 	// The eligible cell nearest the cursor. Drops are resolved against the whole
 	// grid, so releasing anywhere over it — even in the gap between cells — lands
@@ -58,18 +60,25 @@
 </script>
 
 <div class="board-bar">
-	<!-- one obvious switch: whose plan is on the grid right now -->
-	<div class="view-toggle" role="group" aria-label="which plan is shown">
-		<button class:active={!plan.referenceView} onclick={() => plan.referenceView && plan.toggleReferenceView()}>
-			your plan
-		</button>
-		<button class:active={plan.referenceView} onclick={() => !plan.referenceView && plan.toggleReferenceView()}>
-			reference plan
-		</button>
-	</div>
+	<!-- grade view: unlocks grade entry on chips, in the details panel, and the
+	     CGPA / recovery panel -->
+	<button
+		class="grade-toggle"
+		class:active={plan.gradeMode}
+		aria-pressed={plan.gradeMode}
+		title="grade view — enter grades and track your CGPA"
+		onclick={() => {
+			plan.gradeMode = !plan.gradeMode;
+			// grades apply to your own plan — drop the reference preview on the way in
+			if (plan.gradeMode && plan.referenceView) plan.toggleReferenceView();
+		}}
+	>
+		grade view
+	</button>
 
 	<!-- what the chips are labelled with: code, title, or both -->
 	<div class="label-toggle" role="group" aria-label="what course chips show">
+		<span class="lt-lead">show</span>
 		<label>
 			<input
 				type="checkbox"
@@ -77,7 +86,7 @@
 				checked={plan.showCodes}
 				onchange={() => plan.toggleLabel('code')}
 			/>
-			<span>show codes</span>
+			<span>codes</span>
 		</label>
 		<label>
 			<input
@@ -86,8 +95,19 @@
 				checked={plan.showTitles}
 				onchange={() => plan.toggleLabel('title')}
 			/>
-			<span>show titles</span>
+			<span>titles</span>
 		</label>
+		{#if plan.gradeMode}
+			<label>
+				<input
+					type="checkbox"
+					class="tick"
+					checked={plan.showGradeLabels}
+					onchange={() => (plan.showGradeLabels = !plan.showGradeLabels)}
+				/>
+				<span>grades</span>
+			</label>
+		{/if}
 	</div>
 
 	<div class="legend" aria-label="course colour legend">
@@ -97,17 +117,33 @@
 		<span class="key"><i data-type="other"></i>other dept.</span>
 	</div>
 
-	<button
-		class="placed-total"
-		title="credits placed / degree total — click for the drop-form rules"
-		onclick={() => (showCredits = true)}
-	>
-		{plan.totalPlacedCredits}<em>/</em>{plan.degreeTotal} cr
-	</button>
+	{#if plan.gradeMode}
+		<button
+			class="cgpa-btn"
+			title="enter grades, see your CGPA and what you need to recover"
+			onclick={() => (showGrades = true)}
+		>
+			{#if plan.cgpa === null}enter grades{:else}<span class="cgpa-lbl">CGPA</span> {plan.cgpa.toFixed(2)}{/if}
+		</button>
+	{/if}
+
+	{#if !plan.gradeMode}
+		<button
+			class="placed-total"
+			title="credits placed / degree total — click for the drop-form rules"
+			onclick={() => (showCredits = true)}
+		>
+			{plan.totalPlacedCredits}<em>/</em>{plan.degreeTotal} cr
+		</button>
+	{/if}
 </div>
 
 {#if showCredits}
 	<CreditRules {plan} onclose={() => (showCredits = false)} />
+{/if}
+
+{#if showGrades && plan.gradeMode}
+	<GradesPanel {plan} onclose={() => (showGrades = false)} />
 {/if}
 
 <div
@@ -126,7 +162,15 @@
 	{/each}
 
 	{#each plan.years as y (y)}
-		<div class="year-head">y{y}</div>
+		<div class="year-head">
+			{#if plan.gradeMode}
+				{@const yg = plan.yearGpa(y)}
+				<span class="yh-gpa">{yg === null ? '—' : yg.toFixed(2)}</span>
+				<span class="yh-year">y{y}</span>
+			{:else}
+				y{y}
+			{/if}
+		</div>
 		{#each plan.trims as t (t)}
 			{@const coreSlot = plan.coreOnly(y, t)}
 			{@const slotCredits = plan.slotCredits(y, t)}
@@ -168,6 +212,9 @@
 							plan.selected = byCode(code);
 						}}
 					>
+						{#if plan.gradeMode && plan.showGradeLabels && plan.gradeOf(code)}
+							<span class="chip-grade" class:fail={plan.gradeOf(code) === 'U'}>{plan.gradeOf(code)}</span>
+						{/if}
 						<span class="label">{plan.gridLabel(code)}</span>
 						<button
 							class="x"
@@ -180,8 +227,13 @@
 					</div>
 				{/each}
 				{#if slotCredits > 0}
-					<span class="cell-credits" class:over={y !== 1 && slotCredits > plan.targetLoad}>
-						{slotCredits} cr
+					<span class="cell-credits" class:over={!plan.gradeMode && y !== 1 && slotCredits > plan.targetLoad}>
+						{#if plan.gradeMode}
+							{@const tg = plan.slotTgpa(y, t)}
+							<span class="cell-tgpa">TGPA {tg === null ? '—' : tg.toFixed(2)}</span>
+						{:else}
+							{slotCredits} cr
+						{/if}
 						<button
 							class="clear"
 							title="clear this trimester"
@@ -233,6 +285,22 @@
 	.year-head {
 		font-size: 2.2rem;
 		align-self: center;
+		text-align: center;
+	}
+
+	// grade view: the year's GPA takes the label's place, with a small y-tag
+	.yh-gpa {
+		display: block;
+		font-size: 1.9rem;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		color: var(--color-text);
+	}
+
+	.yh-year {
+		display: block;
+		font-size: 1.1rem;
+		color: var(--color-text-muted);
 	}
 
 	.cell {
@@ -335,6 +403,31 @@
 		pointer-events: none;
 	}
 
+	// grade badge on a chip (grade view only) — a small fixed-size capsule so
+	// every grade (A+, B, U) is the same width and the chip never bulks up when
+	// a grade is entered. Faded and lowkey; red for a U.
+	.chip-grade {
+		flex-shrink: 0;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 1.9rem;
+		padding: 0 0.4rem;
+		font-size: 1.05rem;
+		font-weight: 700;
+		line-height: 1.4;
+		border-radius: 999px;
+		color: var(--color-text);
+		background: var(--color-bg-light);
+		border: 1px solid color-mix(in srgb, var(--color-text) 14%, transparent);
+		font-variant-numeric: tabular-nums;
+
+		&.fail {
+			color: var(--color-danger);
+			border-color: color-mix(in srgb, var(--color-danger) 40%, transparent);
+		}
+	}
+
 	.chip {
 		position: relative;
 		display: flex;
@@ -430,6 +523,9 @@
 	// the bar above the grid: the titles switch (one switch for every chip,
 	// instead of tapping them one by one), the colour legend, and the
 	// placed-credits total — sticky so it stays readable while scrolling
+	// the board's header strip — the exact aesthetic of the column headers
+	// (same gradient shape, card shadow, border), recoloured grey / greyish-blue
+	// so the middle reads as its own grayed zone
 	.board-bar {
 		position: sticky;
 		top: 0;
@@ -438,25 +534,50 @@
 		align-items: center;
 		gap: 2.4rem;
 		flex-wrap: wrap;
-		padding: 1.4rem 3.2rem;
-		background: var(--color-bg);
-		border-bottom: 1px solid var(--color-border-divider);
+		min-height: 5.6rem;
+		padding: 0.8rem 3.2rem;
+		background: linear-gradient(to bottom, var(--color-bg-board-start) 0%, var(--color-bg-board-end) 30%);
+		box-shadow: var(--shadow-card);
+		border-bottom: 1px solid color-mix(in srgb, var(--color-board-text) 55%, transparent);
+
+		// grey out every control inside — the accent/plum and text all go a cool
+		// blue-grey so the whole strip reads as one grayscaled zone (the legend's
+		// colour swatches keep their own vars, since they're a key)
+		--color-accent: #6e7889;
+		--color-control: #7f8a9b;
+		--color-control-deep: #58616f;
+		--color-text: #464e5c;
+		--color-text-muted: #767e8c;
+		--color-border-card: #bcc3cd;
+
+		// cool the gloss/shadows too, so glossy controls (the credits pill,
+		// buttons) shine blue-grey instead of the warm pink highlights
+		--gloss-face: linear-gradient(
+			to bottom,
+			rgba(255, 255, 255, 0.72) 0%,
+			rgba(255, 255, 255, 0.3) 48%,
+			rgba(96, 106, 124, 0.05) 52%,
+			rgba(96, 106, 124, 0.16) 100%
+		);
+		--shadow-inset:
+			inset 0 1px 0 rgba(255, 255, 255, 0.95),
+			inset 0 6px 9px -6px rgba(255, 255, 255, 0.75),
+			inset 0 -5px 8px -7px rgba(96, 106, 124, 0.22);
+		--shadow-card: 0 1px 2px rgba(90, 100, 120, 0.1), 0 3px 8px rgba(90, 100, 120, 0.08);
 	}
 
 	// the your-plan ⇄ reference-plan segmented switch
-	.view-toggle {
-		@include segmented;
-
-		button {
-			padding: 0.5rem 1.4rem;
-			font-size: 1.35rem;
-		}
-	}
 
 	.label-toggle {
 		display: flex;
 		align-items: center;
 		gap: 1.6rem;
+
+		.lt-lead {
+			font-size: 1.4rem;
+			font-weight: 600;
+			color: var(--color-text-muted);
+		}
 
 		label {
 			display: flex;
@@ -557,6 +678,46 @@
 			font-style: normal;
 			color: var(--color-text-muted);
 			padding: 0 0.2rem;
+		}
+	}
+
+	.grade-toggle {
+		padding: 0.5rem 1.2rem;
+		font-size: 1.3rem;
+		font-weight: 600;
+		color: var(--color-text-muted);
+		background-color: var(--color-bg-light);
+		border: 1px solid var(--color-border-card);
+		border-radius: 999px;
+		cursor: pointer;
+		@include glossy;
+
+		// lit plum when on, so "grade view" reads as an active mode
+		&.active {
+			color: var(--color-on-accent);
+			background-color: var(--color-accent);
+			border-color: var(--color-control-deep);
+			@include glossy-accent;
+		}
+	}
+
+	.cgpa-btn {
+		padding: 0.4rem 1rem;
+		font-size: 1.5rem;
+		font-weight: 700;
+		color: var(--color-text);
+		font-variant-numeric: tabular-nums;
+		background-color: var(--color-bg-light);
+		border: 1px solid var(--color-border-card);
+		border-radius: 999px;
+		cursor: pointer;
+		@include glossy;
+
+		.cgpa-lbl {
+			font-size: 1.1rem;
+			font-weight: 600;
+			letter-spacing: 0.03em;
+			color: var(--color-text-muted);
 		}
 	}
 

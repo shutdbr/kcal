@@ -131,12 +131,14 @@
 	flex-shrink: 0;
 	width: $size;
 	height: $size;
-	background: var(--color-bg-light);
+	background-color: var(--color-bg-light);
+	background-image: var(--gloss-face); // the shiny convex face
 	border: 1px solid var(--color-border-card);
 	border-radius: 3px;
+	box-shadow: var(--shadow-inset);
 	cursor: pointer;
 	transition:
-		background 0.15s ease,
+		background-color 0.15s ease,
 		border-color 0.15s ease;
 
 	&:hover {
@@ -144,7 +146,8 @@
 	}
 
 	&:checked {
-		background: var(--color-control);
+		background-color: var(--color-control);
+		background-image: var(--gloss-face-accent); // lit like the accent buttons
 		border-color: var(--color-control-deep);
 	}
 

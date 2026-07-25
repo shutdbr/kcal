@@ -36,6 +36,12 @@
 	--color-bg-sidebar-end: #f8ece8;
 	--color-bg-header-start: #fff4f2;
 	--color-bg-header-end: #f0d4cc;
+	// the board's header/background — a cool grey with a faint blue cast
+	--color-bg-board-start: #ebedf0;
+	--color-bg-board-end: #d3d6da;
+	--color-board-text: #6f757f;
+	// the board field behind the grid — a very pale grey with a faint blue cast
+	--color-bg-board-page: #edeef0;
 	--color-bg-card-start: #ffffff;
 	--color-bg-card-end: #fffaf9;
 	--color-bg-warm-start: #f8ece8;
@@ -68,9 +74,9 @@
 	// face, and a soft shade along the bottom — a gently domed surface, kept
 	// faint enough to read as a sheen rather than a gel button
 	--shadow-inset:
-		inset 0 1px 0 rgba(255, 255, 255, 0.85),
-		inset 0 5px 8px -6px rgba(255, 255, 255, 0.7),
-		inset 0 -5px 8px -7px rgba(150, 106, 120, 0.18);
+		inset 0 1px 0 rgba(255, 255, 255, 0.95),
+		inset 0 6px 9px -6px rgba(255, 255, 255, 0.75),
+		inset 0 -5px 8px -7px rgba(150, 106, 120, 0.22);
 	--shadow-inset-hover:
 		inset 0 1px 0 rgba(255, 255, 255, 0.95),
 		inset 0 7px 10px -6px rgba(255, 255, 255, 0.8),
@@ -80,17 +86,21 @@
 	// the lit face laid over a button's own colour: bright at the top, falling
 	// off past the midline, shaded at the bottom. -accent is the version that
 	// survives on top of a saturated fill.
+	// a convex glass face: lit upper half, a crease at the midline, shaded
+	// lower half — the tactile iOS-era button, kept subtle
 	--gloss-face: linear-gradient(
 		to bottom,
-		rgba(255, 255, 255, 0.62) 0%,
-		rgba(255, 255, 255, 0.06) 52%,
-		rgba(150, 106, 120, 0.11) 100%
+		rgba(255, 255, 255, 0.72) 0%,
+		rgba(255, 255, 255, 0.3) 48%,
+		rgba(150, 106, 120, 0.05) 52%,
+		rgba(150, 106, 120, 0.16) 100%
 	);
 	--gloss-face-accent: linear-gradient(
 		to bottom,
-		rgba(255, 255, 255, 0.3) 0%,
-		rgba(255, 255, 255, 0.06) 52%,
-		rgba(0, 0, 0, 0.14) 100%
+		rgba(255, 255, 255, 0.42) 0%,
+		rgba(255, 255, 255, 0.16) 48%,
+		rgba(0, 0, 0, 0.05) 52%,
+		rgba(0, 0, 0, 0.18) 100%
 	);
 	// the recessed track a segmented control's segments sit in
 	--shadow-well: inset 0 2px 4px rgba(120, 84, 96, 0.22), inset 0 -1px 0 rgba(255, 255, 255, 0.5);
@@ -101,12 +111,12 @@
 
 	// ── Course type fills ──
 	--color-course-required: #ffffff; //  required → white
-	--color-course-elective: #f8dcda; //  elective → pinkish red
+	--color-course-elective: #e4e6f5; //  elective → soft periwinkle
 	--color-course-audit: #d9f4e8; //     audit    → green
-	--color-course-elective-deep: #dfaeae;
+	--color-course-elective-deep: #b4bade;
 	--color-border-audit: #9fd4bd;
-	--color-course-core: #e4e6f5; //      foundation core (KCCS) → soft periwinkle
-	--color-course-core-deep: #b4bade;
+	--color-course-core: #f8dcda; //      foundation core (KCCS) → pinkish red
+	--color-course-core-deep: #dfaeae;
 
 	// ── Hint chip fills ──
 	// each fill carries a -deep partner used as its border, so a chip is
@@ -134,7 +144,7 @@
 	--color-prog-2: #bd925a; //  concentration — muted amber
 
 	// ── Grid ──
-	--color-grid-cell: #e4dcdc;
+	--color-grid-cell: #e1e3e8;
 	--color-grid-cell-problem: #d3b7b7;
 	--color-drop-hint: rgba(150, 106, 120, 0.22);
 
@@ -166,6 +176,10 @@
 	--color-bg-sidebar-end: #221a1e;
 	--color-bg-header-start: #34272c;
 	--color-bg-header-end: #281e23;
+	--color-bg-board-start: #2b2f37;
+	--color-bg-board-end: #23272e;
+	--color-board-text: #8b95a6;
+	--color-bg-board-page: #21242b;
 	--color-bg-card-start: #342930;
 	--color-bg-card-end: #2c2227;
 	--color-bg-warm-start: #2a2126;
@@ -212,12 +226,12 @@
 	// course fills keep their hues (white / pink / green / periwinkle) at the
 	// depth the dark board needs — the legend still reads left to right
 	--color-course-required: #3a2f36;
-	--color-course-elective: #4e333a;
-	--color-course-elective-deep: #7d4f59;
+	--color-course-elective: #343a55;
+	--color-course-elective-deep: #5c638f;
 	--color-course-audit: #26443d;
 	--color-border-audit: #4a7d6d;
-	--color-course-core: #343a55;
-	--color-course-core-deep: #5c638f;
+	--color-course-core: #4e333a;
+	--color-course-core-deep: #7d4f59;
 
 	--color-hint-warn: #4a2b2f;
 	--color-hint-warn-deep: #8c5057;
@@ -236,7 +250,7 @@
 	--color-prog-1: #79bfad;
 	--color-prog-2: #d3ac77;
 
-	--color-grid-cell: #2b2227;
+	--color-grid-cell: #262a30;
 	--color-grid-cell-problem: #45292e;
 	--color-drop-hint: rgba(230, 190, 205, 0.16);
 

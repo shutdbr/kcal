@@ -35,6 +35,15 @@ import {
 	subjectById
 } from './data';
 import {
+	GRADE_POINTS,
+	GRAD_MIN_CGPA,
+	isGradeLetter,
+	isGradeMark,
+	recovery,
+	weightedGpa,
+	type GradeMark
+} from './grades';
+import {
 	slotKey,
 	parseSlot,
 	type Course,
@@ -61,10 +70,17 @@ export class Plan {
 	picks = $state({ major1: 'mathematics', major2: 'history', minor: 'physics', conc: 'physics' });
 	placements = $state<Record<SlotKey, string[]>>({});
 	audited = $state<string[]>([]); // codes the student has marked as audits
+	grades = $state<Record<string, GradeMark>>({}); // code → grade / status (audits never carry one)
 	// what a grid chip is labelled with — either, or both. Turning one off
 	// forces the other on, so a chip is never blank
 	showCodes = $state(true);
 	showTitles = $state(false);
+	// grade view: off by default so the planner stays clean; toggled at the top
+	// of the board, it unlocks grade entry on chips, in the details panel, the
+	// CGPA / recovery panel, and the grade hints. NOTHING grade-related shows
+	// while this is off.
+	gradeMode = $state(false);
+	showGradeLabels = $state(true); // show the grade on each chip (only ever in grade view)
 	// the load the student is aiming for each trimester. The university's own
 	// numbers are fixed (12 min / 20 cap); this is the line THEY want to sit
 	// on, and it's what the grid colours a trimester against — 16 is the
@@ -104,6 +120,9 @@ export class Plan {
 					placements: this.#referenceStash ?? this.placements,
 					zoomPos: this.zoomPos,
 					audited: this.audited,
+					grades: this.grades,
+					gradeMode: this.gradeMode,
+					showGradeLabels: this.showGradeLabels,
 					targetLoad: this.targetLoad,
 					fourYear: this.fourYear,
 					structure: this.structure,
@@ -124,6 +143,9 @@ export class Plan {
 		filters?: unknown;
 		placements?: unknown;
 		audited?: unknown;
+		grades?: unknown;
+		gradeMode?: unknown;
+		showGradeLabels?: unknown;
 	}) {
 		if (typeof parsed.fourYear === 'boolean') this.fourYear = parsed.fourYear;
 		if (
@@ -153,6 +175,14 @@ export class Plan {
 		}
 		if (Array.isArray(parsed.audited))
 			this.audited = parsed.audited.filter((c: unknown): c is string => typeof c === 'string' && hasCode(c));
+		if (parsed.grades && typeof parsed.grades === 'object' && !Array.isArray(parsed.grades)) {
+			const g: Record<string, GradeMark> = {};
+			for (const [code, mark] of Object.entries(parsed.grades))
+				if (hasCode(code) && isGradeMark(mark)) g[code] = mark;
+			this.grades = g;
+		}
+		if (typeof parsed.gradeMode === 'boolean') this.gradeMode = parsed.gradeMode;
+		if (typeof parsed.showGradeLabels === 'boolean') this.showGradeLabels = parsed.showGradeLabels;
 		const target = (parsed as { targetLoad?: unknown }).targetLoad;
 		if (typeof target === 'number' && target >= TRIM_MIN && target <= TRIM_HARD_MAX) this.targetLoad = target;
 		this.ensureDistinctPicks();
@@ -242,6 +272,32 @@ export class Plan {
 
 	placedCodes = $derived(new Set(this.placed.map((p) => p.code)));
 	totalPlacedCredits = $derived(this.placed.reduce((sum, p) => sum + byCode(p.code).credits, 0));
+
+	// ── grades / CGPA ──
+	// every placed, non-audit course that carries a grade — one row per unique
+	// code, with its credits and grade points (a U scores 0 but still counts,
+	// exactly as the manual computes CGPA)
+	gradedCourses = $derived.by(() => {
+		const out: { code: string; credits: number; points: number; letter: GradeMark }[] = [];
+		for (const code of this.placedCodes) {
+			const mark = this.grades[code];
+			// only real letter grades count toward the CGPA — W / I earn no points
+			if (!mark || this.isAudit(code) || !isGradeLetter(mark)) continue;
+			out.push({ code, credits: byCode(code).credits, points: GRADE_POINTS[mark], letter: mark });
+		}
+		return out;
+	});
+	gradedCredits = $derived(this.gradedCourses.reduce((s, c) => s + c.credits, 0));
+	earnedPoints = $derived(this.gradedCourses.reduce((s, c) => s + c.points * c.credits, 0));
+	/** cumulative GPA over everything graded so far — null until a grade exists */
+	cgpa = $derived(this.gradedCredits > 0 ? this.earnedPoints / this.gradedCredits : null);
+	/** every placed non-audit credit — what the final CGPA will be taken over,
+	 *  so the recovery projection runs against the plan the student actually built */
+	gradableCredits = $derived.by(() => {
+		let c = 0;
+		for (const code of this.placedCodes) if (!this.isAudit(code)) c += byCode(code).credits;
+		return c;
+	});
 
 	// ── laws: course type ──
 	// per-programme required/elective sets for the exact variant on the plan
@@ -350,6 +406,20 @@ export class Plan {
 			: [...this.audited, code];
 	}
 
+	gradeOf(code: string): GradeMark | undefined {
+		return this.grades[code];
+	}
+
+	/** set a course's grade / status, or clear it with null */
+	setGrade(code: string, mark: GradeMark | null) {
+		if (mark) {
+			this.grades = { ...this.grades, [code]: mark };
+		} else {
+			const { [code]: _drop, ...rest } = this.grades;
+			this.grades = rest;
+		}
+	}
+
 	/** the code a placed course should read as on the grid: the one from
 	 *  the student's own programme (HIST235 for a historian) when the
 	 *  cross-listed course belongs to exactly one of their subjects */
@@ -386,6 +456,32 @@ export class Plan {
 
 	slotCredits(year: number, trim: TrimNum): number {
 		return this.slotCourses(year, trim).reduce((sum, code) => sum + byCode(code).credits, 0);
+	}
+
+	/** trimester GPA for a slot — credit-weighted over its letter-graded,
+	 *  non-audit courses; null when nothing there carries a grade */
+	slotTgpa(year: number, trim: TrimNum): number | null {
+		const items: { points: number; credits: number }[] = [];
+		for (const code of this.slotCourses(year, trim)) {
+			const g = this.grades[code];
+			if (this.isAudit(code) || !isGradeLetter(g)) continue;
+			items.push({ points: GRADE_POINTS[g], credits: byCode(code).credits });
+		}
+		return weightedGpa(items);
+	}
+
+	/** GPA across a whole year's letter-graded, non-audit courses; null when
+	 *  none of that year's courses are graded */
+	yearGpa(year: number): number | null {
+		const items: { points: number; credits: number }[] = [];
+		for (const trim of TRIMS) {
+			for (const code of this.slotCourses(year, trim)) {
+				const g = this.grades[code];
+				if (this.isAudit(code) || !isGradeLetter(g)) continue;
+				items.push({ points: GRADE_POINTS[g], credits: byCode(code).credits });
+			}
+		}
+		return weightedGpa(items);
 	}
 
 	// ── the drop laws: core-only slots, trimester offering, eligible years, prereq order ──
@@ -449,6 +545,7 @@ export class Plan {
 	/** wipe everything back to the freshly-seeded recommended plan */
 	reset() {
 		this.audited = [];
+		this.grades = {};
 		this.showCodes = true;
 		this.showTitles = false;
 		this.selected = null;
@@ -929,6 +1026,77 @@ export class Plan {
 				text: `you will exceed the required total credits (${this.totalPlacedCredits}/${this.degreeTotal})`,
 				codes: []
 			});
+		}
+
+		// ── grade-view hints (from the Examinations & Assessment Manual) ──
+		if (this.gradeMode) {
+			const mark = (code: string) => this.grades[code];
+			const graded = [...this.placedCodes].filter((c) => !this.isAudit(c));
+			const label = (codes: string[]) => codes.map((c) => this.shownCode(c)).join(', ');
+
+			// failing: a U scores 0 and blocks graduation until cleared
+			const uCodes = graded.filter((c) => mark(c) === 'U');
+			if (uCodes.length)
+				hints.push({
+					kind: 'warn',
+					text: `${label(uCodes)}: U (fail) — counts as 0 for now; repeat the course or take a supplementary exam, then update the grade here and the new one replaces the U.`,
+					codes: uCodes
+				});
+
+			// incompletes revert to the computed grade if left unfinished
+			const iCodes = graded.filter((c) => mark(c) === 'I');
+			if (iCodes.length)
+				hints.push({
+					kind: 'caution',
+					text: `${label(iCodes)}: Incomplete — submit pending work within six weeks or it defaults to the computed grade.`,
+					codes: iCodes
+				});
+
+			// a D or E can be raised via an improvement exam
+			const deCodes = graded.filter((c) => mark(c) === 'D' || mark(c) === 'E');
+			if (deCodes.length)
+				hints.push({
+					kind: 'info',
+					text: `${label(deCodes)}: a D/E can be raised with an improvement exam (up to ${this.fourYear ? 4 : 3} across the degree).`,
+					codes: deCodes
+				});
+
+			// the 5.5 CGPA graduation floor, with how far off it is
+			if (this.cgpa !== null && this.cgpa < GRAD_MIN_CGPA) {
+				const rec = recovery(GRAD_MIN_CGPA, this.earnedPoints, this.gradedCredits, this.gradableCredits);
+				const left = Math.max(0, this.gradableCredits - this.gradedCredits);
+				if (rec.kind === 'reachable')
+					hints.push({
+						kind: 'caution',
+						text: `CGPA ${this.cgpa.toFixed(2)} is below the 5.5 graduation floor — average at least ${rec.needed.toFixed(2)} over your remaining ${left} credits to recover.`,
+						codes: []
+					});
+				else
+					hints.push({
+						kind: 'warn',
+						text:
+							rec.kind === 'impossible'
+								? `CGPA ${this.cgpa.toFixed(2)} is below the 5.5 graduation floor and can't reach it on this plan — clear a U or add credits.`
+								: `CGPA ${this.cgpa.toFixed(2)} is below the 5.5 graduation floor.`,
+						codes: []
+					});
+			}
+
+			// Dean's Merit List — the grade condition (the list itself is the top 10%)
+			if (this.gradedCredits > 0) {
+				if (uCodes.length || iCodes.length)
+					hints.push({
+						kind: 'info',
+						text: `an I or U grade makes you ineligible for the Dean's Merit List this year.`,
+						codes: []
+					});
+				else
+					hints.push({
+						kind: 'good',
+						text: `no I or U grades — you meet the Dean's Merit List grade condition (the list is the cohort's top 10%).`,
+						codes: []
+					});
+			}
 		}
 
 		return hints;

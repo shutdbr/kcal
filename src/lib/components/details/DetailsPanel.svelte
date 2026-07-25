@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Plan } from '$lib/plan.svelte';
 	import { byCode, canAudit, hasCode } from '$lib/data';
+	import { GRADE_SCALE, OTHER_MARKS, type GradeMark } from '$lib/grades';
 
 	let { plan }: { plan: Plan } = $props();
 
@@ -8,6 +9,7 @@
 	function jump(code: string) {
 		if (hasCode(code)) plan.selected = byCode(code);
 	}
+
 </script>
 
 <header class="col-header">
@@ -40,7 +42,44 @@
 		</div>
 
 		{#if plan.placedCodes.has(c.code)}
-			{#if canAudit(c.code)}
+			{#if plan.gradeMode}
+				<!-- grade dropdown: letters count toward CGPA, Withdrawn / Incomplete
+				     don't. Hidden while auditing, since an audit carries no grade. -->
+				{#if !plan.isAudit(c.code)}
+					<label class="d-grade">
+						<span>grade</span>
+						<select
+							value={plan.gradeOf(c.code) ?? ''}
+							onchange={(e) =>
+								plan.setGrade(c.code, (e.currentTarget.value || null) as GradeMark | null)}
+						>
+							<option value="">— not graded —</option>
+							{#each OTHER_MARKS as m (m.mark)}
+								<option value={m.mark}>{m.label}</option>
+							{/each}
+							<optgroup label="grade">
+								{#each GRADE_SCALE as g (g.letter)}
+									<option value={g.letter}>{g.letter} · {g.points}</option>
+								{/each}
+							</optgroup>
+						</select>
+					</label>
+				{/if}
+				<!-- audit sits under the grade, taking a course off the CGPA -->
+				{#if canAudit(c.code)}
+					<label class="d-audit">
+						<input
+							type="checkbox"
+							checked={plan.isAudit(c.code)}
+							onchange={() => {
+								plan.toggleAudit(c.code);
+								if (plan.isAudit(c.code)) plan.setGrade(c.code, null);
+							}}
+						/>
+						<span>I'm taking this as an audit</span>
+					</label>
+				{/if}
+			{:else if canAudit(c.code)}
 				<label class="d-audit">
 					<input
 						type="checkbox"
@@ -118,6 +157,10 @@
 	.d-head {
 		display: flex;
 		flex-direction: column;
+		justify-content: center;
+		// reserve room for a two-line title so a one-line course doesn't shrink
+		// the box and shove everything below it up and down between selections
+		min-height: 9rem;
 		@include card;
 
 		.d-code {
@@ -148,7 +191,12 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		padding: 0.8rem 0.4rem;
+		justify-content: center;
+		gap: 0.3rem;
+		// a fixed height so credits / offered / type stay the same size box no
+		// matter how long their value is — the panel doesn't jump between courses
+		min-height: 5.6rem;
+		padding: 0.6rem 0.4rem;
 		background: var(--color-bg-light);
 		border: 1px solid var(--color-border-card);
 		border-radius: 4px;
@@ -164,6 +212,50 @@
 		.d-stat-value {
 			font-size: 1.5rem;
 			font-weight: 700;
+			white-space: nowrap; // "t1 t2 t3" / "elective" never wrap to a 2nd line
+		}
+	}
+
+	// SMS-bar: two flush segments in one tray, with a little retro depth — a
+	// beveled tray, a lit groove between, and a recessed field
+	.d-grade {
+		display: flex;
+		align-items: stretch;
+		overflow: hidden;
+		min-height: 3.6rem;
+		background: linear-gradient(to bottom, var(--color-bg-card-start) 0%, var(--color-bg-card-end) 100%);
+		border: 1px solid var(--color-border-card);
+		border-radius: 9px;
+		box-shadow: var(--shadow-inset);
+
+		// the label segment, flush to the left edge
+		span {
+			flex-shrink: 0;
+			display: flex;
+			align-items: center;
+			padding: 0 1.1rem;
+			font-size: 1.05rem;
+			font-weight: 700;
+			text-transform: uppercase;
+			letter-spacing: 0.06em;
+			color: var(--color-text-muted);
+			// beveled groove: a shade then a lit edge
+			border-right: 1px solid var(--color-border-card);
+			box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.55);
+		}
+
+		// the recessed field, filling the rest
+		select {
+			flex: 1;
+			min-width: 0;
+			padding: 0 0.9rem;
+			font-size: 1.35rem;
+			font-weight: 600;
+			color: var(--color-text);
+			background: var(--color-bg-light);
+			border: none;
+			box-shadow: var(--shadow-well);
+			cursor: pointer;
 		}
 	}
 

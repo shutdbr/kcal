@@ -15,11 +15,40 @@ body {
 	height: 100%;
 	width: 100%;
 	overflow: auto;
-	font-size: 62.5%; // 1rem = 10px (the settings dialog moves this base)
+	// Responsive rem base: scales with the viewport so the app stays the same
+	// PROPORTION of the screen on any display — a wide monitor keeps the compact
+	// look it has now (~10px near 1900px wide), while a smaller or OS-scaled
+	// Windows laptop no longer balloons (floored at 7.5px, capped at 11px). The
+	// text-size setting multiplies this via --text-scale (default 1).
+	font-size: calc(clamp(7.5px, 0.52vw, 11px) * var(--text-scale, 1));
 	color: var(--color-text);
 	// so nothing behind the app's own panels flashes the default white
 	background: var(--color-bg);
 	font-family: 'Ubuntu Sans', sans-serif;
+}
+
+// Thin, consistent scrollbars — Windows / Firefox default bars are chunky next
+// to macOS's slim overlay ones, so pin a slim styled bar everywhere.
+* {
+	scrollbar-width: thin;
+	scrollbar-color: color-mix(in srgb, var(--color-border) 50%, transparent) transparent;
+}
+::-webkit-scrollbar {
+	width: 9px;
+	height: 9px;
+}
+::-webkit-scrollbar-track {
+	background: transparent;
+}
+::-webkit-scrollbar-thumb {
+	background: color-mix(in srgb, var(--color-border) 50%, transparent);
+	border: 2px solid transparent;
+	border-radius: 999px;
+	background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+	background: var(--color-border);
+	background-clip: padding-box;
 }
 
 input,
