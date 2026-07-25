@@ -61,10 +61,18 @@ export class Plan {
 	picks = $state({ major1: 'mathematics', major2: 'history', minor: 'physics', conc: 'physics' });
 	placements = $state<Record<SlotKey, string[]>>({});
 	audited = $state<string[]>([]); // codes the student has marked as audits
-	showTitles = $state(false); // grid chips show titles instead of codes
-	idealView = $state(false); // grid is previewing the recommended path, not the student's plan
-	#idealStash: Record<SlotKey, string[]> | null = null; // the real plan, kept safe during the preview
-	// where a course sits on the zoomed credit canvas (cell index 0-19, 4 per
+	// what a grid chip is labelled with — either, or both. Turning one off
+	// forces the other on, so a chip is never blank
+	showCodes = $state(true);
+	showTitles = $state(false);
+	// the load the student is aiming for each trimester. The university's own
+	// numbers are fixed (12 min / 20 cap); this is the line THEY want to sit
+	// on, and it's what the grid colours a trimester against — 16 is the
+	// registration the drop form recommends.
+	targetLoad = $state(TRIM_NORMAL_MAX);
+	referenceView = $state(false); // grid is previewing the recommended path, not the student's plan
+	#referenceStash: Record<SlotKey, string[]> | null = null; // the real plan, kept safe during the preview
+	// where a course sits on the zoomed credit canvas (cell index 0-23, 4 per
 	// row) — set when the student drops it on a specific spot; absent = packed
 	zoomPos = $state<Record<string, number>>({});
 	zoom = $state<{ year: number; trim: TrimNum } | null>(null);
@@ -76,7 +84,7 @@ export class Plan {
 	#flashTimer: ReturnType<typeof setTimeout> | undefined;
 
 	constructor() {
-		// default plan = the ideal order for the chosen programmes;
+		// default plan = the department order for the chosen programmes;
 		// a saved plan (below) replaces it
 		this.seedRecommended();
 		if (!browser) return;
@@ -91,11 +99,12 @@ export class Plan {
 			localStorage.setItem(
 				STORAGE_KEY,
 				JSON.stringify({
-					// never persist the ideal-path preview — the stashed real
+					// never persist the reference-plan preview — the stashed real
 					// plan is what a reload should bring back
-					placements: this.#idealStash ?? this.placements,
+					placements: this.#referenceStash ?? this.placements,
 					zoomPos: this.zoomPos,
 					audited: this.audited,
+					targetLoad: this.targetLoad,
 					fourYear: this.fourYear,
 					structure: this.structure,
 					picks: this.picks,
@@ -119,7 +128,7 @@ export class Plan {
 		if (typeof parsed.fourYear === 'boolean') this.fourYear = parsed.fourYear;
 		if (
 			typeof parsed.structure === 'string' &&
-			['single-major', 'double-major', 'major-minor', 'major-minor-conc'].includes(parsed.structure)
+			['single-major', 'double-major', 'major-minor', 'major-conc', 'major-minor-conc'].includes(parsed.structure)
 		)
 			this.structure = parsed.structure as StructureKind;
 		// older saves stored subject codes ("BUSI") — only accept current ids,
@@ -138,12 +147,14 @@ export class Plan {
 		if (rawPos && typeof rawPos === 'object' && !Array.isArray(rawPos)) {
 			const pos: Record<string, number> = {};
 			for (const [code, cell] of Object.entries(rawPos)) {
-				if (hasCode(code) && typeof cell === 'number' && cell >= 0 && cell < 20) pos[code] = cell;
+				if (hasCode(code) && typeof cell === 'number' && cell >= 0 && cell < 24) pos[code] = cell;
 			}
 			this.zoomPos = pos;
 		}
 		if (Array.isArray(parsed.audited))
 			this.audited = parsed.audited.filter((c: unknown): c is string => typeof c === 'string' && hasCode(c));
+		const target = (parsed as { targetLoad?: unknown }).targetLoad;
+		if (typeof target === 'number' && target >= TRIM_MIN && target <= TRIM_HARD_MAX) this.targetLoad = target;
 		this.ensureDistinctPicks();
 	}
 
@@ -172,8 +183,12 @@ export class Plan {
 	}
 
 	// ── derived: structure ──
-	years = $derived(this.fourYear ? [1, 2, 3, 4] : [1, 2, 3]);
+	// year 4 is always on the grid — plenty of 3-year students spread their
+	// degree over four years. 4yup only picks WHICH variant's requirements
+	// apply (3yr vs 4yr lists and credit tables) and how far the seeder packs.
+	years: number[] = [1, 2, 3, 4];
 	trims = TRIMS;
+	seedYears = $derived(this.fourYear ? [1, 2, 3, 4] : [1, 2, 3]);
 
 	programmes: Programme[] = $derived.by(() => {
 		switch (this.structure) {
@@ -188,6 +203,11 @@ export class Plan {
 				return [
 					{ role: 'major', subject: this.picks.major1 },
 					{ role: 'minor', subject: this.picks.minor }
+				];
+			case 'major-conc':
+				return [
+					{ role: 'major', subject: this.picks.major1 },
+					{ role: 'concentration', subject: this.picks.conc }
 				];
 			case 'major-minor-conc':
 				return [
@@ -339,10 +359,24 @@ export class Plan {
 		return inProgramme.length === 1 ? (c.codesBySubject[inProgramme[0]] ?? c.code) : c.code;
 	}
 
-	/** grid chip label: the course title when the show-titles switch under
-	 *  the grid is on, otherwise its (programme-contextual) code */
+	/** grid chip label: whichever of the code / title switches above the grid
+	 *  are on. Both on reads "COMP236 · Digitalization and Society" */
 	gridLabel(code: string): string {
-		return this.showTitles ? byCode(code).title : this.shownCode(code);
+		const parts: string[] = [];
+		if (this.showCodes) parts.push(this.shownCode(code));
+		if (this.showTitles) parts.push(byCode(code).title);
+		return parts.join(' · ');
+	}
+
+	/** flip one of the label switches, keeping at least one of them on */
+	toggleLabel(which: 'code' | 'title') {
+		if (which === 'code') {
+			this.showCodes = !this.showCodes;
+			if (!this.showCodes) this.showTitles = true;
+		} else {
+			this.showTitles = !this.showTitles;
+			if (!this.showTitles) this.showCodes = true;
+		}
 	}
 
 	// ── slot helpers ──
@@ -415,34 +449,37 @@ export class Plan {
 	/** wipe everything back to the freshly-seeded recommended plan */
 	reset() {
 		this.audited = [];
+		this.showCodes = true;
 		this.showTitles = false;
 		this.selected = null;
 		this.zoom = null;
-		this.idealView = false;
-		this.#idealStash = null;
+		this.zoomPos = {}; // nothing is where the student put it any more
+		this.targetLoad = TRIM_NORMAL_MAX;
+		this.referenceView = false;
+		this.#referenceStash = null;
 		this.seedRecommended();
 	}
 
 	/** flip between your plan and a preview of the recommended path. Your
 	 *  plan comes back exactly as you left it — the preview never touches it. */
-	toggleIdealView() {
-		if (this.idealView) {
-			if (this.#idealStash) this.placements = this.#idealStash;
-			this.#idealStash = null;
-			this.idealView = false;
+	toggleReferenceView() {
+		if (this.referenceView) {
+			if (this.#referenceStash) this.placements = this.#referenceStash;
+			this.#referenceStash = null;
+			this.referenceView = false;
 		} else {
-			this.#idealStash = this.placements;
+			this.#referenceStash = this.placements;
 			this.seedRecommended();
-			this.idealView = true;
+			this.referenceView = true;
 		}
 	}
 
-	/** while previewing: take the ideal path as your own plan */
-	adoptIdeal() {
-		if (!this.idealView) return;
-		this.#idealStash = null;
-		this.idealView = false;
-		this.#setFlash('the ideal path is now your plan');
+	/** while previewing: take the reference plan as your own plan */
+	adoptReference() {
+		if (!this.referenceView) return;
+		this.#referenceStash = null;
+		this.referenceView = false;
+		this.#setFlash('the reference plan is now your plan');
 	}
 
 	/** no two active roles may point at the same subject — after a pick or
@@ -452,7 +489,7 @@ export class Plan {
 		const active: (keyof typeof this.picks)[] = ['major1'];
 		if (this.structure === 'double-major') active.push('major2');
 		if (this.structure === 'major-minor' || this.structure === 'major-minor-conc') active.push('minor');
-		if (this.structure === 'major-minor-conc') active.push('conc');
+		if (this.structure === 'major-minor-conc' || this.structure === 'major-conc') active.push('conc');
 		const taken = new Set<string>();
 		for (const k of active) {
 			const pool = k === 'major1' || k === 'major2' ? MAJOR_SUBJECTS : PROGRAMME_SUBJECTS;
@@ -465,7 +502,7 @@ export class Plan {
 	}
 
 	/**
-	 * Fill the grid with the ideal order for the chosen programmes:
+	 * Fill the grid with the department order for the chosen programmes:
 	 * the department's published pathway where one exists, otherwise the
 	 * required courses scheduled into the earliest slot that satisfies
 	 * offering, year eligibility, prereq order and the 20-credit load.
@@ -500,7 +537,7 @@ export class Plan {
 			const course = byCode(code);
 			let best: { y: number; t: TrimNum } | undefined;
 			let bestKey = [Infinity, Infinity];
-			for (const y of this.years) {
+			for (const y of this.seedYears) {
 				for (const t of TRIMS) {
 					// year-1 t1/t2 are reserved for the foundation core (seeded below)
 					if (this.coreOnly(y, t)) continue;
@@ -527,7 +564,7 @@ export class Plan {
 		// y1 t3 / year 2, and the year-3-only Engaging with the Environment
 		// lands in year 3. Most-constrained first (fewest offered trimesters),
 		// so the t1-only courses claim y1 t1 before the flexible ones fill it.
-		const coreSlots: { y: number; t: TrimNum }[] = this.years.flatMap((y) =>
+		const coreSlots: { y: number; t: TrimNum }[] = this.seedYears.flatMap((y) =>
 			TRIMS.map((t) => ({ y, t: t as TrimNum }))
 		);
 		const cores = [...CORE_COURSES].sort(
@@ -565,13 +602,16 @@ export class Plan {
 				// MATH427 alongside its prerequisite MATH303) — never place a
 				// course at or before a prerequisite already on the grid
 				const after = Math.max(0, ...byCode(code).prereqs.map((p) => pos.get(p) ?? 0));
-				if (this.years.includes(year) && !this.coreOnly(year, trim) && year * 10 + trim > after) {
+				if (this.seedYears.includes(year) && !this.coreOnly(year, trim) && year * 10 + trim > after) {
 					put(code, year, trim);
 				} else {
 					// pathway claims a core-only/invisible slot (e.g. MATH191 in
 					// y1 t1) or one that breaks prereq order — tuck it into
-					// the earliest slot that actually works
-					const slot = findSlot(code, after);
+					// the EARLIEST slot that actually works (spread=false), so a
+					// displaced early course (Proofs, t3-only) still lands in year 1
+					// and doesn't push its whole chain — Analysis 1 → 2 → 3 — so late
+					// that a t1-only tail (Analysis 3) has no valid slot left
+					const slot = findSlot(code, after, Infinity, false);
 					if (slot) put(code, slot.y, slot.t);
 				}
 			}
@@ -673,20 +713,33 @@ export class Plan {
 		// credits (not just the one being zoomed — the default plan should
 		// already own up to its thin trimesters). Year 1 is exempt: t1/t2
 		// are the foundation core and t3 carries no min or max at all.
+		// An empty plan is under the minimum in EVERY trimester, so these are
+		// gathered into one chip instead of nine identical ones — the panel is
+		// meant to be read, and a wall of the same sentence isn't.
+		const thin: { year: number; trim: TrimNum; credits: number }[] = [];
 		for (const year of this.years) {
 			if (year === 1) continue;
 			for (const trim of TRIMS) {
 				const c = this.slotCredits(year, trim);
-				if (c < TRIM_MIN) {
-					hints.push({
-						// a credit-count issue is a caution (yellow), not a hard
-						// error — you top a light trimester up with other courses
-						kind: 'caution',
-						text: `Y${year} T${trim} is under the ${TRIM_MIN}-credit minimum (${c}/${TRIM_MIN})`,
-						codes: []
-					});
-				}
+				// on a 3-year degree, year 4 is optional spillover — an empty
+				// trimester there is normal, not an under-loaded one
+				if (year === 4 && !this.fourYear && c === 0) continue;
+				if (c < TRIM_MIN) thin.push({ year, trim, credits: c });
 			}
+		}
+		if (thin.length) {
+			// a credit-count issue is a caution (yellow), not a hard error —
+			// you top a light trimester up with other courses
+			hints.push({
+				kind: 'caution',
+				text:
+					thin.length === 1
+						? `Y${thin[0].year} T${thin[0].trim} is under the ${TRIM_MIN}-credit minimum (${thin[0].credits}/${TRIM_MIN})`
+						: `${thin.length} trimesters are under the ${TRIM_MIN}-credit minimum — ${thin
+								.map((t) => `Y${t.year} T${t.trim} (${t.credits})`)
+								.join(', ')}`,
+				codes: []
+			});
 		}
 
 		// law 0.5 — the foundation core: all twelve KCCS courses must be on
@@ -891,29 +944,45 @@ export class Plan {
 	}
 
 	// ── programme stats for the hints panel ──
-	stats: ProgrammeStat[] = $derived.by(() =>
-		this.programmes.map((prog, i) => {
+	stats: ProgrammeStat[] = $derived.by(() => {
+		// Each placed course is claimed by ONE programme — the earliest in the
+		// list (majors come before minors/concentrations) whose requirements it
+		// satisfies — so a cross-listed course taken for one programme doesn't
+		// also fill another's tally (a CS-minor no longer auto-completes off
+		// maths courses that happen to be cross-listed into CS). The open minor,
+		// last in the list, claims only what nothing else does.
+		const counts = (c: Course, i: number): boolean => {
+			const prog = this.programmes[i];
+			if (prog.subject === 'open') return !isCore(c.code);
+			const s = this.programmeSets[i];
+			// is the course named in this programme's scraped required / choice /
+			// elective lists for the exact variant?
+			const inLists = c.codes.some((x) => s.requiredAll.has(x) || s.pick.has(x) || s.elective.has(x));
+			// a minor counts ONLY the courses its scraped structure names — not
+			// every course in the department — so cross-listed or extra
+			// department courses don't inflate its credits
+			if (prog.role === 'minor') return inLists;
+			return c.subjects.includes(prog.subject) || inLists;
+		};
+		const claimedBy = new Map<string, number>();
+		for (const p of this.placed) {
+			const c = byCode(p.code);
+			for (let i = 0; i < this.programmes.length; i++) {
+				if (counts(c, i)) {
+					claimedBy.set(p.code, i);
+					break;
+				}
+			}
+		}
+		return this.programmes.map((prog, i) => {
 			const total = creditsFor(prog.subject, prog.role, this.fourYear, this.isDouble);
 			const sets = this.programmeSets[i];
-			// the open minor has no course list of its own — any placed course
-			// that isn't foundation core and that no OTHER chosen programme
-			// claims counts toward it ("just do random courses")
+			// only the courses this programme has claimed (see above)
+			const mine = this.placed.filter((p) => claimedBy.get(p.code) === i).map((p) => byCode(p.code));
+			const placedCredits = mine.reduce((s, c) => s + c.credits, 0);
+			// the open minor has no course list of its own — its claimed courses
+			// are whatever isn't foundation core and no declared programme took
 			if (prog.subject === 'open') {
-				const placedCredits = this.placed
-					.map((p) => byCode(p.code))
-					.filter((c) => !isCore(c.code))
-					.filter(
-						(c) =>
-							!this.programmes.some((other, j) => {
-								if (j === i) return false;
-								const os = this.programmeSets[j];
-								return (
-									c.subjects.includes(other.subject) ||
-									c.codes.some((x) => os.requiredAll.has(x) || os.pick.has(x) || os.elective.has(x))
-								);
-							})
-					)
-					.reduce((s, c) => s + c.credits, 0);
 				return {
 					role: prog.role,
 					subject: prog.subject,
@@ -930,17 +999,6 @@ export class Plan {
 			// choice pools. requiredAll (not required) so those support courses
 			// still count toward the degree's required credits.
 			const structure = new Set([...sets.requiredAll, ...sets.pick]);
-			// credits that count toward this programme: its own department's
-			// courses plus anything its structure/electives pull in from
-			// other departments (MATH230 counts toward computer science)
-			const placedCredits = this.placed
-				.map((p) => byCode(p.code))
-				.filter(
-					(c) =>
-						c.subjects.includes(prog.subject) ||
-						c.codes.some((x) => structure.has(x) || sets.elective.has(x))
-				)
-				.reduce((s, c) => s + c.credits, 0);
 			// what the degree *demands* comes from the site's own credit table
 			// when stated — the course list overstates it when it's choice
 			// pools (history: pick 3 of 5 methodology courses)
@@ -949,10 +1007,7 @@ export class Plan {
 				creditsOfCodes(requiredSetFor(prog.subject, prog.role, this.fourYear, this.isDouble));
 			const requiredDone = Math.min(
 				requiredNeeded,
-				this.placed
-					.map((p) => byCode(p.code))
-					.filter((c) => c.codes.some((x) => structure.has(x)))
-					.reduce((s, c) => s + c.credits, 0)
+				mine.filter((c) => c.codes.some((x) => structure.has(x))).reduce((s, c) => s + c.credits, 0)
 			);
 			return {
 				role: prog.role,
@@ -963,8 +1018,8 @@ export class Plan {
 				requiredDone,
 				requiredNeeded
 			};
-		})
-	);
+		});
+	});
 
 	// ── choice pools per programme (history's "any three of…" groups) ──
 	// the website's 'choose N from' groups the seeded required core can't make

@@ -1,14 +1,16 @@
 <script lang="ts">
 	import type { Plan } from '$lib/plan.svelte';
 	import type { TrimNum } from '$lib/types';
-	import { byCode, isCore, TRIM_NORMAL_MAX } from '$lib/data';
+	import { byCode, isCore } from '$lib/data';
 	import { flip } from 'svelte/animate';
 	import { fly } from 'svelte/transition';
 	import { sendCourse, receiveCourse } from '$lib/transitions';
+	import CreditRules from './CreditRules.svelte';
 
 	let { plan }: { plan: Plan } = $props();
 
 	let gridEl: HTMLDivElement;
+	let showCredits = $state(false);
 
 	// The eligible cell nearest the cursor. Drops are resolved against the whole
 	// grid, so releasing anywhere over it — even in the gap between cells — lands
@@ -58,30 +60,55 @@
 <div class="board-bar">
 	<!-- one obvious switch: whose plan is on the grid right now -->
 	<div class="view-toggle" role="group" aria-label="which plan is shown">
-		<button class:active={!plan.idealView} onclick={() => plan.idealView && plan.toggleIdealView()}>
+		<button class:active={!plan.referenceView} onclick={() => plan.referenceView && plan.toggleReferenceView()}>
 			your plan
 		</button>
-		<button class:active={plan.idealView} onclick={() => !plan.idealView && plan.toggleIdealView()}>
-			✧ ideal path
+		<button class:active={plan.referenceView} onclick={() => !plan.referenceView && plan.toggleReferenceView()}>
+			reference plan
 		</button>
 	</div>
 
-	<label class="titles-toggle">
-		<input type="checkbox" class="tick" bind:checked={plan.showTitles} />
-		<span>show course titles</span>
-	</label>
+	<!-- what the chips are labelled with: code, title, or both -->
+	<div class="label-toggle" role="group" aria-label="what course chips show">
+		<label>
+			<input
+				type="checkbox"
+				class="tick"
+				checked={plan.showCodes}
+				onchange={() => plan.toggleLabel('code')}
+			/>
+			<span>show codes</span>
+		</label>
+		<label>
+			<input
+				type="checkbox"
+				class="tick"
+				checked={plan.showTitles}
+				onchange={() => plan.toggleLabel('title')}
+			/>
+			<span>show titles</span>
+		</label>
+	</div>
 
 	<div class="legend" aria-label="course colour legend">
-		<span class="key"><i data-type="core"></i>foundation</span>
+		<span class="key"><i data-type="core"></i>kccs</span>
 		<span class="key"><i data-type="required"></i>required</span>
 		<span class="key"><i data-type="elective"></i>elective</span>
 		<span class="key"><i data-type="other"></i>other dept.</span>
 	</div>
 
-	<span class="placed-total" title="credits placed / degree total">
+	<button
+		class="placed-total"
+		title="credits placed / degree total — click for the drop-form rules"
+		onclick={() => (showCredits = true)}
+	>
 		{plan.totalPlacedCredits}<em>/</em>{plan.degreeTotal} cr
-	</span>
+	</button>
 </div>
+
+{#if showCredits}
+	<CreditRules {plan} onclose={() => (showCredits = false)} />
+{/if}
 
 <div
 	class="overview"
@@ -153,7 +180,7 @@
 					</div>
 				{/each}
 				{#if slotCredits > 0}
-					<span class="cell-credits" class:over={y !== 1 && slotCredits > TRIM_NORMAL_MAX}>
+					<span class="cell-credits" class:over={y !== 1 && slotCredits > plan.targetLoad}>
 						{slotCredits} cr
 						<button
 							class="clear"
@@ -172,10 +199,10 @@
 </div>
 
 <div class="save-row">
-	{#if plan.idealView}
+	{#if plan.referenceView}
 		<!-- previewing: the only decision is whether to take this path -->
-		<button class="save" onclick={() => plan.adoptIdeal()}>
-			✧ use this plan
+		<button class="save" onclick={() => plan.adoptReference()}>
+			use this plan
 		</button>
 		<span class="save-note">just looking — switch back to “your plan” and nothing has changed</span>
 	{:else}
@@ -217,7 +244,7 @@
 		min-height: 13rem;
 		padding: 1rem 1rem 2.2rem;
 		background: var(--color-grid-cell);
-		border-radius: 3px;
+		border-radius: 8px;
 		cursor: zoom-in;
 		outline: 2px dashed transparent;
 		outline-offset: -2px;
@@ -226,6 +253,8 @@
 			opacity 0.25s ease,
 			outline-color 0.25s ease;
 		@include card-shine;
+		// drop only the outer shadow, keep the inset shine
+		box-shadow: var(--shadow-inset);
 
 		&:hover {
 			background: var(--color-drop-hint);
@@ -244,25 +273,13 @@
 			background: var(--color-grid-cell-problem);
 		}
 
-		// while dragging: mint where the course fits cleanly, with a gentle
-		// pulse so the eye is drawn to the valid slots. A course CAN be dropped
-		// anywhere unlocked (the hints flag a bad trimester) — so a slot it
-		// doesn't fit is left looking normal, not forbidden.
+		// while dragging: mint where the course fits cleanly. Still, not
+		// pulsing — the whole grid breathing at once was noise. A course CAN
+		// be dropped anywhere unlocked (the hints flag a bad trimester) — so a
+		// slot it doesn't fit is left looking normal, not forbidden.
 		&.can-drop {
 			background: var(--color-course-audit);
 			outline-color: var(--color-border-audit);
-			animation: pulse-drop 1.4s ease-in-out infinite;
-		}
-
-	}
-
-	@keyframes pulse-drop {
-		0%,
-		100% {
-			outline-color: var(--color-border-audit);
-		}
-		50% {
-			outline-color: transparent;
 		}
 	}
 
@@ -278,7 +295,7 @@
 		color: var(--color-text-muted);
 
 		&.over {
-			color: #a01414;
+			color: var(--color-danger);
 		}
 
 		.clear {
@@ -324,11 +341,12 @@
 		align-items: center;
 		gap: 0.4rem;
 		height: fit-content;
+		overflow: hidden; // clips the accent stripe to the rounded corners
 		// extra right padding reserves the top-right corner for the × button,
 		// which sits in the corner for every chip rather than beside the label
 		padding: 0.7rem 2.2rem 0.7rem 1rem;
 		font-size: 1.3rem;
-		border-radius: 3px;
+		border-radius: 5px; // a touch rounder, so the shine reads as a curved face
 		cursor: grab;
 		transition:
 			transform 0.15s ease,
@@ -425,69 +443,38 @@
 		border-bottom: 1px solid var(--color-border-divider);
 	}
 
-	// the your-plan ⇄ ideal-path segmented switch
+	// the your-plan ⇄ reference-plan segmented switch
 	.view-toggle {
-		display: flex;
-		border: 1px solid var(--color-border-card);
-		border-radius: 4px;
-		overflow: hidden;
-		@include card-shine;
+		@include segmented;
 
 		button {
-			padding: 0.6rem 1.4rem;
+			padding: 0.5rem 1.4rem;
 			font-size: 1.35rem;
-			font-weight: 600;
-			color: var(--color-text-muted);
-			background: var(--color-bg-light);
-			border: none;
-			cursor: pointer;
-			transition:
-				background 0.15s ease,
-				color 0.15s ease;
-
-			&:hover {
-				color: var(--color-text);
-			}
-
-			&.active {
-				color: #fff;
-				background: var(--color-accent);
-			}
-		}
-
-		button + button {
-			border-left: 1px solid var(--color-border-card);
 		}
 	}
 
-	.titles-toggle {
+	.label-toggle {
 		display: flex;
 		align-items: center;
-		gap: 0.8rem;
-		font-size: 1.4rem;
-		font-weight: 600;
-		color: var(--color-text);
-		cursor: pointer;
+		gap: 1.6rem;
 
-		// square checkbox, same look as the sidebar's 4yup tick
-		.tick {
-			appearance: none;
-			width: 1.8rem;
-			height: 1.8rem;
-			background: var(--color-bg-light);
-			border: 1px solid var(--color-border-card);
-			border-radius: 3px;
+		label {
+			display: flex;
+			align-items: center;
+			gap: 0.8rem;
+			font-size: 1.4rem;
+			font-weight: 600;
+			color: var(--color-text);
 			cursor: pointer;
+		}
 
-			&:checked {
-				background: #a01414;
-				border-color: #7c1010;
-			}
+		.tick {
+			@include tick(1.7rem);
 		}
 	}
 
 	// under the grid: the save button when there's something to save, a quiet
-	// "✓ plan saved" otherwise, and "use this plan" while previewing the ideal
+	// "✓ plan saved" otherwise, and "use this plan" while previewing the reference
 	.save-row {
 		display: flex;
 		flex-direction: column;
@@ -502,6 +489,8 @@
 		color: var(--color-text-muted);
 	}
 
+	// the one primary action on the board — a lit plum button, so it doesn't
+	// read as just another surface
 	.save {
 		display: flex;
 		align-items: center;
@@ -511,25 +500,20 @@
 		padding: 1rem 2.8rem;
 		font-size: 1.5rem;
 		font-weight: 600;
-		color: var(--color-text);
-		background: linear-gradient(to bottom, var(--color-bg-card-start) 0%, var(--color-bg-card-end) 100%);
-		border: 1px solid var(--color-border-card);
-		border-radius: 4px;
+		color: var(--color-on-accent);
+		background-color: var(--color-accent);
+		border: 1px solid var(--color-control-deep);
+		border-radius: 6px;
 		cursor: pointer;
-		@include card-shine;
+		@include glossy-accent;
 		transition:
-			transform 0.15s ease,
+			filter 0.15s ease,
 			box-shadow 0.15s ease,
-			background 0.15s ease;
+			transform 0.1s ease;
 
 		&:hover {
-			transform: translateY(-1px);
-			background: var(--color-bg-light);
+			filter: brightness(1.07);
 			@include card-shine-hover;
-		}
-
-		&:active {
-			transform: none;
 		}
 	}
 
@@ -556,11 +540,18 @@
 		}
 	}
 
+	// clicking it opens the drop-form rules, checked against this plan
 	.placed-total {
+		padding: 0.4rem 1rem;
 		font-size: 1.5rem;
 		font-weight: 700;
 		color: var(--color-text);
 		font-variant-numeric: tabular-nums;
+		background-color: var(--color-bg-light);
+		border: 1px solid var(--color-border-card);
+		border-radius: 999px;
+		cursor: pointer;
+		@include glossy;
 
 		em {
 			font-style: normal;

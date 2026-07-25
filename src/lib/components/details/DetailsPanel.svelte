@@ -55,24 +55,6 @@
 			{/if}
 		{/if}
 
-		{#if c.prereqs.length}
-			<div class="label">needs first</div>
-			<div class="d-chips">
-				{#each c.prereqs as p (p)}
-					<button class="d-chip" onclick={() => jump(p)}>{p}</button>
-				{/each}
-			</div>
-		{/if}
-
-		{#if c.unlocks.some(hasCode)}
-			<div class="label">unlocks</div>
-			<div class="d-chips">
-				{#each c.unlocks.filter(hasCode) as u (u)}
-					<button class="d-chip" onclick={() => jump(u)}>{u}</button>
-				{/each}
-			</div>
-		{/if}
-
 		{#if c.desc}
 			<div class="label">about</div>
 			<p class="d-desc">{c.desc}</p>
@@ -81,6 +63,24 @@
 		<!-- profs rotate every year, so this is context, not a promise -->
 		{#if c.faculty}
 			<p class="d-faculty">recently taught by {c.faculty}</p>
+		{/if}
+
+		{#if c.prereqs.length}
+			<div class="label">needs first</div>
+			<div class="d-chips">
+				{#each c.prereqs as p (p)}
+					<button class="d-chip" onclick={() => jump(p)}>{hasCode(p) ? plan.gridLabel(p) : p}</button>
+				{/each}
+			</div>
+		{/if}
+
+		{#if c.unlocks.some(hasCode)}
+			<div class="label">unlocks</div>
+			<div class="d-chips">
+				{#each c.unlocks.filter(hasCode) as u (u)}
+					<button class="d-chip" onclick={() => jump(u)}>{plan.gridLabel(u)}</button>
+				{/each}
+			</div>
 		{/if}
 	</div>
 {:else}
@@ -176,9 +176,7 @@
 		cursor: pointer;
 
 		input {
-			width: 1.4rem;
-			height: 1.4rem;
-			cursor: pointer;
+			@include tick(1.5rem);
 		}
 	}
 
@@ -203,15 +201,16 @@
 		font-size: 1.3rem;
 		font-weight: 600;
 		color: var(--color-text);
-		background: var(--color-bg-light);
+		background-color: var(--color-bg-light);
 		border: 1px solid var(--color-border-card);
-		border-radius: 3px;
+		border-radius: 5px;
+		text-align: left;
 		cursor: pointer;
-		@include card-shine;
-
+		@include glossy;
+		// keep the lit face, drop only the outer shadow
+		box-shadow: var(--shadow-inset);
 		&:hover {
-			background: var(--color-hover-medium);
-			@include card-shine-hover;
+			box-shadow: var(--shadow-inset-hover);
 		}
 	}
 

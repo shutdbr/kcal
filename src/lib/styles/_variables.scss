@@ -3,13 +3,21 @@
 // ─────────────────────────────────────────────
 // All colors & spacing in one place.
 // To change the theme, edit ONLY this file.
+//
+// Light is the default set on :root; the dark set at the bottom overrides
+// the same names under [data-theme='dark'] (written by the settings store —
+// 'system' resolves to a concrete light/dark there, so this file never has
+// to duplicate itself inside a media query).
 // ─────────────────────────────────────────────
 
 :root {
+	color-scheme: light; // native selects, scrollbars and the search field follow
+
 	// ── Text ──
 	--color-text: #623a52;
 	--color-text-muted: #927f83;
 	--color-accent: #7c4b69;
+	--color-on-accent: #fff8f8; // text/icons sitting ON an accent fill
 
 	// ── Borders ──
 	// Structural/frame borders (column separators, header + section
@@ -40,11 +48,52 @@
 	--color-active-strong: rgba(150, 106, 120, 0.15);
 	--color-subtle: rgba(150, 106, 120, 0.1);
 
+	// ── Controls ──
+	// every tick box in the app (4yup, catalogue filters, the grid's label
+	// switches) fills with the accent plum when checked — one control colour,
+	// not the three different reds this used to be
+	--color-control: var(--color-accent);
+	--color-control-deep: #5c3350;
+	// something the student should notice is wrong (over the credit cap) —
+	// a brick red pulled toward the plum family so it still belongs here
+	--color-danger: #8f3b45;
+	--color-danger-deep: #6d2b34;
+
 	// ── Shadows ──
-	--shadow-card: 0 1px 3px rgba(144, 114, 114, 0.08);
-	--shadow-card-hover: 0 2px 6px rgba(144, 114, 114, 0.12);
-	--shadow-inset: inset 0 1px 0 rgba(255, 255, 255, 0.5);
-	--shadow-inset-hover: inset 0 1px 0 rgba(255, 255, 255, 0.6);
+	// two-part drop shadow: a tight contact shadow plus a wider soft one, so
+	// surfaces sit on the page rather than being outlined on it
+	--shadow-card: 0 1px 2px rgba(144, 114, 114, 0.10), 0 3px 8px rgba(144, 114, 114, 0.08);
+	--shadow-card-hover: 0 2px 4px rgba(144, 114, 114, 0.13), 0 6px 14px rgba(144, 114, 114, 0.12);
+	// the gloss: a crisp lit top edge, that light bleeding a few px down the
+	// face, and a soft shade along the bottom — a gently domed surface, kept
+	// faint enough to read as a sheen rather than a gel button
+	--shadow-inset:
+		inset 0 1px 0 rgba(255, 255, 255, 0.85),
+		inset 0 5px 8px -6px rgba(255, 255, 255, 0.7),
+		inset 0 -5px 8px -7px rgba(150, 106, 120, 0.18);
+	--shadow-inset-hover:
+		inset 0 1px 0 rgba(255, 255, 255, 0.95),
+		inset 0 7px 10px -6px rgba(255, 255, 255, 0.8),
+		inset 0 -6px 9px -7px rgba(150, 106, 120, 0.22);
+
+	// ── Gloss ──
+	// the lit face laid over a button's own colour: bright at the top, falling
+	// off past the midline, shaded at the bottom. -accent is the version that
+	// survives on top of a saturated fill.
+	--gloss-face: linear-gradient(
+		to bottom,
+		rgba(255, 255, 255, 0.62) 0%,
+		rgba(255, 255, 255, 0.06) 52%,
+		rgba(150, 106, 120, 0.11) 100%
+	);
+	--gloss-face-accent: linear-gradient(
+		to bottom,
+		rgba(255, 255, 255, 0.3) 0%,
+		rgba(255, 255, 255, 0.06) 52%,
+		rgba(0, 0, 0, 0.14) 100%
+	);
+	// the recessed track a segmented control's segments sit in
+	--shadow-well: inset 0 2px 4px rgba(120, 84, 96, 0.22), inset 0 -1px 0 rgba(255, 255, 255, 0.5);
 
 	// ─────────────────────────────────────────
 	// Tracey-specific tokens
@@ -60,15 +109,21 @@
 	--color-course-core-deep: #b4bade;
 
 	// ── Hint chip fills ──
+	// each fill carries a -deep partner used as its border, so a chip is
+	// outlined in a darker shade of itself instead of a shared grey
 	--color-hint-warn: #f2d7d7; //   red    — a hard error
+	--color-hint-warn-deep: #c08585;
 	--color-hint-caution: #f6e7c2; // yellow — a credit-count issue (more/less than allowed)
+	--color-hint-caution-deep: #ceac62;
 	--color-hint-info: #e7dee0;
+	--color-hint-info-deep: #b6a2a8;
 	--color-hint-good: #e0efe4;
+	--color-hint-good-deep: #8fbb9d;
 
 	// ── Credit zones (trimester zoom) ──
 	--color-zone-min: #dcb9be; //  the 12-credit minimum boxes — tinted, but light
 	--color-zone-rest: #faf3f3; // everything past the minimum, uniform
-	--color-zone-border: #b08f9b;
+	--color-zone-border: #7d5866; // dark enough to read as ruled paper, not a smudge
 
 	// ── Programme accent (multi-programme plans) ──
 	// a thin left stripe telling apart which chosen programme a course belongs
@@ -85,4 +140,105 @@
 
 	// ── Backdrop ──
 	--color-backdrop: rgba(0, 0, 0, 0.3);
+}
+
+// ─────────────────────────────────────────────
+// Dark theme — the same plum, turned down to a
+// late-night version of itself rather than a
+// neutral grey shell
+// ─────────────────────────────────────────────
+:root[data-theme='dark'] {
+	color-scheme: dark;
+
+	--color-text: #f1e3e7;
+	--color-text-muted: #ac949c;
+	--color-accent: #c78fae;
+	--color-on-accent: #241a1f;
+
+	--color-border: #7b5665;
+	--color-border-light: var(--color-border);
+	--color-border-card: #4b3a41;
+	--color-border-divider: #382b31;
+
+	--color-bg: #201a1e;
+	--color-bg-light: #2e2429;
+	--color-bg-sidebar: #271e23;
+	--color-bg-sidebar-end: #221a1e;
+	--color-bg-header-start: #34272c;
+	--color-bg-header-end: #281e23;
+	--color-bg-card-start: #342930;
+	--color-bg-card-end: #2c2227;
+	--color-bg-warm-start: #2a2126;
+	--color-bg-warm-end: #241c20;
+
+	--color-hover: rgba(255, 226, 236, 0.05);
+	--color-hover-medium: rgba(255, 226, 236, 0.08);
+	--color-active: rgba(255, 226, 236, 0.12);
+	--color-active-strong: rgba(255, 226, 236, 0.16);
+	--color-subtle: rgba(255, 226, 236, 0.1);
+
+	--color-control: #a4658a;
+	--color-control-deep: #c78fae;
+	--color-danger: #d98a92;
+	--color-danger-deep: #8f3b45;
+
+	--shadow-card: 0 1px 2px rgba(0, 0, 0, 0.45), 0 3px 8px rgba(0, 0, 0, 0.3);
+	--shadow-card-hover: 0 2px 4px rgba(0, 0, 0, 0.5), 0 6px 14px rgba(0, 0, 0, 0.36);
+	// same domed surface, lit by a much weaker highlight — a bright white top
+	// edge on a dark fill reads as a scratch, not a sheen
+	--shadow-inset:
+		inset 0 1px 0 rgba(255, 255, 255, 0.11),
+		inset 0 5px 8px -6px rgba(255, 255, 255, 0.10),
+		inset 0 -5px 8px -7px rgba(0, 0, 0, 0.5);
+	--shadow-inset-hover:
+		inset 0 1px 0 rgba(255, 255, 255, 0.16),
+		inset 0 7px 10px -6px rgba(255, 255, 255, 0.13),
+		inset 0 -6px 9px -7px rgba(0, 0, 0, 0.55);
+
+	--gloss-face: linear-gradient(
+		to bottom,
+		rgba(255, 255, 255, 0.12) 0%,
+		rgba(255, 255, 255, 0.02) 52%,
+		rgba(0, 0, 0, 0.26) 100%
+	);
+	--gloss-face-accent: linear-gradient(
+		to bottom,
+		rgba(255, 255, 255, 0.26) 0%,
+		rgba(255, 255, 255, 0.04) 52%,
+		rgba(0, 0, 0, 0.2) 100%
+	);
+	--shadow-well: inset 0 2px 4px rgba(0, 0, 0, 0.45), inset 0 -1px 0 rgba(255, 255, 255, 0.06);
+
+	// course fills keep their hues (white / pink / green / periwinkle) at the
+	// depth the dark board needs — the legend still reads left to right
+	--color-course-required: #3a2f36;
+	--color-course-elective: #4e333a;
+	--color-course-elective-deep: #7d4f59;
+	--color-course-audit: #26443d;
+	--color-border-audit: #4a7d6d;
+	--color-course-core: #343a55;
+	--color-course-core-deep: #5c638f;
+
+	--color-hint-warn: #4a2b2f;
+	--color-hint-warn-deep: #8c5057;
+	--color-hint-caution: #453923;
+	--color-hint-caution-deep: #8a6f38;
+	--color-hint-info: #372c32;
+	--color-hint-info-deep: #6a565e;
+	--color-hint-good: #2a4038;
+	--color-hint-good-deep: #558068;
+
+	--color-zone-min: #3f3037;
+	--color-zone-rest: #272025;
+	--color-zone-border: #8a6675;
+
+	--color-prog-0: #b492c4;
+	--color-prog-1: #79bfad;
+	--color-prog-2: #d3ac77;
+
+	--color-grid-cell: #2b2227;
+	--color-grid-cell-problem: #45292e;
+	--color-drop-hint: rgba(230, 190, 205, 0.16);
+
+	--color-backdrop: rgba(0, 0, 0, 0.55);
 }

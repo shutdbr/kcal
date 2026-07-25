@@ -144,16 +144,10 @@
      "MATH304",
      "MATH305",
      "MATH313",
-     "MATH328",
      "MATH332",
      "MATH333",
      "MATH341",
-     "MATH344",
-     "MATH405",
-     "MATH414",
-     "MATH427",
-     "MATH434",
-     "MATH442"
+     "MATH434"
     ],
     "double_major_4yr": [
      "MATH191",
@@ -164,12 +158,7 @@
      "MATH230",
      "MATH231",
      "MATH303",
-     "MATH305",
-     "MATH313",
-     "MATH328",
-     "MATH332",
-     "MATH333",
-     "MATH341"
+     "MATH332"
     ],
     "single_major_3yr": [
      "MATH191",
@@ -180,12 +169,7 @@
      "MATH230",
      "MATH231",
      "MATH303",
-     "MATH305",
-     "MATH313",
-     "MATH328",
-     "MATH332",
-     "MATH333",
-     "MATH341"
+     "MATH332"
     ],
     "double_major_3yr": [
      "MATH191",
@@ -196,12 +180,7 @@
      "MATH230",
      "MATH231",
      "MATH303",
-     "MATH305",
-     "MATH313",
-     "MATH328",
-     "MATH332",
-     "MATH333",
-     "MATH341"
+     "MATH332"
     ],
     "minor_4yr": [
      "MATH191",
@@ -222,7 +201,37 @@
      "MATH230"
     ]
    },
-   "pick_codes": {},
+   "pick_codes": {
+    "single_major_4yr": [
+     "MATH427",
+     "MATH414",
+     "MATH442",
+     "MATH328",
+     "MATH344",
+     "MATH405"
+    ],
+    "double_major_4yr": [
+     "MATH313",
+     "MATH328",
+     "MATH305",
+     "MATH333",
+     "MATH341"
+    ],
+    "single_major_3yr": [
+     "MATH313",
+     "MATH328",
+     "MATH305",
+     "MATH333",
+     "MATH341"
+    ],
+    "double_major_3yr": [
+     "MATH313",
+     "MATH328",
+     "MATH305",
+     "MATH333",
+     "MATH341"
+    ]
+   },
    "elective_codes": {
     "single_major_4yr": [
      "COMP321",
@@ -479,13 +488,7 @@
            "id": "gangotryi-sorcar"
           }
          ]
-        }
-       ]
-      },
-      {
-       "rule": null,
-       "pick": null,
-       "courses": [
+        },
         {
          "title": "Algebra 1",
          "code": "MATH231",
@@ -664,25 +667,16 @@
            "id": "shibi-vasudevan"
           }
          ]
-        }
-       ]
-      },
-      {
-       "rule": null,
-       "pick": null,
-       "courses": [
+        },
         {
-         "title": "Measure and Integration",
-         "code": "MATH405",
-         "match": "inexact",
-         "catalog_title": "Measure theory and integration",
+         "title": "Algebra 4",
+         "code": "MATH434",
+         "match": "exact",
          "crosslisted_with": [],
          "credits": 4,
-         "type": "Required",
+         "type": "Required (4th Year)",
          "terms": [
-          "24_T3",
-          "25_T1",
-          "25_T2"
+          "24_T1"
          ],
          "eligible_years": [
           4
@@ -691,9 +685,40 @@
          "eligible_phd": false,
          "faculty": [
           {
-           "email": "shibi.vasudevan@krea.edu.in",
-           "name": "Shibi Vasudevan",
-           "id": "shibi-vasudevan"
+           "email": "raghavan.n@krea.edu.in",
+           "name": "Raghavan K N",
+           "id": "raghavan-k-n"
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "rule": "Any three of the following courses:",
+       "pick": 3,
+       "courses": [
+        {
+         "title": "Partial Differential Equations",
+         "code": "MATH427",
+         "match": "exact",
+         "crosslisted_with": [],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T2",
+          "25_T3"
+         ],
+         "eligible_years": [
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "debangana.mukherjee@krea.edu.in",
+           "name": "Debangana Mukherjee",
+           "id": "debangana-mukherjee"
           }
          ]
         },
@@ -723,27 +748,25 @@
          ]
         },
         {
-         "title": "Partial Differential Equations",
-         "code": "MATH427",
+         "title": "Topology 2",
+         "code": "MATH442",
          "match": "exact",
          "crosslisted_with": [],
          "credits": 4,
-         "type": "Required",
+         "type": "Required (4th year)",
          "terms": [
-          "24_T2",
-          "25_T3"
+          "24_T1"
          ],
          "eligible_years": [
-          3,
           4
          ],
          "eligible_msc": false,
          "eligible_phd": false,
          "faculty": [
           {
-           "email": "debangana.mukherjee@krea.edu.in",
-           "name": "Debangana Mukherjee",
-           "id": "debangana-mukherjee"
+           "email": "",
+           "name": "Arghya Mondal",
+           "id": null
           }
          ]
         },
@@ -776,52 +799,6 @@
          ]
         },
         {
-         "title": "Algebra 4",
-         "code": "MATH434",
-         "match": "exact",
-         "crosslisted_with": [],
-         "credits": 4,
-         "type": "Required (4th Year)",
-         "terms": [
-          "24_T1"
-         ],
-         "eligible_years": [
-          4
-         ],
-         "eligible_msc": false,
-         "eligible_phd": false,
-         "faculty": [
-          {
-           "email": "raghavan.n@krea.edu.in",
-           "name": "Raghavan K N",
-           "id": "raghavan-k-n"
-          }
-         ]
-        },
-        {
-         "title": "Topology 2",
-         "code": "MATH442",
-         "match": "exact",
-         "crosslisted_with": [],
-         "credits": 4,
-         "type": "Required (4th year)",
-         "terms": [
-          "24_T1"
-         ],
-         "eligible_years": [
-          4
-         ],
-         "eligible_msc": false,
-         "eligible_phd": false,
-         "faculty": [
-          {
-           "email": "",
-           "name": "Arghya Mondal",
-           "id": null
-          }
-         ]
-        },
-        {
          "title": "Geometry: Curves and Surfaces",
          "code": "MATH344",
          "match": "inexact",
@@ -844,6 +821,32 @@
            "email": "gangotryi.sorcar@krea.edu.in",
            "name": "Gangotryi Sorcar",
            "id": "gangotryi-sorcar"
+          }
+         ]
+        },
+        {
+         "title": "Measure and Integration",
+         "code": "MATH405",
+         "match": "inexact",
+         "catalog_title": "Measure theory and integration",
+         "crosslisted_with": [],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T3",
+          "25_T1",
+          "25_T2"
+         ],
+         "eligible_years": [
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "shibi.vasudevan@krea.edu.in",
+           "name": "Shibi Vasudevan",
+           "id": "shibi-vasudevan"
           }
          ]
         }
@@ -971,39 +974,6 @@
          ]
         },
         {
-         "title": "Probability",
-         "code": "MATH313",
-         "match": "exact",
-         "crosslisted_with": [],
-         "credits": 4,
-         "type": "Required",
-         "terms": [
-          "24_T2",
-          "25_T1",
-          "25_T2"
-         ],
-         "eligible_years": [
-          2,
-          3,
-          4
-         ],
-         "eligible_msc": false,
-         "eligible_phd": false,
-         "faculty": [
-          {
-           "email": "debangana.mukherjee@krea.edu.in",
-           "name": "Debangana Mukherjee",
-           "id": "debangana-mukherjee"
-          }
-         ]
-        }
-       ]
-      },
-      {
-       "rule": null,
-       "pick": null,
-       "courses": [
-        {
          "title": "Ordinary Differential Equations",
          "code": "MATH226",
          "match": "exact",
@@ -1108,37 +1078,6 @@
          ]
         },
         {
-         "title": "Complex Analysis",
-         "code": "MATH305",
-         "match": "exact",
-         "crosslisted_with": [],
-         "credits": 4,
-         "type": "Required",
-         "terms": [
-          "24_T3",
-          "25_T3"
-         ],
-         "eligible_years": [
-          3,
-          4
-         ],
-         "eligible_msc": false,
-         "eligible_phd": false,
-         "faculty": [
-          {
-           "email": "rishi.vyas@krea.edu.in",
-           "name": "Rishi Vyas",
-           "id": "rishi-vyas"
-          }
-         ]
-        }
-       ]
-      },
-      {
-       "rule": null,
-       "pick": null,
-       "courses": [
-        {
          "title": "Algebra 2",
          "code": "MATH332",
          "match": "exact",
@@ -1162,6 +1101,92 @@
            "email": "chudamani.anilkumar@krea.edu.in",
            "name": "Chudamani Anilkumar",
            "id": null
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "rule": "Any four of the following courses:",
+       "pick": 4,
+       "courses": [
+        {
+         "title": "Probability",
+         "code": "MATH313",
+         "match": "exact",
+         "crosslisted_with": [],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T2",
+          "25_T1",
+          "25_T2"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "debangana.mukherjee@krea.edu.in",
+           "name": "Debangana Mukherjee",
+           "id": "debangana-mukherjee"
+          }
+         ]
+        },
+        {
+         "title": "Numerical Methods",
+         "code": "MATH328",
+         "match": "exact",
+         "crosslisted_with": [
+          "COMP328"
+         ],
+         "credits": 4,
+         "type": "Required|Elective",
+         "terms": [
+          "24_T2",
+          "25_T1",
+          "25_T2"
+         ],
+         "eligible_years": [
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "vivek.tewary@krea.edu.in",
+           "name": "Vivek Tewary",
+           "id": "vivek-tewary"
+          }
+         ]
+        },
+        {
+         "title": "Complex Analysis",
+         "code": "MATH305",
+         "match": "exact",
+         "crosslisted_with": [],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T3",
+          "25_T3"
+         ],
+         "eligible_years": [
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "rishi.vyas@krea.edu.in",
+           "name": "Rishi Vyas",
+           "id": "rishi-vyas"
           }
          ]
         },
@@ -1213,34 +1238,6 @@
            "email": "soumya.dey@krea.edu.in",
            "name": "Soumya Dey",
            "id": "soumya-dey"
-          }
-         ]
-        },
-        {
-         "title": "Numerical Methods",
-         "code": "MATH328",
-         "match": "exact",
-         "crosslisted_with": [
-          "COMP328"
-         ],
-         "credits": 4,
-         "type": "Required|Elective",
-         "terms": [
-          "24_T2",
-          "25_T1",
-          "25_T2"
-         ],
-         "eligible_years": [
-          3,
-          4
-         ],
-         "eligible_msc": false,
-         "eligible_phd": false,
-         "faculty": [
-          {
-           "email": "vivek.tewary@krea.edu.in",
-           "name": "Vivek Tewary",
-           "id": "vivek-tewary"
           }
          ]
         }
@@ -1368,39 +1365,6 @@
          ]
         },
         {
-         "title": "Probability",
-         "code": "MATH313",
-         "match": "exact",
-         "crosslisted_with": [],
-         "credits": 4,
-         "type": "Required",
-         "terms": [
-          "24_T2",
-          "25_T1",
-          "25_T2"
-         ],
-         "eligible_years": [
-          2,
-          3,
-          4
-         ],
-         "eligible_msc": false,
-         "eligible_phd": false,
-         "faculty": [
-          {
-           "email": "debangana.mukherjee@krea.edu.in",
-           "name": "Debangana Mukherjee",
-           "id": "debangana-mukherjee"
-          }
-         ]
-        }
-       ]
-      },
-      {
-       "rule": null,
-       "pick": null,
-       "courses": [
-        {
          "title": "Ordinary Differential Equations",
          "code": "MATH226",
          "match": "exact",
@@ -1505,37 +1469,6 @@
          ]
         },
         {
-         "title": "Complex Analysis",
-         "code": "MATH305",
-         "match": "exact",
-         "crosslisted_with": [],
-         "credits": 4,
-         "type": "Required",
-         "terms": [
-          "24_T3",
-          "25_T3"
-         ],
-         "eligible_years": [
-          3,
-          4
-         ],
-         "eligible_msc": false,
-         "eligible_phd": false,
-         "faculty": [
-          {
-           "email": "rishi.vyas@krea.edu.in",
-           "name": "Rishi Vyas",
-           "id": "rishi-vyas"
-          }
-         ]
-        }
-       ]
-      },
-      {
-       "rule": null,
-       "pick": null,
-       "courses": [
-        {
          "title": "Algebra 2",
          "code": "MATH332",
          "match": "exact",
@@ -1559,6 +1492,92 @@
            "email": "chudamani.anilkumar@krea.edu.in",
            "name": "Chudamani Anilkumar",
            "id": null
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "rule": "Any four of the following courses:",
+       "pick": 4,
+       "courses": [
+        {
+         "title": "Probability",
+         "code": "MATH313",
+         "match": "exact",
+         "crosslisted_with": [],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T2",
+          "25_T1",
+          "25_T2"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "debangana.mukherjee@krea.edu.in",
+           "name": "Debangana Mukherjee",
+           "id": "debangana-mukherjee"
+          }
+         ]
+        },
+        {
+         "title": "Numerical Methods",
+         "code": "MATH328",
+         "match": "exact",
+         "crosslisted_with": [
+          "COMP328"
+         ],
+         "credits": 4,
+         "type": "Required|Elective",
+         "terms": [
+          "24_T2",
+          "25_T1",
+          "25_T2"
+         ],
+         "eligible_years": [
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "vivek.tewary@krea.edu.in",
+           "name": "Vivek Tewary",
+           "id": "vivek-tewary"
+          }
+         ]
+        },
+        {
+         "title": "Complex Analysis",
+         "code": "MATH305",
+         "match": "exact",
+         "crosslisted_with": [],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T3",
+          "25_T3"
+         ],
+         "eligible_years": [
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "rishi.vyas@krea.edu.in",
+           "name": "Rishi Vyas",
+           "id": "rishi-vyas"
           }
          ]
         },
@@ -1610,34 +1629,6 @@
            "email": "soumya.dey@krea.edu.in",
            "name": "Soumya Dey",
            "id": "soumya-dey"
-          }
-         ]
-        },
-        {
-         "title": "Numerical Methods",
-         "code": "MATH328",
-         "match": "exact",
-         "crosslisted_with": [
-          "COMP328"
-         ],
-         "credits": 4,
-         "type": "Required|Elective",
-         "terms": [
-          "24_T2",
-          "25_T1",
-          "25_T2"
-         ],
-         "eligible_years": [
-          3,
-          4
-         ],
-         "eligible_msc": false,
-         "eligible_phd": false,
-         "faculty": [
-          {
-           "email": "vivek.tewary@krea.edu.in",
-           "name": "Vivek Tewary",
-           "id": "vivek-tewary"
           }
          ]
         }
@@ -1765,39 +1756,6 @@
          ]
         },
         {
-         "title": "Probability",
-         "code": "MATH313",
-         "match": "exact",
-         "crosslisted_with": [],
-         "credits": 4,
-         "type": "Required",
-         "terms": [
-          "24_T2",
-          "25_T1",
-          "25_T2"
-         ],
-         "eligible_years": [
-          2,
-          3,
-          4
-         ],
-         "eligible_msc": false,
-         "eligible_phd": false,
-         "faculty": [
-          {
-           "email": "debangana.mukherjee@krea.edu.in",
-           "name": "Debangana Mukherjee",
-           "id": "debangana-mukherjee"
-          }
-         ]
-        }
-       ]
-      },
-      {
-       "rule": null,
-       "pick": null,
-       "courses": [
-        {
          "title": "Ordinary Differential Equations",
          "code": "MATH226",
          "match": "exact",
@@ -1902,37 +1860,6 @@
          ]
         },
         {
-         "title": "Complex Analysis",
-         "code": "MATH305",
-         "match": "exact",
-         "crosslisted_with": [],
-         "credits": 4,
-         "type": "Required",
-         "terms": [
-          "24_T3",
-          "25_T3"
-         ],
-         "eligible_years": [
-          3,
-          4
-         ],
-         "eligible_msc": false,
-         "eligible_phd": false,
-         "faculty": [
-          {
-           "email": "rishi.vyas@krea.edu.in",
-           "name": "Rishi Vyas",
-           "id": "rishi-vyas"
-          }
-         ]
-        }
-       ]
-      },
-      {
-       "rule": null,
-       "pick": null,
-       "courses": [
-        {
          "title": "Algebra 2",
          "code": "MATH332",
          "match": "exact",
@@ -1956,6 +1883,92 @@
            "email": "chudamani.anilkumar@krea.edu.in",
            "name": "Chudamani Anilkumar",
            "id": null
+          }
+         ]
+        }
+       ]
+      },
+      {
+       "rule": "Any three of the following courses:",
+       "pick": 3,
+       "courses": [
+        {
+         "title": "Probability",
+         "code": "MATH313",
+         "match": "exact",
+         "crosslisted_with": [],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T2",
+          "25_T1",
+          "25_T2"
+         ],
+         "eligible_years": [
+          2,
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "debangana.mukherjee@krea.edu.in",
+           "name": "Debangana Mukherjee",
+           "id": "debangana-mukherjee"
+          }
+         ]
+        },
+        {
+         "title": "Numerical Methods",
+         "code": "MATH328",
+         "match": "exact",
+         "crosslisted_with": [
+          "COMP328"
+         ],
+         "credits": 4,
+         "type": "Required|Elective",
+         "terms": [
+          "24_T2",
+          "25_T1",
+          "25_T2"
+         ],
+         "eligible_years": [
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "vivek.tewary@krea.edu.in",
+           "name": "Vivek Tewary",
+           "id": "vivek-tewary"
+          }
+         ]
+        },
+        {
+         "title": "Complex Analysis",
+         "code": "MATH305",
+         "match": "exact",
+         "crosslisted_with": [],
+         "credits": 4,
+         "type": "Required",
+         "terms": [
+          "24_T3",
+          "25_T3"
+         ],
+         "eligible_years": [
+          3,
+          4
+         ],
+         "eligible_msc": false,
+         "eligible_phd": false,
+         "faculty": [
+          {
+           "email": "rishi.vyas@krea.edu.in",
+           "name": "Rishi Vyas",
+           "id": "rishi-vyas"
           }
          ]
         },
@@ -2007,34 +2020,6 @@
            "email": "soumya.dey@krea.edu.in",
            "name": "Soumya Dey",
            "id": "soumya-dey"
-          }
-         ]
-        },
-        {
-         "title": "Numerical Methods",
-         "code": "MATH328",
-         "match": "exact",
-         "crosslisted_with": [
-          "COMP328"
-         ],
-         "credits": 4,
-         "type": "Required|Elective",
-         "terms": [
-          "24_T2",
-          "25_T1",
-          "25_T2"
-         ],
-         "eligible_years": [
-          3,
-          4
-         ],
-         "eligible_msc": false,
-         "eligible_phd": false,
-         "faculty": [
-          {
-           "email": "vivek.tewary@krea.edu.in",
-           "name": "Vivek Tewary",
-           "id": "vivek-tewary"
           }
          ]
         }

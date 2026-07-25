@@ -115,10 +115,12 @@ export const COURSES: Course[] = Object.values(rawCourses)
 		// the source strings are messy ("Required|Elective", "ELECTIVE (PHILOSOPHY…)").
 		// Rule: elective only when it says so and never says required — otherwise required.
 		required: /required/i.test(c.type) || !/elective/i.test(c.type),
-		// the foundation core runs sections every term (the CSVs' per-term rows
-		// are too spotty to trust) — treat KCCS as offered in all trimesters
+		// the year-1 foundation core runs sections every term (the CSVs' per-term
+		// rows are too spotty to trust) — treat those as offered in all trimesters.
+		// KCCS190 ("Engaging with the Environment") is the exception: a year-3
+		// course that genuinely only runs in t3, so honour its real term.
 		offered:
-			c.subject === 'core'
+			c.subject === 'core' && c.eligible_years?.includes(1)
 				? ([1, 2, 3] as TrimNum[])
 				: [...new Set(c.terms.map(termToTrim).filter((t): t is TrimNum => t !== undefined))].sort(),
 		eligibleYears: c.eligible_years,

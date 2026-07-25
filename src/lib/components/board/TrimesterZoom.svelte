@@ -11,12 +11,20 @@
 	let year = $derived(plan.zoom!.year);
 	let trim = $derived(plan.zoom!.trim);
 
-	// Each background cell = 1 credit; the canvas is the 20-credit hard cap
-	// (4 columns × 5 rows). The 12-credit minimum reads as three 2×2 boxes —
-	// the exact footprint of the three 4-credit courses it takes to reach it.
+	// Each background cell = 1 credit. Courses are laid out as squares (4 cr =
+	// 2×2), and five squares don't tile a 20-cell 4×5 canvas — so the canvas is
+	// 4 columns × 6 rows, enough room to actually park five (even six)
+	// 4-credit courses without them being squeezed out of the grid.
+	const COLS = 4;
+	const ROWS = 6;
+	// The 12-credit minimum reads as three 2×2 boxes — the exact footprint of
+	// the three 4-credit courses it takes to reach it. Then plain cells up to
+	// the 20-credit cap, and a final faint strip that is laying-out space past
+	// the cap rather than credits you're meant to fill.
 	const MIN_BOXES = Array.from({ length: TRIM_MIN / 4 }, (_, i) => i);
 	const REST_CELLS = Array.from({ length: TRIM_HARD_MAX - TRIM_MIN }, (_, i) => i);
-	const FREE_CELLS = Array.from({ length: TRIM_HARD_MAX }, (_, i) => i);
+	const OVER_CELLS = Array.from({ length: COLS * ROWS - TRIM_HARD_MAX }, (_, i) => i);
+	const FREE_CELLS = Array.from({ length: COLS * ROWS }, (_, i) => i);
 
 	// year 1's t3 carries no credit minimum or maximum at all
 	let exempt = $derived(year === 1);
@@ -42,9 +50,15 @@
 		if (!canvasEl) return;
 		const r = canvasEl.getBoundingClientRect();
 		const span = spans(byCode(code).credits);
-		const col = Math.min(4 - span.col, Math.max(0, Math.floor(((e.clientX - r.left) / r.width) * 4)));
-		const row = Math.min(5 - span.row, Math.max(0, Math.floor(((e.clientY - r.top) / r.height) * 5)));
-		plan.zoomPos[code] = row * 4 + col;
+		const col = Math.min(
+			COLS - span.col,
+			Math.max(0, Math.floor(((e.clientX - r.left) / r.width) * COLS))
+		);
+		const row = Math.min(
+			ROWS - span.row,
+			Math.max(0, Math.floor(((e.clientY - r.top) / r.height) * ROWS))
+		);
+		plan.zoomPos[code] = row * COLS + col;
 	}
 
 	function dragstart(e: DragEvent, code: string) {
@@ -75,6 +89,9 @@
 			{#each REST_CELLS as i (i)}
 				<div class="zone-cell"></div>
 			{/each}
+			{#each OVER_CELLS as i (i)}
+				<div class="zone-cell over"></div>
+			{/each}
 		{/if}
 	</div>
 
@@ -91,7 +108,7 @@
 				class:dragging={plan.dragging === code}
 				data-prog={plan.accentOf(code)}
 				style={cell !== undefined
-					? `grid-column: ${(cell % 4) + 1} / span ${span.col}; grid-row: ${Math.floor(cell / 4) + 1} / span ${span.row};`
+					? `grid-column: ${(cell % COLS) + 1} / span ${span.col}; grid-row: ${Math.floor(cell / COLS) + 1} / span ${span.row};`
 					: `grid-column: span ${span.col}; grid-row: span ${span.row};`}
 				draggable="true"
 				role="listitem"
@@ -139,20 +156,22 @@
 		padding: 0.6rem 1.2rem;
 		font-size: 1.3rem;
 		color: var(--color-text);
-		background: var(--color-bg-light);
+		background-color: var(--color-bg-light);
 		border: 1px solid var(--color-border-card);
-		border-radius: 3px;
+		border-radius: 5px;
 		cursor: pointer;
-		@include card-shine;
+		@include glossy;
 
 		&:hover {
-			background: var(--color-hover-medium);
+			background-color: var(--color-hover-medium);
 		}
 	}
 
 	.canvas {
 		position: relative;
-		height: 46rem;
+		// one credit-cell stays ~9.2rem tall, so six rows instead of five make
+		// the canvas taller rather than squashing the courses on it
+		height: 55.2rem;
 		max-width: 76rem;
 		margin: 0 3.2rem 3.2rem;
 		border: 1px dashed var(--color-zone-border); // outer border follows the rounded corner
@@ -160,19 +179,26 @@
 		overflow: hidden;
 	}
 
-	// 20 one-credit cells: the hard cap (grid-template-rows must stay
-	// TRIM_HARD_MAX / 4 rows)
+	// 24 one-credit cells (COLS × ROWS in the script) — the 20-credit cap plus
+	// a row of slack, so five 2×2 courses have somewhere to sit
 	.layer {
 		position: absolute;
 		inset: 0;
 		display: grid;
 		grid-template-columns: repeat(4, 1fr);
-		grid-template-rows: repeat(5, 1fr);
+		grid-template-rows: repeat(6, 1fr);
 	}
 
 	.zone-cell {
 		background: var(--color-zone-rest);
 		border: 1px dashed var(--color-zone-border);
+
+		// past the 20-credit cap: still droppable space, just not credits the
+		// trimester is meant to hold
+		&.over {
+			background: none;
+			opacity: 0.5;
+		}
 	}
 
 	// the minimum load, drawn as course-shaped 2×2 boxes
@@ -194,6 +220,7 @@
 		display: flex;
 		flex-direction: column;
 		min-width: 0;
+		overflow: hidden; // clips the accent stripe to the rounded corners
 		margin: 0.7rem;
 		padding: 1.2rem 1.4rem;
 		border-radius: 8px;

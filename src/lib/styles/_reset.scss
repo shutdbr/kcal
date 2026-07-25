@@ -15,8 +15,10 @@ body {
 	height: 100%;
 	width: 100%;
 	overflow: auto;
-	font-size: 62.5%; // 1rem = 10px
+	font-size: 62.5%; // 1rem = 10px (the settings dialog moves this base)
 	color: var(--color-text);
+	// so nothing behind the app's own panels flashes the default white
+	background: var(--color-bg);
 	font-family: 'Ubuntu Sans', sans-serif;
 }
 

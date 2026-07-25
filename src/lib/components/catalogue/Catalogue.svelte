@@ -134,6 +134,8 @@
 		display: flex;
 	}
 
+	// a text field is something you type INTO — recessed, not raised like the
+	// buttons around it
 	.search {
 		width: 100%;
 		padding: 0.8rem 3rem 0.8rem 1rem; // right padding reserves the × corner
@@ -141,8 +143,8 @@
 		color: var(--color-text);
 		background: var(--color-bg-card-start);
 		border: 1px solid var(--color-border-card);
-		border-radius: 3px;
-		@include card-shine;
+		border-radius: 5px;
+		box-shadow: var(--shadow-well);
 
 		&::placeholder {
 			color: var(--color-text-muted);
@@ -202,18 +204,7 @@
 	}
 
 	.tick {
-		appearance: none;
-		width: 1.3rem;
-		height: 1.3rem;
-		background: var(--color-grid-cell);
-		border: 1px solid var(--color-border-card);
-		border-radius: 2px;
-		cursor: pointer;
-
-		&:checked {
-			background: #c33f3f;
-			border-color: #a02f2f;
-		}
+		@include tick(1.4rem);
 	}
 
 	.cards {

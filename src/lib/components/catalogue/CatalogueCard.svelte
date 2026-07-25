@@ -100,7 +100,7 @@
 		min-width: 0;
 		overflow: hidden; // nothing (a long crosslist row) may spill outside
 		padding: 1rem 1.2rem;
-		border-radius: 4px;
+		border-radius: 6px; // a touch rounder, so the shine reads as a curved face
 		cursor: grab;
 		transition:
 			transform 0.15s ease,

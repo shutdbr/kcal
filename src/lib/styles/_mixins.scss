@@ -14,6 +14,90 @@
 	box-shadow: var(--shadow-inset-hover), var(--shadow-card-hover);
 }
 
+// A pushable, lit button face. Put it LAST in a rule — it paints a
+// background-image over whatever background-color the caller set, and a
+// later `background:` shorthand would wipe it.
+@mixin glossy {
+	background-image: var(--gloss-face);
+	@include card-shine;
+	transition:
+		background-color 0.15s ease,
+		box-shadow 0.15s ease,
+		transform 0.1s ease;
+
+	&:hover {
+		@include card-shine-hover;
+	}
+
+	// pressed: the face dims and sinks into its own shadow
+	&:active {
+		transform: translateY(1px);
+		box-shadow: var(--shadow-well);
+	}
+}
+
+// same, over a saturated fill (the accent-coloured segment / primary button)
+@mixin glossy-accent {
+	background-image: var(--gloss-face-accent);
+	@include card-shine;
+
+	&:active {
+		transform: translateY(1px);
+		box-shadow: var(--shadow-well);
+	}
+}
+
+// The recessed track segmented controls sit in
+@mixin well {
+	background: var(--color-bg);
+	border: 1px solid var(--color-border-card);
+	border-radius: 6px;
+	box-shadow: var(--shadow-well);
+}
+
+// Segmented control: one continuous rounded bar, segments flush against
+// each other with a hairline between them — no gaps, no inner corners. The
+// live segment is the lit plum face. Apply to the container.
+@mixin segmented {
+	display: flex;
+	overflow: hidden; // clips the segment fills to the bar's rounded corners
+	border: 1px solid var(--color-control-deep);
+	border-radius: 6px;
+	@include card-shine;
+
+	button {
+		flex: 1;
+		padding: 0.55rem 1.4rem;
+		font-size: 1.3rem;
+		font-weight: 600;
+		white-space: nowrap;
+		color: var(--color-text-muted);
+		background-color: var(--color-bg-light);
+		background-image: var(--gloss-face);
+		border: none;
+		border-radius: 0;
+		cursor: pointer;
+		transition:
+			background-color 0.15s ease,
+			color 0.15s ease;
+
+		// the hairline divider — the bar's own border does the outside
+		& + button {
+			border-left: 1px solid var(--color-control-deep);
+		}
+
+		&:hover {
+			color: var(--color-text);
+		}
+
+		&.active {
+			color: var(--color-on-accent);
+			background-color: var(--color-accent);
+			background-image: var(--gloss-face-accent);
+		}
+	}
+}
+
 // Standard card container
 @mixin card {
 	padding: 1.6rem;
@@ -35,6 +119,47 @@
 	background: linear-gradient(to bottom, var(--color-bg-header-start) 0%, var(--color-bg-header-end) 30%);
 	box-shadow: var(--shadow-card);
 	border-bottom: 1px solid var(--color-border);
+}
+
+// The one tick box, used by every switch in the app (4yup, catalogue
+// filters, the grid's label switches, the audit tick). Checked = the accent
+// plum with a drawn checkmark — one control colour instead of the three
+// different reds these used to be.
+@mixin tick($size: 1.6rem) {
+	appearance: none;
+	position: relative;
+	flex-shrink: 0;
+	width: $size;
+	height: $size;
+	background: var(--color-bg-light);
+	border: 1px solid var(--color-border-card);
+	border-radius: 3px;
+	cursor: pointer;
+	transition:
+		background 0.15s ease,
+		border-color 0.15s ease;
+
+	&:hover {
+		border-color: var(--color-control);
+	}
+
+	&:checked {
+		background: var(--color-control);
+		border-color: var(--color-control-deep);
+	}
+
+	// the checkmark — two edges of a rotated box, scaled off the tick size
+	&:checked::after {
+		content: '';
+		position: absolute;
+		top: 46%;
+		left: 50%;
+		width: $size * 0.26;
+		height: $size * 0.5;
+		border: solid var(--color-on-accent);
+		border-width: 0 2px 2px 0;
+		transform: translate(-50%, -50%) rotate(45deg);
+	}
 }
 
 // Uppercase muted section label
@@ -85,22 +210,28 @@
 // 'other' = anything outside your major/minor requirements (green); an
 // audit is a separate student-set flag layered on top (see .is-audit).
 @mixin course-type-fill {
+	// each type sets --fill so the programme-accent mixin can wash a faint
+	// hint of the programme colour into it (see programme-accent below)
 	&[data-type='required'] {
-		background: var(--color-course-required);
+		--fill: var(--color-course-required);
+		background: var(--fill);
 		border: 1px solid var(--color-border-card);
 	}
 	// the KCCS foundation core — its own colour so the twelve university-wide
 	// requirements never read as one of your programme's courses
 	&[data-type='core'] {
-		background: var(--color-course-core);
+		--fill: var(--color-course-core);
+		background: var(--fill);
 		border: 1px solid var(--color-course-core-deep);
 	}
 	&[data-type='elective'] {
-		background: var(--color-course-elective);
+		--fill: var(--color-course-elective);
+		background: var(--fill);
 		border: 1px solid var(--color-course-elective-deep);
 	}
 	&[data-type='other'] {
-		background: var(--color-course-audit);
+		--fill: var(--color-course-audit);
+		background: var(--fill);
 		border: 1px solid var(--color-border-audit);
 	}
 	// student-marked audit: a dashed ring on top of the type colour
@@ -116,6 +247,8 @@
 // multi-programme plan (the attribute is omitted otherwise), so a single major
 // stays unmarked. Apply on a position:relative element.
 @mixin programme-accent {
+	// no radius of its own — the host clips it (overflow: hidden), so the
+	// stripe meets the card's rounded corners without white notches
 	&[data-prog]::before {
 		content: '';
 		position: absolute;
@@ -123,8 +256,12 @@
 		top: 0;
 		bottom: 0;
 		width: 3px;
-		border-radius: 3px 0 0 3px;
 		background: var(--prog-accent, transparent);
+	}
+	// and a very faint wash of the same colour across the whole card, so a
+	// maths course reads gently green even before you spot the stripe
+	&[data-prog] {
+		background: color-mix(in srgb, var(--prog-accent, transparent) 6%, var(--fill, var(--color-bg-light)));
 	}
 	&[data-prog='0'] {
 		--prog-accent: var(--color-prog-0);

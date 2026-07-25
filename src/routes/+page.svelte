@@ -6,9 +6,12 @@
 	import OverviewGrid from '$lib/components/board/OverviewGrid.svelte';
 	import TrimesterZoom from '$lib/components/board/TrimesterZoom.svelte';
 	import DetailsPanel from '$lib/components/details/DetailsPanel.svelte';
+	import Intro from '$lib/components/Intro.svelte';
 
 	const plan = new Plan();
 </script>
+
+<Intro />
 
 <svelte:head>
 	<title>tracey — kreabot's schedule planner</title>

@@ -1,9 +1,20 @@
 <script lang="ts">
 	import type { Plan } from '$lib/plan.svelte';
+	import { byCode, hasCode } from '$lib/data';
 
 	let { plan }: { plan: Plan } = $props();
 
 	let overallLeft = $derived(Math.max(0, plan.degreeTotal - plan.totalPlacedCredits));
+
+	// worst first — a broken prerequisite matters more than "2 audits
+	// remaining", and the panel is long enough that the reds were scrolling
+	// off the bottom under a stack of yellows
+	const RANK = { warn: 0, caution: 1, info: 2, good: 3 };
+	let sorted = $derived([...plan.hints].sort((a, b) => RANK[a.kind] - RANK[b.kind]));
+	let problems = $derived(plan.hints.filter((h) => h.kind === 'warn' || h.kind === 'caution').length);
+
+	// a hint that names a real course can jump to it in the details panel
+	const targetOf = (codes: string[]) => codes.find(hasCode);
 </script>
 
 <div class="section">
@@ -42,7 +53,12 @@
 						{#if group.courses.length}
 							<ul class="choice-list">
 								{#each group.courses as course (course.title)}
-									<li class:missing={!course.code}>{course.title}</li>
+									<li
+										class:missing={!course.code}
+										class:done={course.code && plan.placedCodes.has(course.code)}
+									>
+										{course.title}
+									</li>
 								{/each}
 							</ul>
 						{:else}
@@ -56,11 +72,27 @@
 {/if}
 
 <div class="section">
-	<h3>hints</h3>
+	<h3>
+		hints
+		{#if problems}
+			<span class="count" title="{problems} thing{problems === 1 ? '' : 's'} to fix">{problems}</span>
+		{/if}
+	</h3>
 
 	<div class="chips">
-		{#each plan.hints as hint, i (hint.text + i)}
-			<div class="chip {hint.kind}">{hint.text}</div>
+		{#each sorted as hint, i (hint.text + i)}
+			{@const target = targetOf(hint.codes)}
+			{#if target}
+				<button
+					class="chip {hint.kind}"
+					title="show {target}"
+					onclick={() => (plan.selected = byCode(target))}
+				>
+					{hint.text}
+				</button>
+			{:else}
+				<div class="chip {hint.kind}">{hint.text}</div>
+			{/if}
 		{/each}
 	</div>
 </div>
@@ -73,7 +105,27 @@
 
 		h3 {
 			@include section-label;
+			display: flex;
+			align-items: center;
+			gap: 0.6rem;
 			padding: 1.2rem 1.6rem 0;
+		}
+
+		// how many of the chips below are actually something to fix
+		.count {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			min-width: 1.8rem;
+			height: 1.8rem;
+			padding: 0 0.5rem;
+			font-size: 1.1rem;
+			font-weight: 700;
+			color: var(--color-on-accent);
+			background-color: var(--color-danger);
+			border: 1px solid var(--color-danger-deep);
+			border-radius: 999px;
+			@include glossy-accent;
 		}
 	}
 
@@ -109,13 +161,34 @@
 
 	.choice-list {
 		margin: 0.4rem 0 0;
-		padding-left: 1.6rem;
+		padding-left: 0;
 		font-size: 1.2rem;
 		line-height: 1.5;
 		color: var(--color-text);
 
 		li {
-			list-style: disc;
+			position: relative;
+			padding-left: 1.6rem;
+			list-style: none;
+
+			// own bullet, so a course already on the grid can swap it for a
+			// tick — the pool then reads "3 chosen, 2 to go" at a glance
+			&::before {
+				content: '•';
+				position: absolute;
+				left: 0.3rem;
+				color: var(--color-text-muted);
+			}
+		}
+
+		li.done {
+			&::before {
+				content: '✓';
+				left: 0.1rem;
+				font-size: 1.1rem;
+				font-weight: 700;
+				color: var(--color-hint-good-deep);
+			}
 		}
 
 		// a course the university lists but no term has taught yet — dimmed,
@@ -139,27 +212,52 @@
 		padding: 1.2rem;
 	}
 
+	// each chip is outlined in a darker shade of its own fill — a yellow
+	// caution gets a dark-yellow edge, not a shared grey one
 	.chip {
+		display: block;
+		width: 100%;
 		padding: 0.8rem 1rem;
 		font-size: 1.2rem;
 		line-height: 1.4;
-		border-radius: 3px;
+		text-align: left;
+		color: var(--color-text);
+		border: 1px solid var(--tone-deep);
+		border-radius: 4px;
+		background: var(--tone);
 		@include card-shine;
 
+		// the ones naming a course are buttons that jump to it
+		&:is(button) {
+			cursor: pointer;
+			transition:
+				transform 0.15s ease,
+				box-shadow 0.15s ease;
+
+			&:hover {
+				transform: translateY(-1px);
+				@include card-shine-hover;
+			}
+		}
+
 		&.warn {
-			background: var(--color-hint-warn);
+			--tone: var(--color-hint-warn);
+			--tone-deep: var(--color-hint-warn-deep);
 		}
 
 		&.caution {
-			background: var(--color-hint-caution);
+			--tone: var(--color-hint-caution);
+			--tone-deep: var(--color-hint-caution-deep);
 		}
 
 		&.info {
-			background: var(--color-hint-info);
+			--tone: var(--color-hint-info);
+			--tone-deep: var(--color-hint-info-deep);
 		}
 
 		&.good {
-			background: var(--color-hint-good);
+			--tone: var(--color-hint-good);
+			--tone-deep: var(--color-hint-good-deep);
 		}
 	}
 </style>
