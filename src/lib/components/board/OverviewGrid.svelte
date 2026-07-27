@@ -4,7 +4,7 @@
 	import { byCode, isCore } from '$lib/data';
 	import { flip } from 'svelte/animate';
 	import { fly } from 'svelte/transition';
-	import { sendCourse, receiveCourse } from '$lib/transitions';
+	import { courseIn, courseOut, courseShift } from '$lib/transitions';
 	import CreditRules from './CreditRules.svelte';
 	import GradesPanel from '../grades/GradesPanel.svelte';
 
@@ -202,9 +202,9 @@
 						data-prog={plan.accentOf(code)}
 						draggable="true"
 						role="listitem"
-						animate:flip={{ duration: 220 }}
-						in:receiveCourse={{ key: code }}
-						out:sendCourse={{ key: code }}
+						animate:flip={courseShift}
+						in:courseIn={{ key: code }}
+						out:courseOut={{ key: code }}
 						ondragstart={(e) => chipDragstart(e, code)}
 						ondragend={() => (plan.dragging = null)}
 						onclick={(e) => {

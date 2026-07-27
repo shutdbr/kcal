@@ -25,7 +25,7 @@
 	// roles' lists (cs major → no cs minor); changing an earlier role onto a
 	// later one's subject bumps the later pick instead (ensureDistinctPicks)
 	const distinct = () => {
-		plan.ensureDistinctPicks();
+		plan.programmeChanged();
 		dismissHint();
 	};
 	let major2Opts = $derived(MAJOR_SUBJECTS.filter((s) => s.id !== plan.picks.major1));
@@ -94,7 +94,7 @@
 
 	<label class="row" title="4-year degree — uncheck for the 3-year track">
 		<span class="row-label">4-year</span>
-		<input type="checkbox" class="tick" bind:checked={plan.fourYear} />
+		<input type="checkbox" class="tick" bind:checked={plan.fourYear} onchange={distinct} />
 	</label>
 
 	<label class="row">

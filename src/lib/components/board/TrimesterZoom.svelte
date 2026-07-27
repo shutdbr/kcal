@@ -3,7 +3,7 @@
 	import { TRIM_HARD_MAX, TRIM_MIN, byCode } from '$lib/data';
 	import { flip } from 'svelte/animate';
 	import { fly } from 'svelte/transition';
-	import { sendCourse, receiveCourse } from '$lib/transitions';
+	import { courseIn, courseOut, courseShift } from '$lib/transitions';
 
 	let { plan }: { plan: Plan } = $props();
 
@@ -112,9 +112,9 @@
 					: `grid-column: span ${span.col}; grid-row: span ${span.row};`}
 				draggable="true"
 				role="listitem"
-				animate:flip={{ duration: 220 }}
-				in:receiveCourse={{ key: code }}
-				out:sendCourse={{ key: code }}
+				animate:flip={courseShift}
+				in:courseIn={{ key: code }}
+				out:courseOut={{ key: code }}
 				ondragstart={(e) => dragstart(e, code)}
 				ondragend={() => (plan.dragging = null)}
 				onclick={() => (plan.selected = course)}

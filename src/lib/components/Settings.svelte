@@ -95,12 +95,11 @@
 
 	<section>
 		<h3>feedback</h3>
-		<p class="note">something wrong or missing? let me know.</p>
 
 		<textarea
 			bind:value={message}
 			rows="4"
-			placeholder="what happened, or what you'd want instead…"
+			placeholder="something wrong or missing? let me know."
 		></textarea>
 
 		<div class="actions">

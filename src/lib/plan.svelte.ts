@@ -5,6 +5,9 @@
 
 import { untrack } from 'svelte';
 import { browser } from '$app/environment';
+// the board's motion is a plan concern: only the plan knows when a change is
+// one course moving (worth watching fly) and when it is a whole-board redraw
+import { quietRedraw } from './transitions';
 import {
 	AUDIT_LIMIT,
 	CORE_COURSES,
@@ -582,6 +585,7 @@ export class Plan {
 	 *  plan comes back exactly as you left it — the preview never touches it. */
 	toggleReferenceView() {
 		if (this.referenceView) {
+			quietRedraw(); // your whole plan comes back in one go — same, fade
 			if (this.#referenceStash) this.placements = this.#referenceStash;
 			this.#referenceStash = null;
 			this.referenceView = false;
@@ -598,6 +602,15 @@ export class Plan {
 		this.#referenceStash = null;
 		this.referenceView = false;
 		this.#setFlash('the reference plan is now your plan');
+	}
+
+	/** a sidebar programme control changed. Every surface answers at once —
+	 *  the catalogue re-sorts and re-filters, every chip recolours, and in
+	 *  reference view the whole board reseeds — so the motion is damped for
+	 *  this render (see quietRedraw) instead of a few hundred cards flying. */
+	programmeChanged() {
+		quietRedraw();
+		this.ensureDistinctPicks();
 	}
 
 	/** no two active roles may point at the same subject — after a pick or
@@ -627,6 +640,7 @@ export class Plan {
 	 * Replaces whatever is on the grid — called when the programme changes.
 	 */
 	seedRecommended() {
+		quietRedraw(); // every chip is about to change at once — fade, don't fly
 		const placements: Record<SlotKey, string[]> = {};
 		const pos = new Map<string, number>(); // code -> year*10+trim
 		const load = (y: number, t: TrimNum) =>

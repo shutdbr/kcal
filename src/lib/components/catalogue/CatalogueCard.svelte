@@ -2,7 +2,7 @@
 	import type { Plan } from '$lib/plan.svelte';
 	import type { Course, CourseType } from '$lib/types';
 	import { codeFor } from '$lib/data';
-	import { sendCourse, receiveCourse } from '$lib/transitions';
+	import { courseIn, courseOut } from '$lib/transitions';
 
 	let {
 		plan,
@@ -69,8 +69,8 @@
 		data-prog={plan.accentOf(course.code)}
 		draggable="true"
 		role="listitem"
-		in:receiveCourse={{ key: course.code }}
-		out:sendCourse={{ key: course.code }}
+		in:courseIn={{ key: course.code }}
+		out:courseOut={{ key: course.code }}
 		ondragstart={dragstart}
 		ondragend={() => (plan.dragging = null)}
 		onclick={() => (plan.selected = course)}
