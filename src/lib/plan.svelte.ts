@@ -3,6 +3,7 @@
 // Instantiated once in +page.svelte, passed down as a prop.
 // ─────────────────────────────────────────────
 
+import { untrack } from 'svelte';
 import { browser } from '$app/environment';
 import {
 	AUDIT_LIMIT,
@@ -110,6 +111,26 @@ export class Plan {
 		} catch {
 			// bad save → keep the seed
 		}
+
+		// the reference plan is a pure function of the programme, so a change to
+		// the structure / majors / minor / conc / 3-vs-4-year while it is on
+		// screen must redraw it (your own plan, stashed, is never touched — it
+		// deliberately keeps its placements across a programme change)
+		$effect(() => {
+			// read every input unconditionally so the effect re-runs on any of
+			// them, whichever control the change came from
+			const deps = [
+				this.structure,
+				this.fourYear,
+				this.picks.major1,
+				this.picks.major2,
+				this.picks.minor,
+				this.picks.conc
+			];
+			void deps;
+			if (!this.referenceView) return;
+			untrack(() => this.seedRecommended());
+		});
 
 		$effect(() => {
 			localStorage.setItem(
