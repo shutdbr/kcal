@@ -26,7 +26,6 @@ type RawCourse = {
 	eligible_years: number[];
 	prereqs: string[];
 	unlocks: string[];
-	description: string;
 };
 
 type RawProgramme = {
@@ -125,8 +124,10 @@ export const COURSES: Course[] = Object.values(rawCourses)
 				: [...new Set(c.terms.map(termToTrim).filter((t): t is TrimNum => t !== undefined))].sort(),
 		eligibleYears: c.eligible_years,
 		prereqs: c.prereqs,
-		unlocks: c.unlocks,
-		desc: c.description
+		unlocks: c.unlocks
+		// the catalogue description is deliberately NOT here — it is 60% of the
+		// course data for one paragraph in one panel, so it loads separately
+		// (see descriptions.svelte.ts).
 		// note: cross-listed aliases (e.g. "COMP341|DATA341") are the SAME course
 		// under two department codes, not two interchangeable courses — they're
 		// not separate placeable catalog entries, so `crosslist` stays unset here

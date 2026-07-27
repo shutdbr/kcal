@@ -12,12 +12,14 @@
 	];
 
 	// ── feedback ──
-	// no server behind tracey, so "send" opens a prefilled issue on the repo;
-	// copy is there for anyone without a GitHub account
-	const REPO = 'https://github.com/tdvnm/tracey';
-
+	// posts to the netlify form declared in app.html — no server of our own,
+	// submissions land in the netlify dashboard. Whatever plan the student is
+	// on rides along, since "the grid is wrong" needs the grid to make sense.
 	let message = $state('');
 	let copied = $state(false);
+	let sending = $state(false);
+	let sent = $state(false);
+	let failed = $state(false);
 
 	let body = $derived(
 		[
@@ -31,10 +33,33 @@
 			.join('\n')
 	);
 
-	function send() {
-		if (!message.trim()) return;
-		const url = `${REPO}/issues/new?title=${encodeURIComponent('[feedback] ')}&body=${encodeURIComponent(body)}`;
-		window.open(url, '_blank', 'noopener');
+	async function send() {
+		if (!message.trim() || sending) return;
+		sending = true;
+		failed = false;
+		try {
+			const res = await fetch('/', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+				body: new URLSearchParams({
+					'form-name': 'feedback',
+					'bot-field': '', // honeypot — a bot fills this in, a student can't see it
+					message: message.trim(),
+					plan: `${plan.structure}, ${plan.fourYear ? '4-year' : '3-year'}`,
+					credits: `${plan.totalPlacedCredits}/${plan.degreeTotal}`
+				}).toString()
+			});
+			if (!res.ok) throw new Error(String(res.status));
+			message = '';
+			sent = true;
+			setTimeout(() => (sent = false), 3000);
+		} catch {
+			// offline, or running somewhere netlify isn't handling the post —
+			// the text stays in the box and "copy instead" still works
+			failed = true;
+		} finally {
+			sending = false;
+		}
 	}
 
 	async function copy() {
@@ -103,9 +128,16 @@
 		></textarea>
 
 		<div class="actions">
-			<button class="primary" disabled={!message.trim()} onclick={send}>send</button>
+			<button class="primary" disabled={!message.trim() || sending} onclick={send}>
+				{sending ? 'sending…' : sent ? 'sent ✓' : 'send'}
+			</button>
 			<button disabled={!message.trim()} onclick={copy}>{copied ? 'copied ✓' : 'copy instead'}</button>
 		</div>
+		{#if sent}
+			<p class="note">thank you — it's in.</p>
+		{:else if failed}
+			<p class="note">that didn't go through. try again, or copy the text and send it another way.</p>
+		{/if}
 	</section>
 
 	<section>

@@ -14,7 +14,6 @@ export type Course = {
 	eligibleYears: number[]; // which of years 1-4 this is open to
 	prereqs: string[]; // course codes that must come in an EARLIER trimester
 	unlocks: string[]; // course codes this one is a prerequisite for
-	desc: string; // catalogue description, shown in the details bar
 	substitutes?: string[]; // separate courses that satisfy the same requirement/prereq (interchangeable, but NOT cross-listed under one code)
 };
 

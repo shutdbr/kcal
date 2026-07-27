@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Plan } from '$lib/plan.svelte';
 	import { byCode, canAudit, hasCode } from '$lib/data';
+	import { descriptionOf, loadDescriptions } from '$lib/descriptions.svelte';
 	import { GRADE_SCALE, OTHER_MARKS, type GradeMark } from '$lib/grades';
 
 	let { plan }: { plan: Plan } = $props();
@@ -10,6 +11,13 @@
 		if (hasCode(code)) plan.selected = byCode(code);
 	}
 
+	// descriptions ship in their own chunk. The page asks for it on idle; if a
+	// course is selected before that, ask right now — whichever lands first,
+	// every course fills in from then on
+	$effect(() => {
+		if (plan.selected) loadDescriptions();
+	});
+
 </script>
 
 <header class="col-header">
@@ -17,6 +25,7 @@
 </header>
 {#if plan.selected}
 	{@const c = plan.selected}
+	{@const desc = descriptionOf(c.code)}
 	<div class="details">
 		<div class="d-head">
 			<span class="d-code">{c.code}</span>
@@ -94,9 +103,9 @@
 			{/if}
 		{/if}
 
-		{#if c.desc}
+		{#if desc}
 			<div class="label">about</div>
-			<p class="d-desc">{c.desc}</p>
+			<p class="d-desc">{desc}</p>
 		{/if}
 
 		<!-- profs rotate every year, so this is context, not a promise -->

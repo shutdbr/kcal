@@ -14,6 +14,16 @@
 	let showCredits = $state(false);
 	let showGrades = $state(false);
 
+	// grade view changes what the whole board means — credits become TGPA, chips
+	// take a mark — so the first time it's switched on, say so. Once dismissed
+	// (or once they've read it and turned grade view off) it stays gone.
+	const GRADE_HINT_KEY = 'tracey-grade-hint-seen';
+	let showGradeHint = $state(false);
+	function dismissGradeHint() {
+		showGradeHint = false;
+		localStorage.setItem(GRADE_HINT_KEY, '1');
+	}
+
 	// The eligible cell nearest the cursor. Drops are resolved against the whole
 	// grid, so releasing anywhere over it — even in the gap between cells — lands
 	// the course in the closest slot instead of snapping back to the catalogue.
@@ -71,6 +81,8 @@
 			plan.gradeMode = !plan.gradeMode;
 			// grades apply to your own plan — drop the reference preview on the way in
 			if (plan.gradeMode && plan.referenceView) plan.toggleReferenceView();
+			if (plan.gradeMode && !localStorage.getItem(GRADE_HINT_KEY)) showGradeHint = true;
+			else showGradeHint = false;
 		}}
 	>
 		grade view
@@ -137,6 +149,20 @@
 		</button>
 	{/if}
 </div>
+
+{#if showGradeHint}
+	<div class="grade-hint" transition:fly={{ y: -8, duration: 180 }}>
+		<button class="hint-close" onclick={dismissGradeHint} aria-label="dismiss">×</button>
+		<strong>grade view</strong>
+		<ul>
+			<li>click a course on the grid, then set its <b>grade</b> in the course panel on the right</li>
+			<li>each trimester shows its <b>TGPA</b> instead of credits; the button above shows your <b>CGPA</b></li>
+			<li>open <b>CGPA</b> for the full breakdown and what you'd need to pull an average back up</li>
+			<li><b>audits</b> carry no grade and stay out of the maths</li>
+		</ul>
+		<button class="hint-go" onclick={dismissGradeHint}>got it</button>
+	</div>
+{/if}
 
 {#if showCredits}
 	<CreditRules {plan} onclose={() => (showCredits = false)} />
@@ -526,6 +552,73 @@
 	// the board's header strip — the exact aesthetic of the column headers
 	// (same gradient shape, card shadow, border), recoloured grey / greyish-blue
 	// so the middle reads as its own grayed zone
+	// sits under the board bar the first time grade view is switched on
+	.grade-hint {
+		position: relative;
+		margin: 1.6rem 3.2rem 0;
+		padding: 1.2rem 3rem 1.4rem 1.6rem;
+		background: color-mix(in srgb, var(--color-accent) 12%, var(--color-bg-light));
+		border: 1px solid var(--color-control);
+		border-radius: 6px;
+
+		strong {
+			display: block;
+			font-size: 1.35rem;
+			color: var(--color-text);
+		}
+
+		ul {
+			margin-top: 0.5rem;
+			padding-left: 1.6rem;
+			font-size: 1.25rem;
+			line-height: 1.6;
+			color: var(--color-text-muted);
+
+			li {
+				list-style: disc;
+			}
+
+			b {
+				color: var(--color-text);
+				font-weight: 600;
+			}
+		}
+	}
+
+	.hint-close {
+		position: absolute;
+		top: 0.3rem;
+		right: 0.5rem;
+		padding: 0.2rem 0.5rem;
+		font-size: 1.6rem;
+		line-height: 1;
+		color: var(--color-text-muted);
+		background: none;
+		border: none;
+		cursor: pointer;
+
+		&:hover {
+			color: var(--color-text);
+		}
+	}
+
+	.hint-go {
+		margin-top: 1rem;
+		padding: 0.5rem 1.6rem;
+		font-size: 1.25rem;
+		font-weight: 600;
+		color: var(--color-on-accent);
+		background-color: var(--color-accent);
+		border: 1px solid var(--color-control-deep);
+		border-radius: 5px;
+		cursor: pointer;
+		@include glossy-accent;
+
+		&:hover {
+			filter: brightness(1.07);
+		}
+	}
+
 	.board-bar {
 		position: sticky;
 		top: 0;

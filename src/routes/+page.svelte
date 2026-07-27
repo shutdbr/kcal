@@ -7,8 +7,16 @@
 	import TrimesterZoom from '$lib/components/board/TrimesterZoom.svelte';
 	import DetailsPanel from '$lib/components/details/DetailsPanel.svelte';
 	import Intro from '$lib/components/Intro.svelte';
+	import { loadDescriptions } from '$lib/descriptions.svelte';
 
 	const plan = new Plan();
+
+	// the catalogue prose is a separate chunk so it can't hold up first paint —
+	// pull it in once the planner is up and the browser has a spare moment
+	$effect(() => {
+		if ('requestIdleCallback' in window) requestIdleCallback(() => loadDescriptions());
+		else setTimeout(loadDescriptions, 400);
+	});
 </script>
 
 <Intro />
