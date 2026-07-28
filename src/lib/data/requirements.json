@@ -2769,12 +2769,12 @@
     },
     "double_major": {
      "3yr": {
-      "total": 96,
+      "total": 48,
       "required": 32,
       "elective": 16
      },
      "4yr": {
-      "total": 128,
+      "total": 64,
       "required": 40,
       "elective": 24
      }
@@ -13842,6 +13842,7 @@
      "COMP201",
      "COMP204",
      "COMP205",
+     "COMP208",
      "COMP210",
      "COMP217",
      "COMP305",
@@ -13849,13 +13850,13 @@
      "COMP312",
      "COMP313",
      "COMP321",
-     "COMP350",
-     "MATH230"
+     "COMP350"
     ],
     "double_major_4yr": [
      "COMP201",
      "COMP204",
      "COMP205",
+     "COMP208",
      "COMP210",
      "COMP217",
      "COMP305",
@@ -13863,13 +13864,13 @@
      "COMP312",
      "COMP313",
      "COMP321",
-     "COMP350",
-     "MATH230"
+     "COMP350"
     ],
     "single_major_3yr": [
      "COMP201",
      "COMP204",
      "COMP205",
+     "COMP208",
      "COMP210",
      "COMP217",
      "COMP305",
@@ -13877,29 +13878,28 @@
      "COMP312",
      "COMP313",
      "COMP321",
-     "COMP350",
-     "MATH230"
+     "COMP350"
     ],
     "double_major_3yr": [
      "COMP201",
      "COMP204",
      "COMP205",
+     "COMP208",
      "COMP210",
      "COMP217",
      "COMP305",
      "COMP308",
      "COMP312",
      "COMP313",
-     "COMP350",
-     "MATH230"
+     "COMP350"
     ],
     "minor_4yr": [
      "COMP201",
      "COMP204",
      "COMP205",
+     "COMP208",
      "COMP210",
-     "COMP217",
-     "MATH230"
+     "COMP217"
     ],
     "minor_3yr": [
      "COMP201",
@@ -14155,7 +14155,7 @@
         },
         {
          "title": "Applied Linear Algebra",
-         "code": "MATH230",
+         "code": "COMP208",
          "match": "prefix",
          "catalog_title": "Linear Algebra",
          "crosslisted_with": [],
@@ -14481,7 +14481,7 @@
         },
         {
          "title": "Applied Linear Algebra",
-         "code": "MATH230",
+         "code": "COMP208",
          "match": "prefix",
          "catalog_title": "Linear Algebra",
          "crosslisted_with": [],
@@ -14807,7 +14807,7 @@
         },
         {
          "title": "Applied Linear Algebra",
-         "code": "MATH230",
+         "code": "COMP208",
          "match": "prefix",
          "catalog_title": "Linear Algebra",
          "crosslisted_with": [],
@@ -15133,7 +15133,7 @@
         },
         {
          "title": "Applied Linear Algebra",
-         "code": "MATH230",
+         "code": "COMP208",
          "match": "prefix",
          "catalog_title": "Linear Algebra",
          "crosslisted_with": [],
@@ -15434,7 +15434,7 @@
         },
         {
          "title": "Applied Linear Algebra",
-         "code": "MATH230",
+         "code": "COMP208",
          "match": "prefix",
          "catalog_title": "Linear Algebra",
          "crosslisted_with": [],
@@ -23382,12 +23382,12 @@
     },
     "double_major": {
      "3yr": {
-      "total": 96,
+      "total": 48,
       "required": 46,
       "elective": 2
      },
      "4yr": {
-      "total": 128,
+      "total": 64,
       "required": 50,
       "elective": 14
      }
@@ -23406,12 +23406,12 @@
     },
     "concentration": {
      "3yr": {
-      "total": 16,
+      "total": 18,
       "required": 18,
       "elective": 0
      },
      "4yr": {
-      "total": 16,
+      "total": 18,
       "required": 18,
       "elective": 0
      }

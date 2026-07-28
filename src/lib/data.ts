@@ -150,6 +150,27 @@ const SUBSTITUTE_GROUPS: string[][] = [
 	// DATA208) — the same course under two department codes.
 	['MATH230', 'COMP208']
 ];
+
+/**
+ * Courses the maths department teaches in full that another department also
+ * teaches an applied version of. The substitution runs ONE WAY: the maths
+ * course is accepted in place of the applied one, but the applied one does
+ * not clear the maths requirement — so a maths + computer-science student
+ * takes the maths course once instead of sitting both.
+ *
+ * Kept separate from SUBSTITUTE_GROUPS above, which is symmetric (either
+ * course satisfies the other). Only used to surface the hint; it does not
+ * (yet) drive prereq checking or the seeder.
+ *
+ * Departmental practice reported by students, not stated on the subject pages.
+ */
+export const MATHS_COVERS: { maths: string; applied: string }[] = [
+	// COMP208 is cross-listed DATA208, so this one pair covers both the
+	// computer-science and the data-science requirement
+	{ maths: 'MATH230', applied: 'COMP208' }, // Linear Algebra / Introduction to Linear Algebra
+	{ maths: 'MATH313', applied: 'COMP305' }, // Probability / Applied Probability and Statistics (cs)
+	{ maths: 'MATH313', applied: 'DATA204' } // Probability / Applied Statistics (data science)
+];
 for (const group of SUBSTITUTE_GROUPS) {
 	const present = group.filter((code) => index.has(code));
 	for (const code of present) {

@@ -81,6 +81,13 @@ TITLE_OVERRIDES = {
     # I/II" — they're the cross-listed research-methods courses
     ("political science", "methods 1"): "SOCL304",  # Qualitative Methods: Researching the Social, Political and the Historical (POLT306)
     ("political science", "methods 2"): "SOCL355",  # Quantitative Research Methods in Humanities and Social Sciences (POLT355)
+    # "Applied Linear Algebra" is computer science's OWN course (cross-listed
+    # DATA208), not the maths department's. Stripping the lead qualifier makes
+    # both it and maths' plainly-titled "Linear Algebra" reduce to the same
+    # phrase, and the exact match wins — so the CS/data-science core came out
+    # pointing at MATH230 and COMP208 landed in no bucket at all.
+    ("computer science", "applied linear algebra"): "COMP208",
+    ("data science", "applied linear algebra"): "COMP208",
 }
 
 PTYPES = [  # order matters: "double major" before "major" substring checks
@@ -258,6 +265,26 @@ def normalise_credits(tables):
 
     if grad_min:
         out["graduation_minimum"] = grad_min
+
+    # ── reconcile the summary total against the per-type breakdown ──
+    # Two tables state each figure and the pages don't always agree:
+    #   • the "Credits needed to earn a Double Major in X" summary column is
+    #     per-major on most subjects but the WHOLE degree (both majors, 2x)
+    #     on politics and physics — summing that across a student's two
+    #     majors would double-count a whole degree,
+    #   • physics states a 16-credit concentration whose own required list
+    #     is 18 credits, so the total sits below its own required core.
+    # The Required/Elective breakdown is per-programme by construction and
+    # is what the published course lists actually add up to, so it wins.
+    # Cells the page gives no breakdown for (literature/psychology
+    # concentrations) keep their stated total.
+    for ptype, years in out.items():
+        if ptype == "graduation_minimum":
+            continue
+        for cell in years.values():
+            parts = sum(cell[m] for m in ("required", "elective") if m in cell)
+            if parts and cell.get("total") != parts:
+                cell["total"] = parts
     return out
 
 

@@ -21,6 +21,7 @@ import {
 	TRIM_MIN,
 	TRIM_NORMAL_MAX,
 	MAJOR_SUBJECTS,
+	MATHS_COVERS,
 	PROGRAMME_SUBJECTS,
 	Y1_CORE_MAX,
 	byCode,
@@ -63,6 +64,10 @@ import {
 const TRIMS: TrimNum[] = [1, 2, 3];
 
 const STORAGE_KEY = 'tracey-plan';
+// the previous save, kept so a torn or rejected write can't lose the plan
+const BACKUP_KEY = 'tracey-plan-backup';
+// bump only when the saved shape changes in a way applySave can't read
+const SAVE_VERSION = 1;
 
 
 export class Plan {
@@ -108,11 +113,26 @@ export class Plan {
 		// a saved plan (below) replaces it
 		this.seedRecommended();
 		if (!browser) return;
-		try {
-			const raw = localStorage.getItem(STORAGE_KEY);
-			if (raw) this.applySave(JSON.parse(raw));
-		} catch {
-			// bad save → keep the seed
+		// The plan lives in this browser and nowhere else, so it has to survive
+		// a redeploy: a new build must never look like a fresh visit. It does,
+		// because localStorage is keyed by ORIGIN, not by build — the deploy
+		// that replaces the app's code leaves the stored plan untouched. What
+		// could still lose it is THIS restore giving up, so it doesn't:
+		//   • the newest readable save wins (the backup covers a write torn by
+		//     a mid-save reload, or a quota failure that truncated the primary),
+		//   • applySave validates field by field, so one field the new build
+		//     no longer understands drops that field, never the whole plan,
+		//   • an unreadable save is left on disk rather than cleared, so a
+		//     later build with a fixed reader can still recover it.
+		for (const key of [STORAGE_KEY, BACKUP_KEY]) {
+			try {
+				const raw = localStorage.getItem(key);
+				if (!raw) continue;
+				this.applySave(JSON.parse(raw));
+				break;
+			} catch {
+				// unreadable → fall through to the backup, then to the seed
+			}
 		}
 
 		// the reference plan is a pure function of the programme, so a change to
@@ -136,24 +156,35 @@ export class Plan {
 		});
 
 		$effect(() => {
-			localStorage.setItem(
-				STORAGE_KEY,
-				JSON.stringify({
-					// never persist the reference-plan preview — the stashed real
-					// plan is what a reload should bring back
-					placements: this.#referenceStash ?? this.placements,
-					zoomPos: this.zoomPos,
-					audited: this.audited,
-					grades: this.grades,
-					gradeMode: this.gradeMode,
-					showGradeLabels: this.showGradeLabels,
-					targetLoad: this.targetLoad,
-					fourYear: this.fourYear,
-					structure: this.structure,
-					picks: this.picks,
-					filters: this.filters
-				})
-			);
+			const json = JSON.stringify({
+				// stamped so a future build can tell an old save's shape from a
+				// new one and migrate it, instead of having to discard it
+				version: SAVE_VERSION,
+				// never persist the reference-plan preview — the stashed real
+				// plan is what a reload should bring back
+				placements: this.#referenceStash ?? this.placements,
+				zoomPos: this.zoomPos,
+				audited: this.audited,
+				grades: this.grades,
+				gradeMode: this.gradeMode,
+				showGradeLabels: this.showGradeLabels,
+				targetLoad: this.targetLoad,
+				fourYear: this.fourYear,
+				structure: this.structure,
+				picks: this.picks,
+				filters: this.filters
+			});
+			try {
+				// keep the last good save as a backup before overwriting, so a
+				// write that fails halfway can't take the plan down with it
+				const prev = localStorage.getItem(STORAGE_KEY);
+				if (prev && prev !== json) localStorage.setItem(BACKUP_KEY, prev);
+				localStorage.setItem(STORAGE_KEY, json);
+			} catch {
+				// storage full, or blocked (Safari private browsing). The plan
+				// still works for this session — it just can't be saved, and
+				// throwing here would take the whole reactive update with it.
+			}
 		});
 	}
 
@@ -985,6 +1016,64 @@ export class Plan {
 					});
 				}
 			}
+		}
+
+		// law 2.5 — the maths department teaches the full version of a couple of
+		// courses another department also teaches applied ("Introduction to
+		// Linear Algebra" is required for a computer-science major, but a maths
+		// student has already done the real thing). Doing the maths one clears
+		// both; doing the applied one does NOT clear the maths requirement, so
+		// the hint has to name the direction rather than call them equivalent.
+		// Only shown when the student is actually doing both departments.
+		const covers = MATHS_COVERS.filter(({ maths, applied }) => {
+			if (!hasCode(maths) || !hasCode(applied)) return false;
+			if (!this.selectedSubjects.includes('mathematics')) return false;
+			// the department that asks for the applied version is on the plan
+			return byCode(applied).subjects.some((s) => this.selectedSubjects.includes(s));
+		});
+		if (covers.length) {
+			const pairs = covers.map(
+				({ maths, applied }) => `${maths} ${byCode(maths).title} covers ${applied} ${byCode(applied).title}`
+			);
+			hints.push({
+				kind: 'info',
+				text: `you are doing maths alongside a department that teaches its own applied version — take the maths course and you do not need the applied one: ${pairs.join('; ')}. It does not work the other way round.`,
+				codes: covers.flatMap(({ maths, applied }) => [maths, applied])
+			});
+		}
+
+		// law 2.6 — the programme's own required courses that aren't on the grid
+		// yet. Law 0.5 does this for the foundation core; without the same for
+		// each programme a student can sit on "required 0/40" with nothing
+		// telling them WHICH courses are missing.
+		for (let i = 0; i < this.programmes.length; i++) {
+			const prog = this.programmes[i];
+			if (prog.subject === 'open') continue;
+			const missing = [...this.programmeSets[i].required]
+				.filter((code) => hasCode(code) && !this.placedCodes.has(code))
+				// a placed substitute already satisfies it (MATH191 for COMP201)
+				.filter((code) => !(byCode(code).substitutes ?? []).some((s) => this.placedCodes.has(s)))
+				.sort();
+			if (!missing.length) continue;
+			const label = subjectById(prog.subject).label;
+			const shown = missing.slice(0, 8);
+			hints.push({
+				kind: 'caution',
+				text: `${label} ${prog.role}: ${missing.length} required course${missing.length === 1 ? '' : 's'} still to place — ${shown.join(', ')}${missing.length > shown.length ? `, +${missing.length - shown.length} more` : ''}`,
+				codes: missing
+			});
+		}
+
+		// law 2.7 — the chosen structure can't fit under the university's own
+		// ceiling. Not something the student can fix by moving courses around,
+		// so it's said once, up front, rather than as a per-trimester nag.
+		const structureCap = this.fourYear ? MAX_TOTAL_4YR : MAX_TOTAL_3YR;
+		if (this.degreeTotal > structureCap) {
+			hints.push({
+				kind: 'caution',
+				text: `this combination asks for ${this.degreeTotal} credits but the ${this.fourYear ? 'four' : 'three'}-year ceiling is ${structureCap} — the programmes overlap in practice, so talk to your mentor about which courses count for both`,
+				codes: []
+			});
 		}
 
 		// law 3 — trimester credit caps: 18 normally, up to 20 at most twice
