@@ -37,6 +37,7 @@ import {
 	recommendedFor,
 	requiredCreditsFor,
 	requiredSetFor,
+	satisfiedBy,
 	subjectById
 } from './data';
 import {
@@ -380,7 +381,7 @@ export class Plan {
 				const code = queue.pop()!;
 				for (const pre of byCode(code).prereqs) {
 					if (!reachableIn(pre, this.fourYear) || requiredAll.has(pre)) continue;
-					if (byCode(pre).substitutes?.some((s) => requiredAll.has(s))) continue;
+					if (satisfiedBy(pre).some((s) => requiredAll.has(s))) continue;
 					if (cap !== undefined && sum + byCode(pre).credits > cap) continue;
 					requiredAll.add(pre);
 					sum += byCode(pre).credits;
@@ -554,7 +555,7 @@ export class Plan {
 		// placed earlier satisfies it too
 		const order = year * 10 + trim;
 		for (const pre of course.prereqs) {
-			const subs = hasCode(pre) ? (byCode(pre).substitutes ?? []) : [];
+			const subs = hasCode(pre) ? satisfiedBy(pre) : [];
 			const ats = this.placed.filter((p) => p.code === pre || subs.includes(p.code));
 			if (ats.length && !ats.some((at) => at.year * 10 + at.trim < order)) return false;
 		}
@@ -754,6 +755,15 @@ export class Plan {
 		const requiredUnion = new Set(
 			this.programmes.flatMap((prog) => requiredSetFor(prog.subject, prog.role, this.fourYear, this.isDouble))
 		);
+		// two programmes can ask for the same material under different codes.
+		// A maths + computer-science student is required to do maths' Linear
+		// Algebra AND cs' applied version — but the maths one clears the
+		// applied one, so seed only that. One-way: the applied course never
+		// displaces the maths one (see MATHS_COVERS).
+		for (const code of [...requiredUnion]) {
+			if (!hasCode(code)) continue;
+			if ((byCode(code).coveredBy ?? []).some((m) => requiredUnion.has(m))) requiredUnion.delete(code);
+		}
 
 		// the departments' published pathways first, where they exist — but
 		// only for the courses that are actually required, so a pathway's
@@ -783,7 +793,7 @@ export class Plan {
 		// a placed course, or one about to be scheduled, counts any of its
 		// interchangeable substitutes as itself (Discrete Maths or Maths
 		// Foundations satisfies a Proofs-and-Ideas prereq, and vice-versa)
-		const subs = (code: string): string[] => (hasCode(code) ? (byCode(code).substitutes ?? []) : []);
+		const subs = (code: string): string[] => (hasCode(code) ? satisfiedBy(code) : []);
 
 		// Everything the programmes require that the pathways didn't place,
 		// PLUS the prerequisites those courses depend on (the 1-credit tools
@@ -944,7 +954,7 @@ export class Plan {
 		for (const p of this.placed) {
 			const course = byCode(p.code);
 			for (const pre of course.prereqs) {
-				const subs = hasCode(pre) ? (byCode(pre).substitutes ?? []) : [];
+				const subs = hasCode(pre) ? satisfiedBy(pre) : [];
 				const placedAt = [pos.get(pre), ...subs.map((s) => pos.get(s))].filter((x) => x !== undefined);
 				const prePos = placedAt.length ? placedAt.reduce((a, b) => (a.order <= b.order ? a : b)) : undefined;
 				if (!prePos) {
@@ -1052,7 +1062,7 @@ export class Plan {
 			const missing = [...this.programmeSets[i].required]
 				.filter((code) => hasCode(code) && !this.placedCodes.has(code))
 				// a placed substitute already satisfies it (MATH191 for COMP201)
-				.filter((code) => !(byCode(code).substitutes ?? []).some((s) => this.placedCodes.has(s)))
+				.filter((code) => !satisfiedBy(code).some((s) => this.placedCodes.has(s)))
 				.sort();
 			if (!missing.length) continue;
 			const label = subjectById(prog.subject).label;

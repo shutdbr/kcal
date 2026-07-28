@@ -15,6 +15,12 @@ export type Course = {
 	prereqs: string[]; // course codes that must come in an EARLIER trimester
 	unlocks: string[]; // course codes this one is a prerequisite for
 	substitutes?: string[]; // separate courses that satisfy the same requirement/prereq (interchangeable, but NOT cross-listed under one code)
+	// One-way substitution, unlike `substitutes` above. `covers` = codes this
+	// course is accepted in place of; `coveredBy` = codes accepted in place of
+	// this one. Maths' Linear Algebra covers cs/data-science's applied version,
+	// but doing the applied one does NOT clear the maths requirement.
+	covers?: string[];
+	coveredBy?: string[];
 };
 
 export type Subject = {

@@ -144,11 +144,12 @@ const SUBSTITUTE_GROUPS: string[][] = [
 	// The discrete-maths core, taught three times under three codes: Proofs and
 	// Ideas (maths), Discrete Mathematics (computer science), and Mathematical
 	// Foundations of Data Science (data science). Equivalent, not cross-listed.
-	['MATH191', 'COMP201', 'DATA203'],
-	// Linear algebra, taught as Linear Algebra (maths) and Introduction to
-	// Linear Algebra (computer science / data science, cross-listed COMP208 /
-	// DATA208) — the same course under two department codes.
-	['MATH230', 'COMP208']
+	['MATH191', 'COMP201', 'DATA203']
+	// NOTE: linear algebra (MATH230 / COMP208) used to sit here as a symmetric
+	// pair. It isn't symmetric — maths' Linear Algebra clears the applied one,
+	// but not the reverse — so it moved to MATHS_COVERS below. A pair must
+	// never appear in both lists: this one would re-open the direction that
+	// one closes.
 ];
 
 /**
@@ -177,6 +178,25 @@ for (const group of SUBSTITUTE_GROUPS) {
 		index.get(code)!.substitutes = present.filter((other) => other !== code);
 	}
 }
+// the one-way edges, in both directions so either end can be asked. A pair
+// listed here must NOT also be a symmetric substitute above — that would
+// re-open the direction this is meant to close.
+for (const { maths, applied } of MATHS_COVERS) {
+	const m = index.get(maths);
+	const a = index.get(applied);
+	if (!m || !a) continue;
+	m.covers = [...new Set([...(m.covers ?? []), applied])];
+	a.coveredBy = [...new Set([...(a.coveredBy ?? []), maths])];
+}
+
+/** codes accepted in place of `code` — its symmetric substitutes plus, for an
+ *  applied course, the fuller maths course that clears it. Ask this wherever a
+ *  requirement or prerequisite needs "is this already satisfied?". */
+export const satisfiedBy = (code: string): string[] => {
+	const c = index.get(code);
+	if (!c) return [];
+	return [...new Set([...(c.substitutes ?? []), ...(c.coveredBy ?? [])])];
+};
 
 // Prereq edges the term CSVs over-state. The krea subject pages list these as
 // *recommended*, not hard prerequisites — the real enrolment gates are
