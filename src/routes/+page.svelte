@@ -7,6 +7,7 @@
 	import TrimesterZoom from '$lib/components/board/TrimesterZoom.svelte';
 	import DetailsPanel from '$lib/components/details/DetailsPanel.svelte';
 	import Intro from '$lib/components/Intro.svelte';
+	import { fly } from 'svelte/transition';
 	import { loadDescriptions } from '$lib/descriptions.svelte';
 
 	const plan = new Plan();
@@ -43,10 +44,31 @@
 	<Catalogue {plan} />
 
 	<main class="board">
-		{#if plan.zoom}
-			<TrimesterZoom {plan} />
-		{:else}
-			<OverviewGrid {plan} />
+		<!-- wrapped so the footer below can be pushed to the bottom of the column
+		     on a short plan, and stay pinned there while a long one scrolls -->
+		<div class="board-main">
+			{#if plan.zoom}
+				<TrimesterZoom {plan} />
+			{:else}
+				<OverviewGrid {plan} />
+			{/if}
+		</div>
+
+		<!-- tracey is still being built and students are already using it, so the
+		     board says so plainly at the bottom rather than letting anyone take a
+		     rough edge for the finished thing -->
+		<p class="wip">
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+				<path d="M14.7 6.3a4 4 0 0 0 5 5l-8.4 8.4a2.4 2.4 0 0 1-3.4-3.4z" />
+				<path d="M14.7 6.3 17.5 3.5" />
+			</svg>
+			still under development
+		</p>
+
+		<!-- the flash lives out here, not on the grid: a refused drop has to be
+		     explained in the zoom view too, and the grid isn't mounted there -->
+		{#if plan.flash}
+			<div class="flash" transition:fly={{ y: 12, duration: 220 }}>{plan.flash}</div>
 		{/if}
 	</main>
 
@@ -61,6 +83,40 @@
 	:global(html),
 	:global(body) {
 		height: 100%;
+	}
+
+	// pinned to the foot of the board column: pushed there by .board-main on a
+	// short plan, held there by `sticky` while a long one scrolls past
+	.wip {
+		position: sticky;
+		bottom: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.6rem;
+		padding: 1rem 3.2rem;
+		font-size: 1.3rem;
+		color: var(--color-text-muted);
+		background: var(--color-bg-board-page);
+		border-top: 1px solid var(--color-border-light);
+
+		svg {
+			width: 1.5rem;
+			height: 1.5rem;
+		}
+	}
+
+	// transient one-liner: a refused drop, a rule the board just applied
+	.flash {
+		position: fixed;
+		bottom: 2.4rem;
+		right: 2.4rem;
+		z-index: 40;
+		padding: 1rem 1.6rem;
+		font-size: 1.4rem;
+		background: var(--color-hint-warn);
+		border-radius: 4px;
+		@include card-shine;
 	}
 
 	// on a phone the app hides entirely and the gate below takes over
@@ -119,6 +175,8 @@
 	}
 
 	.board {
+		display: flex;
+		flex-direction: column;
 		overflow-y: auto;
 		min-height: 0;
 		// the middle column is its own cool zone — a very pale blue-grey field
@@ -127,6 +185,12 @@
 		@include mobile {
 			overflow-y: visible;
 		}
+	}
+
+	// grows to fill a short board so the footer sits at the bottom, never
+	// shrinks below its own content so a long one still scrolls
+	.board-main {
+		flex: 1 0 auto;
 	}
 
 	.rightbar {

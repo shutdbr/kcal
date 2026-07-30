@@ -19,7 +19,7 @@ const [sendCourse, receiveCourse] = crossfade({
 
 // ── redraws ──
 // ONE course flying from the catalogue to the grid is worth watching. A
-// REDRAW — flipping to the reference plan, changing a major, resetting —
+// REDRAW — changing a major, filling in every suggestion, resetting —
 // replaces every chip at once, and twenty cards flying across the screen
 // together reads as noise, not motion. A redraw opens a short quiet window
 // (long enough to cover the render it triggered): chips that appear, vanish

@@ -1,8 +1,11 @@
 <script lang="ts">
 	import type { Plan } from '$lib/plan.svelte';
 	import { byCode, hasCode } from '$lib/data';
+	import ReferencePath from '$lib/components/board/ReferencePath.svelte';
 
 	let { plan }: { plan: Plan } = $props();
+
+	let showPath = $state(false);
 
 	let overallLeft = $derived(Math.max(0, plan.degreeTotal - plan.totalPlacedCredits));
 
@@ -79,23 +82,61 @@
 		{/if}
 	</h3>
 
+	<!-- The reference plan opens from here: this panel is where a student comes
+	     when something is wrong with their plan, and "what does the department
+	     suggest instead" is the next question. It opens as a window, not a
+	     board mode — see ReferencePath. -->
+	<div class="ref">
+		<button class="ref-btn" onclick={() => (showPath = true)}>
+			check reference plan
+			{#if plan.suggestionCount}<em>{plan.suggestionCount} missing</em>{/if}
+		</button>
+	</div>
+
 	<div class="chips">
-		{#each sorted as hint, i (hint.text + i)}
+		{#each sorted as hint, i (hint.id ?? hint.text + i)}
 			{@const target = targetOf(hint.codes)}
-			{#if target}
-				<button
-					class="chip {hint.kind}"
-					title="show {target}"
-					onclick={() => (plan.selected = byCode(target))}
-				>
-					{hint.text}
-				</button>
-			{:else}
-				<div class="chip {hint.kind}">{hint.text}</div>
-			{/if}
+			<div class="chip {hint.kind}">
+				{#if target}
+					<button class="chip-text" title="show {target}" onclick={() => (plan.selected = byCode(target))}>
+						{hint.text}
+					</button>
+				{:else}
+					<span class="chip-text">{hint.text}</span>
+				{/if}
+				<!-- a red hint states a rule the registry enforces, not us — and
+				     waivers, one-off offerings and year exemptions are ordinary.
+				     So it can be crossed off, and stops counting against the plan. -->
+				{#if hint.id}
+					<button
+						class="waive"
+						title="cross this off — e.g. you have a waiver for it"
+						aria-label="cross off: {hint.text}"
+						onclick={() => plan.waiveHint(hint.id!)}>×</button
+					>
+				{/if}
+			</div>
 		{/each}
 	</div>
+
+	{#if plan.waivedHints.length}
+		<div class="waived">
+			<div class="waived-head">
+				crossed off ({plan.waivedHints.length}) — not counted against the plan
+			</div>
+			{#each plan.waivedHints as hint (hint.id)}
+				<button class="wv" title="bring this hint back" onclick={() => plan.unwaiveHint(hint.id!)}>
+					<s>{hint.text}</s>
+					<span class="wv-undo">undo</span>
+				</button>
+			{/each}
+		</div>
+	{/if}
 </div>
+
+{#if showPath}
+	<ReferencePath {plan} onclose={() => (showPath = false)} />
+{/if}
 
 <style lang="scss">
 	@use '$lib/styles/mixins' as *;
@@ -215,9 +256,9 @@
 	// each chip is outlined in a darker shade of its own fill — a yellow
 	// caution gets a dark-yellow edge, not a shared grey one
 	.chip {
-		display: block;
+		display: flex;
+		align-items: flex-start;
 		width: 100%;
-		padding: 0.8rem 1rem;
 		font-size: 1.2rem;
 		line-height: 1.4;
 		text-align: left;
@@ -227,16 +268,45 @@
 		background: var(--tone);
 		@include card-shine;
 
-		// the ones naming a course are buttons that jump to it
-		&:is(button) {
+		// the text fills the chip so the whole width stays clickable; the
+		// cross-off × sits beside it (a button can't nest inside a button)
+		.chip-text {
+			flex: 1;
+			min-width: 0;
+			padding: 0.8rem 1rem;
+			font: inherit;
+			line-height: inherit;
+			text-align: left;
+			color: inherit;
+			background: none;
+			border: 0;
+		}
+
+		// the ones naming a course jump to it
+		.chip-text:is(button) {
 			cursor: pointer;
-			transition:
-				transform 0.15s ease,
-				box-shadow 0.15s ease;
 
 			&:hover {
-				transform: translateY(-1px);
-				@include card-shine-hover;
+				text-decoration: underline;
+			}
+		}
+
+		// only ever on a warn chip — the rules a student can hold a waiver for
+		.waive {
+			flex: none;
+			align-self: stretch;
+			padding: 0 0.9rem;
+			font-size: 1.4rem;
+			line-height: 1;
+			color: var(--color-text);
+			background: none;
+			border: 0;
+			border-left: 1px solid var(--tone-deep);
+			cursor: pointer;
+			opacity: 0.5;
+
+			&:hover {
+				opacity: 1;
 			}
 		}
 
@@ -258,6 +328,84 @@
 		&.good {
 			--tone: var(--color-hint-good);
 			--tone-deep: var(--color-hint-good-deep);
+		}
+	}
+
+	.ref {
+		padding: 1rem 1.2rem 0;
+	}
+
+	.ref-btn {
+		display: flex;
+		align-items: baseline;
+		justify-content: center;
+		gap: 0.6rem;
+		width: 100%;
+		padding: 0.7rem 1rem;
+		font: inherit;
+		font-size: 1.25rem;
+		color: var(--color-text);
+		background: var(--color-bg-light);
+		border: 1px solid var(--color-border-card);
+		border-radius: 5px;
+		cursor: pointer;
+
+		em {
+			font-style: normal;
+			font-size: 1.1rem;
+			color: var(--color-text-muted);
+		}
+
+		&:hover {
+			background: var(--color-hover-medium);
+		}
+	}
+
+	// crossed-off rules live below the live hints, quiet and struck through —
+	// still visible, so a waiver is a decision the student can see and undo,
+	// not a hint that silently vanished
+	.waived {
+		display: flex;
+		flex-direction: column;
+		gap: 0.4rem;
+		padding: 0 1.2rem 1.2rem;
+	}
+
+	.waived-head {
+		@include section-label;
+		padding-bottom: 0.2rem;
+	}
+
+	.wv {
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 0.8rem;
+		width: 100%;
+		padding: 0.4rem 0;
+		font-size: 1.15rem;
+		line-height: 1.4;
+		text-align: left;
+		color: var(--color-text-muted);
+		background: none;
+		border: 0;
+		cursor: pointer;
+
+		.wv-undo {
+			flex: none;
+			font-weight: 700;
+			text-transform: uppercase;
+			font-size: 1rem;
+			letter-spacing: 0.04em;
+			opacity: 0;
+		}
+
+		&:hover {
+			color: var(--color-text);
+
+			.wv-undo {
+				opacity: 1;
+			}
 		}
 	}
 </style>

@@ -7,7 +7,9 @@
 // "laws" numbers below; everything else is derived.
 // ─────────────────────────────────────────────
 
+import { browser } from '$app/environment';
 import type { Course, ProgrammeRole, Subject, TrimNum } from './types';
+import { loadPrereqEdits } from './prereqEdits';
 import coursesData from './data/courses.json';
 import programmeData from './data/programme.json';
 import requirementsData from './data/requirements.json';
@@ -219,6 +221,63 @@ for (const [pre, code] of SOFT_PREREQS) {
 	if (dependent) dependent.prereqs = dependent.prereqs.filter((p) => p !== pre);
 	const prereq = index.get(pre);
 	if (prereq) prereq.unlocks = prereq.unlocks.filter((u) => u !== code);
+}
+
+// Edges the term CSVs state but lose in transit. Both of these are the second
+// half of a numbered sequence whose own row left the prerequisite column
+// blank — the chain is stated on the OTHER course's "prerequisite for any
+// future course" cell, in a record whose multi-line description spills across
+// lines and takes the column with it.
+//
+// Deliberately only the two the source actually supports. A numbered sequence
+// is NOT on its own grounds to add an edge: this planner enforces order —
+// drops bounce, hints go red, the seeder schedules around it — so an invented
+// prerequisite tells a student they can't take a course they can. Every other
+// consecutive pair in the catalogue already carries its edge (checked across
+// all sixteen numbered families), and the departments with no prerequisites at
+// all — history, sociology, arts, the foundation core — genuinely declare none.
+// Mirror any change in misc/generate.py so a data regen keeps them.
+const SEQUENCE_PREREQS: [string, string][] = [
+	// MATH341 Topology 1's forward cell reads "Analysis 4, Topology II". The
+	// first half is a backwards row (MATH341 already lists MATH304 as its own
+	// prerequisite) and is correctly dropped; the second half is real and was
+	// dropped with it.
+	['MATH341', 'MATH442'],
+	// Analysis 4 leaves its own prerequisite column blank, but MATH341 requires
+	// Analysis 3 AND Analysis 4 together, and MATH304 is years 3-4 against
+	// MATH303's 2-4 — the sequence 1 → 2 → 3 → 4 is the only reading left.
+	['MATH303', 'MATH304']
+];
+for (const [pre, code] of SEQUENCE_PREREQS) {
+	const dependent = index.get(code);
+	const prereq = index.get(pre);
+	if (!dependent || !prereq) continue;
+	if (!dependent.prereqs.includes(pre)) dependent.prereqs = [...dependent.prereqs, pre];
+	if (!prereq.unlocks.includes(code)) prereq.unlocks = [...prereq.unlocks, code];
+}
+
+// ── hand-edited prerequisite edges (/admin) ──
+// Applied LAST, so a maintainer's edit wins over both the CSV text and the
+// SOFT_PREREQS corrections above. `unlocks` is then rebuilt from the final
+// prereq edges rather than patched: it is exactly the inverse relation, the
+// seeder reads both, and the two disagreeing would order courses wrongly.
+// Browser only — the prerendered build has no localStorage and ships the
+// generated edges, which the first client render then corrects.
+if (browser) {
+	const edits = loadPrereqEdits();
+	let edited = false;
+	for (const [code, prereqs] of Object.entries(edits)) {
+		const course = index.get(code);
+		if (!course) continue; // an edit for a course this build dropped
+		course.prereqs = prereqs.filter((p) => index.has(p) && p !== code);
+		edited = true;
+	}
+	if (edited) {
+		const dependents = new Map<string, string[]>();
+		for (const c of COURSES)
+			for (const p of c.prereqs) dependents.set(p, [...(dependents.get(p) ?? []), c.code]);
+		for (const c of COURSES) c.unlocks = dependents.get(c.code) ?? [];
+	}
 }
 
 export const hasCode = (code: string): boolean => index.has(code);

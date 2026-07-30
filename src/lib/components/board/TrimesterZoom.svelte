@@ -2,7 +2,6 @@
 	import type { Plan } from '$lib/plan.svelte';
 	import { TRIM_HARD_MAX, TRIM_MIN, byCode } from '$lib/data';
 	import { flip } from 'svelte/animate';
-	import { fly } from 'svelte/transition';
 	import { courseIn, courseOut, courseShift } from '$lib/transitions';
 
 	let { plan }: { plan: Plan } = $props();
@@ -47,7 +46,9 @@
 		const code = e.dataTransfer?.getData('text/plain');
 		if (!code) return;
 		plan.place(code, year, trim);
-		if (!canvasEl) return;
+		// a refused drop (a core-only slot) must not leave a canvas position
+		// behind for a course that isn't there
+		if (!canvasEl || !plan.placedCodes.has(code)) return;
 		const r = canvasEl.getBoundingClientRect();
 		const span = spans(byCode(code).credits);
 		const col = Math.min(
@@ -128,12 +129,70 @@
 	</div>
 </div>
 
-{#if plan.flash}
-	<div class="flash" transition:fly={{ y: 12, duration: 220 }}>{plan.flash}</div>
+<!-- what the recommended path puts in THIS trimester and isn't on the grid —
+     the same suggestions the overview shows, in the view you'd be arranging
+     the trimester from -->
+{#if !plan.gradeMode && plan.suggestionsFor(year, trim).length}
+	<div class="suggested">
+		<span class="s-lead">suggested here</span>
+		{#each plan.suggestionsFor(year, trim) as code (code)}
+			{@const c = byCode(code)}
+			<button class="s-chip" title="add {code}" onclick={() => plan.acceptSuggestion(code)}>
+				<span class="s-code">{plan.shownCode(code)}</span>
+				<span class="s-title">{c.title}</span>
+				<span class="s-plus" aria-hidden="true">+</span>
+			</button>
+		{/each}
+	</div>
 {/if}
 
 <style lang="scss">
 	@use '$lib/styles/mixins' as *;
+
+	.suggested {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.8rem;
+		max-width: 76rem;
+		margin: 0 3.2rem 3.2rem;
+	}
+
+	.s-lead {
+		font-size: 1.15rem;
+		text-transform: uppercase;
+		letter-spacing: 0.06em;
+		color: var(--color-text-muted);
+	}
+
+	.s-chip {
+		display: inline-flex;
+		align-items: baseline;
+		gap: 0.6rem;
+		padding: 0.5rem 0.9rem;
+		font: inherit;
+		font-size: 1.2rem;
+		color: var(--color-text-muted);
+		background: none;
+		border: 1px dashed var(--color-border-card);
+		border-radius: 5px;
+		cursor: pointer;
+
+		.s-code {
+			font-weight: 700;
+		}
+
+		.s-plus {
+			font-weight: 700;
+			opacity: 0.6;
+		}
+
+		&:hover {
+			color: var(--color-text);
+			border-style: solid;
+			border-color: var(--color-control);
+		}
+	}
 
 	header {
 		display: flex;
@@ -289,14 +348,4 @@
 		}
 	}
 
-	.flash {
-		position: fixed;
-		bottom: 2.4rem;
-		right: 2.4rem;
-		padding: 1rem 1.6rem;
-		font-size: 1.4rem;
-		background: var(--color-hint-warn);
-		border-radius: 4px;
-		@include card-shine;
-	}
 </style>

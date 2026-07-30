@@ -342,7 +342,19 @@ def build():
         ("BIOS201", "BIOS241"),   # Ecology & Conservation: Life at Different Scales is recommended, not required
         ("POLT317", "POLT313"),   # backwards source row: "Political Theory II" is listed as a prereq FOR the intro course
     }
-    edges = sorted(e for e in edges if e[0] != e[1] and e not in SOFT_PREREQS)
+    # The other direction: edges the CSVs state but lose in transit, because
+    # the cell that carries them sits in a record whose multi-line description
+    # spills across lines. Added back by hand, and ONLY where the source
+    # supports them — a numbered sequence is not on its own grounds to invent a
+    # gate, since tracey enforces prerequisite order against real registration.
+    # Kept in sync with SEQUENCE_PREREQS in tracey/src/lib/data.ts.
+    SEQUENCE_PREREQS = {
+        ("MATH341", "MATH442"),   # Topology 1's forward cell reads "Analysis 4, Topology II"
+        ("MATH303", "MATH304"),   # Analysis 4's own column is blank; MATH341 requires 303 AND 304
+    }
+    edges = sorted(
+        (e for e in edges | SEQUENCE_PREREQS if e[0] != e[1] and e not in SOFT_PREREQS)
+    )
 
     # A course can't require a HIGHER-level course of its OWN department: a
     # 200-level intro (COMP246 Deep Learning) listing a 300-level course

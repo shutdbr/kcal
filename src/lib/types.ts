@@ -61,6 +61,11 @@ export type Hint = {
 	kind: HintKind;
 	text: string;
 	codes: string[]; // courses involved — these get bolded / tinted on the grid
+	// stable identity for the RULE this hint reports (not for the wording, which
+	// carries the current slot). Present on every warn hint, and only on those:
+	// it is what a student's waiver is stored against, so a red hint they've
+	// crossed off stays crossed off across reloads. See Plan.waiveHint.
+	id?: string;
 };
 
 export type ProgrammeStat = {

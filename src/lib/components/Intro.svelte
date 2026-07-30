@@ -24,7 +24,7 @@
 				<li><b>drag courses</b> from the catalogue onto the year × trimester grid</li>
 				<li>year 1 t1 &amp; t2 take only the <b>kccs foundation courses</b></li>
 				<li>the <b>hints</b> on the left flag anything that breaks a university rule</li>
-				<li>flip to <b>reference plan</b> any time to see one way through the degree</li>
+				<li>the grid starts on the <b>recommended path</b> — dashed courses are ones it suggests, click to add</li>
 				<li>everything <b>saves automatically</b> in your browser</li>
 			</ul>
 

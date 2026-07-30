@@ -8,9 +8,9 @@
 
 	let showSettings = $state(false);
 
-	// first visit lands on a seeded EXAMPLE plan (mathematics) — nudge the
-	// student to make it theirs by picking a major. Remembered once dismissed
-	// or once they change a pick.
+	// The grid arrives already filled with the recommended path for the default
+	// programme, so the first thing to do is say which degree it should be for.
+	// Remembered once dismissed, or once they change a pick.
 	const HINT_KEY = 'tracey-major-hint-seen';
 	let showHint = $state(browser && !localStorage.getItem(HINT_KEY));
 	function dismissHint() {
@@ -18,8 +18,8 @@
 		if (browser) localStorage.setItem(HINT_KEY, '1');
 	}
 
-	// switching the programme does NOT touch the grid — everything the
-	// student placed stays put and just recolours for the new requirements
+	// changing the programme re-lays-out a plan the student has never edited,
+	// and leaves an edited one alone — see Plan.programmeChanged
 
 	// a subject already claimed by an earlier role disappears from the later
 	// roles' lists (cs major → no cs minor); changing an earlier role onto a
@@ -66,32 +66,6 @@
 {/if}
 
 <div class="controls">
-	<!-- whose plan is on the grid — a plain radio pair reads clearer than a
-	     segmented switch. Disabled (not hidden) in grade view, since grades
-	     apply to your own plan only. -->
-	<div class="plan-view" class:disabled={plan.gradeMode} role="radiogroup" aria-label="which plan is shown">
-		<label class="pv-opt">
-			<input
-				type="radio"
-				name="plan-view"
-				checked={!plan.referenceView}
-				disabled={plan.gradeMode}
-				onchange={() => plan.referenceView && plan.toggleReferenceView()}
-			/>
-			<span>your plan</span>
-		</label>
-		<label class="pv-opt">
-			<input
-				type="radio"
-				name="plan-view"
-				checked={plan.referenceView}
-				disabled={plan.gradeMode}
-				onchange={() => !plan.referenceView && plan.toggleReferenceView()}
-			/>
-			<span>reference plan</span>
-		</label>
-	</div>
-
 	<label class="row" title="4-year degree — uncheck for the 3-year track">
 		<span class="row-label">4-year</span>
 		<input type="checkbox" class="tick" bind:checked={plan.fourYear} onchange={distinct} />
@@ -202,7 +176,7 @@
 		}
 	}
 
-	// first-visit nudge: the seeded plan is an example — point at the picker
+	// first-visit nudge: say what the pre-filled grid is, and point at the picker
 	.first-hint {
 		position: relative;
 		margin: 1.4rem 1.4rem 0;
@@ -248,37 +222,6 @@
 		gap: 1rem;
 		padding: 1.6rem 1.4rem;
 		border-bottom: 1px solid var(--color-border-light);
-	}
-
-	.plan-view {
-		display: flex;
-		gap: 1.6rem;
-		padding-bottom: 1rem;
-		border-bottom: 1px solid var(--color-border-divider);
-	}
-
-	.pv-opt {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		font-size: 1.35rem;
-		color: var(--color-text);
-		cursor: pointer;
-
-		input {
-			accent-color: var(--color-accent);
-			cursor: pointer;
-		}
-	}
-
-	// grade view locks the choice to your own plan — clearly greyed, not-allowed
-	.plan-view.disabled {
-		opacity: 0.35;
-
-		.pv-opt,
-		.pv-opt input {
-			cursor: not-allowed;
-		}
 	}
 
 	.row {

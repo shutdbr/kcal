@@ -590,13 +590,25 @@ def build_subject(subject, scraped, resolver, catalog, alias2canon, subj_titles)
 
     for tdata in tracks_out.values():
         for g in tdata["groups"]:
-            out = []
+            out, claimed = [], set()
             for item in g.pop("_items"):
                 if "one_of" in item:
                     out.append({"title": item["title"], "one_of":
                                 [finalize(a) for a in item["one_of"]]})
-                else:
-                    out.append(finalize(item))
+                    continue
+                ref = finalize(item)
+                # One course, listed twice in the same pool under two names:
+                # history's methodology pool carries both "Indian
+                # Historiography" and "Advanced Indian Historiography", and
+                # both resolve to HIST355.  A "choose three of five" that is
+                # really four courses overstates the choice, so the second
+                # mention is dropped and the course keeps the (exact) name it
+                # is catalogued under.
+                if ref.get("code"):
+                    if ref["code"] in claimed:
+                        continue
+                    claimed.add(ref["code"])
+                out.append(ref)
             g["courses"] = out
 
     return {

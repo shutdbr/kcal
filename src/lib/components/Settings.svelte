@@ -1,6 +1,8 @@
 <script lang="ts">
 	import type { Plan } from '$lib/plan.svelte';
 	import { settings, TEXT_SIZES, type ThemeChoice } from '$lib/settings.svelte';
+	import { savedPlans, MAX_SAVES } from '$lib/savedPlans.svelte';
+	import { subjectById } from '$lib/data';
 	import Modal from './Modal.svelte';
 
 	let { plan, onclose }: { plan: Plan; onclose: () => void } = $props();
@@ -10,6 +12,64 @@
 		{ id: 'dark', label: 'dark' },
 		{ id: 'system', label: 'auto' }
 	];
+
+	// ── saved plans ──
+	// The board keeps ONE plan, autosaved. Saving here keeps a copy of it under
+	// a name, so "what would a double major look like" is: save this, change
+	// the degree, and load the old one back if you liked it better.
+	let saveName = $state('');
+	// a name you'd actually recognise in a list: the degree it is
+	let suggestedName = $derived(
+		[
+			plan.programmes.map((pr) => subjectById(pr.subject).short).join(' + '),
+			plan.fourYear ? '4yr' : '3yr'
+		].join(' · ')
+	);
+
+	function saveNow() {
+		savedPlans.save(saveName.trim() || suggestedName, plan.snapshot());
+		saveName = '';
+	}
+
+	// loading replaces what is on the board, so it asks twice — same guard as
+	// "start over", for the same reason
+	let confirmLoad = $state<string | null>(null);
+	let confirmDelete = $state<string | null>(null);
+	let loadTimer: ReturnType<typeof setTimeout>;
+	let delTimer: ReturnType<typeof setTimeout>;
+
+	function load(id: string) {
+		if (confirmLoad !== id) {
+			confirmLoad = id;
+			confirmDelete = null;
+			clearTimeout(loadTimer);
+			loadTimer = setTimeout(() => (confirmLoad = null), 4000);
+			return;
+		}
+		clearTimeout(loadTimer);
+		confirmLoad = null;
+		const entry = savedPlans.items.find((x) => x.id === id);
+		if (entry) plan.restore(entry.data);
+		onclose();
+	}
+
+	function del(id: string) {
+		if (confirmDelete !== id) {
+			confirmDelete = id;
+			confirmLoad = null;
+			clearTimeout(delTimer);
+			delTimer = setTimeout(() => (confirmDelete = null), 4000);
+			return;
+		}
+		clearTimeout(delTimer);
+		confirmDelete = null;
+		savedPlans.remove(id);
+	}
+
+	const when = (ms: number) =>
+		new Date(ms).toLocaleDateString(undefined, { day: 'numeric', month: 'short' }) +
+		' ' +
+		new Date(ms).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
 
 	// ── feedback ──
 	// posts to the netlify form declared in app.html — no server of our own,
@@ -141,6 +201,54 @@
 	</section>
 
 	<section>
+		<h3>saved plans</h3>
+		<p class="note">
+			your board autosaves on its own. this keeps a named copy you can come back to — all in this
+			browser, nothing leaves it.
+		</p>
+
+		<div class="save-new">
+			<input
+				type="text"
+				placeholder={suggestedName}
+				bind:value={saveName}
+				onkeydown={(e) => e.key === 'Enter' && saveNow()}
+			/>
+			<button onclick={saveNow} disabled={savedPlans.full}>save this plan</button>
+		</div>
+
+		{#if savedPlans.full}
+			<p class="note warn">that's {MAX_SAVES} saved plans — delete one to save another.</p>
+		{/if}
+		{#if savedPlans.error}
+			<p class="note warn">{savedPlans.error}</p>
+		{/if}
+
+		{#if savedPlans.items.length}
+			<ul class="saves">
+				{#each savedPlans.items as p (p.id)}
+					<li>
+						<span class="s-name">{p.name}</span>
+						<span class="s-when">{when(p.savedAt)}</span>
+						<button class="s-act" class:confirming={confirmLoad === p.id} onclick={() => load(p.id)}>
+							{confirmLoad === p.id ? 'replace board?' : 'load'}
+						</button>
+						<button
+							class="s-act danger"
+							class:confirming={confirmDelete === p.id}
+							onclick={() => del(p.id)}
+						>
+							{confirmDelete === p.id ? 'delete?' : '×'}
+						</button>
+					</li>
+				{/each}
+			</ul>
+		{:else}
+			<p class="note empty">nothing saved yet.</p>
+		{/if}
+	</section>
+
+	<section>
 		<h3>your plan</h3>
 		<p class="note">saved in this browser only.</p>
 		<div class="actions">
@@ -171,6 +279,104 @@
 	h3 {
 		@include section-label;
 		margin-bottom: 1rem;
+	}
+
+	.save-new {
+		display: flex;
+		gap: 0.8rem;
+		margin-top: 0.8rem;
+
+		input {
+			flex: 1;
+			min-width: 0;
+			padding: 0.6rem 0.8rem;
+			font: inherit;
+			font-size: 1.3rem;
+			color: var(--color-text);
+			background: var(--color-bg);
+			border: 1px solid var(--color-border-card);
+			border-radius: 5px;
+		}
+
+		button {
+			padding: 0.6rem 1.2rem;
+			font: inherit;
+			font-size: 1.3rem;
+			color: var(--color-text);
+			background: var(--color-bg-light);
+			border: 1px solid var(--color-border-card);
+			border-radius: 5px;
+			cursor: pointer;
+
+			&:hover:not(:disabled) {
+				background: var(--color-hover-medium);
+			}
+
+			&:disabled {
+				opacity: 0.45;
+				cursor: default;
+			}
+		}
+	}
+
+	.saves {
+		margin-top: 1rem;
+		list-style: none;
+
+		li {
+			display: grid;
+			grid-template-columns: 1fr auto auto auto;
+			align-items: center;
+			gap: 0.8rem;
+			padding: 0.6rem 0;
+			font-size: 1.3rem;
+
+			& + li {
+				border-top: 1px solid var(--color-border-light);
+			}
+		}
+
+		.s-name {
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			color: var(--color-text);
+		}
+
+		.s-when {
+			font-size: 1.1rem;
+			color: var(--color-text-muted);
+		}
+	}
+
+	.s-act {
+		padding: 0.35rem 0.9rem;
+		font: inherit;
+		font-size: 1.2rem;
+		color: var(--color-text);
+		background: var(--color-bg-light);
+		border: 1px solid var(--color-border-card);
+		border-radius: 4px;
+		cursor: pointer;
+
+		&:hover {
+			background: var(--color-hover-medium);
+		}
+
+		// a second tap is what actually does it — say so, in the button
+		&.confirming {
+			color: var(--color-on-accent);
+			background-color: var(--color-danger);
+			border-color: var(--color-danger-deep);
+		}
+	}
+
+	.note.warn {
+		color: var(--color-danger);
+	}
+
+	.note.empty {
+		font-style: italic;
 	}
 
 	.row {

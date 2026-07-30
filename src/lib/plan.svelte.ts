@@ -3,7 +3,6 @@
 // Instantiated once in +page.svelte, passed down as a prop.
 // ─────────────────────────────────────────────
 
-import { untrack } from 'svelte';
 import { browser } from '$app/environment';
 // the board's motion is a plan concern: only the plan knows when a change is
 // one course moving (worth watching fly) and when it is a whole-board redraw
@@ -96,8 +95,18 @@ export class Plan {
 	// on, and it's what the grid colours a trimester against — 16 is the
 	// registration the drop form recommends.
 	targetLoad = $state(TRIM_NORMAL_MAX);
-	referenceView = $state(false); // grid is previewing the recommended path, not the student's plan
-	#referenceStash: Record<SlotKey, string[]> | null = null; // the real plan, kept safe during the preview
+	// Has the student changed anything yet? The grid arrives pre-filled with the
+	// department's recommended path, so until they touch it their plan and the
+	// recommendation are the same thing and a programme change should re-lay it
+	// out. Once they've edited it, it is THEIR plan and a programme change must
+	// never move their courses. No UI — the student never sees this decision,
+	// they just find that the app does the obvious thing either way.
+	touched = $state(false);
+	// warn hints the student has waived — a broken prerequisite is a real rule,
+	// but plenty of students hold a waiver for one, so a red hint can be crossed
+	// off. Keyed by the hint's rule id, so it stays crossed off across reloads
+	// and re-appears the moment a DIFFERENT course breaks the same rule.
+	waived = $state<string[]>([]);
 	// where a course sits on the zoomed credit canvas (cell index 0-23, 4 per
 	// row) — set when the student drops it on a specific spot; absent = packed
 	zoomPos = $state<Record<string, number>>({});
@@ -136,45 +145,8 @@ export class Plan {
 			}
 		}
 
-		// the reference plan is a pure function of the programme, so a change to
-		// the structure / majors / minor / conc / 3-vs-4-year while it is on
-		// screen must redraw it (your own plan, stashed, is never touched — it
-		// deliberately keeps its placements across a programme change)
 		$effect(() => {
-			// read every input unconditionally so the effect re-runs on any of
-			// them, whichever control the change came from
-			const deps = [
-				this.structure,
-				this.fourYear,
-				this.picks.major1,
-				this.picks.major2,
-				this.picks.minor,
-				this.picks.conc
-			];
-			void deps;
-			if (!this.referenceView) return;
-			untrack(() => this.seedRecommended());
-		});
-
-		$effect(() => {
-			const json = JSON.stringify({
-				// stamped so a future build can tell an old save's shape from a
-				// new one and migrate it, instead of having to discard it
-				version: SAVE_VERSION,
-				// never persist the reference-plan preview — the stashed real
-				// plan is what a reload should bring back
-				placements: this.#referenceStash ?? this.placements,
-				zoomPos: this.zoomPos,
-				audited: this.audited,
-				grades: this.grades,
-				gradeMode: this.gradeMode,
-				showGradeLabels: this.showGradeLabels,
-				targetLoad: this.targetLoad,
-				fourYear: this.fourYear,
-				structure: this.structure,
-				picks: this.picks,
-				filters: this.filters
-			});
+			const json = JSON.stringify(this.snapshot());
 			try {
 				// keep the last good save as a backup before overwriting, so a
 				// write that fails halfway can't take the plan down with it
@@ -187,6 +159,39 @@ export class Plan {
 				// throwing here would take the whole reactive update with it.
 			}
 		});
+	}
+
+	/** Everything that makes up a schedule, in the exact shape applySave reads.
+	 *  The autosave writes this; so does a named save. One serialiser means a
+	 *  saved schedule can never drift from what the restore path understands. */
+	snapshot() {
+		return {
+			// stamped so a future build can tell an old save's shape from a new
+			// one and migrate it, instead of having to discard it
+			version: SAVE_VERSION,
+			placements: this.placements,
+			touched: this.touched,
+			waived: this.waived,
+			zoomPos: this.zoomPos,
+			audited: this.audited,
+			grades: this.grades,
+			gradeMode: this.gradeMode,
+			showGradeLabels: this.showGradeLabels,
+			targetLoad: this.targetLoad,
+			fourYear: this.fourYear,
+			structure: this.structure,
+			picks: this.picks,
+			filters: this.filters
+		};
+	}
+
+	/** load a schedule saved earlier — same validation as a page load, so a
+	 *  snapshot from an older build can never break the app */
+	restore(data: unknown) {
+		quietRedraw(); // the whole board changes at once — fade, don't fly
+		if (data && typeof data === 'object') this.applySave(data as Record<string, unknown>);
+		this.selected = null;
+		this.zoom = null;
 	}
 
 	/** validate + apply a saved/imported plan object. Shared by the
@@ -239,6 +244,17 @@ export class Plan {
 		}
 		if (typeof parsed.gradeMode === 'boolean') this.gradeMode = parsed.gradeMode;
 		if (typeof parsed.showGradeLabels === 'boolean') this.showGradeLabels = parsed.showGradeLabels;
+		// A save exists, so this plan has been used before: treat it as touched
+		// unless it says otherwise. Getting this wrong in the `false` direction
+		// would let a programme change re-lay-out a plan somebody built, and a
+		// save written before this field existed can't tell us either way.
+		this.touched = true;
+		const touched = (parsed as { touched?: unknown }).touched;
+		if (typeof touched === 'boolean') this.touched = touched;
+		// waivers are opaque rule ids — a hint the build no longer emits simply
+		// never matches, so an old id costs nothing and is kept
+		const waived = (parsed as { waived?: unknown }).waived;
+		if (Array.isArray(waived)) this.waived = waived.filter((v): v is string => typeof v === 'string');
 		const target = (parsed as { targetLoad?: unknown }).targetLoad;
 		if (typeof target === 'number' && target >= TRIM_MIN && target <= TRIM_HARD_MAX) this.targetLoad = target;
 		this.ensureDistinctPicks();
@@ -457,6 +473,8 @@ export class Plan {
 	}
 
 	toggleAudit(code: string) {
+		// marking an audit is a decision about YOUR plan, not the preview
+		this.#touch();
 		this.audited = this.audited.includes(code)
 			? this.audited.filter((c) => c !== code)
 			: [...this.audited, code];
@@ -565,9 +583,11 @@ export class Plan {
 	// ── actions ──
 	place(code: string, year: number, trim: TrimNum) {
 		if (this.coreOnly(year, trim) && !isCore(code)) {
+			// a bounced drop is not an edit — stay where we are
 			this.#setFlash(`year 1 t${trim} takes foundation (KCCS) courses only`);
 			return;
 		}
+		this.#touch();
 		// a 5th foundation course IS taken (so t1⇄t2 shuffles and retake
 		// planning stay fluid even when both slots are full) — the hints
 		// flag the over-max slot until it's resolved
@@ -585,6 +605,8 @@ export class Plan {
 	}
 
 	remove(code: string) {
+		// already a no-op when place() passed the gate on the way in
+		this.#touch();
 		for (const key of Object.keys(this.placements)) {
 			if (this.placements[key].includes(code)) {
 				this.placements[key] = this.placements[key].filter((c) => c !== code);
@@ -595,6 +617,7 @@ export class Plan {
 	}
 
 	clearSlot(year: number, trim: TrimNum) {
+		this.#touch();
 		delete this.placements[slotKey(year, trim)];
 	}
 
@@ -608,41 +631,34 @@ export class Plan {
 		this.zoom = null;
 		this.zoomPos = {}; // nothing is where the student put it any more
 		this.targetLoad = TRIM_NORMAL_MAX;
-		this.referenceView = false;
-		this.#referenceStash = null;
+		this.waived = []; // waived rules were about courses that are now gone
+		// start over = the fresh-visit state exactly: the recommended path on
+		// the grid, untouched, so picking a different degree re-lays it out
+		this.touched = false;
 		this.seedRecommended();
 	}
 
-	/** flip between your plan and a preview of the recommended path. Your
-	 *  plan comes back exactly as you left it — the preview never touches it. */
-	toggleReferenceView() {
-		if (this.referenceView) {
-			quietRedraw(); // your whole plan comes back in one go — same, fade
-			if (this.#referenceStash) this.placements = this.#referenceStash;
-			this.#referenceStash = null;
-			this.referenceView = false;
-		} else {
-			this.#referenceStash = this.placements;
-			this.seedRecommended();
-			this.referenceView = true;
-		}
+	/** Every mutating action passes through here. There is one plan and it is
+	 *  always editable — this only records that the student has made it theirs,
+	 *  which is what stops a later programme change from re-laying it out. */
+	#touch() {
+		this.touched = true;
 	}
 
-	/** while previewing: take the reference plan as your own plan */
-	adoptReference() {
-		if (!this.referenceView) return;
-		this.#referenceStash = null;
-		this.referenceView = false;
-		this.#setFlash('the reference plan is now your plan');
-	}
-
-	/** a sidebar programme control changed. Every surface answers at once —
-	 *  the catalogue re-sorts and re-filters, every chip recolours, and in
-	 *  reference view the whole board reseeds — so the motion is damped for
-	 *  this render (see quietRedraw) instead of a few hundred cards flying. */
+	/** A sidebar programme control changed. Every surface answers at once — the
+	 *  catalogue re-sorts and re-filters, every chip recolours — so the motion
+	 *  is damped for this render (see quietRedraw) instead of a few hundred
+	 *  cards flying.
+	 *
+	 *  A plan the student has never edited is still just the recommended path,
+	 *  so it is re-laid-out for the new degree — picking your major on the
+	 *  first visit does the obvious thing. A plan they HAVE edited keeps every
+	 *  course exactly where they put it; only the suggestions underneath change
+	 *  to the new degree's recommendation. */
 	programmeChanged() {
 		quietRedraw();
 		this.ensureDistinctPicks();
+		if (!this.touched) this.seedRecommended();
 	}
 
 	/** no two active roles may point at the same subject — after a pick or
@@ -673,6 +689,22 @@ export class Plan {
 	 */
 	seedRecommended() {
 		quietRedraw(); // every chip is about to change at once — fade, don't fly
+		this.placements = Object.fromEntries(
+			Object.entries(this.recommended).map(([key, codes]) => [key, [...codes]])
+		);
+	}
+
+	/**
+	 * The department's recommended path for the CURRENT programme, as a pure
+	 * function of it: the published pathway where one exists, otherwise the
+	 * required courses scheduled into the earliest slot that satisfies
+	 * offering, year eligibility, prereq order and the 20-credit load.
+	 *
+	 * Derived, not stored, because it is not a second plan the student can get
+	 * lost in — it is what the app would suggest, recomputed whenever the
+	 * degree changes, and shown as ghosts in the slots it would use.
+	 */
+	recommended: Record<SlotKey, string[]> = $derived.by(() => {
 		const placements: Record<SlotKey, string[]> = {};
 		const pos = new Map<string, number>(); // code -> year*10+trim
 		const load = (y: number, t: TrimNum) =>
@@ -855,7 +887,170 @@ export class Plan {
 			}
 		}
 
-		this.placements = placements;
+		return placements;
+	});
+
+	/**
+	 * The credits the degree still needs beyond the recommended path, as
+	 * elective placeholders spread across the trimesters that have room.
+	 *
+	 * The path seeds REQUIRED courses only — the elective budget the credit
+	 * table allows is deliberately left open, because choosing those courses is
+	 * the student's job. Without showing them, though, the reference plan reads
+	 * as a degree that is twenty credits short, and the trimesters it does fill
+	 * look under-loaded. So the remainder is drawn as "elective" boxes: not
+	 * courses, just the room the degree leaves you.
+	 *
+	 * Year 1 t1/t2 are skipped — those take foundation courses only.
+	 */
+	recommendedElectives: Record<SlotKey, number> = $derived.by(() => {
+		const SLOT_CREDITS = 4; // the ordinary course size the placeholders stand for
+		const out: Record<SlotKey, number> = {};
+		const placed = Object.values(this.recommended)
+			.flat()
+			.reduce((sum, code) => sum + byCode(code).credits, 0);
+		let left = this.degreeTotal - placed;
+		if (left < SLOT_CREDITS) return out;
+
+		const slots: SlotKey[] = [];
+		for (const year of this.seedYears) {
+			for (const trim of TRIMS) {
+				if (this.coreOnly(year, trim)) continue;
+				slots.push(slotKey(year, trim));
+			}
+		}
+		const load = (key: SlotKey) =>
+			(this.recommended[key] ?? []).reduce((sum, code) => sum + byCode(code).credits, 0) +
+			(out[key] ?? 0) * SLOT_CREDITS;
+
+		// emptiest trimester first, so the electives fan out across the degree
+		// instead of stacking into whichever year the required courses left free
+		while (left >= SLOT_CREDITS) {
+			let best: SlotKey | undefined;
+			for (const key of slots) {
+				if (load(key) + SLOT_CREDITS > TRIM_NORMAL_MAX) continue;
+				if (!best || load(key) < load(best)) best = key;
+			}
+			if (!best) break; // every trimester is full — the rest won't fit
+			out[best] = (out[best] ?? 0) + 1;
+			left -= SLOT_CREDITS;
+		}
+		return out;
+	});
+
+	/** how many elective placeholders the path carries */
+	recommendedElectiveCount = $derived(
+		Object.values(this.recommendedElectives).reduce((sum, n) => sum + n, 0)
+	);
+
+	/** The elective credits the degree actually leaves open — quoted rather
+	 *  than the box count, because a remainder that isn't a whole number of
+	 *  4-credit courses (a history major + physics minor leaves 2 spare) would
+	 *  otherwise be rounded away in the one place the figure matters. */
+	recommendedElectiveCredits = $derived(
+		Math.max(
+			0,
+			this.degreeTotal -
+				Object.values(this.recommended)
+					.flat()
+					.reduce((sum, code) => sum + byCode(code).credits, 0)
+		)
+	);
+
+	/** electives the reference plan suggests for one cell */
+	electivesFor(year: number, trim: TrimNum): number {
+		return this.recommendedElectives[slotKey(year, trim)] ?? 0;
+	}
+
+	// ── the suggestion layer ──
+	// Where your plan and the recommendation differ, in the recommendation's
+	// own slots. A course you have placed somewhere ELSE is not suggested — you
+	// have made your call about it — and neither is one an interchangeable
+	// substitute already covers (Discrete Maths standing in for Proofs).
+	suggestions: Record<SlotKey, string[]> = $derived.by(() => {
+		const out: Record<SlotKey, string[]> = {};
+		for (const [key, codes] of Object.entries(this.recommended)) {
+			const open = codes.filter(
+				(code) =>
+					!this.placedCodes.has(code) && !satisfiedBy(code).some((sub) => this.placedCodes.has(sub))
+			);
+			if (open.length) out[key] = open;
+		}
+		return out;
+	});
+
+	suggestedCodes = $derived(new Set(Object.values(this.suggestions).flat()));
+	suggestionCount = $derived(this.suggestedCodes.size);
+
+	/** the recommendation's ghosts for one cell */
+	suggestionsFor(year: number, trim: TrimNum): string[] {
+		return this.suggestions[slotKey(year, trim)] ?? [];
+	}
+
+	/** take one suggestion: it lands in the slot the recommendation put it in */
+	acceptSuggestion(code: string) {
+		for (const [key, codes] of Object.entries(this.suggestions)) {
+			if (!codes.includes(code)) continue;
+			const { year, trim } = parseSlot(key);
+			this.place(code, year, trim);
+			return;
+		}
+	}
+
+	/** take every outstanding suggestion at once */
+	acceptAllSuggestions() {
+		quietRedraw(); // the board fills in one go — fade, don't fly
+		this.#touch();
+		const next: Record<SlotKey, string[]> = Object.fromEntries(
+			Object.entries(this.placements).map(([key, codes]) => [key, [...codes]])
+		);
+		for (const [key, codes] of Object.entries(this.suggestions)) {
+			next[key] = [...(next[key] ?? []), ...codes];
+		}
+		this.placements = next;
+	}
+
+	/** Throw the plan away and start from the reference plan. The one action
+	 *  besides "start over" that discards work, so it is never something an
+	 *  edit does by itself — the panel asks twice before calling it. Grades and
+	 *  audits go with it: they were about courses that are no longer here. */
+	useRecommended() {
+		this.seedRecommended();
+		this.zoomPos = {};
+		this.audited = this.audited.filter((c) => this.placedCodes.has(c));
+		this.grades = Object.fromEntries(
+			Object.entries(this.grades).filter(([code]) => this.placedCodes.has(code))
+		);
+		this.selected = null;
+		this.zoom = null;
+		this.touched = true; // they chose this plan, so it is theirs now
+		this.#setFlash('the reference plan is now your plan');
+	}
+
+	// ── clearing out the strays ──
+	// Courses on the grid that count toward none of the declared programmes:
+	// a different department's course that isn't in any of your required or
+	// elective lists (the green 'other' chips). The foundation core is never
+	// one of these — every student takes it — and neither is anything in your
+	// own department, which counts as a subject elective.
+	otherPlacedCodes = $derived(
+		[...this.placedCodes].filter((code) => this.courseType(code) === 'other')
+	);
+
+	/** drop every placed course that counts toward no chosen programme */
+	removeOtherCourses() {
+		const drop = new Set(this.otherPlacedCodes);
+		if (!drop.size) return;
+		quietRedraw(); // several chips leave at once — fade, don't fly
+		this.#touch();
+		const next: Record<SlotKey, string[]> = {};
+		for (const [key, codes] of Object.entries(this.placements)) {
+			const kept = codes.filter((c) => !drop.has(c));
+			if (kept.length) next[key] = kept;
+		}
+		this.placements = next;
+		for (const code of drop) delete this.zoomPos[code];
+		this.#setFlash(`removed ${drop.size} course${drop.size === 1 ? '' : 's'} that count toward no programme`);
 	}
 
 	toggleFilter(subjectId: string) {
@@ -876,8 +1071,23 @@ export class Plan {
 		this.#flashTimer = setTimeout(() => (this.flash = null), 2500);
 	}
 
+	// ── waivers ──
+	// A red hint states a rule the university actually enforces — but it is
+	// enforced by the registry, not by us, and students do get prerequisite
+	// waivers, one-off offerings and year exemptions all the time. So every
+	// warn hint carries a stable `id` and can be crossed off: the rule stops
+	// counting against the plan (no red chip, no tinted cell) until the
+	// student brings it back, and the waiver survives a reload.
+	waiveHint(id: string) {
+		if (!this.waived.includes(id)) this.waived = [...this.waived, id];
+	}
+
+	unwaiveHint(id: string) {
+		this.waived = this.waived.filter((w) => w !== id);
+	}
+
 	// ── the laws → hints ──
-	hints: Hint[] = $derived.by(() => {
+	allHints: Hint[] = $derived.by(() => {
 		const hints: Hint[] = [];
 		const pos = new Map<string, { year: number; trim: TrimNum; order: number }>();
 		for (const p of this.placed) pos.set(p.code, { year: p.year, trim: p.trim, order: p.year * 10 + p.trim });
@@ -936,6 +1146,7 @@ export class Plan {
 			if (nonCore.length) {
 				hints.push({
 					kind: 'warn',
+					id: `core-only:1-${trim}`,
 					text: `year 1 t${trim} can only hold foundation (KCCS) courses`,
 					codes: nonCore
 				});
@@ -943,6 +1154,7 @@ export class Plan {
 			if (codes.length > Y1_CORE_MAX) {
 				hints.push({
 					kind: 'warn',
+					id: `core-max:1-${trim}`,
 					text: `year 1 t${trim} can hold at most ${Y1_CORE_MAX} foundation courses (${codes.length}/${Y1_CORE_MAX})`,
 					codes
 				});
@@ -957,20 +1169,26 @@ export class Plan {
 				const subs = hasCode(pre) ? satisfiedBy(pre) : [];
 				const placedAt = [pos.get(pre), ...subs.map((s) => pos.get(s))].filter((x) => x !== undefined);
 				const prePos = placedAt.length ? placedAt.reduce((a, b) => (a.order <= b.order ? a : b)) : undefined;
+				// all three forms share one waiver id: a waiver is held against
+				// the REQUIREMENT (COMP321's MATH191), so crossing it off stays
+				// crossed off however the student then shuffles the two courses
+				const id = `prereq:${p.code}:${pre}`;
 				if (!prePos) {
 					hints.push({
 						kind: 'warn',
+						id,
 						text: `${p.code} requires prerequisite ${pre}${subs.length ? ` (or ${subs.join('/')})` : ''}`,
 						codes: [p.code, pre]
 					});
 				} else if (prePos.order === p.year * 10 + p.trim) {
 					hints.push({
 						kind: 'warn',
+						id,
 						text: `you can not do the prerequisite and the required in the same trimester [Y${p.year} T${p.trim}]`,
 						codes: [p.code, pre]
 					});
 				} else if (prePos.order > p.year * 10 + p.trim) {
-					hints.push({ kind: 'warn', text: `${pre} must come before ${p.code}`, codes: [p.code, pre] });
+					hints.push({ kind: 'warn', id, text: `${pre} must come before ${p.code}`, codes: [p.code, pre] });
 				}
 			}
 		}
@@ -983,6 +1201,7 @@ export class Plan {
 			if (course.eligibleYears.length && !course.eligibleYears.includes(p.year)) {
 				hints.push({
 					kind: 'warn',
+					id: `year:${p.code}:y${p.year}`,
 					text: `${p.code} is usually only open to Year ${course.eligibleYears.join('/')} — not Year ${p.year}`,
 					codes: [p.code]
 				});
@@ -996,6 +1215,9 @@ export class Plan {
 			if (course.offered.length && !course.offered.includes(p.trim)) {
 				hints.push({
 					kind: 'warn',
+					// per trimester: "it runs in t2 this year" is a claim about t2,
+					// and must not quietly cover a later move into t3
+					id: `offered:${p.code}:t${p.trim}`,
 					text: `${p.code} is not offered in trimester ${p.trim} (runs in t${course.offered.join('/t')})`,
 					codes: [p.code]
 				});
@@ -1127,6 +1349,7 @@ export class Plan {
 		if (badAudits.length) {
 			hints.push({
 				kind: 'warn',
+				id: `audit-ineligible:${[...badAudits].sort().join(',')}`,
 				text: `${badAudits.join(', ')} can not be audited — audits must be 2- or 4-credit courses, never KCCS/391/490/491`,
 				codes: badAudits
 			});
@@ -1135,6 +1358,7 @@ export class Plan {
 		if (audits.length > AUDIT_LIMIT) {
 			hints.push({
 				kind: 'warn',
+				id: 'audit-limit',
 				text: `too many audits — only ${AUDIT_LIMIT} allowed`,
 				codes: audits.map((a) => a.code)
 			});
@@ -1151,6 +1375,7 @@ export class Plan {
 		if (this.totalPlacedCredits > tenureCap) {
 			hints.push({
 				kind: 'warn',
+				id: 'credit-ceiling',
 				text: `total credits exceed the ${tenureCap}-credit ceiling for the ${this.fourYear ? 'four' : 'three'}-year programme (${this.totalPlacedCredits}/${tenureCap})`,
 				codes: []
 			});
@@ -1173,6 +1398,7 @@ export class Plan {
 			if (uCodes.length)
 				hints.push({
 					kind: 'warn',
+					id: `grade-u:${[...uCodes].sort().join(',')}`,
 					text: `${label(uCodes)}: U (fail) — counts as 0 for now; repeat the course or take a supplementary exam, then update the grade here and the new one replaces the U.`,
 					codes: uCodes
 				});
@@ -1208,6 +1434,7 @@ export class Plan {
 				else
 					hints.push({
 						kind: 'warn',
+						id: 'cgpa-floor',
 						text:
 							rec.kind === 'impossible'
 								? `CGPA ${this.cgpa.toFixed(2)} is below the 5.5 graduation floor and can't reach it on this plan — clear a U or add credits.`
@@ -1235,6 +1462,15 @@ export class Plan {
 
 		return hints;
 	});
+
+	/** what the panel and the grid answer to: every hint the student has not
+	 *  crossed off */
+	hints: Hint[] = $derived(this.allHints.filter((h) => !h.id || !this.waived.includes(h.id)));
+
+	/** the crossed-off hints that STILL apply — a waived rule the student has
+	 *  since fixed simply drops out of the list (its id stays waived, so
+	 *  breaking the same rule again is still crossed off) */
+	waivedHints: Hint[] = $derived(this.allHints.filter((h) => h.id && this.waived.includes(h.id)));
 
 	/** codes named in any hint → bold on the grid */
 	flaggedCodes = $derived(new Set(this.hints.flatMap((h) => h.codes)));

@@ -67,6 +67,7 @@
 	function open(year: number, trim: TrimNum) {
 		plan.zoom = { year, trim };
 	}
+
 </script>
 
 <div class="board-bar">
@@ -79,8 +80,6 @@
 		title="grade view — enter grades and track your CGPA"
 		onclick={() => {
 			plan.gradeMode = !plan.gradeMode;
-			// grades apply to your own plan — drop the reference preview on the way in
-			if (plan.gradeMode && plan.referenceView) plan.toggleReferenceView();
 			if (plan.gradeMode && !localStorage.getItem(GRADE_HINT_KEY)) showGradeHint = true;
 			else showGradeHint = false;
 		}}
@@ -168,6 +167,7 @@
 	<CreditRules {plan} onclose={() => (showCredits = false)} />
 {/if}
 
+
 {#if showGrades && plan.gradeMode}
 	<GradesPanel {plan} onclose={() => (showGrades = false)} />
 {/if}
@@ -252,6 +252,31 @@
 						>
 					</div>
 				{/each}
+
+				<!-- The recommended path, shown where it would go. Not a second plan
+				     and not a mode: a course the department would put in this
+				     trimester that isn't anywhere on your grid yet. Click it to take
+				     it; ignore it and it just sits there. Hidden in grade view, which
+				     is about what you HAVE taken. -->
+				{#if !plan.gradeMode}
+					{#each plan.suggestionsFor(y, t) as code (code)}
+						<button
+							class="ghost"
+							class:showing-title={plan.showTitles}
+							data-type={plan.courseType(code)}
+							title="suggested here — click to add {code}"
+							animate:flip={courseShift}
+							onclick={(e) => {
+								e.stopPropagation();
+								plan.acceptSuggestion(code);
+							}}
+						>
+							<span class="label">{plan.gridLabel(code)}</span>
+							<span class="plus" aria-hidden="true">+</span>
+						</button>
+					{/each}
+				{/if}
+
 				{#if slotCredits > 0}
 					<span class="cell-credits" class:over={!plan.gradeMode && y !== 1 && slotCredits > plan.targetLoad}>
 						{#if plan.gradeMode}
@@ -276,31 +301,45 @@
 	{/each}
 </div>
 
-<div class="save-row">
-	{#if plan.referenceView}
-		<!-- previewing: the only decision is whether to take this path -->
-		<button class="save" onclick={() => plan.adoptReference()}>
-			use this plan
-		</button>
-		<span class="save-note">just looking — switch back to “your plan” and nothing has changed</span>
-	{:else}
-		<span class="save-note">✓ your plan saves automatically</span>
-	{/if}
-</div>
+<!-- Bulk grid actions. The recommended path is not a second plan you switch
+     to — it is shown in place, as ghosts, in the slots it would use, and this
+     takes all of them at once. -->
+{#if !plan.gradeMode && (plan.suggestionCount || plan.otherPlacedCodes.length)}
+	<div class="acts-row">
+		{#if plan.suggestionCount}
+			<button class="fill" onclick={() => plan.acceptAllSuggestions()}>
+				fill in the rest
+				<em>{plan.suggestionCount} suggested</em>
+			</button>
+		{/if}
 
-{#if plan.flash}
-	<div class="flash" transition:fly={{ y: 12, duration: 220 }}>{plan.flash}</div>
+		{#if plan.otherPlacedCodes.length}
+			<button
+				class="strip"
+				title="drop every course that counts toward none of your major / minor / concentration"
+				onclick={() => plan.removeOtherCourses()}
+			>
+				remove non-programme courses
+				<em>{plan.otherPlacedCodes.length}</em>
+			</button>
+		{/if}
+	</div>
+	{#if plan.suggestionCount}
+		<p class="acts-note">or click any dashed course to add just that one</p>
+	{/if}
 {/if}
 
 <style lang="scss">
 	@use '$lib/styles/mixins' as *;
 
 	.overview {
+		position: relative;
 		display: grid;
 		grid-template-columns: 4rem repeat(var(--cols), 1fr);
 		gap: 1rem;
 		padding: 2.4rem 3.2rem;
 	}
+
 
 	.trim-head {
 		font-size: 2.2rem;
@@ -687,50 +726,108 @@
 		}
 	}
 
-	// under the grid: the save button when there's something to save, a quiet
-	// "✓ plan saved" otherwise, and "use this plan" while previewing the reference
-	.save-row {
+	// A suggestion wears the same shape as the real chip it would become, at a
+	// fraction of the weight — so the grid reads as "your plan, plus what's
+	// missing" rather than as two different kinds of thing.
+	.ghost {
 		display: flex;
-		flex-direction: column;
 		align-items: center;
-		gap: 0.8rem;
-		min-height: 6rem;
-		padding: 0 3.2rem 3.2rem;
-	}
-
-	.save-note {
-		font-size: 1.3rem;
+		gap: 0.4rem;
+		padding: 0.5rem 0.7rem;
+		font: inherit;
+		font-size: 1.2rem;
+		text-align: left;
 		color: var(--color-text-muted);
-	}
-
-	// the one primary action on the board — a lit plum button, so it doesn't
-	// read as just another surface
-	.save {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-		min-width: 22rem;
-		justify-content: center;
-		padding: 1rem 2.8rem;
-		font-size: 1.5rem;
-		font-weight: 600;
-		color: var(--color-on-accent);
-		background-color: var(--color-accent);
-		border: 1px solid var(--color-control-deep);
-		border-radius: 6px;
+		background: none;
+		border: 1px dashed var(--color-border-card);
+		border-radius: 5px;
 		cursor: pointer;
-		@include glossy-accent;
+		opacity: 0.75;
 		transition:
-			filter 0.15s ease,
-			box-shadow 0.15s ease,
-			transform 0.1s ease;
+			opacity 0.15s ease,
+			color 0.15s ease,
+			border-color 0.15s ease;
 
+		.plus {
+			font-weight: 700;
+			opacity: 0.6;
+		}
+
+		// on hover it firms up into the chip it is about to become
 		&:hover {
-			filter: brightness(1.07);
-			@include card-shine-hover;
+			opacity: 1;
+			color: var(--color-text);
+			border-style: solid;
+			border-color: var(--color-control);
 		}
 	}
 
+	// both bulk actions sit together at the left edge of the grid, in one row,
+	// at identical size — they are the same KIND of thing, so only the fill
+	// colour separates the one that adds from the one that removes
+	.acts-row {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.8rem;
+		padding: 0 8.2rem;
+	}
+
+	.fill,
+	.strip {
+		display: inline-flex;
+		align-items: baseline;
+		gap: 0.6rem;
+		padding: 0.7rem 1.6rem;
+		font: inherit;
+		font-size: 1.3rem;
+		border: 1px solid var(--color-border-card);
+		border-radius: 6px;
+		cursor: pointer;
+
+		em {
+			font-style: normal;
+			font-size: 1.15rem;
+		}
+	}
+
+	// the one that fills the board in — accent, so it reads as the primary of
+	// the two without being any bigger
+	.fill {
+		font-weight: 600;
+		color: var(--color-on-accent);
+		background-color: var(--color-accent);
+		border-color: var(--color-control-deep);
+		@include glossy-accent;
+
+		em {
+			font-weight: 400;
+			opacity: 0.8;
+		}
+
+		&:hover {
+			filter: brightness(1.07);
+		}
+	}
+
+	// the tidy-up — outlined, so it never competes with the one beside it
+	.strip {
+		color: var(--color-text);
+		background: var(--color-bg-light);
+
+		em {
+			color: var(--color-text-muted);
+		}
+
+		&:hover {
+			background: var(--color-hover-medium);
+		}
+	}
+
+	.acts-note {
+		padding: 0.7rem 8.2rem 0;
+		font-size: 1rem;
+		color: var(--color-text-muted);
+	}
 
 	.legend {
 		display: flex;
@@ -814,14 +911,4 @@
 		}
 	}
 
-	.flash {
-		position: fixed;
-		bottom: 2.4rem;
-		right: 2.4rem;
-		padding: 1rem 1.6rem;
-		font-size: 1.4rem;
-		background: var(--color-hint-warn);
-		border-radius: 4px;
-		@include card-shine;
-	}
 </style>

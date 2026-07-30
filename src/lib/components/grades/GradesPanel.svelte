@@ -1,14 +1,18 @@
 <script lang="ts">
 	import type { Plan } from '$lib/plan.svelte';
 	import { byCode, hasCode } from '$lib/data';
+	import { slide } from 'svelte/transition';
 	import {
 		GRADE_POINTS,
+		GRADE_SCALE,
+		OTHER_MARKS,
 		isGradeLetter,
 		weightedGpa,
 		recovery,
 		cgpaToPercent,
 		gradMinCredits,
-		GRAD_MIN_CGPA
+		GRAD_MIN_CGPA,
+		type GradeMark
 	} from '$lib/grades';
 	import Modal from '../Modal.svelte';
 
@@ -44,6 +48,23 @@
 		return { gpa: weightedGpa(items), graded, total: codes.length };
 	}
 
+	// ── entering grades, by trimester ──
+	// A trimester cascades open to its courses, each with its own grade select,
+	// so a student sitting down with a transcript can fill in a whole term (or
+	// the whole degree, via "open all") without hunting course by course
+	// through the grid and the details panel.
+	const termKey = (t: Term) => `${t.year}-${t.trim}`;
+	let open = $state<string[]>([]);
+	let allOpen = $derived(terms.length > 0 && open.length === terms.length);
+
+	function toggleTerm(key: string) {
+		open = open.includes(key) ? open.filter((k) => k !== key) : [...open, key];
+	}
+
+	function toggleAll() {
+		open = allOpen ? [] : terms.map(termKey);
+	}
+
 	// ── recovery ──
 	let target = $state(GRAD_MIN_CGPA);
 	let rec = $derived(recovery(target, plan.earnedPoints, plan.gradedCredits, plan.gradableCredits));
@@ -59,7 +80,7 @@
 <Modal title="grades & cgpa" width="46rem" {onclose}>
 	<div class="hero">
 		{#if plan.cgpa === null}
-			<div class="cgpa-empty">no grades yet — open a course and set its grade to see your CGPA</div>
+			<div class="cgpa-empty">no grades yet — open a trimester below and fill them in</div>
 		{:else}
 			<div class="cgpa"><span class="num">{fmt(plan.cgpa)}</span><span class="den">/10</span></div>
 			<div class="cgpa-sub">
@@ -108,19 +129,66 @@
 
 	{#if terms.length}
 		<section class="terms">
-			<div class="terms-head">by trimester</div>
-			{#each terms as term (term.year + '-' + term.trim)}
+			<div class="terms-head">
+				<span>by trimester</span>
+				<button class="all-btn" onclick={toggleAll}>{allOpen ? 'close all' : 'open all'}</button>
+			</div>
+			{#each terms as term (termKey(term))}
+				{@const key = termKey(term)}
 				{@const t = tgpa(term.codes)}
-				<div class="term-row">
-					<span class="tr-name">year {term.year} · t{term.trim}</span>
-					<span class="tr-count">{t.graded}/{t.total} graded</span>
-					<span class="tr-tgpa">{t.gpa === null ? '—' : fmt(t.gpa)}</span>
+				{@const isOpen = open.includes(key)}
+				<div class="term">
+					<button
+						class="term-row"
+						class:open={isOpen}
+						aria-expanded={isOpen}
+						title="enter grades for this trimester"
+						onclick={() => toggleTerm(key)}
+					>
+						<span class="tr-caret" aria-hidden="true">▸</span>
+						<span class="tr-name">year {term.year} · t{term.trim}</span>
+						<span class="tr-count">{t.graded}/{t.total} graded</span>
+						<span class="tr-tgpa">{t.gpa === null ? '—' : fmt(t.gpa)}</span>
+					</button>
+
+					{#if isOpen}
+						<div class="term-courses" transition:slide={{ duration: 160 }}>
+							{#each term.codes as code (code)}
+								{@const c = byCode(code)}
+								<label class="c-row">
+									<span class="c-code">{plan.shownCode(code)}</span>
+									<span class="c-title">{c.title}</span>
+									<span class="c-cr">{c.credits} cr</span>
+									<select
+										class="c-grade"
+										class:set={plan.gradeOf(code) !== undefined}
+										value={plan.gradeOf(code) ?? ''}
+										onchange={(e) =>
+											plan.setGrade(code, (e.currentTarget.value || null) as GradeMark | null)}
+									>
+										<option value="">—</option>
+										{#each OTHER_MARKS as m (m.mark)}
+											<option value={m.mark}>{m.label}</option>
+										{/each}
+										<optgroup label="grade">
+											{#each GRADE_SCALE as g (g.letter)}
+												<option value={g.letter}>{g.letter} · {g.points}</option>
+											{/each}
+										</optgroup>
+									</select>
+								</label>
+							{/each}
+						</div>
+					{/if}
 				</div>
 			{/each}
 		</section>
 	{/if}
 
-	<p class="hint">enter grades from any course's panel on the right — turn on <b>grade view</b> above the grid.</p>
+	<p class="hint">
+		open a trimester above to grade its courses, or set a grade from any course's panel on the right.
+		audits carry no grade and stay out of the maths.
+	</p>
 </Modal>
 
 <style lang="scss">
@@ -244,17 +312,50 @@
 	}
 	.terms-head {
 		@include section-label;
+		display: flex;
+		align-items: baseline;
+		justify-content: space-between;
+		gap: 1rem;
 		margin-bottom: 0.4rem;
 	}
+	.all-btn {
+		font: inherit;
+		font-size: 1.1rem;
+		text-transform: none;
+		letter-spacing: 0;
+		color: var(--color-accent);
+		background: none;
+		border: 0;
+		cursor: pointer;
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+
+	.term + .term {
+		border-top: 1px solid var(--color-border-light);
+	}
+
 	.term-row {
 		display: grid;
-		grid-template-columns: 1fr auto 4rem;
+		grid-template-columns: 1.2rem 1fr auto 4rem;
 		align-items: center;
 		gap: 1rem;
+		width: 100%;
 		padding: 0.5rem 0;
+		font: inherit;
 		font-size: 1.3rem;
-		& + .term-row {
-			border-top: 1px solid var(--color-border-light);
+		text-align: left;
+		background: none;
+		border: 0;
+		cursor: pointer;
+		.tr-caret {
+			font-size: 1rem;
+			color: var(--color-text-muted);
+			transition: transform 0.15s ease;
+		}
+		&.open .tr-caret {
+			transform: rotate(90deg);
 		}
 		.tr-name {
 			color: var(--color-text);
@@ -267,6 +368,52 @@
 			text-align: right;
 			font-weight: 700;
 			color: var(--color-text);
+		}
+		&:hover .tr-name {
+			text-decoration: underline;
+		}
+	}
+
+	// the cascade: one row per course in the trimester, each with its own grade
+	// select, so a whole term can be typed in without leaving this panel
+	.term-courses {
+		padding: 0.2rem 0 0.8rem 2.2rem;
+	}
+	.c-row {
+		display: grid;
+		grid-template-columns: 6.5rem 1fr auto 8.5rem;
+		align-items: center;
+		gap: 0.8rem;
+		padding: 0.3rem 0;
+		font-size: 1.2rem;
+		.c-code {
+			font-weight: 700;
+			color: var(--color-text);
+		}
+		.c-title {
+			overflow: hidden;
+			white-space: nowrap;
+			text-overflow: ellipsis;
+			color: var(--color-text-muted);
+		}
+		.c-cr {
+			font-size: 1.1rem;
+			color: var(--color-text-muted);
+		}
+	}
+	.c-grade {
+		width: 100%;
+		padding: 0.3rem 0.4rem;
+		font-size: 1.2rem;
+		color: var(--color-text);
+		background: var(--color-bg);
+		border: 1px solid var(--color-border-card);
+		border-radius: 4px;
+		cursor: pointer;
+		// an ungraded course reads as a blank to fill; a set one firms up
+		&.set {
+			font-weight: 700;
+			border-color: var(--color-accent);
 		}
 	}
 
