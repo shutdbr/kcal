@@ -23,7 +23,7 @@
 <Intro />
 
 <svelte:head>
-	<title>tracey — kreabot's schedule planner</title>
+	<title>tracey</title>
 </svelte:head>
 
 <!-- phones get a polite "use a laptop" note instead of a cramped grid -->
