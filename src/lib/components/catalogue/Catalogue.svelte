@@ -34,6 +34,7 @@
 
 <div
 	class="catalogue"
+	data-tour="catalogue"
 	role="list"
 	ondragover={(e) => e.preventDefault()}
 	ondrop={drop}

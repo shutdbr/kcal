@@ -74,7 +74,7 @@
 	</div>
 {/if}
 
-<div class="section">
+<div class="section" data-tour="hints">
 	<h3>
 		hints
 		{#if problems}

@@ -1,22 +1,11 @@
 <script lang="ts">
-	import { browser } from '$app/environment';
 	import type { Plan } from '$lib/plan.svelte';
 	import { MAJOR_SUBJECTS, OPEN_MINOR, PROGRAMME_SUBJECTS } from '$lib/data';
 	import Settings from '$lib/components/Settings.svelte';
 
-	let { plan }: { plan: Plan } = $props();
+	let { plan, ontour }: { plan: Plan; ontour: () => void } = $props();
 
 	let showSettings = $state(false);
-
-	// The grid arrives already filled with the recommended path for the default
-	// programme, so the first thing to do is say which degree it should be for.
-	// Remembered once dismissed, or once they change a pick.
-	const HINT_KEY = 'tracey-major-hint-seen';
-	let showHint = $state(browser && !localStorage.getItem(HINT_KEY));
-	function dismissHint() {
-		showHint = false;
-		if (browser) localStorage.setItem(HINT_KEY, '1');
-	}
 
 	// changing the programme re-lays-out a plan the student has never edited,
 	// and leaves an edited one alone — see Plan.programmeChanged
@@ -26,7 +15,6 @@
 	// later one's subject bumps the later pick instead (ensureDistinctPicks)
 	const distinct = () => {
 		plan.programmeChanged();
-		dismissHint();
 	};
 	let major2Opts = $derived(MAJOR_SUBJECTS.filter((s) => s.id !== plan.picks.major1));
 	// the open minor (free courses, no declared subject) leads the minor list
@@ -43,7 +31,7 @@
 
 <header class="col-header">
 	<h2><span class="brand-small">kreabot's</span> tracey</h2>
-	<button class="gear" aria-label="settings" title="settings" onclick={() => (showSettings = true)}>
+	<button class="gear" data-tour="settings" aria-label="settings" title="settings" onclick={() => (showSettings = true)}>
 		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
 			<circle cx="12" cy="12" r="3.2" />
 			<path
@@ -57,15 +45,11 @@
 	<Settings {plan} onclose={() => (showSettings = false)} />
 {/if}
 
-{#if showHint}
-	<div class="first-hint">
-		<button class="hint-close" onclick={dismissHint} aria-label="dismiss">×</button>
-		<strong>👋 start here</strong>
-		<p>this is an example plan. pick your <b>major</b> below to make it your own.</p>
-	</div>
-{/if}
+<button class="tour-link" onclick={ontour}>
+	<span aria-hidden="true">?</span> quick tour
+</button>
 
-<div class="controls">
+<div class="controls" data-tour="programme">
 	<label class="row" title="4-year degree — uncheck for the 3-year track">
 		<span class="row-label">4-year</span>
 		<input type="checkbox" class="tick" bind:checked={plan.fourYear} onchange={distinct} />
@@ -176,43 +160,34 @@
 		}
 	}
 
-	// first-visit nudge: say what the pre-filled grid is, and point at the picker
-	.first-hint {
-		position: relative;
-		margin: 1.4rem 1.4rem 0;
-		padding: 1rem 2rem 1rem 1.2rem;
-		background: color-mix(in srgb, var(--color-accent) 12%, var(--color-bg-light));
-		border: 1px solid var(--color-control);
-		border-radius: 6px;
-
-		strong {
-			display: block;
-			font-size: 1.3rem;
-			color: var(--color-text);
-		}
-
-		p {
-			margin-top: 0.3rem;
-			font-size: 1.2rem;
-			line-height: 1.45;
-			color: var(--color-text-muted);
-		}
-	}
-
-	.hint-close {
-		position: absolute;
-		top: 0.2rem;
-		right: 0.4rem;
-		padding: 0.2rem 0.5rem;
-		font-size: 1.6rem;
-		line-height: 1;
-		color: var(--color-text-muted);
+	.tour-link {
+		display: flex;
+		align-items: center;
+		align-self: flex-start;
+		gap: 0.6rem;
+		margin: 1.2rem 1.4rem 0;
+		padding: 0.4rem 0.6rem;
+		font-size: 1.3rem;
+		color: var(--color-accent);
 		background: none;
 		border: none;
+		border-radius: 4px;
 		cursor: pointer;
 
 		&:hover {
-			color: var(--color-text);
+			background: var(--color-hover-medium);
+			text-decoration: underline;
+		}
+
+		span {
+			display: grid;
+			place-items: center;
+			width: 1.6rem;
+			height: 1.6rem;
+			font-size: 1.1rem;
+			font-weight: 700;
+			border: 1px solid currentColor;
+			border-radius: 50%;
 		}
 	}
 

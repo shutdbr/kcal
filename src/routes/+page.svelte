@@ -9,8 +9,35 @@
 	import Intro from '$lib/components/Intro.svelte';
 	import { fly } from 'svelte/transition';
 	import { loadDescriptions } from '$lib/descriptions.svelte';
+	import { onMount } from 'svelte';
 
 	const plan = new Plan();
+	const INTRO_KEY = 'tracey-intro-seen';
+	let tourRequested = $state(false);
+	let desktop = $state(false);
+
+	onMount(() => {
+		// Match the mobile gate: a phone visit must not consume the first tour.
+		const media = window.matchMedia('(min-width: 769px)');
+		const update = () => (desktop = media.matches);
+		update();
+		media.addEventListener('change', update);
+		try {
+			tourRequested = !localStorage.getItem(INTRO_KEY);
+		} catch {
+			tourRequested = true;
+		}
+		return () => media.removeEventListener('change', update);
+	});
+
+	function dismissTour() {
+		tourRequested = false;
+		try {
+			localStorage.setItem(INTRO_KEY, '1');
+		} catch {
+			// Dismissal still works when browser storage is unavailable.
+		}
+	}
 
 	// the catalogue prose is a separate chunk so it can't hold up first paint —
 	// pull it in once the planner is up and the browser has a spare moment
@@ -20,7 +47,9 @@
 	});
 </script>
 
-<Intro />
+{#if tourRequested && desktop}
+	<Intro onclose={dismissTour} />
+{/if}
 
 <svelte:head>
 	<title>tracey</title>
@@ -37,7 +66,7 @@
 
 <div class="app">
 	<aside class="rail">
-		<Sidebar {plan} />
+		<Sidebar {plan} ontour={() => (tourRequested = true)} />
 		<HintsPanel {plan} />
 	</aside>
 
@@ -46,7 +75,7 @@
 	<main class="board">
 		<!-- wrapped so the footer below can be pushed to the bottom of the column
 		     on a short plan, and stay pinned there while a long one scrolls -->
-		<div class="board-main">
+		<div class="board-main" data-tour="board">
 			{#if plan.zoom}
 				<TrimesterZoom {plan} />
 			{:else}
@@ -72,7 +101,7 @@
 		{/if}
 	</main>
 
-	<aside class="rightbar">
+	<aside class="rightbar" data-tour="details">
 		<DetailsPanel {plan} />
 	</aside>
 </div>

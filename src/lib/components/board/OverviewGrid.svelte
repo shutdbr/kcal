@@ -70,7 +70,7 @@
 
 </script>
 
-<div class="board-bar">
+<div class="board-bar" data-tour="board-toggles">
 	<!-- grade view: unlocks grade entry on chips, in the details panel, and the
 	     CGPA / recovery panel -->
 	<button
@@ -305,7 +305,7 @@
      to — it is shown in place, as ghosts, in the slots it would use, and this
      takes all of them at once. -->
 {#if !plan.gradeMode && (plan.suggestionCount || plan.otherPlacedCodes.length)}
-	<div class="acts-row">
+	<div class="acts-row" data-tour="board-actions">
 		{#if plan.suggestionCount}
 			<button class="fill" onclick={() => plan.acceptAllSuggestions()}>
 				fill in the rest
