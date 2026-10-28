@@ -89,3 +89,5 @@ src/
 └─ app.scss / app.html
 misc/                          # the data pipeline (see below)
 ```
+
+# kcal
