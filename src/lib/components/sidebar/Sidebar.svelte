@@ -1,4 +1,5 @@
 <script lang="ts">
+	import PixelIcon from '../PixelIcon.svelte';
 	import type { Plan } from '$lib/plan.svelte';
 	import { MAJOR_SUBJECTS, OPEN_MINOR, PROGRAMME_SUBJECTS } from '$lib/data';
 	import Settings from '$lib/components/Settings.svelte';
@@ -30,24 +31,22 @@
 </script>
 
 <header class="col-header">
-	<h2><span class="brand-small">kreabot's</span> tracey</h2>
+	<h2>Relay</h2>
 	<button class="gear" data-tour="settings" aria-label="settings" title="settings" onclick={() => (showSettings = true)}>
-		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
-			<circle cx="12" cy="12" r="3.2" />
-			<path
-				d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.03 1.56V21a2 2 0 1 1-4 0v-.09A1.7 1.7 0 0 0 8.9 19.3a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.56-1.03H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.7 8.9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6a1.7 1.7 0 0 0 1.03-1.56V3a2 2 0 1 1 4 0v.09A1.7 1.7 0 0 0 15.1 4.7a1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9v.09a1.7 1.7 0 0 0 1.56 1.03H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1.03z"
-			/>
-		</svg>
+		<PixelIcon name="gear" size="1.6rem" snap />
 	</button>
 </header>
 
 {#if showSettings}
-	<Settings {plan} onclose={() => (showSettings = false)} />
+	<Settings
+		{plan}
+		onclose={() => (showSettings = false)}
+		ontour={() => {
+			showSettings = false;
+			ontour();
+		}}
+	/>
 {/if}
-
-<button class="tour-link" onclick={ontour}>
-	<span aria-hidden="true">?</span> quick tour
-</button>
 
 <div class="controls" data-tour="programme">
 	<label class="row" title="4-year degree — uncheck for the 3-year track">
@@ -56,7 +55,16 @@
 	</label>
 
 	<label class="row">
-		<span class="row-label">plan</span>
+		<span class="row-label">batch</span>
+		<select bind:value={plan.batchStartYear} onchange={distinct}>
+			{#each [2022, 2023, 2024, 2025, 2026] as year (year)}
+				<option value={year}>{year}-{String(year + (plan.fourYear ? 4 : 3)).slice(-2)}</option>
+			{/each}
+		</select>
+	</label>
+
+	<label class="row">
+		<span class="row-label">degree</span>
 		<select bind:value={plan.structure} onchange={distinct}>
 			<option value="single-major">single major</option>
 			<option value="double-major">double major</option>
@@ -99,7 +107,7 @@
 
 	{#if plan.structure === 'major-conc' || plan.structure === 'major-minor-conc'}
 		<label class="row">
-			<span class="row-label">conc.</span>
+			<span class="row-label" title="concentration">conc.</span>
 			<select bind:value={plan.picks.conc} onchange={distinct}>
 				{#each concOpts as s (s.id)}
 					<option value={s.id}>{s.label}</option>
@@ -122,12 +130,6 @@
 			font-weight: 600;
 			color: var(--color-text);
 		}
-
-		.brand-small {
-			font-size: 1.2rem;
-			font-weight: 400;
-			color: var(--color-text-muted);
-		}
 	}
 
 	// the app's one settings entry point, in the corner it's always in
@@ -142,52 +144,11 @@
 		color: var(--color-text-muted);
 		background: none;
 		border: none;
-		border-radius: 5px;
 		cursor: pointer;
-		transition:
-			color 0.15s ease,
-			background 0.15s ease,
-			transform 0.3s ease;
-
-		svg {
-			width: 1.8rem;
-			height: 1.8rem;
-		}
+		transition: color 0.15s ease;
 
 		&:hover {
 			color: var(--color-text);
-			transform: rotate(45deg);
-		}
-	}
-
-	.tour-link {
-		display: flex;
-		align-items: center;
-		align-self: flex-start;
-		gap: 0.6rem;
-		margin: 1.2rem 1.4rem 0;
-		padding: 0.4rem 0.6rem;
-		font-size: 1.3rem;
-		color: var(--color-accent);
-		background: none;
-		border: none;
-		border-radius: 4px;
-		cursor: pointer;
-
-		&:hover {
-			background: var(--color-hover-medium);
-			text-decoration: underline;
-		}
-
-		span {
-			display: grid;
-			place-items: center;
-			width: 1.6rem;
-			height: 1.6rem;
-			font-size: 1.1rem;
-			font-weight: 700;
-			border: 1px solid currentColor;
-			border-radius: 50%;
 		}
 	}
 
@@ -195,7 +156,7 @@
 		display: flex;
 		flex-direction: column;
 		gap: 1rem;
-		padding: 1.6rem 1.4rem;
+		padding: 1.6rem 1.6rem;
 		border-bottom: 1px solid var(--color-border-light);
 	}
 
@@ -204,7 +165,7 @@
 		grid-template-columns: 5.4rem 1fr;
 		align-items: center;
 		gap: 1rem;
-		font-size: 1.4rem;
+		font-size: var(--text-body);
 		cursor: pointer;
 	}
 
@@ -216,12 +177,13 @@
 	select {
 		width: 100%;
 		min-width: 0; // long option labels must not push past the panel edge
-		font-size: 1.3rem;
+		font-size: var(--text-body);
 		color: var(--color-text);
 		padding: 0.45rem 0.6rem;
 		background-color: var(--color-bg-light);
 		border: 1px solid var(--color-border-card);
-		border-radius: 5px;
+		border-radius: var(--rail-radius, 4px);
+		box-shadow: var(--shadow-well);
 		cursor: pointer;
 	}
 

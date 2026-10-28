@@ -98,6 +98,72 @@
 	}
 }
 
+// A small secondary button, App Store price-tag style: a soft vertical
+// gradient over the light fill, a hairline border, a lit top edge and
+// embossed text. Pressing sinks it into its own shadow. $armable: it can be
+// armed (.confirming) — a destructive button waiting for its second click.
+@mixin store-button($armable: false) {
+	color: var(--color-text);
+	text-shadow: var(--emboss);
+	background-color: var(--color-bg-light);
+	background-image: var(--gloss-face);
+	border: 1px solid color-mix(in srgb, var(--color-border) 40%, var(--color-border-card));
+	border-radius: 4px;
+	box-shadow: var(--shadow-inset), 0 1px 1px rgba(98, 58, 82, 0.1);
+	cursor: pointer;
+	transition:
+		background-color 0.15s ease,
+		box-shadow 0.12s ease,
+		transform 0.14s var(--spring);
+
+	&:hover:not(:disabled) {
+		background-color: color-mix(in srgb, var(--color-accent) 6%, var(--color-bg-light));
+	}
+
+	&:active:not(:disabled) {
+		transform: translateY(1px);
+		box-shadow: var(--shadow-well);
+		transition-duration: 0.07s;
+	}
+
+	// armed: red — and it stays red under the cursor, a shade deeper, rather
+	// than the hover above washing it back to white
+	@if $armable {
+		&.confirming {
+			color: var(--color-on-accent);
+			text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.3);
+			background-color: var(--color-danger);
+			border-color: var(--color-danger-deep);
+
+			&:hover:not(:disabled) {
+				background-color: var(--color-danger-deep);
+			}
+		}
+	}
+}
+
+// A progress bar as an iOS 6 slider track, minus the knob: the track is a
+// white capsule set into the surface, shaded along its top inside edge; the
+// fill (progress-fill) is a glossy bar of the caller's colour — set it as
+// background-color — lit at the top and deepening toward the bottom. Its
+// leading edge is cut straight; only the track's own ends are rounded.
+@mixin progress-track {
+	overflow: hidden; // rounds the fill's left end to the capsule
+	background-color: var(--color-bg-light);
+	background-image: linear-gradient(rgba(98, 58, 82, 0.1), rgba(98, 58, 82, 0) 70%);
+	border: 1px solid color-mix(in srgb, var(--color-border) 35%, var(--color-border-card));
+	border-radius: 999px;
+	box-shadow: inset 0 1px 2px rgba(98, 58, 82, 0.18), 0 1px 0 rgba(255, 255, 255, 0.7);
+}
+
+@mixin progress-fill {
+	background-image: linear-gradient(rgba(255, 255, 255, 0.42), rgba(255, 255, 255, 0.1) 50%, rgba(0, 0, 0, 0.12));
+	box-shadow:
+		inset 0 1px 0 rgba(255, 255, 255, 0.35),
+		inset 0 -1px 1px rgba(0, 0, 0, 0.15),
+		0 0 0 1px rgba(0, 0, 0, 0.12); // a hairline edge against the track
+}
+
 // Standard card container
 @mixin card {
 	padding: 1.6rem;
@@ -139,10 +205,16 @@
 	cursor: pointer;
 	transition:
 		background-color 0.15s ease,
-		border-color 0.15s ease;
+		border-color 0.15s ease,
+		transform 0.18s var(--spring);
 
 	&:hover {
 		border-color: var(--color-control);
+	}
+
+	// pressed: the box sinks under the finger
+	&:active {
+		transform: scale(0.86);
 	}
 
 	&:checked {
@@ -151,17 +223,19 @@
 		border-color: var(--color-control-deep);
 	}
 
-	// the checkmark — two edges of a rotated box, scaled off the tick size
+	// the checkmark — a chunky pixel-art tick, cut out of the on-accent
+	// colour with a mask so it follows the theme. The viewBox spans the box's
+	// inner face, so at the default text size every block lands on a whole
+	// pixel. It draws in left to right a few pixels at a time (app.scss).
 	&:checked::after {
 		content: '';
 		position: absolute;
-		top: 46%;
-		left: 50%;
-		width: $size * 0.26;
-		height: $size * 0.5;
-		border: solid var(--color-on-accent);
-		border-width: 0 2px 2px 0;
-		transform: translate(-50%, -50%) rotate(45deg);
+		inset: 0;
+		background: var(--color-on-accent);
+		$pixel-tick: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14' shape-rendering='crispEdges'%3E%3Cpath d='M10 3h2v1h-2zM9 4h3v1H9zM8 5h3v1H8zM2 6h2v1H2zM7 6h3v1H7zM2 7h3v1H2zM6 7h3v1H6zM3 8h5v1H3zM4 9h3v1H4zM5 10h1v1H5z'/%3E%3C/svg%3E");
+		-webkit-mask: $pixel-tick center / 100% 100% no-repeat;
+		mask: $pixel-tick center / 100% 100% no-repeat;
+		animation: relay-tick-draw 0.16s steps(5, end) both;
 	}
 }
 
@@ -209,71 +283,90 @@
 	}
 }
 
-// Course card fill by type — apply on an element with data-type attr.
-// 'other' = anything outside your major/minor requirements (green); an
-// audit is a separate student-set flag layered on top (see .is-audit).
-@mixin course-type-fill {
-	// each type sets --fill so the programme-accent mixin can wash a faint
-	// hint of the programme colour into it (see programme-accent below)
+// A subject colour at one of the shared depths (see Course colours in
+// _variables), in the element's own --hue — lavender when it has none
+@function subject-tone($depth) {
+	@return oklch(var(--tone-#{$depth}-l) var(--tone-#{$depth}-c) var(--hue, 300));
+}
+
+// Course card fill by type — apply on an element with data-type attr and,
+// for required/elective, a --hue. 'other' = anything outside your
+// programmes (untinted); an audit is a separate student-set flag layered on
+// top (see .is-audit).
+@mixin course-type-fill($audits: true) {
 	&[data-type='required'] {
-		--fill: var(--color-course-required);
-		background: var(--fill);
-		border: 1px solid var(--color-border-card);
+		background: subject-tone(required);
+		border: 1px solid subject-tone(required-deep);
 	}
 	// the KCCS foundation core — its own colour so the twelve university-wide
 	// requirements never read as one of your programme's courses
 	&[data-type='core'] {
-		--fill: var(--color-course-core);
-		background: var(--fill);
+		background: var(--color-course-core);
 		border: 1px solid var(--color-course-core-deep);
 	}
 	&[data-type='elective'] {
-		--fill: var(--color-course-elective);
-		background: var(--fill);
-		border: 1px solid var(--color-course-elective-deep);
+		background: subject-tone(elective);
+		border: 1px solid subject-tone(elective-deep);
 	}
 	&[data-type='other'] {
-		--fill: var(--color-course-audit);
-		background: var(--fill);
+		background: var(--color-course-audit);
 		border: 1px solid var(--color-border-audit);
 	}
 	// student-marked audit: a dashed ring on top of the type colour
+	@if $audits {
 	&.is-audit {
 		border-style: dashed;
 		border-width: 1.5px;
 		border-color: var(--color-accent);
 	}
+	}
 }
 
-// Subtle per-programme accent — a thin coloured bar down the left edge of a
-// course chip/card, keyed by the `data-prog` index (0/1/2). Only present on a
-// multi-programme plan (the attribute is omitted otherwise), so a single major
-// stays unmarked. Apply on a position:relative element.
-@mixin programme-accent {
-	// no radius of its own — the host clips it (overflow: hidden), so the
-	// stripe meets the card's rounded corners without white notches
-	&[data-prog]::before {
-		content: '';
-		position: absolute;
-		left: 0;
-		top: 0;
-		bottom: 0;
-		width: 3px;
-		background: var(--prog-accent, transparent);
+// the leading markers on a course (required dot, warning ×) share one size
+$mark-size: 0.8rem;
+
+// The required marker: a small dot leading a course's first line, in its
+// subject's ink
+@mixin required-dot {
+	flex-shrink: 0;
+	display: inline-block;
+	width: $mark-size;
+	height: $mark-size;
+	border-radius: 50%;
+	background: subject-tone(ink);
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4); // one fine lit edge
+}
+
+// Severity markers: how bad a hint is, told by how many edges its mark
+// has — the fewer, the sharper, the worse. A triangle for a broken rule,
+// a square for a caution, a hexagon for a note, a circle when all's well.
+// The same mark leads the hint in the sidebar and the course chips it
+// names, so the two read as one. Drawn as masks, so they take the colour.
+$shape-triangle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 1.8 14.6 13.6H1.4Z' fill='black' stroke='black' stroke-width='1.6' stroke-linejoin='round'/%3E%3C/svg%3E");
+$shape-square: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Crect x='2.4' y='2.4' width='11.2' height='11.2' rx='1.8' fill='black'/%3E%3C/svg%3E");
+$shape-hexagon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M8 1.4 13.7 4.7V11.3L8 14.6 2.3 11.3V4.7Z' fill='black' stroke='black' stroke-width='1' stroke-linejoin='round'/%3E%3C/svg%3E");
+$shape-circle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6.2' fill='black'/%3E%3C/svg%3E");
+
+// put it on an element carrying data-kind (warn | caution | info | good)
+@mixin severity-mark {
+	flex-shrink: 0;
+	display: inline-block;
+	width: calc(#{$mark-size} * 1.15);
+	height: calc(#{$mark-size} * 1.15);
+	mask: $shape-circle center / contain no-repeat;
+	background: var(--color-hint-good-deep);
+
+	&[data-kind='warn'] {
+		mask-image: $shape-triangle;
+		background: var(--color-hint-warn-deep);
 	}
-	// and a very faint wash of the same colour across the whole card, so a
-	// maths course reads gently green even before you spot the stripe
-	&[data-prog] {
-		background: color-mix(in srgb, var(--prog-accent, transparent) 6%, var(--fill, var(--color-bg-light)));
+	&[data-kind='caution'] {
+		mask-image: $shape-square;
+		background: var(--color-hint-caution-deep);
 	}
-	&[data-prog='0'] {
-		--prog-accent: var(--color-prog-0);
-	}
-	&[data-prog='1'] {
-		--prog-accent: var(--color-prog-1);
-	}
-	&[data-prog='2'] {
-		--prog-accent: var(--color-prog-2);
+	&[data-kind='info'] {
+		mask-image: $shape-hexagon;
+		background: var(--color-hint-info-deep);
 	}
 }
 

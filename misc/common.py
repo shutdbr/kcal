@@ -1,4 +1,4 @@
-"""Shared vocabulary for the kreabot/tracey data pipeline.
+"""Shared vocabulary for the kreabot/relay data pipeline.
 
 Everything here is stdlib-only so both generate.py (offline, CSVs) and
 scrape_programmes.py (network, bs4) can import it.

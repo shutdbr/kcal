@@ -14,8 +14,9 @@
 	color-scheme: light; // native selects, scrollbars and the search field follow
 
 	// ── Text ──
+	--text-body: 1.3rem; // the one body size in the side columns — only headings differ
 	--color-text: #623a52;
-	--color-text-muted: #927f83;
+	--color-text-muted: #76626c; // ≥4.5:1 on every light surface, so small muted text stays legible
 	--color-accent: #7c4b69;
 	--color-on-accent: #fff8f8; // text/icons sitting ON an accent fill
 
@@ -40,6 +41,21 @@
 	--color-bg-board-start: #ebedf0;
 	--color-bg-board-end: #d3d6da;
 	--color-board-text: #6f757f;
+	// the board's toolbar — a cool brushed-steel strip carrying glossy
+	// old-iPhone segmented keys: light pink, dark pink when selected
+	--bar-top: #eef1f5;
+	--bar-bottom: #d6dbe2;
+	--bar-edge: #aeb6c2;
+	--bar-text: #3d4554;
+	--bar-text-muted: #586173; // ≥4.5:1 on the strip
+	--bar-hi: rgba(255, 255, 255, 0.75); // the lit top edge on every face
+	--bar-key: #f4dbe5;
+	--bar-key-edge: #b88a9f;
+	--bar-key-text: #7a3d5c;
+	--bar-key-on: #a84a73;
+	--bar-key-on-edge: #7a3253;
+	--bar-key-on-text: #ffffff;
+	--bar-well: rgba(40, 56, 84, 0.07);
 	// the board field behind the grid — a very pale grey with a faint blue cast
 	--color-bg-board-page: #edeef0;
 	--color-bg-card-start: #ffffff;
@@ -64,6 +80,13 @@
 	// a brick red pulled toward the plum family so it still belongs here
 	--color-danger: #8f3b45;
 	--color-danger-deep: #6d2b34;
+
+	// ── Motion ──
+	// one spring for everything that moves or swells: it settles with a
+	// slight overshoot, the way iOS springs do — never a bounce. Things that
+	// slide or fade use the ease-out; a press goes down fast.
+	--spring: cubic-bezier(0.34, 1.3, 0.64, 1);
+	--ease-out: cubic-bezier(0.22, 1, 0.36, 1);
 
 	// ── Shadows ──
 	// two-part drop shadow: a tight contact shadow plus a wider soft one, so
@@ -104,19 +127,45 @@
 	);
 	// the recessed track a segmented control's segments sit in
 	--shadow-well: inset 0 2px 4px rgba(120, 84, 96, 0.22), inset 0 -1px 0 rgba(255, 255, 255, 0.5);
+	// text pressed into a lit face: a white line just under each glyph
+	--emboss: 0 1px 0 rgba(255, 255, 255, 0.75);
 
 	// ─────────────────────────────────────────
-	// Tracey-specific tokens
+	// Relay-specific tokens
 	// ─────────────────────────────────────────
 
-	// ── Course type fills ──
-	--color-course-required: #ffffff; //  required → white
-	--color-course-elective: #e4e6f5; //  elective → soft periwinkle
-	--color-course-audit: #d9f4e8; //     audit    → green
-	--color-course-elective-deep: #b4bade;
-	--color-border-audit: #9fd4bd;
-	--color-course-core: #f8dcda; //      foundation core (KCCS) → pinkish red
-	--color-course-core-deep: #dfaeae;
+	// ── Course colours ──
+	// two axes. Hue = whose course it is: every programme subject has a fixed
+	// hue (SUBJECTS in data.ts), carried on the card as --hue. Depth = how
+	// bound you are to it: required a step deeper than the grid cell, elective
+	// a step paler. Each depth is one lightness + one muted chroma shared by
+	// every hue (OKLCH), so no subject reads brighter or darker than another.
+	// -ink is the required dot and the progress-bar fill.
+	--tone-required-l: 0.882;
+	--tone-required-c: 0.035;
+	--tone-required-deep-l: 0.74;
+	--tone-required-deep-c: 0.052;
+	--tone-elective-l: 0.944;
+	--tone-elective-c: 0.019;
+	--tone-elective-deep-l: 0.85;
+	--tone-elective-deep-c: 0.028;
+	--tone-ink-l: 0.55;
+	--tone-ink-c: 0.068;
+	// a trimester cell tinted by the courses in it — only a hint of the hue,
+	// a step lighter and much greyer than the chips, so they stand off it
+	--tone-cell-l: 0.935;
+	--tone-cell-c: 0.016;
+
+	// the same depths in lavender, for anything not tied to one subject
+	// (the reference plan's open slots, the credit rules, admin pages)
+	--color-course-required: oklch(var(--tone-required-l) var(--tone-required-c) 300);
+	--color-course-required-deep: oklch(var(--tone-required-deep-l) var(--tone-required-deep-c) 300);
+	--color-course-elective: oklch(var(--tone-elective-l) var(--tone-elective-c) 300);
+	--color-course-elective-deep: oklch(var(--tone-elective-deep-l) var(--tone-elective-deep-c) 300);
+	--color-course-audit: #f4f7fb; //         other dept. → untinted, a cool white
+	--color-border-audit: #c2ccd6;
+	--color-course-core: #eecbc6; //          foundation core (KCCS) → blush
+	--color-course-core-deep: #cb9e98;
 
 	// ── Hint chip fills ──
 	// each fill carries a -deep partner used as its border, so a chip is
@@ -131,19 +180,16 @@
 	--color-hint-good-deep: #8fbb9d;
 
 	// ── Credit zones (trimester zoom) ──
-	--color-zone-min: #dcb9be; //  the 12-credit minimum boxes — tinted, but light
-	--color-zone-rest: #faf3f3; // everything past the minimum, uniform
-	--color-zone-border: #7d5866; // dark enough to read as ruled paper, not a smudge
-
-	// ── Programme accent (multi-programme plans) ──
-	// a thin left stripe telling apart which chosen programme a course belongs
-	// to on a double major / major+minor / +concentration. Muted on purpose —
-	// the required/elective/other fill stays the primary signal.
-	--color-prog-0: #8f6f9e; //  first major   — muted plum
-	--color-prog-1: #5f9a8a; //  minor / 2nd   — muted teal
-	--color-prog-2: #bd925a; //  concentration — muted amber
+	// the zoomed trimester is the board's own grey, enlarged — the course
+	// cards on it carry the colour, the paper underneath stays quiet
+	--color-zone-min: #d9dde5; //  the 12-credit minimum boxes — a step deeper than the rest
+	--color-zone-rest: #f2f3f6; // everything past the minimum, uniform
+	--color-zone-border: #a3aab6; // slate, dashed — ruled paper, not a frame
 
 	// ── Grid ──
+	// while dragging, the slots a course fits cleanly light up mint
+	--color-drop-ok: #d9f4e8;
+	--color-drop-ok-edge: #9fd4bd;
 	--color-grid-cell: #e1e3e8;
 	--color-grid-cell-problem: #d3b7b7;
 	--color-drop-hint: rgba(150, 106, 120, 0.22);
@@ -179,6 +225,19 @@
 	--color-bg-board-start: #2b2f37;
 	--color-bg-board-end: #23272e;
 	--color-board-text: #8b95a6;
+	--bar-top: #343a45;
+	--bar-bottom: #282d35;
+	--bar-edge: #15181d;
+	--bar-text: #dbe0e8;
+	--bar-text-muted: #a2abba;
+	--bar-hi: rgba(255, 255, 255, 0.07);
+	--bar-key: #4a323d;
+	--bar-key-edge: #24171d;
+	--bar-key-text: #efcfdc;
+	--bar-key-on: #9c4670;
+	--bar-key-on-edge: #5e2441;
+	--bar-key-on-text: #ffffff;
+	--bar-well: rgba(0, 0, 0, 0.2);
 	--color-bg-board-page: #21242b;
 	--color-bg-card-start: #342930;
 	--color-bg-card-end: #2c2227;
@@ -222,16 +281,26 @@
 		rgba(0, 0, 0, 0.2) 100%
 	);
 	--shadow-well: inset 0 2px 4px rgba(0, 0, 0, 0.45), inset 0 -1px 0 rgba(255, 255, 255, 0.06);
+	--emboss: 0 -1px 0 rgba(0, 0, 0, 0.45);
 
-	// course fills keep their hues (white / pink / green / periwinkle) at the
-	// depth the dark board needs — the legend still reads left to right
-	--color-course-required: #3a2f36;
-	--color-course-elective: #343a55;
-	--color-course-elective-deep: #5c638f;
-	--color-course-audit: #26443d;
-	--color-border-audit: #4a7d6d;
-	--color-course-core: #4e333a;
-	--color-course-core-deep: #7d4f59;
+	// the same hues at depths flipped for a dark board: required is the
+	// brighter step and elective sits nearer the background
+	--tone-required-l: 0.39;
+	--tone-required-c: 0.038;
+	--tone-required-deep-l: 0.56;
+	--tone-required-deep-c: 0.05;
+	--tone-elective-l: 0.33;
+	--tone-elective-c: 0.024;
+	--tone-elective-deep-l: 0.45;
+	--tone-elective-deep-c: 0.032;
+	--tone-ink-l: 0.74;
+	--tone-ink-c: 0.065;
+	--tone-cell-l: 0.26;
+	--tone-cell-c: 0.014;
+	--color-course-audit: #2b2f35;
+	--color-border-audit: #515963;
+	--color-course-core: #5c3f3d;
+	--color-course-core-deep: #926865;
 
 	--color-hint-warn: #4a2b2f;
 	--color-hint-warn-deep: #8c5057;
@@ -242,14 +311,13 @@
 	--color-hint-good: #2a4038;
 	--color-hint-good-deep: #558068;
 
-	--color-zone-min: #3f3037;
-	--color-zone-rest: #272025;
-	--color-zone-border: #8a6675;
+	--color-zone-min: #2c3139;
+	--color-zone-rest: #23262c;
+	--color-zone-border: #555d6b;
 
-	--color-prog-0: #b492c4;
-	--color-prog-1: #79bfad;
-	--color-prog-2: #d3ac77;
 
+	--color-drop-ok: #26443d;
+	--color-drop-ok-edge: #4a7d6d;
 	--color-grid-cell: #262a30;
 	--color-grid-cell-problem: #45292e;
 	--color-drop-hint: rgba(230, 190, 205, 0.16);

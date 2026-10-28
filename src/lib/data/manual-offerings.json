@@ -1,0 +1,4260 @@
+{
+  "source": "User-provided timetable, T2 for all plan years; academic year unspecified.",
+  "courses": [
+    {
+      "code": "CHEM320",
+      "title": "Electrochemistry",
+      "codes": [
+        "CHEM320"
+      ],
+      "facultyEmails": [
+        "raghuvamsy.maligalganesh@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "chemistry",
+      "subjects": [
+        "chemistry"
+      ],
+      "codesBySubject": {
+        "chemistry": "CHEM320"
+      },
+      "faculty": [
+        {
+          "email": "raghuvamsy.maligalganesh@krea.edu.in",
+          "name": "Raghuvamsy Maligalganesh",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "COMP337",
+      "title": "Computer Networks and Internet",
+      "codes": [
+        "COMP337"
+      ],
+      "facultyEmails": [
+        "abuthahir.abdulrahuman@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": true,
+      "subject": "computer science",
+      "subjects": [
+        "computer science"
+      ],
+      "codesBySubject": {
+        "computer science": "COMP337"
+      },
+      "faculty": [
+        {
+          "email": "abuthahir.abdulrahuman@krea.edu.in",
+          "name": "Abuthahir Abdulrahuman",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "ECON202",
+      "title": "Microeconomics I",
+      "codes": [
+        "ECON202"
+      ],
+      "facultyEmails": [
+        "anwesha.chakrabarti@krea.edu.in",
+        "suchika.chopra@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "economics",
+      "subjects": [
+        "economics"
+      ],
+      "codesBySubject": {
+        "economics": "ECON202"
+      },
+      "faculty": [
+        {
+          "email": "anwesha.chakrabarti@krea.edu.in",
+          "name": "Anwesha Chakrabarti",
+          "id": null
+        },
+        {
+          "email": "suchika.chopra@krea.edu.in",
+          "name": "Suchika Chopra",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "ECON337",
+      "title": "Economics of Crime",
+      "codes": [
+        "ECON337"
+      ],
+      "facultyEmails": [
+        "SIAS_FACULTY002@oneerp.krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": true,
+      "subject": "economics",
+      "subjects": [
+        "economics"
+      ],
+      "codesBySubject": {
+        "economics": "ECON337"
+      },
+      "faculty": [
+        {
+          "email": "SIAS_FACULTY002@oneerp.krea.edu.in",
+          "name": "SIAS_FACULTY002@oneerp.krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "HIST355",
+      "title": "Indian Historiography",
+      "codes": [
+        "HIST355"
+      ],
+      "facultyEmails": [
+        "deepashree.dutta@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "history",
+      "subjects": [
+        "history"
+      ],
+      "codesBySubject": {
+        "history": "HIST355"
+      },
+      "faculty": [
+        {
+          "email": "deepashree.dutta@krea.edu.in",
+          "name": "Deepashree Dutta",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "KCCS133",
+      "title": "Design Thinking",
+      "codes": [
+        "KCCS133"
+      ],
+      "facultyEmails": [
+        "nazifa.ahmed@krea.edu.in",
+        "shilpi.sarkar@krea.edu.in",
+        "venugopal.maddipati@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "core",
+      "subjects": [
+        "core"
+      ],
+      "codesBySubject": {
+        "core": "KCCS133"
+      },
+      "faculty": [
+        {
+          "email": "nazifa.ahmed@krea.edu.in",
+          "name": "nazifa.ahmed@krea.edu.in",
+          "id": null
+        },
+        {
+          "email": "shilpi.sarkar@krea.edu.in",
+          "name": "shilpi.sarkar@krea.edu.in",
+          "id": null
+        },
+        {
+          "email": "venugopal.maddipati@krea.edu.in",
+          "name": "Venugopal Maddipati",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "KCCS190",
+      "title": "Engaging With The Environment",
+      "codes": [
+        "KCCS190"
+      ],
+      "facultyEmails": [
+        "lakshmi.narayanan@krea.edu.in",
+        "aryasree.sudharaj@krea.edu.in",
+        "prateek.gantayat@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "core",
+      "subjects": [
+        "core"
+      ],
+      "codesBySubject": {
+        "core": "KCCS190"
+      },
+      "faculty": [
+        {
+          "email": "lakshmi.narayanan@krea.edu.in",
+          "name": "Lakshmi Narayanan",
+          "id": null
+        },
+        {
+          "email": "aryasree.sudharaj@krea.edu.in",
+          "name": "Aryasree Sudharaj",
+          "id": null
+        },
+        {
+          "email": "prateek.gantayat@krea.edu.in",
+          "name": "Prateek Gantayat",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "PHIL207",
+      "title": "Virtue Ethics: Character and Conduct Across Cultures",
+      "codes": [
+        "PHIL207"
+      ],
+      "facultyEmails": [
+        "vivek.radhakrishnan@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": true,
+      "subject": "philosophy",
+      "subjects": [
+        "philosophy"
+      ],
+      "codesBySubject": {
+        "philosophy": "PHIL207"
+      },
+      "faculty": [
+        {
+          "email": "vivek.radhakrishnan@krea.edu.in",
+          "name": "Vivek Radhakrishnan",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "PHYS202",
+      "title": "Mathematical Methods II",
+      "codes": [
+        "PHYS202",
+        "ECON240"
+      ],
+      "facultyEmails": [
+        "nicolas.gheeraert@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "physics",
+      "subjects": [
+        "physics",
+        "economics"
+      ],
+      "codesBySubject": {
+        "economics": "ECON240",
+        "physics": "PHYS202"
+      },
+      "faculty": [
+        {
+          "email": "nicolas.gheeraert@krea.edu.in",
+          "name": "Nicolas Gheeraert",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "PSYC333",
+      "title": "Psychology of Language",
+      "codes": [
+        "PSYC333"
+      ],
+      "facultyEmails": [
+        "sayantan.mandal@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "psychology",
+      "subjects": [
+        "psychology"
+      ],
+      "codesBySubject": {
+        "psychology": "PSYC333"
+      },
+      "faculty": [
+        {
+          "email": "sayantan.mandal@krea.edu.in",
+          "name": "Sayantan Mandal",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "SOCL233",
+      "title": "Acts of Dwelling: Practices, Protocols and Politics",
+      "codes": [
+        "SOCL233"
+      ],
+      "facultyEmails": [
+        "nidhin.donald@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": true,
+      "subject": "sociology",
+      "subjects": [
+        "sociology"
+      ],
+      "codesBySubject": {
+        "sociology": "SOCL233"
+      },
+      "faculty": [
+        {
+          "email": "nidhin.donald@krea.edu.in",
+          "name": "nidhin.donald@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "CHEM208",
+      "title": "Atoms, molecules & elements",
+      "codes": [
+        "CHEM208"
+      ],
+      "facultyEmails": [
+        "brijesh.mishra@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "chemistry",
+      "subjects": [
+        "chemistry"
+      ],
+      "codesBySubject": {
+        "chemistry": "CHEM208"
+      },
+      "faculty": [
+        {
+          "email": "brijesh.mishra@krea.edu.in",
+          "name": "Brijesh Kumar Mishra",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "CHEM423",
+      "title": "Stereochemistry",
+      "codes": [
+        "CHEM423"
+      ],
+      "facultyEmails": [
+        "debajit.maiti@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "chemistry",
+      "subjects": [
+        "chemistry"
+      ],
+      "codesBySubject": {
+        "chemistry": "CHEM423"
+      },
+      "faculty": [
+        {
+          "email": "debajit.maiti@krea.edu.in",
+          "name": "Debajit Maiti",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "DATA204",
+      "title": "Applied Statistics",
+      "codes": [
+        "DATA204",
+        "ENVS258"
+      ],
+      "facultyEmails": [
+        "naveen.prabhakar@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "data science",
+      "subjects": [
+        "data science",
+        "environmental studies"
+      ],
+      "codesBySubject": {
+        "environmental studies": "ENVS258",
+        "data science": "DATA204"
+      },
+      "faculty": [
+        {
+          "email": "naveen.prabhakar@krea.edu.in",
+          "name": "Naveen Prabhakar",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "ENVS426",
+      "title": "Environmental Justice",
+      "codes": [
+        "ENVS426"
+      ],
+      "facultyEmails": [
+        "abhayraj.naik@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "environmental studies",
+      "subjects": [
+        "environmental studies"
+      ],
+      "codesBySubject": {
+        "environmental studies": "ENVS426"
+      },
+      "faculty": [
+        {
+          "email": "abhayraj.naik@krea.edu.in",
+          "name": "Abhayraj Naik",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "HIST346",
+      "title": "Diversity and Unity in Medieval Europe 500",
+      "codes": [
+        "HIST346"
+      ],
+      "facultyEmails": [
+        "jonathanandrew.jarrett@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "history",
+      "subjects": [
+        "history"
+      ],
+      "codesBySubject": {
+        "history": "HIST346"
+      },
+      "faculty": [
+        {
+          "email": "jonathanandrew.jarrett@krea.edu.in",
+          "name": "jonathanandrew.jarrett@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "KCCS134",
+      "title": "Introduction to Computational Thinking",
+      "codes": [
+        "KCCS134"
+      ],
+      "facultyEmails": [
+        "abuthahir.abdulrahuman@krea.edu.in",
+        "inzemamul.haque@krea.edu.in",
+        "mullai.thiagu@krea.edu.in",
+        "prathamesh.turaga@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "core",
+      "subjects": [
+        "core"
+      ],
+      "codesBySubject": {
+        "core": "KCCS134"
+      },
+      "faculty": [
+        {
+          "email": "abuthahir.abdulrahuman@krea.edu.in",
+          "name": "Abuthahir Abdulrahuman",
+          "id": null
+        },
+        {
+          "email": "inzemamul.haque@krea.edu.in",
+          "name": "Inzemamul Haque",
+          "id": null
+        },
+        {
+          "email": "mullai.thiagu@krea.edu.in",
+          "name": "Mullai Thiagu",
+          "id": null
+        },
+        {
+          "email": "prathamesh.turaga@krea.edu.in",
+          "name": "prathamesh.turaga@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "LITT432",
+      "title": "A Writers Diary Coetzee & Creative Autobiography",
+      "codes": [
+        "LITT432"
+      ],
+      "facultyEmails": [
+        "kai.easton@krea.edu.in",
+        "prayaag.akbar@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": true,
+      "subject": "literature",
+      "subjects": [
+        "literature"
+      ],
+      "codesBySubject": {
+        "literature": "LITT432"
+      },
+      "faculty": [
+        {
+          "email": "kai.easton@krea.edu.in",
+          "name": "Kai Easton",
+          "id": null
+        },
+        {
+          "email": "prayaag.akbar@krea.edu.in",
+          "name": "Prayaag Akbar",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "MATH231",
+      "title": "Algebra 1 & Topics in Algebra 1: Group Theory",
+      "codes": [
+        "MATH231"
+      ],
+      "facultyEmails": [
+        "soumya.dey@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "mathematics",
+      "subjects": [
+        "mathematics"
+      ],
+      "codesBySubject": {
+        "mathematics": "MATH231"
+      },
+      "faculty": [
+        {
+          "email": "soumya.dey@krea.edu.in",
+          "name": "Soumya Dey",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "MATH405",
+      "title": "Measure theory and integration & Topics in Analysis 1: Measure Theory and Integration",
+      "codes": [
+        "MATH405"
+      ],
+      "facultyEmails": [
+        "shibi.vasudevan@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "mathematics",
+      "subjects": [
+        "mathematics"
+      ],
+      "codesBySubject": {
+        "mathematics": "MATH405"
+      },
+      "faculty": [
+        {
+          "email": "shibi.vasudevan@krea.edu.in",
+          "name": "Shibi Vasudevan",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "PSYC450",
+      "title": "Psychology of Inequality",
+      "codes": [
+        "PSYC450"
+      ],
+      "facultyEmails": [
+        "suryodaya.sharma@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": true,
+      "subject": "psychology",
+      "subjects": [
+        "psychology"
+      ],
+      "codesBySubject": {
+        "psychology": "PSYC450"
+      },
+      "faculty": [
+        {
+          "email": "suryodaya.sharma@krea.edu.in",
+          "name": "Suryodaya Sharma",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "COMP349",
+      "title": "GPU Programming",
+      "codes": [
+        "COMP349"
+      ],
+      "facultyEmails": [
+        "mullai.thiagu@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": true,
+      "subject": "computer science",
+      "subjects": [
+        "computer science"
+      ],
+      "codesBySubject": {
+        "computer science": "COMP349"
+      },
+      "faculty": [
+        {
+          "email": "mullai.thiagu@krea.edu.in",
+          "name": "Mullai Thiagu",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "ECON309",
+      "title": "Macroeconomics III",
+      "codes": [
+        "ECON309"
+      ],
+      "facultyEmails": [
+        "albert.jodhimani@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "economics",
+      "subjects": [
+        "economics"
+      ],
+      "codesBySubject": {
+        "economics": "ECON309"
+      },
+      "faculty": [
+        {
+          "email": "albert.jodhimani@krea.edu.in",
+          "name": "Albert Jodhimani",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "ENVS310",
+      "title": "Agrarian crisis and Indian society",
+      "codes": [
+        "ENVS310"
+      ],
+      "facultyEmails": [
+        "jaideep.hardikar@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "environmental studies",
+      "subjects": [
+        "environmental studies"
+      ],
+      "codesBySubject": {
+        "environmental studies": "ENVS310"
+      },
+      "faculty": [
+        {
+          "email": "jaideep.hardikar@krea.edu.in",
+          "name": "Jaideep Hardikar",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "HIST304",
+      "title": "Historicizing Conflict through Art and Architecture: West Asia, 7th Century to the Present",
+      "codes": [
+        "HIST304"
+      ],
+      "facultyEmails": [
+        "venugopal.maddipati@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": true,
+      "subject": "history",
+      "subjects": [
+        "history"
+      ],
+      "codesBySubject": {
+        "history": "HIST304"
+      },
+      "faculty": [
+        {
+          "email": "venugopal.maddipati@krea.edu.in",
+          "name": "Venugopal Maddipati",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "KCCS101",
+      "title": "Writing and Oral Communication",
+      "codes": [
+        "KCCS101"
+      ],
+      "facultyEmails": [
+        "renu.susan@krea.edu.in",
+        "uk.shamsudheen@krea.edu.in",
+        "nangsel.sherpa@krea.edu.in",
+        "azeem.ahmed@krea.edu.in",
+        "meghna.bohidar@krea.edu.in",
+        "anakshipal.sibsankar@krea.edu.in",
+        "rahul.pillai@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "core",
+      "subjects": [
+        "core"
+      ],
+      "codesBySubject": {
+        "core": "KCCS101"
+      },
+      "faculty": [
+        {
+          "email": "renu.susan@krea.edu.in",
+          "name": "renu.susan@krea.edu.in",
+          "id": null
+        },
+        {
+          "email": "uk.shamsudheen@krea.edu.in",
+          "name": "uk.shamsudheen@krea.edu.in",
+          "id": null
+        },
+        {
+          "email": "nangsel.sherpa@krea.edu.in",
+          "name": "nangsel.sherpa@krea.edu.in",
+          "id": null
+        },
+        {
+          "email": "azeem.ahmed@krea.edu.in",
+          "name": "azeem.ahmed@krea.edu.in",
+          "id": null
+        },
+        {
+          "email": "meghna.bohidar@krea.edu.in",
+          "name": "meghna.bohidar@krea.edu.in",
+          "id": null
+        },
+        {
+          "email": "anakshipal.sibsankar@krea.edu.in",
+          "name": "anakshipal.sibsankar@krea.edu.in",
+          "id": null
+        },
+        {
+          "email": "rahul.pillai@krea.edu.in",
+          "name": "rahul.pillai@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "LITT206",
+      "title": "Creative Writing",
+      "codes": [
+        "LITT206"
+      ],
+      "facultyEmails": [
+        "prayaag.akbar@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "literature",
+      "subjects": [
+        "literature"
+      ],
+      "codesBySubject": {
+        "literature": "LITT206"
+      },
+      "faculty": [
+        {
+          "email": "prayaag.akbar@krea.edu.in",
+          "name": "Prayaag Akbar",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "MATH346",
+      "title": "Introductory Fourier analysis",
+      "codes": [
+        "MATH346",
+        "COMP346",
+        "DATA346",
+        "PHYS346"
+      ],
+      "facultyEmails": [
+        "shibi.vasudevan@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "mathematics",
+      "subjects": [
+        "mathematics",
+        "computer science",
+        "data science",
+        "physics"
+      ],
+      "codesBySubject": {
+        "physics": "PHYS346",
+        "data science": "DATA346",
+        "computer science": "COMP346",
+        "mathematics": "MATH346"
+      },
+      "faculty": [
+        {
+          "email": "shibi.vasudevan@krea.edu.in",
+          "name": "Shibi Vasudevan",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "PSYC208",
+      "title": "Introduction to Qualitative Approaches in Psychology",
+      "codes": [
+        "PSYC208"
+      ],
+      "facultyEmails": [
+        "akanksha.adya@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "psychology",
+      "subjects": [
+        "psychology"
+      ],
+      "codesBySubject": {
+        "psychology": "PSYC208"
+      },
+      "faculty": [
+        {
+          "email": "akanksha.adya@krea.edu.in",
+          "name": "Akanksha Adya",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "PSYC343",
+      "title": "Introduction to Neuroscience",
+      "codes": [
+        "PSYC343"
+      ],
+      "facultyEmails": [
+        "rakesh.sengupta@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": true,
+      "subject": "psychology",
+      "subjects": [
+        "psychology"
+      ],
+      "codesBySubject": {
+        "psychology": "PSYC343"
+      },
+      "faculty": [
+        {
+          "email": "rakesh.sengupta@krea.edu.in",
+          "name": "Rakesh Sengupta",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "CHEM222",
+      "title": "Physical Chemistry Lab",
+      "codes": [
+        "CHEM222"
+      ],
+      "facultyEmails": [
+        "raghuvamsy.maligalganesh@krea.edu.in",
+        "jesni.jacob@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "chemistry",
+      "subjects": [
+        "chemistry"
+      ],
+      "codesBySubject": {
+        "chemistry": "CHEM222"
+      },
+      "faculty": [
+        {
+          "email": "raghuvamsy.maligalganesh@krea.edu.in",
+          "name": "Raghuvamsy Maligalganesh",
+          "id": null
+        },
+        {
+          "email": "jesni.jacob@krea.edu.in",
+          "name": "jesni.jacob@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "COMP351",
+      "title": "Quantum Computing",
+      "codes": [
+        "COMP351"
+      ],
+      "facultyEmails": [
+        "mithilesh.kumar@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": true,
+      "subject": "computer science",
+      "subjects": [
+        "computer science"
+      ],
+      "codesBySubject": {
+        "computer science": "COMP351"
+      },
+      "faculty": [
+        {
+          "email": "mithilesh.kumar@krea.edu.in",
+          "name": "Mithilesh Kumar",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "ECON207",
+      "title": "The Indian Economy",
+      "codes": [
+        "ECON207"
+      ],
+      "facultyEmails": [
+        "karthik.cavale@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "economics",
+      "subjects": [
+        "economics"
+      ],
+      "codesBySubject": {
+        "economics": "ECON207"
+      },
+      "faculty": [
+        {
+          "email": "karthik.cavale@krea.edu.in",
+          "name": "karthik.cavale@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "ENVS343",
+      "title": "Environmental Consequences of Militarism",
+      "codes": [
+        "ENVS343"
+      ],
+      "facultyEmails": [
+        "chirag.dhara@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": true,
+      "subject": "environmental studies",
+      "subjects": [
+        "environmental studies"
+      ],
+      "codesBySubject": {
+        "environmental studies": "ENVS343"
+      },
+      "faculty": [
+        {
+          "email": "chirag.dhara@krea.edu.in",
+          "name": "Chirag Dhara",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "HIST326",
+      "title": "Ancient World",
+      "codes": [
+        "HIST326"
+      ],
+      "facultyEmails": [
+        "rebecca.darley@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "history",
+      "subjects": [
+        "history"
+      ],
+      "codesBySubject": {
+        "history": "HIST326"
+      },
+      "faculty": [
+        {
+          "email": "rebecca.darley@krea.edu.in",
+          "name": "rebecca.darley@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "KCCS121",
+      "title": "Scientific Reasoning",
+      "codes": [
+        "KCCS121"
+      ],
+      "facultyEmails": [
+        "debajit.maiti@krea.edu.in",
+        "lidija.stankovikj@krea.edu.in",
+        "guha.dharmarajan@krea.edu.in",
+        "sushant.raut@krea.edu.in",
+        "nicolas.gheeraert@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "core",
+      "subjects": [
+        "core"
+      ],
+      "codesBySubject": {
+        "core": "KCCS121"
+      },
+      "faculty": [
+        {
+          "email": "debajit.maiti@krea.edu.in",
+          "name": "Debajit Maiti",
+          "id": null
+        },
+        {
+          "email": "lidija.stankovikj@krea.edu.in",
+          "name": "lidija.stankovikj@krea.edu.in",
+          "id": null
+        },
+        {
+          "email": "guha.dharmarajan@krea.edu.in",
+          "name": "Guha Dharmarajan",
+          "id": null
+        },
+        {
+          "email": "sushant.raut@krea.edu.in",
+          "name": "Sushant Kumar Raut",
+          "id": null
+        },
+        {
+          "email": "nicolas.gheeraert@krea.edu.in",
+          "name": "Nicolas Gheeraert",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "PHYS223",
+      "title": "Classical Physics: Spacetime",
+      "codes": [
+        "PHYS223"
+      ],
+      "facultyEmails": [
+        "sivakumar.srinivasan@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "physics",
+      "subjects": [
+        "physics"
+      ],
+      "codesBySubject": {
+        "physics": "PHYS223"
+      },
+      "faculty": [
+        {
+          "email": "sivakumar.srinivasan@krea.edu.in",
+          "name": "Sivakumar Srinivasan",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "POLT416",
+      "title": "The Strongmanand the Fakir: Understanding the Populist Phenomenon",
+      "codes": [
+        "POLT416"
+      ],
+      "facultyEmails": [
+        "proma.raychaudhury@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "political science",
+      "subjects": [
+        "political science"
+      ],
+      "codesBySubject": {
+        "political science": "POLT416"
+      },
+      "faculty": [
+        {
+          "email": "proma.raychaudhury@krea.edu.in",
+          "name": "Proma Raychaudhury",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "PSYC205",
+      "title": "Statistics & Research Methods I",
+      "codes": [
+        "PSYC205"
+      ],
+      "facultyEmails": [
+        "madhavilatha.maganti@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "psychology",
+      "subjects": [
+        "psychology"
+      ],
+      "codesBySubject": {
+        "psychology": "PSYC205"
+      },
+      "faculty": [
+        {
+          "email": "madhavilatha.maganti@krea.edu.in",
+          "name": "Madhavilatha Maganti",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "PSYC334",
+      "title": "Introduction to Clinical Psychology",
+      "codes": [
+        "PSYC334"
+      ],
+      "facultyEmails": [
+        "sabah.siddiqui@krea.edu.in",
+        "varun.viswanathan@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "psychology",
+      "subjects": [
+        "psychology"
+      ],
+      "codesBySubject": {
+        "psychology": "PSYC334"
+      },
+      "faculty": [
+        {
+          "email": "sabah.siddiqui@krea.edu.in",
+          "name": "Sabah Siddiqui",
+          "id": null
+        },
+        {
+          "email": "varun.viswanathan@krea.edu.in",
+          "name": "Varun Viswanathan",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "BIOS218",
+      "title": "Biochemistry",
+      "codes": [
+        "BIOS218"
+      ],
+      "facultyEmails": [
+        "lakshman.varanasi@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "biology",
+      "subjects": [
+        "biology"
+      ],
+      "codesBySubject": {
+        "biology": "BIOS218"
+      },
+      "faculty": [
+        {
+          "email": "lakshman.varanasi@krea.edu.in",
+          "name": "Lakshman Varanasi",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "CHEM306",
+      "title": "Making Carbon based Molecules",
+      "codes": [
+        "CHEM306"
+      ],
+      "facultyEmails": [
+        "surajit.kayal@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "chemistry",
+      "subjects": [
+        "chemistry"
+      ],
+      "codesBySubject": {
+        "chemistry": "CHEM306"
+      },
+      "faculty": [
+        {
+          "email": "surajit.kayal@krea.edu.in",
+          "name": "Surajit Kayal",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "ECON203",
+      "title": "Macroeconomics",
+      "codes": [
+        "ECON203"
+      ],
+      "facultyEmails": [
+        "albert.jodhimani@krea.edu.in",
+        "arghya.bhattacharya@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "economics",
+      "subjects": [
+        "economics"
+      ],
+      "codesBySubject": {
+        "economics": "ECON203"
+      },
+      "faculty": [
+        {
+          "email": "albert.jodhimani@krea.edu.in",
+          "name": "Albert Jodhimani",
+          "id": null
+        },
+        {
+          "email": "arghya.bhattacharya@krea.edu.in",
+          "name": "arghya.bhattacharya@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "ENVS238",
+      "title": "Introduction to Environmental Law and Policy",
+      "codes": [
+        "ENVS238"
+      ],
+      "facultyEmails": [
+        "abhayraj.naik@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "environmental studies",
+      "subjects": [
+        "environmental studies"
+      ],
+      "codesBySubject": {
+        "environmental studies": "ENVS238"
+      },
+      "faculty": [
+        {
+          "email": "abhayraj.naik@krea.edu.in",
+          "name": "Abhayraj Naik",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "ENVS333",
+      "title": "Remote Sensing",
+      "codes": [
+        "ENVS333",
+        "DATA333"
+      ],
+      "facultyEmails": [
+        "lakshmi.narayanan@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "environmental studies",
+      "subjects": [
+        "environmental studies",
+        "data science"
+      ],
+      "codesBySubject": {
+        "data science": "DATA333",
+        "environmental studies": "ENVS333"
+      },
+      "faculty": [
+        {
+          "email": "lakshmi.narayanan@krea.edu.in",
+          "name": "Lakshmi Narayanan",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "LITT340",
+      "title": "The Novel and Forms of Selfhood",
+      "codes": [
+        "LITT340"
+      ],
+      "facultyEmails": [
+        "udaya.kumar@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": true,
+      "subject": "literature",
+      "subjects": [
+        "literature"
+      ],
+      "codesBySubject": {
+        "literature": "LITT340"
+      },
+      "faculty": [
+        {
+          "email": "udaya.kumar@krea.edu.in",
+          "name": "udaya.kumar@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "PHIL342",
+      "title": "Curatorial Frameworks: Theory and Praxis",
+      "codes": [
+        "PHIL342",
+        "ARTS342"
+      ],
+      "facultyEmails": [
+        "srajana.kaikini@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "philosophy",
+      "subjects": [
+        "philosophy",
+        "arts"
+      ],
+      "codesBySubject": {
+        "arts": "ARTS342",
+        "philosophy": "PHIL342"
+      },
+      "faculty": [
+        {
+          "email": "srajana.kaikini@krea.edu.in",
+          "name": "Srajana Kaikini",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "POLT204",
+      "title": "Introduction to Comparative Politics",
+      "codes": [
+        "POLT204"
+      ],
+      "facultyEmails": [
+        "proma.raychaudhury@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "political science",
+      "subjects": [
+        "political science"
+      ],
+      "codesBySubject": {
+        "political science": "POLT204"
+      },
+      "faculty": [
+        {
+          "email": "proma.raychaudhury@krea.edu.in",
+          "name": "Proma Raychaudhury",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "PSYC344",
+      "title": "Systems Approaches to Working with Couples and Families",
+      "codes": [
+        "PSYC344"
+      ],
+      "facultyEmails": [
+        "chitra.subrahmanian@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": true,
+      "subject": "psychology",
+      "subjects": [
+        "psychology"
+      ],
+      "codesBySubject": {
+        "psychology": "PSYC344"
+      },
+      "faculty": [
+        {
+          "email": "chitra.subrahmanian@krea.edu.in",
+          "name": "Chitra Subrahmanian",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "BIOS236",
+      "title": "Immunology",
+      "codes": [
+        "BIOS236"
+      ],
+      "facultyEmails": [
+        "vaishali.sharma@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "biology",
+      "subjects": [
+        "biology"
+      ],
+      "codesBySubject": {
+        "biology": "BIOS236"
+      },
+      "faculty": [
+        {
+          "email": "vaishali.sharma@krea.edu.in",
+          "name": "Vaishali Sharma",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "ECON204",
+      "title": "Econometrics I",
+      "codes": [
+        "ECON204"
+      ],
+      "facultyEmails": [
+        "suchika.chopra@krea.edu.in",
+        "vidyabharathi.rajkumar@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "economics",
+      "subjects": [
+        "economics"
+      ],
+      "codesBySubject": {
+        "economics": "ECON204"
+      },
+      "faculty": [
+        {
+          "email": "suchika.chopra@krea.edu.in",
+          "name": "Suchika Chopra",
+          "id": null
+        },
+        {
+          "email": "vidyabharathi.rajkumar@krea.edu.in",
+          "name": "vidyabharathi.rajkumar@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "ENVS306",
+      "title": "Introduction to Sustainability",
+      "codes": [
+        "ENVS306"
+      ],
+      "facultyEmails": [
+        "lidija.stankovikj@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "environmental studies",
+      "subjects": [
+        "environmental studies"
+      ],
+      "codesBySubject": {
+        "environmental studies": "ENVS306"
+      },
+      "faculty": [
+        {
+          "email": "lidija.stankovikj@krea.edu.in",
+          "name": "lidija.stankovikj@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "HIST350",
+      "title": "Religious and Political Identities in Modern India",
+      "codes": [
+        "HIST350",
+        "POLT350"
+      ],
+      "facultyEmails": [
+        "hilal.ahmed@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": true,
+      "subject": "history",
+      "subjects": [
+        "history",
+        "political science"
+      ],
+      "codesBySubject": {
+        "political science": "POLT350",
+        "history": "HIST350"
+      },
+      "faculty": [
+        {
+          "email": "hilal.ahmed@krea.edu.in",
+          "name": "hilal.ahmed@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "KCCS124",
+      "title": "Data Analytics",
+      "codes": [
+        "KCCS124"
+      ],
+      "facultyEmails": [
+        "brijesh.mishra@krea.edu.in",
+        "tanmoy.chakrabarty@krea.edu.in",
+        "rama.kamineni@krea.edu.in",
+        "raghavan.komaranapuram@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "core",
+      "subjects": [
+        "core"
+      ],
+      "codesBySubject": {
+        "core": "KCCS124"
+      },
+      "faculty": [
+        {
+          "email": "brijesh.mishra@krea.edu.in",
+          "name": "Brijesh Kumar Mishra",
+          "id": null
+        },
+        {
+          "email": "tanmoy.chakrabarty@krea.edu.in",
+          "name": "Tanmoy Chakrabarty",
+          "id": null
+        },
+        {
+          "email": "rama.kamineni@krea.edu.in",
+          "name": "Rama Koteswara Rao Kamineni",
+          "id": null
+        },
+        {
+          "email": "raghavan.komaranapuram@krea.edu.in",
+          "name": "raghavan.komaranapuram@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "LITT239",
+      "title": "The Uses of Orthodoxy",
+      "codes": [
+        "LITT239"
+      ],
+      "facultyEmails": [
+        "abhishek.shukla@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": true,
+      "subject": "literature",
+      "subjects": [
+        "literature"
+      ],
+      "codesBySubject": {
+        "literature": "LITT239"
+      },
+      "faculty": [
+        {
+          "email": "abhishek.shukla@krea.edu.in",
+          "name": "Abhishek Shukla",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "PHYS360",
+      "title": "Quantum Information & Advanced quantum information",
+      "codes": [
+        "PHYS360",
+        "CHEM360",
+        "COMP360"
+      ],
+      "facultyEmails": [
+        "sivakumar.srinivasan@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "physics",
+      "subjects": [
+        "physics",
+        "chemistry",
+        "computer science"
+      ],
+      "codesBySubject": {
+        "computer science": "COMP360",
+        "chemistry": "CHEM360",
+        "physics": "PHYS360"
+      },
+      "faculty": [
+        {
+          "email": "sivakumar.srinivasan@krea.edu.in",
+          "name": "Sivakumar Srinivasan",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "POLT309",
+      "title": "Indian Politics II",
+      "codes": [
+        "POLT309"
+      ],
+      "facultyEmails": [
+        "shilpi.singh@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "political science",
+      "subjects": [
+        "political science"
+      ],
+      "codesBySubject": {
+        "political science": "POLT309"
+      },
+      "faculty": [
+        {
+          "email": "shilpi.singh@krea.edu.in",
+          "name": "Shilpi Singh",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "PSYC353",
+      "title": "Disembodied Mind",
+      "codes": [
+        "PSYC353"
+      ],
+      "facultyEmails": [
+        "sayantan.mandal@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": true,
+      "subject": "psychology",
+      "subjects": [
+        "psychology"
+      ],
+      "codesBySubject": {
+        "psychology": "PSYC353"
+      },
+      "faculty": [
+        {
+          "email": "sayantan.mandal@krea.edu.in",
+          "name": "Sayantan Mandal",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "COMP433",
+      "title": "High Performance Computing",
+      "codes": [
+        "COMP433"
+      ],
+      "facultyEmails": [
+        "chiranjib.sur@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "computer science",
+      "subjects": [
+        "computer science"
+      ],
+      "codesBySubject": {
+        "computer science": "COMP433"
+      },
+      "faculty": [
+        {
+          "email": "chiranjib.sur@krea.edu.in",
+          "name": "Chiranjib Sur",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "DATA245",
+      "title": "Probabilistic Models in Finance Finance",
+      "codes": [
+        "DATA245"
+      ],
+      "facultyEmails": [
+        "rakesh.nigam@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": true,
+      "subject": "data science",
+      "subjects": [
+        "data science"
+      ],
+      "codesBySubject": {
+        "data science": "DATA245"
+      },
+      "faculty": [
+        {
+          "email": "rakesh.nigam@krea.edu.in",
+          "name": "Rakesh Nigam",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "KCCS103",
+      "title": "Creative Expression",
+      "codes": [
+        "KCCS103"
+      ],
+      "facultyEmails": [
+        "prajwal.parajuly@krea.edu.in",
+        "shilpi.sarkar@krea.edu.in",
+        "nazifa.ahmed@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "core",
+      "subjects": [
+        "core"
+      ],
+      "codesBySubject": {
+        "core": "KCCS103"
+      },
+      "faculty": [
+        {
+          "email": "prajwal.parajuly@krea.edu.in",
+          "name": "Prajwal Parajuly",
+          "id": null
+        },
+        {
+          "email": "shilpi.sarkar@krea.edu.in",
+          "name": "shilpi.sarkar@krea.edu.in",
+          "id": null
+        },
+        {
+          "email": "nazifa.ahmed@krea.edu.in",
+          "name": "nazifa.ahmed@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "KCCS123",
+      "title": "Philosophical Perspectives across Cultures",
+      "codes": [
+        "KCCS123"
+      ],
+      "facultyEmails": [
+        "sambaiah.gundimeda@krea.edu.in",
+        "shilpi.singh@krea.edu.in",
+        "henry.vumjou@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "core",
+      "subjects": [
+        "core"
+      ],
+      "codesBySubject": {
+        "core": "KCCS123"
+      },
+      "faculty": [
+        {
+          "email": "sambaiah.gundimeda@krea.edu.in",
+          "name": "Sambaiah Gundimeda",
+          "id": null
+        },
+        {
+          "email": "shilpi.singh@krea.edu.in",
+          "name": "Shilpi Singh",
+          "id": null
+        },
+        {
+          "email": "henry.vumjou@krea.edu.in",
+          "name": "henry.vumjou@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "MATH313",
+      "title": "Probability",
+      "codes": [
+        "MATH313"
+      ],
+      "facultyEmails": [
+        "debangana.mukherjee@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "mathematics",
+      "subjects": [
+        "mathematics"
+      ],
+      "codesBySubject": {
+        "mathematics": "MATH313"
+      },
+      "faculty": [
+        {
+          "email": "debangana.mukherjee@krea.edu.in",
+          "name": "Debangana Mukherjee",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "SOCL344",
+      "title": "Citizenship, Exclusion and Belonging in South Asia",
+      "codes": [
+        "SOCL344",
+        "HIST344",
+        "POLT344"
+      ],
+      "facultyEmails": [
+        "panchali.ray@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": true,
+      "subject": "sociology",
+      "subjects": [
+        "sociology",
+        "history",
+        "political science"
+      ],
+      "codesBySubject": {
+        "political science": "POLT344",
+        "history": "HIST344",
+        "sociology": "SOCL344"
+      },
+      "faculty": [
+        {
+          "email": "panchali.ray@krea.edu.in",
+          "name": "Panchali Ray",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "BIOS231",
+      "title": "Ways of Knowing: Instrumentation in Biology",
+      "codes": [
+        "BIOS231"
+      ],
+      "facultyEmails": [
+        "maha.r@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "biology",
+      "subjects": [
+        "biology"
+      ],
+      "codesBySubject": {
+        "biology": "BIOS231"
+      },
+      "faculty": [
+        {
+          "email": "maha.r@krea.edu.in",
+          "name": "Maha R",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "BUSI202",
+      "title": "Foundations of Marketing",
+      "codes": [
+        "BUSI202"
+      ],
+      "facultyEmails": [
+        "debankur.saha@krea.edu.in",
+        "kriti.krishna@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "business studies",
+      "subjects": [
+        "business studies"
+      ],
+      "codesBySubject": {
+        "business studies": "BUSI202"
+      },
+      "faculty": [
+        {
+          "email": "debankur.saha@krea.edu.in",
+          "name": "debankur.saha@krea.edu.in",
+          "id": null
+        },
+        {
+          "email": "kriti.krishna@krea.edu.in",
+          "name": "kriti.krishna@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "COMP205",
+      "title": "Programming, Algorithms and Data Structures",
+      "codes": [
+        "COMP205"
+      ],
+      "facultyEmails": [
+        "prathamesh.turaga@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "computer science",
+      "subjects": [
+        "computer science"
+      ],
+      "codesBySubject": {
+        "computer science": "COMP205"
+      },
+      "faculty": [
+        {
+          "email": "prathamesh.turaga@krea.edu.in",
+          "name": "prathamesh.turaga@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "DATA238",
+      "title": "Numerical Methods for Data Science",
+      "codes": [
+        "DATA238",
+        "ECON238"
+      ],
+      "facultyEmails": [
+        "subha.venkatraman@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "data science",
+      "subjects": [
+        "data science",
+        "economics"
+      ],
+      "codesBySubject": {
+        "economics": "ECON238",
+        "data science": "DATA238"
+      },
+      "faculty": [
+        {
+          "email": "subha.venkatraman@krea.edu.in",
+          "name": "Subha Venkatraman",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "LITT301",
+      "title": "Make or Break?: The Literary Canon",
+      "codes": [
+        "LITT301"
+      ],
+      "facultyEmails": [
+        "kai.easton@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "literature",
+      "subjects": [
+        "literature"
+      ],
+      "codesBySubject": {
+        "literature": "LITT301"
+      },
+      "faculty": [
+        {
+          "email": "kai.easton@krea.edu.in",
+          "name": "Kai Easton",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "MATH307",
+      "title": "Introduction to Differential Geometry",
+      "codes": [
+        "MATH307"
+      ],
+      "facultyEmails": [
+        "gangotryi.sorcar@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": true,
+      "subject": "mathematics",
+      "subjects": [
+        "mathematics"
+      ],
+      "codesBySubject": {
+        "mathematics": "MATH307"
+      },
+      "faculty": [
+        {
+          "email": "gangotryi.sorcar@krea.edu.in",
+          "name": "Gangotryi Sorcar",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "MATH328",
+      "title": "Numerical Methods",
+      "codes": [
+        "MATH328",
+        "COMP328"
+      ],
+      "facultyEmails": [
+        "vivek.tewary@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "mathematics",
+      "subjects": [
+        "mathematics",
+        "computer science"
+      ],
+      "codesBySubject": {
+        "computer science": "COMP328",
+        "mathematics": "MATH328"
+      },
+      "faculty": [
+        {
+          "email": "vivek.tewary@krea.edu.in",
+          "name": "Vivek Tewary",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "PHYS228",
+      "title": "Mechanical Properties of Matter",
+      "codes": [
+        "PHYS228"
+      ],
+      "facultyEmails": [
+        "iyyappan.iyyasamy@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "physics",
+      "subjects": [
+        "physics"
+      ],
+      "codesBySubject": {
+        "physics": "PHYS228"
+      },
+      "faculty": [
+        {
+          "email": "iyyappan.iyyasamy@krea.edu.in",
+          "name": "iyyappan.iyyasamy@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "PHYS443",
+      "title": "Molecular spectroscopy",
+      "codes": [
+        "PHYS443"
+      ],
+      "facultyEmails": [
+        "venkata.bhadram@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "physics",
+      "subjects": [
+        "physics"
+      ],
+      "codesBySubject": {
+        "physics": "PHYS443"
+      },
+      "faculty": [
+        {
+          "email": "venkata.bhadram@krea.edu.in",
+          "name": "Venkata Srinu Bhadram",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "POLT308",
+      "title": "Global Politics II",
+      "codes": [
+        "POLT308"
+      ],
+      "facultyEmails": [
+        "geeti.das@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "political science",
+      "subjects": [
+        "political science"
+      ],
+      "codesBySubject": {
+        "political science": "POLT308"
+      },
+      "faculty": [
+        {
+          "email": "geeti.das@krea.edu.in",
+          "name": "Geeti Das",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "CHEM220",
+      "title": "Symmetry and Group Theory",
+      "codes": [
+        "CHEM220"
+      ],
+      "facultyEmails": [
+        "ksviswanathan@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "chemistry",
+      "subjects": [
+        "chemistry"
+      ],
+      "codesBySubject": {
+        "chemistry": "CHEM220"
+      },
+      "faculty": [
+        {
+          "email": "ksviswanathan@krea.edu.in",
+          "name": "Ksviswanathan",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "COMP313",
+      "title": "Machine Learning",
+      "codes": [
+        "COMP313"
+      ],
+      "facultyEmails": [
+        "meesum.syed@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "computer science",
+      "subjects": [
+        "computer science"
+      ],
+      "codesBySubject": {
+        "computer science": "COMP313"
+      },
+      "faculty": [
+        {
+          "email": "meesum.syed@krea.edu.in",
+          "name": "meesum.syed@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "DATA302",
+      "title": "Introduction to Statistical Learning",
+      "codes": [
+        "DATA302"
+      ],
+      "facultyEmails": [
+        "rakesh.nigam@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "data science",
+      "subjects": [
+        "data science"
+      ],
+      "codesBySubject": {
+        "data science": "DATA302"
+      },
+      "faculty": [
+        {
+          "email": "rakesh.nigam@krea.edu.in",
+          "name": "Rakesh Nigam",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "ECON221",
+      "title": "Behavioral Economics",
+      "codes": [
+        "ECON221"
+      ],
+      "facultyEmails": [
+        "SIAS_FACULTY002@oneerp.krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": true,
+      "subject": "economics",
+      "subjects": [
+        "economics"
+      ],
+      "codesBySubject": {
+        "economics": "ECON221"
+      },
+      "faculty": [
+        {
+          "email": "SIAS_FACULTY002@oneerp.krea.edu.in",
+          "name": "SIAS_FACULTY002@oneerp.krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "HIST201",
+      "title": "Sources of History",
+      "codes": [
+        "HIST201"
+      ],
+      "facultyEmails": [
+        "jonathanandrew.jarrett@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": true,
+      "subject": "history",
+      "subjects": [
+        "history"
+      ],
+      "codesBySubject": {
+        "history": "HIST201"
+      },
+      "faculty": [
+        {
+          "email": "jonathanandrew.jarrett@krea.edu.in",
+          "name": "jonathanandrew.jarrett@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "LITT241",
+      "title": "Out on a Quest: Writing a Research Essay",
+      "codes": [
+        "LITT241"
+      ],
+      "facultyEmails": [
+        "anannya.dasgupta@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "literature",
+      "subjects": [
+        "literature"
+      ],
+      "codesBySubject": {
+        "literature": "LITT241"
+      },
+      "faculty": [
+        {
+          "email": "anannya.dasgupta@krea.edu.in",
+          "name": "Anannya Dasgupta",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "MATH066",
+      "title": "Tools for Mathematics and the Sciences: Calculus",
+      "codes": [
+        "MATH066",
+        "PHYS066",
+        "ECON066",
+        "ENVS066",
+        "DATA066",
+        "COMP066"
+      ],
+      "facultyEmails": [
+        "rishi.vyas@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "mathematics",
+      "subjects": [
+        "mathematics",
+        "physics",
+        "economics",
+        "environmental studies",
+        "data science",
+        "computer science"
+      ],
+      "codesBySubject": {
+        "computer science": "COMP066",
+        "data science": "DATA066",
+        "environmental studies": "ENVS066",
+        "economics": "ECON066",
+        "physics": "PHYS066",
+        "mathematics": "MATH066"
+      },
+      "faculty": [
+        {
+          "email": "rishi.vyas@krea.edu.in",
+          "name": "Rishi Vyas",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "PSYC338",
+      "title": "Vision: Ways of Seeing",
+      "codes": [
+        "PSYC338"
+      ],
+      "facultyEmails": [
+        "rakesh.sengupta@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": true,
+      "subject": "psychology",
+      "subjects": [
+        "psychology"
+      ],
+      "codesBySubject": {
+        "psychology": "PSYC338"
+      },
+      "faculty": [
+        {
+          "email": "rakesh.sengupta@krea.edu.in",
+          "name": "Rakesh Sengupta",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "PSYC438",
+      "title": "Advanced Qualitative Research: Power, politics, pleasure",
+      "codes": [
+        "PSYC438"
+      ],
+      "facultyEmails": [
+        "sabah.siddiqui@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "psychology",
+      "subjects": [
+        "psychology"
+      ],
+      "codesBySubject": {
+        "psychology": "PSYC438"
+      },
+      "faculty": [
+        {
+          "email": "sabah.siddiqui@krea.edu.in",
+          "name": "Sabah Siddiqui",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "SOCL402",
+      "title": "Sociological and Anthropological Theory",
+      "codes": [
+        "SOCL402"
+      ],
+      "facultyEmails": [
+        "preeti.sampat@krea.edu.in",
+        "nidhin.donald@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": true,
+      "subject": "sociology",
+      "subjects": [
+        "sociology"
+      ],
+      "codesBySubject": {
+        "sociology": "SOCL402"
+      },
+      "faculty": [
+        {
+          "email": "preeti.sampat@krea.edu.in",
+          "name": "Preeti Sampat",
+          "id": null
+        },
+        {
+          "email": "nidhin.donald@krea.edu.in",
+          "name": "nidhin.donald@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "BIOS207",
+      "title": "LAB I",
+      "codes": [
+        "BIOS207"
+      ],
+      "facultyEmails": [
+        "arindam.chatterjee@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "biology",
+      "subjects": [
+        "biology"
+      ],
+      "codesBySubject": {
+        "biology": "BIOS207"
+      },
+      "faculty": [
+        {
+          "email": "arindam.chatterjee@krea.edu.in",
+          "name": "arindam.chatterjee@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "CHEM225",
+      "title": "Systems Biology",
+      "codes": [
+        "BIOS225",
+        "CHEM225"
+      ],
+      "facultyEmails": [
+        "kalyan.chakrabarti@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "chemistry",
+      "subjects": [
+        "biology",
+        "chemistry"
+      ],
+      "codesBySubject": {
+        "chemistry": "CHEM225",
+        "biology": "BIOS225"
+      },
+      "faculty": [
+        {
+          "email": "kalyan.chakrabarti@krea.edu.in",
+          "name": "Kalyan Chakrabarti",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "BUSI336",
+      "title": "Foundations of Entrepreneurship",
+      "codes": [
+        "BUSI336",
+        "ENTR301"
+      ],
+      "facultyEmails": [
+        "anil.srinivasan@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": true,
+      "subject": "business studies",
+      "subjects": [
+        "business studies"
+      ],
+      "codesBySubject": {
+        "business studies": "BUSI336"
+      },
+      "faculty": [
+        {
+          "email": "anil.srinivasan@krea.edu.in",
+          "name": "anil.srinivasan@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "LITT323",
+      "title": "Jonathan Swift and the Enlightenment",
+      "codes": [
+        "LITT323",
+        "HIST323",
+        "PHIL223"
+      ],
+      "facultyEmails": [
+        "abhishek.shukla@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "literature",
+      "subjects": [
+        "literature",
+        "history",
+        "philosophy"
+      ],
+      "codesBySubject": {
+        "philosophy": "PHIL223",
+        "history": "HIST323",
+        "literature": "LITT323"
+      },
+      "faculty": [
+        {
+          "email": "abhishek.shukla@krea.edu.in",
+          "name": "Abhishek Shukla",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "MATH342",
+      "title": "Graph Theory",
+      "codes": [
+        "MATH342",
+        "COMP342"
+      ],
+      "facultyEmails": [
+        "raghavan.komaranapuram@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "mathematics",
+      "subjects": [
+        "mathematics",
+        "computer science"
+      ],
+      "codesBySubject": {
+        "computer science": "COMP342",
+        "mathematics": "MATH342"
+      },
+      "faculty": [
+        {
+          "email": "raghavan.komaranapuram@krea.edu.in",
+          "name": "raghavan.komaranapuram@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "PSYC451",
+      "title": "Social Psychological Interventions",
+      "codes": [
+        "PSYC451"
+      ],
+      "facultyEmails": [
+        "suryodaya.sharma@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": true,
+      "subject": "psychology",
+      "subjects": [
+        "psychology"
+      ],
+      "codesBySubject": {
+        "psychology": "PSYC451"
+      },
+      "faculty": [
+        {
+          "email": "suryodaya.sharma@krea.edu.in",
+          "name": "Suryodaya Sharma",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "SOCL406",
+      "title": "Religion and Society in South Asia",
+      "codes": [
+        "SOCL406",
+        "HIST406",
+        "POLT406"
+      ],
+      "facultyEmails": [
+        "annu.jalais@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "sociology",
+      "subjects": [
+        "sociology",
+        "history",
+        "political science"
+      ],
+      "codesBySubject": {
+        "political science": "POLT406",
+        "history": "HIST406",
+        "sociology": "SOCL406"
+      },
+      "faculty": [
+        {
+          "email": "annu.jalais@krea.edu.in",
+          "name": "annu.jalais@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "BUSI206",
+      "title": "Strategy and Innovation",
+      "codes": [
+        "BUSI206"
+      ],
+      "facultyEmails": [
+        "aravind.selvaraj@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "business studies",
+      "subjects": [
+        "business studies"
+      ],
+      "codesBySubject": {
+        "business studies": "BUSI206"
+      },
+      "faculty": [
+        {
+          "email": "aravind.selvaraj@krea.edu.in",
+          "name": "aravind.selvaraj@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "BUSI335",
+      "title": "HR Analytics",
+      "codes": [
+        "BUSI335"
+      ],
+      "facultyEmails": [
+        "mitali.saxena@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": true,
+      "subject": "business studies",
+      "subjects": [
+        "business studies"
+      ],
+      "codesBySubject": {
+        "business studies": "BUSI335"
+      },
+      "faculty": [
+        {
+          "email": "mitali.saxena@krea.edu.in",
+          "name": "mitali.saxena@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "ECON311",
+      "title": "Development Economics",
+      "codes": [
+        "ECON311"
+      ],
+      "facultyEmails": [
+        "vidyabharathi.rajkumar@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "economics",
+      "subjects": [
+        "economics"
+      ],
+      "codesBySubject": {
+        "economics": "ECON311"
+      },
+      "faculty": [
+        {
+          "email": "vidyabharathi.rajkumar@krea.edu.in",
+          "name": "vidyabharathi.rajkumar@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "HIST205",
+      "title": "Sources of the Self: India in the Second Millennium A.D.",
+      "codes": [
+        "HIST205"
+      ],
+      "facultyEmails": [
+        "deepashree.dutta@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "history",
+      "subjects": [
+        "history"
+      ],
+      "codesBySubject": {
+        "history": "HIST205"
+      },
+      "faculty": [
+        {
+          "email": "deepashree.dutta@krea.edu.in",
+          "name": "Deepashree Dutta",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "MATH256",
+      "title": "Writing in Mathematics and Quantitative Sciences",
+      "codes": [
+        "MATH256",
+        "COMP256",
+        "DATA256"
+      ],
+      "facultyEmails": [
+        "vivek.tewary@krea.edu.in",
+        "charudatta.navare@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "mathematics",
+      "subjects": [
+        "mathematics",
+        "computer science",
+        "data science"
+      ],
+      "codesBySubject": {
+        "data science": "DATA256",
+        "computer science": "COMP256",
+        "mathematics": "MATH256"
+      },
+      "faculty": [
+        {
+          "email": "vivek.tewary@krea.edu.in",
+          "name": "Vivek Tewary",
+          "id": null
+        },
+        {
+          "email": "charudatta.navare@krea.edu.in",
+          "name": "charudatta.navare@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "POLT346",
+      "title": "Imagining Caste: Cinema, Politics and Democracy in India",
+      "codes": [
+        "POLT346",
+        "HIST352",
+        "SOCL353"
+      ],
+      "facultyEmails": [
+        "sambaiah.gundimeda@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": true,
+      "subject": "political science",
+      "subjects": [
+        "political science",
+        "history",
+        "sociology"
+      ],
+      "codesBySubject": {
+        "sociology": "SOCL353",
+        "history": "HIST352",
+        "political science": "POLT346"
+      },
+      "faculty": [
+        {
+          "email": "sambaiah.gundimeda@krea.edu.in",
+          "name": "Sambaiah Gundimeda",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "SOCL218",
+      "title": "Beasts, People and Wild Environments",
+      "codes": [
+        "SOCL218",
+        "ENVS243"
+      ],
+      "facultyEmails": [
+        "annu.jalais@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "sociology",
+      "subjects": [
+        "sociology",
+        "environmental studies"
+      ],
+      "codesBySubject": {
+        "environmental studies": "ENVS243",
+        "sociology": "SOCL218"
+      },
+      "faculty": [
+        {
+          "email": "annu.jalais@krea.edu.in",
+          "name": "annu.jalais@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "CHEM206",
+      "title": "Carbon based molecules",
+      "codes": [
+        "CHEM206"
+      ],
+      "facultyEmails": [
+        "debajit.maiti@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "chemistry",
+      "subjects": [
+        "chemistry"
+      ],
+      "codesBySubject": {
+        "chemistry": "CHEM206"
+      },
+      "faculty": [
+        {
+          "email": "debajit.maiti@krea.edu.in",
+          "name": "Debajit Maiti",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "COMP312",
+      "title": "Principles of Computer Systems",
+      "codes": [
+        "COMP312"
+      ],
+      "facultyEmails": [
+        "inzemamul.haque@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "computer science",
+      "subjects": [
+        "computer science"
+      ],
+      "codesBySubject": {
+        "computer science": "COMP312"
+      },
+      "faculty": [
+        {
+          "email": "inzemamul.haque@krea.edu.in",
+          "name": "Inzemamul Haque",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "POLT338",
+      "title": "Global Conflicts: Causes, Consequences, Solutions",
+      "codes": [
+        "POLT338"
+      ],
+      "facultyEmails": [
+        "sumantra.bose@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "political science",
+      "subjects": [
+        "political science"
+      ],
+      "codesBySubject": {
+        "political science": "POLT338"
+      },
+      "faculty": [
+        {
+          "email": "sumantra.bose@krea.edu.in",
+          "name": "Sumantra Bose",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "SOCL338",
+      "title": "Capitalism: Essential Readings",
+      "codes": [
+        "SOCL338",
+        "HIST348",
+        "POLT348",
+        "ECON348"
+      ],
+      "facultyEmails": [
+        "preeti.sampat@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "sociology",
+      "subjects": [
+        "sociology",
+        "history",
+        "political science",
+        "economics"
+      ],
+      "codesBySubject": {
+        "economics": "ECON348",
+        "political science": "POLT348",
+        "history": "HIST348",
+        "sociology": "SOCL338"
+      },
+      "faculty": [
+        {
+          "email": "preeti.sampat@krea.edu.in",
+          "name": "Preeti Sampat",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "DATA434",
+      "title": "Visual AI: From Data to Interactive Experiences",
+      "codes": [
+        "DATA434",
+        "COMP434"
+      ],
+      "facultyEmails": [
+        "lakshmanan.nataraj@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": true,
+      "subject": "data science",
+      "subjects": [
+        "data science",
+        "computer science"
+      ],
+      "codesBySubject": {
+        "computer science": "COMP434",
+        "data science": "DATA434"
+      },
+      "faculty": [
+        {
+          "email": "lakshmanan.nataraj@krea.edu.in",
+          "name": "lakshmanan.nataraj@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "MATH334",
+      "title": "Conics and Cubics",
+      "codes": [
+        "MATH334"
+      ],
+      "facultyEmails": [
+        "chudamani.anilkumar@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": true,
+      "subject": "mathematics",
+      "subjects": [
+        "mathematics"
+      ],
+      "codesBySubject": {
+        "mathematics": "MATH334"
+      },
+      "faculty": [
+        {
+          "email": "chudamani.anilkumar@krea.edu.in",
+          "name": "Chudamani Anilkumar",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "PHYS341",
+      "title": "States of Matter",
+      "codes": [
+        "PHYS341"
+      ],
+      "facultyEmails": [
+        "venkata.bhadram@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "physics",
+      "subjects": [
+        "physics"
+      ],
+      "codesBySubject": {
+        "physics": "PHYS341"
+      },
+      "faculty": [
+        {
+          "email": "venkata.bhadram@krea.edu.in",
+          "name": "Venkata Srinu Bhadram",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "POLT337",
+      "title": "Coping with Diversity and Conflict: A Global Survey of Strategies",
+      "codes": [
+        "POLT337"
+      ],
+      "facultyEmails": [
+        "sumantra.bose@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "political science",
+      "subjects": [
+        "political science"
+      ],
+      "codesBySubject": {
+        "political science": "POLT337"
+      },
+      "faculty": [
+        {
+          "email": "sumantra.bose@krea.edu.in",
+          "name": "Sumantra Bose",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "ENVS345",
+      "title": "Theatre Of The Climate: Performing A Just Future",
+      "codes": [
+        "ARTS345",
+        "ENVS345"
+      ],
+      "facultyEmails": [
+        "swarnamalya.ganesh@krea.edu.in",
+        "chirag.dhara@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "environmental studies",
+      "subjects": [
+        "arts",
+        "environmental studies"
+      ],
+      "codesBySubject": {
+        "environmental studies": "ENVS345",
+        "arts": "ARTS345"
+      },
+      "faculty": [
+        {
+          "email": "swarnamalya.ganesh@krea.edu.in",
+          "name": "Swarnamalya Ganesh",
+          "id": null
+        },
+        {
+          "email": "chirag.dhara@krea.edu.in",
+          "name": "Chirag Dhara",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "CHEM424",
+      "title": "Instrumental Methods of Analysis",
+      "codes": [
+        "CHEM424"
+      ],
+      "facultyEmails": [
+        "surajit.kayal@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "chemistry",
+      "subjects": [
+        "chemistry"
+      ],
+      "codesBySubject": {
+        "chemistry": "CHEM424"
+      },
+      "faculty": [
+        {
+          "email": "surajit.kayal@krea.edu.in",
+          "name": "Surajit Kayal",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "ENVS204",
+      "title": "Climate Change: Science, Economics, and Policy",
+      "codes": [
+        "ENVS204"
+      ],
+      "facultyEmails": [
+        "prateek.gantayat@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "environmental studies",
+      "subjects": [
+        "environmental studies"
+      ],
+      "codesBySubject": {
+        "environmental studies": "ENVS204"
+      },
+      "faculty": [
+        {
+          "email": "prateek.gantayat@krea.edu.in",
+          "name": "Prateek Gantayat",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "MATH202",
+      "title": "Analysis 2: single variable calculus",
+      "codes": [
+        "MATH202"
+      ],
+      "facultyEmails": [
+        "gangotryi.sorcar@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "mathematics",
+      "subjects": [
+        "mathematics"
+      ],
+      "codesBySubject": {
+        "mathematics": "MATH202"
+      },
+      "faculty": [
+        {
+          "email": "gangotryi.sorcar@krea.edu.in",
+          "name": "Gangotryi Sorcar",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "MATH341",
+      "title": "Topology 1 & Topics in Topology 1: Fundamentals Of Algebraic Topology and Underlying Geometric Notions",
+      "codes": [
+        "MATH341"
+      ],
+      "facultyEmails": [
+        "soumya.dey@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "mathematics",
+      "subjects": [
+        "mathematics"
+      ],
+      "codesBySubject": {
+        "mathematics": "MATH341"
+      },
+      "faculty": [
+        {
+          "email": "soumya.dey@krea.edu.in",
+          "name": "Soumya Dey",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "BIOS217",
+      "title": "Microbiology",
+      "codes": [
+        "BIOS217"
+      ],
+      "facultyEmails": [
+        "vikas.jain@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "biology",
+      "subjects": [
+        "biology"
+      ],
+      "codesBySubject": {
+        "biology": "BIOS217"
+      },
+      "faculty": [
+        {
+          "email": "vikas.jain@krea.edu.in",
+          "name": "Vikas Jain",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "BUSI302",
+      "title": "Consumer Behavior",
+      "codes": [
+        "BUSI302"
+      ],
+      "facultyEmails": [
+        "kriti.krishna@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "business studies",
+      "subjects": [
+        "business studies"
+      ],
+      "codesBySubject": {
+        "business studies": "BUSI302"
+      },
+      "faculty": [
+        {
+          "email": "kriti.krishna@krea.edu.in",
+          "name": "kriti.krishna@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "DATA239",
+      "title": "Geometry for Computer Vision",
+      "codes": [
+        "DATA239",
+        "COMP239"
+      ],
+      "facultyEmails": [
+        "sankara.subramanian@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "data science",
+      "subjects": [
+        "data science",
+        "computer science"
+      ],
+      "codesBySubject": {
+        "computer science": "COMP239",
+        "data science": "DATA239"
+      },
+      "faculty": [
+        {
+          "email": "sankara.subramanian@krea.edu.in",
+          "name": "sankara.subramanian@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "ECON334",
+      "title": "Mathematical Methods for Economics II",
+      "codes": [
+        "ECON334"
+      ],
+      "facultyEmails": [
+        "anwesha.chakrabarti@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "economics",
+      "subjects": [
+        "economics"
+      ],
+      "codesBySubject": {
+        "economics": "ECON334"
+      },
+      "faculty": [
+        {
+          "email": "anwesha.chakrabarti@krea.edu.in",
+          "name": "Anwesha Chakrabarti",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "PHIL312",
+      "title": "Freedom",
+      "codes": [
+        "PHIL312",
+        "POLT312",
+        "HIST312"
+      ],
+      "facultyEmails": [
+        "mukund.padmanabhan@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "philosophy",
+      "subjects": [
+        "philosophy",
+        "political science",
+        "history"
+      ],
+      "codesBySubject": {
+        "history": "HIST312",
+        "political science": "POLT312",
+        "philosophy": "PHIL312"
+      },
+      "faculty": [
+        {
+          "email": "mukund.padmanabhan@krea.edu.in",
+          "name": "Mukund Padmanabhan",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "PSYC203",
+      "title": "Brain and Behaviour",
+      "codes": [
+        "PSYC203",
+        "BIOS203"
+      ],
+      "facultyEmails": [
+        "kumari.anshu@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "psychology",
+      "subjects": [
+        "psychology",
+        "biology"
+      ],
+      "codesBySubject": {
+        "biology": "BIOS203",
+        "psychology": "PSYC203"
+      },
+      "faculty": [
+        {
+          "email": "kumari.anshu@krea.edu.in",
+          "name": "kumari.anshu@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "PSYC349",
+      "title": "Developmental Psychopathology",
+      "codes": [
+        "PSYC349"
+      ],
+      "facultyEmails": [
+        "madhavilatha.maganti@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": true,
+      "subject": "psychology",
+      "subjects": [
+        "psychology"
+      ],
+      "codesBySubject": {
+        "psychology": "PSYC349"
+      },
+      "faculty": [
+        {
+          "email": "madhavilatha.maganti@krea.edu.in",
+          "name": "Madhavilatha Maganti",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "SOCL228",
+      "title": "Ethnography of Political Violence",
+      "codes": [
+        "SOCL228",
+        "PSYC228",
+        "POLT228"
+      ],
+      "facultyEmails": [
+        "panchali.ray@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": true,
+      "subject": "sociology",
+      "subjects": [
+        "sociology",
+        "psychology",
+        "political science"
+      ],
+      "codesBySubject": {
+        "political science": "POLT228",
+        "psychology": "PSYC228",
+        "sociology": "SOCL228"
+      },
+      "faculty": [
+        {
+          "email": "panchali.ray@krea.edu.in",
+          "name": "Panchali Ray",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "BUSI201",
+      "title": "Introduction to Accounting and Finance",
+      "codes": [
+        "BUSI201",
+        "FINA201"
+      ],
+      "facultyEmails": [
+        "easwaran.kv@krea.edu.in",
+        "aishwarya.krishnaswamy@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "business studies",
+      "subjects": [
+        "business studies"
+      ],
+      "codesBySubject": {
+        "business studies": "BUSI201"
+      },
+      "faculty": [
+        {
+          "email": "easwaran.kv@krea.edu.in",
+          "name": "easwaran.kv@krea.edu.in",
+          "id": null
+        },
+        {
+          "email": "aishwarya.krishnaswamy@krea.edu.in",
+          "name": "aishwarya.krishnaswamy@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "COMP208",
+      "title": "Introduction to Linear Algebra",
+      "codes": [
+        "COMP208",
+        "DATA208"
+      ],
+      "facultyEmails": [
+        "meesum.syed@krea.edu.in",
+        "naveen.prabhakar@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "computer science",
+      "subjects": [
+        "computer science",
+        "data science"
+      ],
+      "codesBySubject": {
+        "data science": "DATA208",
+        "computer science": "COMP208"
+      },
+      "faculty": [
+        {
+          "email": "meesum.syed@krea.edu.in",
+          "name": "meesum.syed@krea.edu.in",
+          "id": null
+        },
+        {
+          "email": "naveen.prabhakar@krea.edu.in",
+          "name": "Naveen Prabhakar",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "LITT245",
+      "title": "Novel Writing",
+      "codes": [
+        "LITT245"
+      ],
+      "facultyEmails": [
+        "prajwal.parajuly@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": true,
+      "subject": "literature",
+      "subjects": [
+        "literature"
+      ],
+      "codesBySubject": {
+        "literature": "LITT245"
+      },
+      "faculty": [
+        {
+          "email": "prajwal.parajuly@krea.edu.in",
+          "name": "Prajwal Parajuly",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "BUSI318",
+      "title": "Basics of Digital Marketing",
+      "codes": [
+        "BUSI318"
+      ],
+      "facultyEmails": [
+        "sathya.saminadan@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "business studies",
+      "subjects": [
+        "business studies"
+      ],
+      "codesBySubject": {
+        "business studies": "BUSI318"
+      },
+      "faculty": [
+        {
+          "email": "sathya.saminadan@krea.edu.in",
+          "name": "sathya.saminadan@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "ECON338",
+      "title": "Monetary Theory",
+      "codes": [
+        "ECON338"
+      ],
+      "facultyEmails": [
+        "arghya.bhattacharya@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": true,
+      "subject": "economics",
+      "subjects": [
+        "economics"
+      ],
+      "codesBySubject": {
+        "economics": "ECON338"
+      },
+      "faculty": [
+        {
+          "email": "arghya.bhattacharya@krea.edu.in",
+          "name": "arghya.bhattacharya@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "HIST329",
+      "title": "Im)Possible Worlds: Maps, Cosmologies, Power and Resistance",
+      "codes": [
+        "HIST329"
+      ],
+      "facultyEmails": [
+        "rebecca.darley@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": true,
+      "subject": "history",
+      "subjects": [
+        "history"
+      ],
+      "codesBySubject": {
+        "history": "HIST329"
+      },
+      "faculty": [
+        {
+          "email": "rebecca.darley@krea.edu.in",
+          "name": "rebecca.darley@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "PSYC327",
+      "title": "Social Psychology",
+      "codes": [
+        "PSYC327"
+      ],
+      "facultyEmails": [
+        "rakshi.rath@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "psychology",
+      "subjects": [
+        "psychology"
+      ],
+      "codesBySubject": {
+        "psychology": "PSYC327"
+      },
+      "faculty": [
+        {
+          "email": "rakshi.rath@krea.edu.in",
+          "name": "Rakshi Rath",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "BIOS222",
+      "title": "Plant Diversity and Reproduction",
+      "codes": [
+        "BIOS222",
+        "ENVS222"
+      ],
+      "facultyEmails": [
+        "yadugiri.tiruvaimozhi@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "biology",
+      "subjects": [
+        "biology",
+        "environmental studies"
+      ],
+      "codesBySubject": {
+        "environmental studies": "ENVS222",
+        "biology": "BIOS222"
+      },
+      "faculty": [
+        {
+          "email": "yadugiri.tiruvaimozhi@krea.edu.in",
+          "name": "Yadugiri Tiruvaimozhi",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "BIOS241",
+      "title": "Ecology and Conservation Biology",
+      "codes": [
+        "BIOS241",
+        "ENVS231"
+      ],
+      "facultyEmails": [
+        "guha.dharmarajan@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "biology",
+      "subjects": [
+        "biology",
+        "environmental studies"
+      ],
+      "codesBySubject": {
+        "environmental studies": "ENVS231",
+        "biology": "BIOS241"
+      },
+      "faculty": [
+        {
+          "email": "guha.dharmarajan@krea.edu.in",
+          "name": "Guha Dharmarajan",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "ARTS351",
+      "title": "Who Inherits Her Dance?",
+      "codes": [
+        "ARTS351",
+        "HIST351"
+      ],
+      "facultyEmails": [
+        "swarnamalya.ganesh@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": true,
+      "subject": "arts",
+      "subjects": [
+        "arts",
+        "history"
+      ],
+      "codesBySubject": {
+        "history": "HIST351",
+        "arts": "ARTS351"
+      },
+      "faculty": [
+        {
+          "email": "swarnamalya.ganesh@krea.edu.in",
+          "name": "Swarnamalya Ganesh",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "BUSI333",
+      "title": "Measuring Impact with A/B Testing",
+      "codes": [
+        "BUSI333",
+        "ECON345"
+      ],
+      "facultyEmails": [
+        "sumit.mishra@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "business studies",
+      "subjects": [
+        "business studies",
+        "economics"
+      ],
+      "codesBySubject": {
+        "economics": "ECON345",
+        "business studies": "BUSI333"
+      },
+      "faculty": [
+        {
+          "email": "sumit.mishra@krea.edu.in",
+          "name": "Sumit Mishra",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "COMP121",
+      "title": "Programming literacy",
+      "codes": [
+        "COMP121"
+      ],
+      "facultyEmails": [
+        "srikumar.subramanian@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "computer science",
+      "subjects": [
+        "computer science"
+      ],
+      "codesBySubject": {
+        "computer science": "COMP121"
+      },
+      "faculty": [
+        {
+          "email": "srikumar.subramanian@krea.edu.in",
+          "name": "Srikumar K Subramanian",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "PHYS283",
+      "title": "Astronomical Bodies and Phenomena",
+      "codes": [
+        "PHYS283"
+      ],
+      "facultyEmails": [
+        "jessy.jose@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": true,
+      "subject": "physics",
+      "subjects": [
+        "physics"
+      ],
+      "codesBySubject": {
+        "physics": "PHYS283"
+      },
+      "faculty": [
+        {
+          "email": "jessy.jose@krea.edu.in",
+          "name": "jessy.jose@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "BIOS223",
+      "title": "Advanced Cell Biology",
+      "codes": [
+        "BIOS223"
+      ],
+      "facultyEmails": [
+        "gautam.banerjee@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "biology",
+      "subjects": [
+        "biology"
+      ],
+      "codesBySubject": {
+        "biology": "BIOS223"
+      },
+      "faculty": [
+        {
+          "email": "gautam.banerjee@krea.edu.in",
+          "name": "Gautam Banerjee",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "BUSI331",
+      "title": "Finance & Sustainable Development Goals",
+      "codes": [
+        "BUSI331",
+        "FINA331",
+        "ENVS334"
+      ],
+      "facultyEmails": [
+        "govindapuram.suresh@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": true,
+      "subject": "business studies",
+      "subjects": [
+        "business studies",
+        "environmental studies"
+      ],
+      "codesBySubject": {
+        "environmental studies": "ENVS334",
+        "business studies": "BUSI331"
+      },
+      "faculty": [
+        {
+          "email": "govindapuram.suresh@krea.edu.in",
+          "name": "govindapuram.suresh@krea.edu.in",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "CHEM411",
+      "title": "Molecular modelling and Simulations: Biomolecules and rational drug design",
+      "codes": [
+        "CHEM411",
+        "COMP414"
+      ],
+      "facultyEmails": [
+        "sudip.roy@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "chemistry",
+      "subjects": [
+        "chemistry",
+        "computer science"
+      ],
+      "codesBySubject": {
+        "computer science": "COMP414",
+        "chemistry": "CHEM411"
+      },
+      "faculty": [
+        {
+          "email": "sudip.roy@krea.edu.in",
+          "name": "Sudip Roy",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "PHYS222",
+      "title": "Classical Physics: Energy and Force II",
+      "codes": [
+        "PHYS222"
+      ],
+      "facultyEmails": [
+        "tanmoy.chakrabarty@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "physics",
+      "subjects": [
+        "physics"
+      ],
+      "codesBySubject": {
+        "physics": "PHYS222"
+      },
+      "faculty": [
+        {
+          "email": "tanmoy.chakrabarty@krea.edu.in",
+          "name": "Tanmoy Chakrabarty",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "BUSI205",
+      "title": "Information Systems and Data Analytics",
+      "codes": [
+        "BUSI205",
+        "ECON208"
+      ],
+      "facultyEmails": [
+        "mullai.thiagu@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "business studies",
+      "subjects": [
+        "business studies",
+        "economics"
+      ],
+      "codesBySubject": {
+        "economics": "ECON208",
+        "business studies": "BUSI205"
+      },
+      "faculty": [
+        {
+          "email": "mullai.thiagu@krea.edu.in",
+          "name": "Mullai Thiagu",
+          "id": null
+        }
+      ]
+    },
+    {
+      "code": "PHYS216",
+      "title": "Computational Methods",
+      "codes": [
+        "PHYS216",
+        "COMP216"
+      ],
+      "facultyEmails": [
+        "aritra.gupta@krea.edu.in"
+      ],
+      "offered": [
+        2
+      ],
+      "new": false,
+      "subject": "physics",
+      "subjects": [
+        "physics",
+        "computer science"
+      ],
+      "codesBySubject": {
+        "computer science": "COMP216",
+        "physics": "PHYS216"
+      },
+      "faculty": [
+        {
+          "email": "aritra.gupta@krea.edu.in",
+          "name": "Aritra Gupta",
+          "id": null
+        }
+      ]
+    }
+  ],
+  "review": [
+    {
+      "source": "CWPC601",
+      "reason": "graduate-only or missing title"
+    },
+    {
+      "source": "MATH635",
+      "reason": "graduate-only or missing title"
+    },
+    {
+      "source": "MATH620",
+      "reason": "graduate-only or missing title"
+    },
+    {
+      "source": "CWPC601(A)",
+      "reason": "graduate-only or missing title"
+    },
+    {
+      "source": "CWPC601(B)",
+      "reason": "graduate-only or missing title"
+    }
+  ]
+}

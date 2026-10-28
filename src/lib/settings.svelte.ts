@@ -9,7 +9,7 @@
 
 import { browser } from '$app/environment';
 
-const STORAGE_KEY = 'tracey-settings';
+const STORAGE_KEY = 'relay-settings';
 
 export type ThemeChoice = 'light' | 'dark' | 'system';
 

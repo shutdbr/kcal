@@ -13,7 +13,7 @@
 
 import { browser } from '$app/environment';
 
-const SAVES_KEY = 'tracey-saved-plans';
+const SAVES_KEY = 'relay-saved-plans';
 // A snapshot is a whole plan (~10-30 KB of JSON). localStorage is a few MB, so
 // this is nowhere near the ceiling — it is a list-length limit, to keep the
 // settings panel readable and stop an accidental save loop filling the quota.

@@ -1,40 +1,51 @@
 <script lang="ts">
-	// The maintainer's side of tracey: the prerequisite graph the whole planner
-	// rests on is generated from messy CSV text, so it needs somewhere to be
-	// read, corrected and checked. Two pages, one shared header.
+	// The maintainer's side of relay: the catalogue and the prerequisite graph
+	// the whole planner rests on are generated from messy CSV text, and the
+	// drop-form rules change from year to year — so they need somewhere to be
+	// read, corrected and checked. Three pages, one shared header.
 	import '../../app.scss';
+	import './admin.scss';
 	import { page } from '$app/state';
 	import type { Snippet } from 'svelte';
 
 	let { children }: { children: Snippet } = $props();
 
 	const tabs = [
-		{ href: '/admin', label: 'prerequisites' },
+		{ href: '/admin', label: 'courses' },
+		{ href: '/admin/crosslist', label: 'cross-listing' },
+		{ href: '/admin/rules', label: 'rules' },
+		{ href: '/admin/batches', label: 'batches' },
 		{ href: '/admin/tree', label: 'tree' }
 	];
 </script>
 
 <svelte:head>
-	<title>tracey admin</title>
+	<title>Relay admin</title>
 	<meta name="robots" content="noindex" />
 </svelte:head>
 
 <header class="admin-bar">
-	<a class="brand" href="/">← tracey</a>
+	<div class="brand">
+		<span class="logo">Relay</span>
+		<span class="badge">admin</span>
+	</div>
 	<nav>
 		{#each tabs as tab (tab.href)}
-			<a href={tab.href} class:active={page.url.pathname === tab.href}>{tab.label}</a>
+			<a href={tab.href} class:active={page.url.pathname === tab.href}>
+				{tab.label}
+			</a>
 		{/each}
 	</nav>
+	<!-- a full reload, not a client-side hop: edits are read when the catalogue
+	     module loads, so only a fresh load of the planner shows them -->
+	<a class="to-planner" href="/" data-sveltekit-reload>open planner ↗</a>
 </header>
 
-<main class="admin-body">
+<main class="admin-body adm">
 	{@render children()}
 </main>
 
 <style lang="scss">
-	@use '$lib/styles/mixins' as *;
-
 	:global(html),
 	:global(body) {
 		height: 100%;
@@ -44,44 +55,70 @@
 		display: flex;
 		align-items: center;
 		gap: 2.4rem;
-		padding: 1rem 2rem;
-		background: linear-gradient(to bottom, var(--color-bg-header-start), var(--color-bg-header-end));
+		height: 4.8rem;
+		padding: 0 2rem;
+		background: var(--color-bg-light);
 		border-bottom: 1px solid var(--color-border-card);
+	}
 
-		.brand {
-			font-size: 1.4rem;
-			font-weight: 600;
+	.brand {
+		display: flex;
+		align-items: baseline;
+		gap: 0.6rem;
+
+		.logo {
+			font-size: 1.6rem;
+			font-weight: 700;
 			color: var(--color-text);
-			text-decoration: none;
 		}
 
-		nav {
-			display: flex;
-			gap: 0.6rem;
-		}
-
-		nav a {
-			padding: 0.5rem 1.2rem;
-			font-size: 1.3rem;
+		.badge {
+			font-size: 1.2rem;
 			color: var(--color-text-muted);
-			text-decoration: none;
-			border: 1px solid transparent;
-			border-radius: 999px;
+		}
+	}
 
-			&:hover {
-				color: var(--color-text);
-			}
+	nav {
+		display: flex;
+		align-self: stretch;
+		gap: 0.4rem;
+	}
 
-			&.active {
-				color: var(--color-text);
-				background: var(--color-bg-light);
-				border-color: var(--color-border-card);
-			}
+	// tabs: an underline, nothing more
+	nav a {
+		display: flex;
+		align-items: center;
+		padding: 0 1rem;
+		font-size: 1.3rem;
+		color: var(--color-text-muted);
+		text-decoration: none;
+		border-bottom: 2px solid transparent;
+
+		&:hover {
+			color: var(--color-text);
+		}
+
+		&.active {
+			color: var(--color-text);
+			font-weight: 600;
+			border-bottom-color: var(--color-accent);
+		}
+	}
+
+	.to-planner {
+		margin-left: auto;
+		font-size: 1.3rem;
+		font-weight: 600;
+		color: var(--color-accent);
+		text-decoration: none;
+
+		&:hover {
+			text-decoration: underline;
 		}
 	}
 
 	.admin-body {
-		height: calc(100% - 4.6rem);
+		height: calc(100% - 4.8rem);
 		overflow: hidden;
 	}
 </style>

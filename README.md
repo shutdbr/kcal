@@ -1,9 +1,9 @@
-# tracey
+# relay
 
 **A visual degree-plan builder for [Krea University](https://krea.edu.in) (SIAS).**
 
 Pick a programme (single major, double major, major + minor, or major + minor +
-concentration) and tracey lays out a recommended 3- or 4-year plan on a
+concentration) and relay lays out a recommended 3- or 4-year plan on a
 year-by-trimester grid. Drag courses around, and it checks your plan against the
 real rules — credit loads, prerequisites, when each course is actually offered,
 which year it's open to, and how many audits you have left — surfacing every

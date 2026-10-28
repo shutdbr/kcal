@@ -20976,6 +20976,11 @@
    "url": "https://krea.edu.in/sias/psychology-at-krea/",
    "credits": {
     "single_major": {
+     "4yr": {
+      "total": 80,
+      "required": 48,
+      "elective": 32
+     },
      "3yr": {
       "total": 60,
       "required": 36,
@@ -20984,6 +20989,11 @@
     },
     "double_major": {
      "4yr": {
+      "total": 64,
+      "required": 48,
+      "elective": 16
+     },
+     "3yr": {
       "total": 48,
       "required": 36,
       "elective": 12
@@ -21003,6 +21013,9 @@
     },
     "concentration": {
      "3yr": {
+      "total": 16
+     },
+     "4yr": {
       "total": 16
      }
     }

@@ -3,19 +3,33 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>kreabot's tracey</title>
+		<title>Relay</title>
+		<!-- Preserve browser data from before the Relay rename before app modules load. -->
+		<script>
+			try {
+				for (var key of Object.keys(localStorage)) {
+					if (!key.startsWith('tracey-')) continue;
+					var nextKey = 'relay-' + key.slice(7);
+					if (localStorage.getItem(nextKey) === null) {
+						localStorage.setItem(nextKey, localStorage.getItem(key));
+					}
+				}
+			} catch (e) {
+				// Storage may be unavailable; the app still works for this session.
+			}
+		</script>
 		<!-- theme + text size applied before first paint, so a dark-mode
 		     reload never flashes the light palette. Mirrors the storage
 		     shape in $lib/settings.svelte.ts — change both together. -->
 		<script>
 			try {
-				var s = JSON.parse(localStorage.getItem('tracey-settings') || '{}');
+				var s = JSON.parse(localStorage.getItem('relay-settings') || '{}');
 				var t = s.theme || 'light';
 				if (t === 'system') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 				document.documentElement.dataset.theme = t;
 				var scales = { small: 0.9, normal: 1, large: 1.1, huge: 1.2 };
 				document.documentElement.style.setProperty('--text-scale', scales[s.textSize] || 1);
-				document.documentElement.style.fontSize = 'calc(clamp(7.5px, 0.52vw, 11px) * var(--text-scale, 1))';
+				document.documentElement.style.fontSize = 'calc(clamp(10px, 0.52vw, 11px) * var(--text-scale, 1))';
 			} catch (e) {
 				document.documentElement.dataset.theme = 'light';
 			}

@@ -45,6 +45,9 @@ export const isGradeMark = (v: unknown): v is GradeMark => isGradeLetter(v) || v
 export const gradMinCredits = (fourYear: boolean): number => (fourYear ? 160 : 120);
 export const gradMaxCredits = (fourYear: boolean): number => (fourYear ? 176 : 128);
 export const GRAD_MIN_CGPA = 5.5; // and "E and above in all courses" — i.e. no U
+// the manual's other two standing lines (CGPA Requirements section)
+export const AID_MIN_CGPA = 6.5; // to keep receiving financial aid
+export const EXIT_CGPA = 3.5; // below this the student is asked to leave
 
 // CGPA → percentage, per the manual (CGPA / 10 × 100)
 export const cgpaToPercent = (cgpa: number): number => (cgpa / 10) * 100;

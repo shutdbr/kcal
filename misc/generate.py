@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
-"""Single source of truth for kreabot + tracey course data.
+"""Single source of truth for kreabot + relay course data.
 
 Parses every misc/*.csv term catalog (drop a new one in here each
 trimester, no code changes needed) and writes one canonical
 courses.json into both apps:
     kreabot/src/lib/courses.json   (canonical copy)
-    tracey/src/lib/data/courses.json
+    relay/src/lib/data/courses.json
 
 department.json / programme.json are hand-maintained (nothing in the
 CSVs can rebuild professor bios or major/minor requirements) and live
-in kreabot/src/lib/ — this script just mirrors them into tracey so
+in kreabot/src/lib/ — this script just mirrors them into relay so
 both apps read the same files.
 
 Usage: python3 misc/generate.py
@@ -23,8 +23,8 @@ import shutil
 from datetime import datetime, timezone
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-TRACEY_ROOT = os.path.dirname(HERE)
-KREABOT_ROOT = os.path.join(os.path.dirname(TRACEY_ROOT), "kreabot")
+RELAY_ROOT = os.path.dirname(HERE)
+KREABOT_ROOT = os.path.join(os.path.dirname(RELAY_ROOT), "kreabot")
 
 NON_ANSWERS = {
     "", "none", "-", "--na--", "n/a", "na", "nil", "no", "n", "yes", "y",
@@ -36,7 +36,7 @@ ROMAN = {"i": "1", "ii": "2", "iii": "3", "iv": "4", "v": "5", "vi": "6"}
 # Course-code prefix -> full subject name, matching the keys used in
 # kreabot's department.json / programme.json / SUBJECTS list. KCCS is
 # the university-wide foundation (common core) curriculum — mapped to
-# the pseudo-subject "core" so tracey can place and colour it, but it
+# the pseudo-subject "core" so relay can place and colour it, but it
 # is not a major/minor. Any prefix not in this map is left unmapped
 # and surfaced in review_flags instead of guessed at, so a new
 # department showing up in a future CSV doesn't get silently dropped
@@ -337,7 +337,7 @@ def build():
     # as *recommended*, not hard prerequisites (the real gates are common-
     # curriculum courses we don't model). Drop them so the course isn't pulled
     # onto a plan as a forced requirement. (prereq, dependent) by canonical
-    # code; kept in sync with SOFT_PREREQS in tracey/src/lib/data.ts.
+    # code; kept in sync with SOFT_PREREQS in relay/src/lib/data.ts.
     SOFT_PREREQS = {
         ("BIOS201", "BIOS241"),   # Ecology & Conservation: Life at Different Scales is recommended, not required
         ("POLT317", "POLT313"),   # backwards source row: "Political Theory II" is listed as a prereq FOR the intro course
@@ -346,8 +346,8 @@ def build():
     # the cell that carries them sits in a record whose multi-line description
     # spills across lines. Added back by hand, and ONLY where the source
     # supports them — a numbered sequence is not on its own grounds to invent a
-    # gate, since tracey enforces prerequisite order against real registration.
-    # Kept in sync with SEQUENCE_PREREQS in tracey/src/lib/data.ts.
+    # gate, since relay enforces prerequisite order against real registration.
+    # Kept in sync with SEQUENCE_PREREQS in relay/src/lib/data.ts.
     SEQUENCE_PREREQS = {
         ("MATH341", "MATH442"),   # Topology 1's forward cell reads "Analysis 4, Topology II"
         ("MATH303", "MATH304"),   # Analysis 4's own column is blank; MATH341 requires 303 AND 304
@@ -444,7 +444,7 @@ def build():
     template = open(os.path.join(HERE, "course_tree_template.html"),
                     encoding="utf-8").read()
     out = template.replace("/*__DATA__*/null", json.dumps(tree_data, ensure_ascii=False))
-    out_path = os.path.join(TRACEY_ROOT, "course-tree.html")
+    out_path = os.path.join(RELAY_ROOT, "course-tree.html")
     with open(out_path, "w", encoding="utf-8") as fh:
         fh.write(out)
     print("wrote", out_path, "(standalone debug artifact, not linked from either app)")
@@ -634,17 +634,17 @@ def build():
     }
 
     kreabot_out = os.path.join(KREABOT_ROOT, "src", "lib", "courses.json")
-    tracey_out = os.path.join(TRACEY_ROOT, "src", "lib", "data", "courses.json")
-    for out_path in (kreabot_out, tracey_out):
+    relay_out = os.path.join(RELAY_ROOT, "src", "lib", "data", "courses.json")
+    for out_path in (kreabot_out, relay_out):
         os.makedirs(os.path.dirname(out_path), exist_ok=True)
         with open(out_path, "w", encoding="utf-8") as fh:
             json.dump(output, fh, ensure_ascii=False, indent=1)
         print(f"wrote {out_path}: {len(app)} courses, {n_app_edges} prereq links")
 
-    # ── mirror hand-maintained files into tracey ──
+    # ── mirror hand-maintained files into relay ──
     for name in ("department.json", "programme.json"):
         src = os.path.join(KREABOT_ROOT, "src", "lib", name)
-        dst = os.path.join(TRACEY_ROOT, "src", "lib", "data", name)
+        dst = os.path.join(RELAY_ROOT, "src", "lib", "data", name)
         if os.path.exists(src):
             shutil.copyfile(src, dst)
             print(f"mirrored {src} -> {dst}")

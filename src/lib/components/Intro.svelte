@@ -7,7 +7,7 @@
 		{
 			target: 'programme',
 			title: 'make this your degree',
-			body: 'hi, this is tracey! start here: choose your major, add a minor or concentration, and pick a 3- or 4-year degree. the starting grid is an example to help you get going.'
+			body: 'hi, this is Relay! start here: choose your major, add a minor or concentration, and pick a 3- or 4-year degree. the starting grid is an example to help you get going.'
 		},
 		{
 			target: 'catalogue',
@@ -22,7 +22,7 @@
 		{
 			target: 'board-toggles',
 			title: 'switch how you view it',
-			body: 'grade view turns the grid into your transcript — enter grades and track your CGPA instead of credits. show codes / titles controls what each chip is labelled with.'
+			body: 'grade view turns the grid into your transcript — enter grades and track your CGPA instead of credits. show codes / titles controls course labels everywhere, including hints and the catalogue.'
 		},
 		{
 			target: 'board-actions',
@@ -37,12 +37,12 @@
 		{
 			target: 'hints',
 			title: 'keep your plan on track',
-			body: 'hints flag things like missing prerequisites and credit loads as you edit. check reference plan opens the suggested path for your programme; the information section above tracks your credits and requirements.'
+			body: 'hints flag things like missing prerequisites and credit loads as you edit — point at one and its courses light up on the grid. "suggested path" shows the order your department recommends; the information section above tracks your credits and requirements.'
 		},
 		{
 			target: 'settings',
 			title: 'you’re ready to start',
-			body: 'your plan saves automatically in this browser. open settings to keep named copies, change the theme, or adjust text size. you can replay this walkthrough any time with quick tour.'
+			body: 'your plan saves automatically in this browser. open settings to keep named copies, change the theme, adjust text size, or replay this walkthrough with quick tour.'
 		}
 	];
 

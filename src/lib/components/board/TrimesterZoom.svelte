@@ -67,15 +67,36 @@
 		if (e.dataTransfer) e.dataTransfer.effectAllowed = 'move';
 		plan.dragging = code;
 	}
+
+	// what's wrong with THIS trimester — the hints that name its courses — so
+	// opening a red cell answers "why is it red?"
+	let slotHints = $derived(
+		plan.hints.filter(
+			(h) => (h.kind === 'warn' || h.kind === 'caution') && h.codes.some((c) => plan.slotCourses(year, trim).includes(c))
+		)
+	);
 </script>
 
 <header>
 	<button class="back" onclick={() => (plan.zoom = null)}>← back</button>
-	<h1>Year {year}, Trimester {trim}</h1>
+	<h1>year {year} · trimester {trim}</h1>
 	<span class="load">
 		{plan.slotCredits(year, trim)}{exempt ? '' : ` / ${TRIM_HARD_MAX}`} credits
 	</span>
 </header>
+
+<p class="how">
+	each square is one credit{exempt ? '' : ` — the shaded blocks are the ${TRIM_MIN}-credit minimum, three 4-credit courses`}.
+	arrange the courses however helps you think; where they sit here doesn't change your plan.
+</p>
+
+{#if slotHints.length}
+	<ul class="slot-hints">
+		{#each slotHints as h (h.id ?? h.text)}
+			<li class={h.kind}>{h.text}</li>
+		{/each}
+	</ul>
+{/if}
 
 <div class="canvas" role="list" bind:this={canvasEl} ondragover={(e) => e.preventDefault()} ondrop={drop}>
 	<div class="layer zones">
@@ -101,13 +122,14 @@
 			{@const course = byCode(code)}
 			{@const span = spans(course.credits)}
 			{@const cell = plan.zoomPos[code]}
+			{@const type = plan.courseType(code)}
 			<div
 				class="placed"
-				data-type={plan.courseType(code)}
+				data-type={type}
 				class:flagged={plan.flaggedCodes.has(code)}
 				class:is-audit={plan.isAudit(code)}
 				class:dragging={plan.dragging === code}
-				data-prog={plan.accentOf(code)}
+				style:--hue={plan.hueOf(code)}
 				style={cell !== undefined
 					? `grid-column: ${(cell % COLS) + 1} / span ${span.col}; grid-row: ${Math.floor(cell / COLS) + 1} / span ${span.row};`
 					: `grid-column: span ${span.col}; grid-row: span ${span.row};`}
@@ -120,9 +142,9 @@
 				ondragend={() => (plan.dragging = null)}
 				onclick={() => (plan.selected = course)}
 			>
-				<button class="x" aria-label="remove {code}" onclick={() => plan.remove(code)}>×</button>
-				<span class="code">{plan.shownCode(code)}</span>
-				<span class="title">{course.title}</span>
+				<button class="x" aria-label="remove {plan.courseLabel(code)}" onclick={(e) => { e.stopPropagation(); plan.remove(code); }}>×</button>
+				{#if plan.showCodes}<span class="code">{#if plan.flagKinds.has(code)}<span class="flag" data-kind={plan.flagKinds.get(code)} role="img" aria-label="named in a hint" title="named in a hint — see hints"></span>{/if}{#if type === 'required'}<span class="req-dot" role="img" aria-label="required"></span>{/if}{plan.shownCode(code)}</span>{/if}
+				<span class="title">{#if !plan.showCodes && plan.flagKinds.has(code)}<span class="flag" data-kind={plan.flagKinds.get(code)} role="img" aria-label="named in a hint" title="named in a hint — see hints"></span>{/if}{#if type === 'required' && !plan.showCodes}<span class="req-dot" role="img" aria-label="required"></span>{/if}{course.title}</span>
 				<span class="credits">{course.credits} cr</span>
 			</div>
 		{/each}
@@ -137,8 +159,8 @@
 		<span class="s-lead">suggested here</span>
 		{#each plan.suggestionsFor(year, trim) as code (code)}
 			{@const c = byCode(code)}
-			<button class="s-chip" title="add {code}" onclick={() => plan.acceptSuggestion(code)}>
-				<span class="s-code">{plan.shownCode(code)}</span>
+			<button class="s-chip" title="add {plan.courseLabel(code)}" onclick={() => plan.acceptSuggestion(code)}>
+				{#if plan.showCodes}<span class="s-code">{plan.shownCode(code)}</span>{/if}
 				<span class="s-title">{c.title}</span>
 				<span class="s-plus" aria-hidden="true">+</span>
 			</button>
@@ -194,6 +216,38 @@
 		}
 	}
 
+	.how {
+		max-width: 76rem;
+		margin: -0.8rem 3.2rem 1.2rem;
+		font-size: 1.3rem;
+		line-height: 1.5;
+		color: var(--color-text-muted);
+	}
+
+	.slot-hints {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		max-width: 76rem;
+		margin: 0 3.2rem 1.4rem;
+		list-style: none;
+
+		li {
+			padding: 0.7rem 1.1rem;
+			font-size: 1.3rem;
+			line-height: 1.45;
+			color: var(--color-text);
+			background: color-mix(in srgb, var(--color-hint-warn) 45%, var(--color-bg-light));
+			border: 1px solid color-mix(in srgb, var(--color-hint-warn-deep) 45%, transparent);
+			border-radius: 6px;
+
+			&.caution {
+				background: color-mix(in srgb, var(--color-hint-caution) 45%, var(--color-bg-light));
+				border-color: color-mix(in srgb, var(--color-hint-caution-deep) 45%, transparent);
+			}
+		}
+	}
+
 	header {
 		display: flex;
 		align-items: baseline;
@@ -214,16 +268,7 @@
 	.back {
 		padding: 0.6rem 1.2rem;
 		font-size: 1.3rem;
-		color: var(--color-text);
-		background-color: var(--color-bg-light);
-		border: 1px solid var(--color-border-card);
-		border-radius: 5px;
-		cursor: pointer;
-		@include glossy;
-
-		&:hover {
-			background-color: var(--color-hover-medium);
-		}
+		@include store-button;
 	}
 
 	.canvas {
@@ -279,7 +324,7 @@
 		display: flex;
 		flex-direction: column;
 		min-width: 0;
-		overflow: hidden; // clips the accent stripe to the rounded corners
+		overflow: hidden; // nothing spills past the rounded corners
 		margin: 0.7rem;
 		padding: 1.2rem 1.4rem;
 		border-radius: 8px;
@@ -290,7 +335,6 @@
 			box-shadow 0.2s ease;
 		@include course-type-fill;
 		@include card-shine;
-		@include programme-accent;
 
 		&:hover {
 			transform: translateY(-2px);
@@ -299,16 +343,30 @@
 
 		&:active {
 			cursor: grabbing;
+			transform: scale(0.98);
 		}
 
-		// the source of an in-flight drag fades back while the cursor carries it
+		// the source of an in-flight drag leaves its dashed outline behind
 		&.dragging {
-			opacity: 0.35;
+			transform: none;
+			background: color-mix(in srgb, var(--color-board-text) 6%, transparent);
+			border: 1px dashed color-mix(in srgb, var(--color-board-text) 60%, transparent);
+			box-shadow: none;
+
+			> * {
+				visibility: hidden;
+			}
 		}
 
 		.code {
 			font-size: 1.6rem;
 			font-weight: 700;
+		}
+
+		.req-dot {
+			@include required-dot;
+			margin-right: 0.6rem;
+			vertical-align: 0.12em;
 		}
 
 		.title {
@@ -322,8 +380,11 @@
 			color: var(--color-text-muted);
 		}
 
-		&.flagged .code {
-			text-decoration: underline dotted;
+		// a course named in a hint leads with that hint's severity mark
+		.flag {
+			@include severity-mark;
+			margin-right: 0.5rem;
+			vertical-align: -0.1em;
 		}
 
 		.x {

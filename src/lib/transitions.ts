@@ -12,9 +12,9 @@ import { cubicOut } from 'svelte/easing';
 // grid → catalogue on return. With no matching partner (e.g. toggling the
 // zoom view) it falls back to a soft scale, so it never just pops.
 const [sendCourse, receiveCourse] = crossfade({
-	duration: 260,
+	duration: (distance) => Math.min(280, Math.max(160, Math.sqrt(distance) * 14)),
 	easing: cubicOut,
-	fallback: (node) => scale(node, { start: 0.9, opacity: 0, duration: 180, easing: cubicOut })
+	fallback: (node) => scale(node, { start: 0.97, opacity: 0, duration: 160, easing: cubicOut })
 });
 
 // ── redraws ──
@@ -27,7 +27,8 @@ const [sendCourse, receiveCourse] = crossfade({
 const QUIET_MS = 150;
 let quietUntil = 0;
 const now = () => (typeof performance === 'undefined' ? Date.now() : performance.now());
-const quiet = () => now() < quietUntil;
+export const reducedMotion = () => typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+const quiet = () => now() < quietUntil || reducedMotion();
 /** called by the plan whenever it replaces the whole board at once */
 export const quietRedraw = () => (quietUntil = now() + QUIET_MS);
 
@@ -36,11 +37,21 @@ type Motion = TransitionConfig | (() => TransitionConfig);
 
 /** a course arriving on a surface — flies from wherever it left, or fades in on a redraw */
 export const courseIn = (node: Element, params: CourseParams): Motion =>
-	quiet() ? fade(node, { duration: 120, easing: cubicOut }) : receiveCourse(node, params);
+	quiet() ? fade(node, { duration: reducedMotion() ? 0 : 120, easing: cubicOut }) : receiveCourse(node, params);
 
 /** a course leaving a surface — flies to wherever it lands, or fades out on a redraw */
 export const courseOut = (node: Element, params: CourseParams): Motion =>
-	quiet() ? fade(node, { duration: 90, easing: cubicOut }) : sendCourse(node, params);
+	quiet() ? fade(node, { duration: reducedMotion() ? 0 : 90, easing: cubicOut }) : sendCourse(node, params);
 
 /** `animate:flip` duration — a redraw reshuffles every slot, so it snaps instead */
 export const courseShift = { duration: () => (quiet() ? 0 : 220) };
+
+/** a number rolling over to its next value — the old one slides out one way
+ *  while the new one slides in after it, slightly blurred in motion, like a
+ *  mechanical counter (or iOS's numeric text). Stack old and new in one grid
+ *  cell so they cross. dir 1 = enters from below, -1 = leaves upward. */
+export const roll = (_node: Element, { dir = 1 }: { dir?: 1 | -1 } = {}): TransitionConfig => ({
+	duration: reducedMotion() ? 0 : 340,
+	easing: cubicOut,
+	css: (t, u) => `transform: translateY(${u * 70 * dir}%); opacity: ${t}; filter: blur(${u * 1.5}px)`
+});

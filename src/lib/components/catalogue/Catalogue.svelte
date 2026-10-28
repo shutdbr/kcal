@@ -1,9 +1,27 @@
 <script lang="ts">
+	import PixelIcon from '../PixelIcon.svelte';
+	import { tick } from 'svelte';
 	import type { Plan } from '$lib/plan.svelte';
 	import { subjectById } from '$lib/data';
 	import CatalogueCard from './CatalogueCard.svelte';
 
 	let { plan }: { plan: Plan } = $props();
+
+	let catalogueEl: HTMLDivElement;
+	$effect(() => {
+		const request = plan.catalogueReveal;
+		if (!request) return;
+		let cancelled = false;
+		void tick().then(() => {
+			if (cancelled) return;
+			const cell = Array.from(catalogueEl.querySelectorAll<HTMLElement>('[data-course]'))
+				.find((el) => el.dataset.course === request.code);
+			const card = cell?.querySelector<HTMLElement>('[data-course-card]');
+			card?.focus({ preventScroll: true });
+			cell?.scrollIntoView({ block: 'center', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' });
+		});
+		return () => { cancelled = true; };
+	});
 
 	// filter chips: one per distinct selected subject, plus the foundation
 	// core — always on offer, whatever the programmes are. The open minor
@@ -34,6 +52,7 @@
 
 <div
 	class="catalogue"
+	bind:this={catalogueEl}
 	data-tour="catalogue"
 	role="list"
 	ondragover={(e) => e.preventDefault()}
@@ -46,7 +65,8 @@
 	<!-- search + filters stay put while the cards scroll underneath -->
 	<div class="controls">
 		<div class="search-box">
-			<input class="search" type="search" placeholder="search course" bind:value={plan.search} />
+			<span class="search-icon"><PixelIcon name="search" /></span>
+			<input class="search" type="search" aria-label="search courses" placeholder="search course" bind:value={plan.search} />
 			{#if plan.search}
 				<button class="clear-search" aria-label="clear search" onclick={() => (plan.search = '')}>
 					×
@@ -69,6 +89,12 @@
 		</div>
 	</div>
 
+	{#if plan.catalogueReveal}
+		<div class="reveal-note" role="status">
+			<span>showing {plan.catalogueReveal.code}</span>
+			<button onclick={() => (plan.catalogueReveal = null)} aria-label="return to catalogue filters">done ×</button>
+		</div>
+	{/if}
 	<div class="scroll">
 		<div class="cards">
 			{#each plan.catalogue as course (course.code)}
@@ -77,7 +103,7 @@
 				     course (the KCCS foundation set) also takes the full row:
 				     span-3 cards would strand a dead quarter-column beside
 				     every one of them, since nothing 1cr sits nearby to fill it -->
-				<div class="cell" style="grid-column: span {course.credits >= 3 ? 4 : Math.max(1, course.credits)};">
+				<div class="cell" class:revealed={plan.catalogueReveal?.code === course.code} data-course={course.code} style="grid-column: span {(course.pendingCredits && course.credits === 0) || course.credits >= 3 ? 4 : Math.max(1, course.credits)};">
 					<CatalogueCard
 						{plan}
 						{course}
@@ -127,7 +153,7 @@
 		min-height: 0;
 		overflow-y: auto;
 		overflow-x: hidden;
-		padding: 0.4rem 1.4rem 2.4rem;
+		padding: 1rem 1.4rem 2.4rem;
 	}
 
 	.search-box {
@@ -137,15 +163,36 @@
 
 	// a text field is something you type INTO — recessed, not raised like the
 	// buttons around it
+	.search-icon {
+		position: absolute;
+		left: 1rem;
+		top: 50%;
+		transform: translateY(-50%);
+		width: 1.5rem;
+		height: 1.5rem;
+		color: #969196;
+		pointer-events: none;
+	}
+	// the iOS 6 search capsule: set into the panel, shaded along its top
+	// inside edge, with a lit lip under it
 	.search {
 		width: 100%;
-		padding: 0.8rem 3rem 0.8rem 1rem; // right padding reserves the × corner
-		font-size: 1.4rem;
+		padding: 0.75rem 3rem 0.75rem 3.2rem; // right padding reserves the × corner
+		font-size: var(--text-body);
 		color: var(--color-text);
 		background: var(--color-bg-card-start);
-		border: 1px solid var(--color-border-card);
-		border-radius: 5px;
-		box-shadow: var(--shadow-well);
+		border: 1px solid color-mix(in srgb, var(--color-border) 45%, var(--color-border-card));
+		border-radius: 999px;
+		box-shadow:
+			inset 0 1px 3px rgba(98, 58, 82, 0.25),
+			0 1px 0 rgba(255, 255, 255, 0.8);
+		transition:
+			border-color 0.2s ease,
+			box-shadow 0.2s ease;
+
+		&:focus {
+			border-color: var(--color-accent);
+		}
 
 		&::placeholder {
 			color: var(--color-text-muted);
@@ -157,42 +204,59 @@
 		}
 	}
 
+	// the round grey clear button iOS puts in its search field — springs in
+	// when there's something to clear
 	.clear-search {
 		position: absolute;
 		top: 50%;
-		right: 0.6rem;
-		transform: translateY(-50%);
+		right: 0.8rem;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 2rem;
-		height: 2rem;
-		padding: 0;
-		background: none;
-		border: none;
-		border-radius: 3px;
-		font-size: 1.7rem;
+		width: 1.7rem;
+		height: 1.7rem;
+		padding: 0 0 0.1rem;
+		font-size: 1.4rem;
+		font-weight: 700;
 		line-height: 1;
-		color: var(--color-text-muted);
+		color: var(--color-bg-light);
+		background: color-mix(in srgb, var(--color-text-muted) 75%, transparent);
+		border: none;
+		border-radius: 50%;
 		cursor: pointer;
+		translate: 0 -50%;
+		animation: clear-in 0.3s var(--spring) both;
+		transition:
+			background-color 0.15s ease,
+			scale 0.12s ease;
 
 		&:hover {
-			color: var(--color-text);
-			background: var(--color-hover-medium);
+			background: var(--color-text-muted);
+		}
+
+		&:active {
+			scale: 0.88;
+		}
+	}
+
+	@keyframes clear-in {
+		from {
+			scale: 0.3;
+			opacity: 0;
 		}
 	}
 
 	.filters {
 		display: flex;
-		gap: 1.4rem;
-		padding: 1rem 0.2rem;
+		gap: 2rem;
+		padding: 1.4rem 0.4rem 0.6rem;
 	}
 
 	.filter {
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-		font-size: 1.4rem;
+		font-size: var(--text-body);
 		cursor: pointer;
 
 		// kccs is a different beast (all-or-nothing core view) — set it
@@ -215,6 +279,20 @@
 		gap: 1rem;
 	}
 
+	.reveal-note {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 0.6rem 1.6rem;
+		font-size: var(--text-body);
+		color: var(--color-text-muted);
+		button { border: 0; background: none; color: var(--color-accent); cursor: pointer; padding: 0.4rem; }
+	}
+	.revealed {
+		border-radius: 6px;
+		outline: 2px solid var(--color-accent);
+		outline-offset: 3px;
+	}
 	.cell {
 		display: grid; // so the card stretches
 		min-width: 0; // long titles ellipsize instead of widening the column

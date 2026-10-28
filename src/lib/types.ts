@@ -9,6 +9,7 @@ export type Course = {
 	codes: string[]; // all cross-listed codes for this one course, e.g. ['ARTS229','HIST235','LITT235']
 	codesBySubject: Record<string, string>; // subject id → the code that subject sees it under
 	credits: number;
+	pendingCredits?: boolean;
 	required: boolean; // the university's own required/elective flag — anything not clearly elective is required
 	offered: TrimNum[]; // which trimesters it has run in, derived from terms taught
 	eligibleYears: number[]; // which of years 1-4 this is open to
@@ -21,6 +22,12 @@ export type Course = {
 	// but doing the applied one does NOT clear the maths requirement.
 	covers?: string[];
 	coveredBy?: string[];
+	// /admin's credit-sharing override: does this course count toward every
+	// programme it satisfies ('all') or just the first that claims it ('one')?
+	// Absent = the site-wide default (CREDIT_SHARE_DEFAULT in data.ts).
+	share?: 'one' | 'all';
+	retired?: boolean;
+	added?: boolean; // created in /admin, not by the data pipeline
 };
 
 export type Subject = {
@@ -28,6 +35,7 @@ export type Subject = {
 	label: string; // full name shown in sidebar
 	short: string; // short name shown as catalogue filter chip
 	majorable: boolean; // some subjects are only offered as minor/concentration
+	hue?: number; // the subject's fixed OKLCH hue — its courses wear it (see SUBJECTS)
 };
 
 export type ProgrammeRole = 'major' | 'minor' | 'concentration';
@@ -76,6 +84,8 @@ export type ProgrammeStat = {
 	creditsLeft: number;
 	requiredDone: number; // credits of required courses placed
 	requiredNeeded: number; // credits of required courses in total
+	electiveDone: number;
+	electiveNeeded: number;
 };
 
 /** "year-trim" e.g. "3-1" for Year 3, Trimester 1 */

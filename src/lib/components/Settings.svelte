@@ -2,10 +2,12 @@
 	import type { Plan } from '$lib/plan.svelte';
 	import { settings, TEXT_SIZES, type ThemeChoice } from '$lib/settings.svelte';
 	import { savedPlans, MAX_SAVES } from '$lib/savedPlans.svelte';
-	import { subjectById } from '$lib/data';
+	import { byCode, subjectById } from '$lib/data';
 	import Modal from './Modal.svelte';
+	import FeedbackForm from './FeedbackForm.svelte';
+	import PixelIcon from './PixelIcon.svelte';
 
-	let { plan, onclose }: { plan: Plan; onclose: () => void } = $props();
+	let { plan, onclose, ontour }: { plan: Plan; onclose: () => void; ontour: () => void } = $props();
 
 	const THEMES: { id: ThemeChoice; label: string }[] = [
 		{ id: 'light', label: 'light' },
@@ -71,65 +73,28 @@
 		' ' +
 		new Date(ms).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
 
-	// ── feedback ──
-	// posts to the netlify form declared in app.html — no server of our own,
-	// submissions land in the netlify dashboard. Whatever plan the student is
-	// on rides along, since "the grid is wrong" needs the grid to make sense.
-	let message = $state('');
-	let copied = $state(false);
-	let sending = $state(false);
-	let sent = $state(false);
-	let failed = $state(false);
-
-	let body = $derived(
-		[
-			message.trim(),
-			'',
-			'---',
-			`plan: ${plan.structure}, ${plan.fourYear ? '4-year' : '3-year'}`,
-			`credits placed: ${plan.totalPlacedCredits}/${plan.degreeTotal}`
-		]
-			.filter((l) => l !== '')
-			.join('\n')
-	);
-
-	async function send() {
-		if (!message.trim() || sending) return;
-		sending = true;
-		failed = false;
+	// ── share ──
+	// the plan as plain text, trimester by trimester — something to paste to
+	// an advisor or a friend, since saved plans never leave this browser
+	let shared = $state(false);
+	async function copyPlan() {
+		const degree = plan.programmes.map((p) => `${subjectById(p.subject).label} ${p.role}`).join(' + ');
+		const lines = [`${degree} · ${plan.fourYear ? '4' : '3'}-year · batch ${plan.batchStartYear}`, ''];
+		for (const y of plan.years)
+			for (const t of plan.trims) {
+				const codes = plan.slotCourses(y, t);
+				if (codes.length)
+					lines.push(
+						`Y${y} T${t} (${plan.slotCredits(y, t)} cr): ${codes.map((c) => `${byCode(c).code} ${byCode(c).title}`).join('; ')}`
+					);
+			}
+		lines.push('', `${plan.totalPlacedCredits} of ${plan.degreeTotal} credits placed`);
 		try {
-			const res = await fetch('/', {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-				body: new URLSearchParams({
-					'form-name': 'feedback',
-					'bot-field': '', // honeypot — a bot fills this in, a student can't see it
-					message: message.trim(),
-					plan: `${plan.structure}, ${plan.fourYear ? '4-year' : '3-year'}`,
-					credits: `${plan.totalPlacedCredits}/${plan.degreeTotal}`
-				}).toString()
-			});
-			if (!res.ok) throw new Error(String(res.status));
-			message = '';
-			sent = true;
-			setTimeout(() => (sent = false), 3000);
+			await navigator.clipboard.writeText(lines.join('\n'));
+			shared = true;
+			setTimeout(() => (shared = false), 1800);
 		} catch {
-			// offline, or running somewhere netlify isn't handling the post —
-			// the text stays in the box and "copy instead" still works
-			failed = true;
-		} finally {
-			sending = false;
-		}
-	}
-
-	async function copy() {
-		if (!message.trim()) return;
-		try {
-			await navigator.clipboard.writeText(`[feedback]\n${body}`);
-			copied = true;
-			setTimeout(() => (copied = false), 1800);
-		} catch {
-			// clipboard blocked — the textarea is right there to select from
+			// clipboard blocked — nothing else to fall back to here
 		}
 	}
 
@@ -179,25 +144,16 @@
 	</section>
 
 	<section>
-		<h3>feedback</h3>
-
-		<textarea
-			bind:value={message}
-			rows="4"
-			placeholder="something wrong or missing? let me know."
-		></textarea>
-
+		<h3>help</h3>
+		<p class="note">a walk around the board — what each part does and where things live.</p>
 		<div class="actions">
-			<button class="primary" disabled={!message.trim() || sending} onclick={send}>
-				{sending ? 'sending…' : sent ? 'sent ✓' : 'send'}
-			</button>
-			<button disabled={!message.trim()} onclick={copy}>{copied ? 'copied ✓' : 'copy instead'}</button>
+			<button onclick={ontour}><PixelIcon name="help" size="1.3rem" /> quick tour</button>
 		</div>
-		{#if sent}
-			<p class="note">thank you — it's in.</p>
-		{:else if failed}
-			<p class="note">that didn't go through. try again, or copy the text and send it another way.</p>
-		{/if}
+	</section>
+
+	<section>
+		<h3>feedback</h3>
+		<FeedbackForm {plan} />
 	</section>
 
 	<section>
@@ -250,8 +206,9 @@
 
 	<section>
 		<h3>your plan</h3>
-		<p class="note">saved in this browser only.</p>
+		<p class="note">saved in this browser only. copy it as text to send to an advisor.</p>
 		<div class="actions">
+			<button onclick={copyPlan}>{shared ? 'copied ✓' : 'copy plan as text'}</button>
 			<button class="danger" onclick={startOver}>
 				{confirming ? 'really start over?' : 'start over'}
 			</button>
@@ -268,7 +225,7 @@
 		& + section {
 			margin-top: 1.6rem;
 			padding-top: 1.6rem;
-			border-top: 1px solid var(--color-border-divider);
+			border-top: 1px dotted var(--color-border-card);
 		}
 
 		&:last-child {
@@ -302,18 +259,10 @@
 			padding: 0.6rem 1.2rem;
 			font: inherit;
 			font-size: 1.3rem;
-			color: var(--color-text);
-			background: var(--color-bg-light);
-			border: 1px solid var(--color-border-card);
-			border-radius: 5px;
-			cursor: pointer;
-
-			&:hover:not(:disabled) {
-				background: var(--color-hover-medium);
-			}
+			@include store-button;
 
 			&:disabled {
-				opacity: 0.45;
+				opacity: 0.6;
 				cursor: default;
 			}
 		}
@@ -332,7 +281,7 @@
 			font-size: 1.3rem;
 
 			& + li {
-				border-top: 1px solid var(--color-border-light);
+				border-top: 1px dotted var(--color-border-card);
 			}
 		}
 
@@ -353,22 +302,10 @@
 		padding: 0.35rem 0.9rem;
 		font: inherit;
 		font-size: 1.2rem;
-		color: var(--color-text);
-		background: var(--color-bg-light);
-		border: 1px solid var(--color-border-card);
-		border-radius: 4px;
-		cursor: pointer;
+		@include store-button($armable: true);
 
-		&:hover {
-			background: var(--color-hover-medium);
-		}
-
-		// a second tap is what actually does it — say so, in the button
-		&.confirming {
-			color: var(--color-on-accent);
-			background-color: var(--color-danger);
-			border-color: var(--color-danger-deep);
-		}
+		// a second tap is what actually does it — the button says so, and
+		// turns red (store-button's armed state)
 	}
 
 	.note.warn {
@@ -406,32 +343,15 @@
 		color: var(--color-text-muted);
 	}
 
-	textarea {
-		width: 100%;
-		min-width: 0;
-		padding: 0.6rem 0.8rem;
-		font-size: 1.3rem;
-		color: var(--color-text);
-		background: var(--color-bg-light);
-		border: 1px solid var(--color-border-card);
-		border-radius: 5px;
-		box-shadow: var(--shadow-well);
-		margin-top: 1rem;
-		resize: vertical;
-		line-height: 1.45;
-		font-family: inherit;
-
-		&::placeholder {
-			color: var(--color-text-muted);
-		}
-	}
-
 	.actions {
 		display: flex;
 		gap: 0.8rem;
 		margin-top: 1rem;
 
 		button {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.6rem;
 			padding: 0.7rem 1.6rem;
 			font-size: 1.3rem;
 			font-weight: 600;
@@ -443,15 +363,8 @@
 			@include glossy;
 
 			&:disabled {
-				opacity: 0.5;
+				opacity: 0.6;
 				cursor: not-allowed;
-			}
-
-			&.primary {
-				color: var(--color-on-accent);
-				background-color: var(--color-accent);
-				border-color: var(--color-control-deep);
-				@include glossy-accent;
 			}
 
 			// destructive, so it's the one button wearing the danger colour

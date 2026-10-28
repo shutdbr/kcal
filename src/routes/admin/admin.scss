@@ -1,0 +1,274 @@
+// ─────────────────────────────────────────────
+// The admin's shared vocabulary — flat, quiet, one accent.
+//
+// The planner is glossy on purpose (it is a thing students handle); the
+// admin is a tool for reading and correcting data, so it drops the sheen and
+// the cards for hairlines and whitespace. Every admin page uses these same
+// few pieces, scoped under .adm so none of it leaks into the planner.
+// ─────────────────────────────────────────────
+
+.adm {
+	--adm-line: var(--color-border-divider);
+	--adm-line-strong: var(--color-border-card);
+	--adm-pad: 2.4rem;
+
+	height: 100%;
+	font-size: 1.3rem;
+	color: var(--color-text);
+	background: var(--color-bg-light);
+
+	// ── buttons ──
+	.btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		padding: 0.5rem 1.1rem;
+		font: inherit;
+		font-size: 1.25rem;
+		line-height: 1.3;
+		color: var(--color-text);
+		text-decoration: none;
+		white-space: nowrap;
+		background: transparent;
+		border: 1px solid var(--adm-line-strong);
+		border-radius: 6px;
+		cursor: pointer;
+		transition:
+			background 0.12s ease,
+			border-color 0.12s ease;
+
+		&:hover:not(:disabled) {
+			background: var(--color-hover-medium);
+		}
+
+		&:disabled {
+			opacity: 0.4;
+			cursor: default;
+		}
+
+		&.primary {
+			color: var(--color-on-accent);
+			background: var(--color-accent);
+			border-color: var(--color-accent);
+
+			&:hover:not(:disabled) {
+				background: var(--color-control-deep);
+			}
+		}
+
+		&.ghost {
+			border-color: transparent;
+		}
+
+		&.sm {
+			padding: 0.25rem 0.8rem;
+			font-size: 1.15rem;
+		}
+
+		&.danger {
+			color: var(--color-danger);
+		}
+
+		&.danger.confirming {
+			color: var(--color-on-accent);
+			background: var(--color-danger);
+			border-color: var(--color-danger);
+		}
+	}
+
+	.link {
+		padding: 0;
+		font: inherit;
+		font-weight: 600;
+		color: var(--color-accent);
+		text-decoration: none;
+		background: none;
+		border: 0;
+		cursor: pointer;
+
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+
+	// ── fields ──
+	.input,
+	select.input {
+		width: 100%;
+		padding: 0.55rem 0.8rem;
+		font: inherit;
+		color: var(--color-text);
+		background: var(--color-bg-light);
+		border: 1px solid var(--adm-line-strong);
+		border-radius: 6px;
+
+		&:focus {
+			outline: none;
+			border-color: var(--color-accent);
+			box-shadow: 0 0 0 3px var(--color-subtle);
+		}
+	}
+
+	// a row of mutually exclusive choices
+	.seg {
+		display: inline-flex;
+		padding: 2px;
+		background: var(--color-bg);
+		border-radius: 7px;
+
+		button {
+			padding: 0.35rem 1rem;
+			font: inherit;
+			font-size: 1.2rem;
+			color: var(--color-text-muted);
+			background: none;
+			border: 0;
+			border-radius: 5px;
+			cursor: pointer;
+
+			&:hover {
+				color: var(--color-text);
+			}
+
+			&.on {
+				color: var(--color-text);
+				background: var(--color-bg-light);
+				box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+			}
+		}
+	}
+
+	// independent on/off pills (trimesters, years)
+	.pills {
+		display: inline-flex;
+		flex-wrap: wrap;
+		gap: 0.4rem;
+
+		button {
+			min-width: 3.6rem;
+			padding: 0.35rem 0.9rem;
+			font: inherit;
+			font-size: 1.2rem;
+			color: var(--color-text-muted);
+			background: none;
+			border: 1px solid var(--adm-line-strong);
+			border-radius: 999px;
+			cursor: pointer;
+
+			&.on {
+				color: var(--color-on-accent);
+				background: var(--color-accent);
+				border-color: var(--color-accent);
+			}
+		}
+	}
+
+	// ── settings rows: label | control ──
+	.section {
+		padding: 1.8rem 0;
+		border-top: 1px solid var(--adm-line);
+
+		&:first-child {
+			border-top: 0;
+		}
+
+		> h2 {
+			margin-bottom: 0.6rem;
+			font-size: 1.05rem;
+			font-weight: 700;
+			letter-spacing: 0.08em;
+			text-transform: uppercase;
+			color: var(--color-text-muted);
+		}
+	}
+
+	.set {
+		display: grid;
+		grid-template-columns: 16rem minmax(0, 1fr);
+		align-items: start;
+		gap: 1.6rem;
+		padding: 0.9rem 0;
+
+		> .set-label {
+			padding-top: 0.55rem;
+			font-weight: 600;
+
+			small {
+				display: block;
+				margin-top: 0.2rem;
+				font-size: 1.1rem;
+				font-weight: 400;
+				color: var(--color-text-muted);
+			}
+		}
+
+		// an edited value carries a dot by its label
+		&.changed > .set-label::after {
+			content: '';
+			display: inline-block;
+			width: 0.6rem;
+			height: 0.6rem;
+			margin-left: 0.6rem;
+			vertical-align: middle;
+			background: var(--color-accent);
+			border-radius: 50%;
+		}
+	}
+
+	.help {
+		margin-top: 0.4rem;
+		font-size: 1.15rem;
+		line-height: 1.5;
+		color: var(--color-text-muted);
+	}
+
+	.was {
+		margin-top: 0.4rem;
+		font-size: 1.15rem;
+		color: var(--color-text-muted);
+
+		.link {
+			margin-left: 0.6rem;
+		}
+	}
+
+	.tag {
+		display: inline-block;
+		padding: 0.05rem 0.5rem;
+		font-size: 1rem;
+		font-weight: 600;
+		color: var(--color-text-muted);
+		border: 1px solid var(--adm-line-strong);
+		border-radius: 4px;
+
+		&.new {
+			color: var(--color-hint-good-deep);
+			border-color: var(--color-hint-good-deep);
+		}
+	}
+
+	.empty {
+		padding: 2.4rem 1.6rem;
+		font-size: 1.25rem;
+		text-align: center;
+		color: var(--color-text-muted);
+	}
+
+	// a quiet banner — warnings only, never decoration
+	.note {
+		padding: 0.9rem 1.2rem;
+		font-size: 1.2rem;
+		line-height: 1.5;
+		border-radius: 6px;
+		background: var(--color-bg);
+
+		&.bad {
+			background: var(--color-hint-warn);
+		}
+	}
+
+	input[type='checkbox'] {
+		accent-color: var(--color-accent);
+	}
+}

@@ -21,6 +21,9 @@
 	// the code this course goes by in the subject you're browsing (HIST235
 	// under history), and the other departments it's cross-listed with
 	let shownCode = $derived(codeFor(course, contextSubject));
+	let label = $derived(plan.courseLabel(course.code, shownCode));
+	// a quarter-width card only has room for one short line
+	let compactText = $derived(plan.showCodes ? shownCode : course.title);
 	let alsoCodes = $derived(course.codes.filter((c) => c !== shownCode));
 	// the tools courses are cross-listed across every department — showing
 	// all of them makes the card balloon, so cap it and count the rest
@@ -28,9 +31,15 @@
 	let xlistShown = $derived(alsoCodes.slice(0, XLIST_MAX));
 	let xlistExtra = $derived(alsoCodes.length - xlistShown.length);
 	// a 1-credit card is only a quarter of the row wide — too narrow for a
-	// title or a crosslist row without looking broken. Show just the code,
-	// centred, as a compact chip; the full details are one click away.
-	let compact = $derived(course.credits <= 1);
+	// title or crosslist row without clipping; clamp the title to two lines.
+	let pending = $derived(course.pendingCredits && course.credits === 0);
+	let compact = $derived(!pending && course.credits <= 1);
+	// a card with the whole catalogue row to itself (see Catalogue's spans) —
+	// the only width with room for a worded "on plan" button
+	let fullRow = $derived(pending || course.credits >= 3);
+	// the fill alone doesn't say "required" to someone who hasn't read the
+	// legend, so required courses also lead with a dot (no room on a chip)
+	let showReq = $derived(type === 'required' && !compact);
 
 	function dragstart(e: DragEvent) {
 		e.dataTransfer?.setData('text/plain', course.code);
@@ -43,58 +52,77 @@
 	<!-- a course already on the grid leaves a dashed placeholder; the ↩ button
 	     lifts it back off, which flies it home to this slot (see the grid's
 	     out:sendCourse) -->
-	<div class="card placed" class:compact title="{shownCode} is already on your plan">
-		<span class="code">{shownCode}</span>
+	<div data-course-card tabindex="-1" class="card placed" class:compact title="{label} is already on your plan">
+		{#if plan.showCodes || compact}<span class="code">{compact ? compactText : shownCode}</span>{/if}
 		{#if !compact}
 			<span class="title">{course.title}</span>
 		{/if}
 		<button
 			class="unplace"
-			aria-label="take {shownCode} back off the grid"
-			title="take {shownCode} back off the grid"
+			class:icon={!fullRow}
+			aria-label="take {label} back off the grid"
+			title="take {label} back off the grid"
 			onclick={(e) => {
 				e.stopPropagation();
 				plan.remove(course.code);
 			}}
 		>
-			↩
+			<!-- says what it is ("on plan") and, under the cursor, what it does -->
+			{#if fullRow}<span class="state">on plan ↩</span><span class="act">remove ↩</span>{:else}↩{/if}
 		</button>
 	</div>
 {:else}
-	<div
+	<button
+		type="button"
+		data-course-card
 		class="card"
 		class:compact
 		class:dragging={plan.dragging === course.code}
 		data-type={type}
-		data-prog={plan.accentOf(course.code)}
-		draggable="true"
-		role="listitem"
+		style:--hue={plan.hueOf(course.code)}
+		draggable={!pending}
 		in:courseIn={{ key: course.code }}
 		out:courseOut={{ key: course.code }}
 		ondragstart={dragstart}
 		ondragend={() => (plan.dragging = null)}
 		onclick={() => (plan.selected = course)}
-		title={compact ? `${shownCode} — ${course.title}` : `drag ${shownCode} onto the grid`}
+		title={pending ? `${label} — credits awaiting confirmation` : `drag ${label} onto the grid`}
 	>
+		{#if plan.showCodes || compact}
 		<span class="code">
-			{shownCode}
+			{#if showReq}<span class="req-dot" role="img" aria-label="required" title="required by your programme"></span>{/if}
+			{compact ? compactText : shownCode}
 			{#if alsoCodes.length && !compact}
 				<span class="xlist" title="cross-listed as {alsoCodes.join(', ')}">
 					⇄ {xlistShown.join(' · ')}{xlistExtra > 0 ? ` +${xlistExtra}` : ''}
 				</span>
 			{/if}
 		</span>
-		{#if !compact}
-			<span class="title">{course.title}</span>
 		{/if}
-	</div>
+		{#if !compact}
+			<!-- with codes switched off there's no code row, so the dot leads the title -->
+			<span class="title">{#if showReq && !plan.showCodes}<span class="req-dot" role="img" aria-label="required" title="required by your programme"></span>{/if}{course.title}</span>
+			<!-- with codes off there's no code row to carry the cross-listing,
+			     so it gets a line of its own under the title -->
+			{#if !plan.showCodes && alsoCodes.length}
+				<span class="xlist alone" title="cross-listed as {alsoCodes.join(', ')}">
+					⇄ {xlistShown.join(' · ')}{xlistExtra > 0 ? ` +${xlistExtra}` : ''}
+				</span>
+			{/if}
+		{/if}
+		{#if pending}<span class="pending">credits to confirm</span>{/if}
+	</button>
 {/if}
 
 <style lang="scss">
 	@use '$lib/styles/mixins' as *;
 
+	.pending { font-size: var(--text-body); color: var(--color-text-muted); margin-top: .5rem; }
 	.card {
 		position: relative;
+		text-align: left;
+		font: inherit;
+		color: var(--color-text);
 		display: flex;
 		flex-direction: column;
 		min-width: 0;
@@ -106,13 +134,12 @@
 			transform 0.15s ease,
 			opacity 0.15s ease,
 			box-shadow 0.2s ease;
-		@include course-type-fill;
-		@include card-shine;
-		@include programme-accent;
+		@include course-type-fill(false);
+		box-shadow: var(--shadow-inset);
 
 		&:hover {
-			transform: translateY(-2px);
-			@include card-shine-hover;
+			transform: translateY(-1px);
+			box-shadow: var(--shadow-inset-hover);
 		}
 
 		&:active {
@@ -148,7 +175,11 @@
 
 			.code {
 				// small enough that a full 7-char code (MATH061) fits the
-				// quarter-width card without clipping
+				// quarter-width card without clipping; a title ellipsizes
+				display: block;
+				overflow: hidden;
+				white-space: nowrap;
+				text-overflow: ellipsis;
 				font-size: 1.1rem;
 				letter-spacing: -0.02em;
 			}
@@ -162,7 +193,7 @@
 		gap: 0.5rem;
 		min-width: 0;
 		max-width: 100%;
-		font-size: 1.5rem;
+		font-size: var(--text-body);
 		font-weight: 700;
 	}
 
@@ -174,19 +205,29 @@
 		max-width: 100%;
 		overflow: hidden;
 		text-overflow: ellipsis;
-		font-size: 1.15rem;
-		font-weight: 600;
+		font-weight: 400;
 		color: var(--color-text-muted);
-		padding: 0.1rem 0.5rem;
-		background: var(--color-subtle);
-		border-radius: 3px;
 		white-space: nowrap;
+
+		&.alone {
+			margin-top: 0.3rem;
+		}
+	}
+
+	.req-dot {
+		@include required-dot;
+		align-self: center;
+
+		.title & {
+			margin-right: 0.5rem;
+			vertical-align: 0.1em;
+		}
 	}
 
 	// two lines then ellipsis — enough to tell courses apart without letting
 	// a long title stretch the card taller than its neighbours
 	.title {
-		font-size: 1.4rem;
+		font-size: var(--text-body);
 		line-height: 1.3;
 		display: -webkit-box;
 		-webkit-line-clamp: 2;
@@ -200,28 +241,44 @@
 		position: absolute;
 		top: 0.3rem;
 		right: 0.3rem;
-		width: 1.8rem;
+		min-width: 1.8rem;
 		height: 1.8rem;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		padding: 0;
-		font-size: 1.2rem;
+		padding: 0 0.5rem;
+		font-size: 1.1rem;
 		line-height: 1;
 		color: var(--color-text-muted);
-		background: var(--color-bg-light);
-		border: 1px solid var(--color-border-card);
-		border-radius: 3px;
+		background: none;
+		border: none;
 		cursor: pointer;
 		transition:
 			transform 0.15s ease,
-			background 0.15s ease,
 			color 0.15s ease;
 
 		&:hover {
 			color: var(--color-text);
-			background: var(--color-hover-medium);
-			transform: scale(1.12);
+			transform: scale(1.06);
 		}
+
+		.act {
+			display: none;
+		}
+
+		&:hover,
+		&:focus-visible {
+			.state {
+				display: none;
+			}
+
+			.act {
+				display: inline;
+			}
+		}
+	}
+
+	.unplace.icon {
+		padding: 0;
 	}
 </style>

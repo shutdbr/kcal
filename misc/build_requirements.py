@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Assemble the comprehensive programme-requirements database for tracey.
+"""Assemble the comprehensive programme-requirements database for relay.
 
 This is the second half of the pipeline the scrape docstring promises:
 scrape_programmes.py pulls the two sections that actually matter from
@@ -14,7 +14,7 @@ CSV-derived catalog (courses.json) so every website course title gets:
 
 and normalises the credit tables into a flat per-programme schema.  The
 result is one self-contained src/lib/data/requirements.json (mirrored to
-kreabot) — the whole requirements picture tracey needs, nothing else.
+kreabot) — the whole requirements picture relay needs, nothing else.
 
 Title -> code resolution reuses common.TitleIndex (exact, then subtitle-
 stripped, then conservative fuzzy).  On top of that a "prefix" tier
@@ -40,11 +40,11 @@ from datetime import datetime, timezone
 from common import DISCIPLINE_TO_SUBJECT, TitleIndex, norm_title, strip_subtitle
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-TRACEY_ROOT = os.path.dirname(HERE)
-KREABOT_ROOT = os.path.join(os.path.dirname(TRACEY_ROOT), "kreabot")
+RELAY_ROOT = os.path.dirname(HERE)
+KREABOT_ROOT = os.path.join(os.path.dirname(RELAY_ROOT), "kreabot")
 
 SCRAPED = os.path.join(HERE, "scraped_programmes.json")
-COURSES = os.path.join(TRACEY_ROOT, "src", "lib", "data", "courses.json")
+COURSES = os.path.join(RELAY_ROOT, "src", "lib", "data", "courses.json")
 
 # leading qualifiers the website adds to a title the catalog lists plain
 PREFIXES = [
@@ -193,11 +193,33 @@ def normalise_credits(tables):
                        for c in rows[0])
         if combined:
             header = rows[0]
+            # one or more (type, duration) slots per column. "Applicable to
+            # both 3- and 4-Year programmes" fills both durations.
+            slots = []
+            for c in header[1:]:
+                t = find_type(c)
+                both = re.search(r"\b3\b|3-", c) and re.search(r"\b4\b|4-", c)
+                slots.append([(t, d) for d in (("3yr", "4yr") if both else (find_dur(c),))])
+            # The site has typo'd these labels before (psychology once read
+            # "3-Year Single Major" over its 4-year column), and a repeated
+            # label would silently overwrite the real numbers. On a duplicate,
+            # trust the column order these tables always use, as the
+            # type-columns layout below does.
+            flat = [s for col in slots for s in col]
+            if len(set(flat)) != len(flat):
+                order = [[("single_major", "4yr")], [("double_major", "4yr")],
+                         [("single_major", "3yr")], [("double_major", "3yr")],
+                         [("minor", "4yr")], [("minor", "3yr")],
+                         [("concentration", "3yr"), ("concentration", "4yr")]]
+                print("  ! duplicate credit-table headers %r — using column order"
+                      % header[1:], file=sys.stderr)
+                if len(slots) == len(order):
+                    slots = order
             for row in rows[1:]:
                 metric = find_metric(row[0]) or "total"
-                for col in range(1, len(header)):
-                    put(find_type(header[col]), find_dur(header[col]),
-                        metric, to_int(row[col]) if col < len(row) else None)
+                for col, targets in enumerate(slots, start=1):
+                    for t, d in targets:
+                        put(t, d, metric, to_int(row[col]) if col < len(row) else None)
             continue
 
         # type-columns layout: pick the row with the most type keywords as
@@ -377,7 +399,7 @@ class Resolver:
 # ── main assembly ───────────────────────────────────────────────────
 def course_ref(code, site_title, kind, cat_title, catalog, alias2canon):
     """One entry in a track's course list: the website title plus, when
-    the code is a real catalog course, the CSV facts tracey needs."""
+    the code is a real catalog course, the CSV facts relay needs."""
     ref = {"title": site_title, "code": code, "match": kind}
     if kind and kind != "exact":
         ref["catalog_title"] = cat_title
@@ -691,9 +713,9 @@ def main():
         "subjects": out_subjects,
     }
 
-    tracey_out = os.path.join(TRACEY_ROOT, "src", "lib", "data", "requirements.json")
+    relay_out = os.path.join(RELAY_ROOT, "src", "lib", "data", "requirements.json")
     kreabot_out = os.path.join(KREABOT_ROOT, "src", "lib", "requirements.json")
-    for path in (tracey_out, kreabot_out):
+    for path in (relay_out, kreabot_out):
         if not os.path.isdir(os.path.dirname(path)):
             continue
         with open(path, "w", encoding="utf-8") as fh:

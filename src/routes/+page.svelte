@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { dragMotion } from '$lib/dragMotion';
 	import { Plan } from '$lib/plan.svelte';
 	import Sidebar from '$lib/components/sidebar/Sidebar.svelte';
 	import HintsPanel from '$lib/components/sidebar/HintsPanel.svelte';
@@ -7,12 +8,15 @@
 	import TrimesterZoom from '$lib/components/board/TrimesterZoom.svelte';
 	import DetailsPanel from '$lib/components/details/DetailsPanel.svelte';
 	import Intro from '$lib/components/Intro.svelte';
+	import Modal from '$lib/components/Modal.svelte';
+	import FeedbackForm from '$lib/components/FeedbackForm.svelte';
+	import { DATA_UPDATED } from '$lib/data';
 	import { fly } from 'svelte/transition';
 	import { loadDescriptions } from '$lib/descriptions.svelte';
 	import { onMount } from 'svelte';
 
 	const plan = new Plan();
-	const INTRO_KEY = 'tracey-intro-seen';
+	const INTRO_KEY = 'relay-intro-seen';
 	let tourRequested = $state(false);
 	let desktop = $state(false);
 
@@ -39,6 +43,25 @@
 		}
 	}
 
+	// how current the course data is, said plainly in the footer
+	const dataMonth = DATA_UPDATED?.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });
+
+	// on a phone: hand the link on to a laptop (the share sheet where there
+	// is one, the clipboard otherwise)
+	let linkCopied = $state(false);
+	async function passLink() {
+		const url = location.origin;
+		try {
+			if (navigator.share) await navigator.share({ title: 'Relay', url });
+			else {
+				await navigator.clipboard.writeText(url);
+				linkCopied = true;
+			}
+		} catch {
+			// share sheet dismissed, or clipboard blocked — the address bar has it
+		}
+	}
+
 	// the catalogue prose is a separate chunk so it can't hold up first paint —
 	// pull it in once the planner is up and the browser has a spare moment
 	$effect(() => {
@@ -52,7 +75,7 @@
 {/if}
 
 <svelte:head>
-	<title>tracey</title>
+	<title>Relay</title>
 </svelte:head>
 
 <!-- phones get a polite "use a laptop" note instead of a cramped grid -->
@@ -61,10 +84,11 @@
 		<rect x="3" y="5" width="18" height="12" rx="1.5" />
 		<path d="M1.5 19.5h21" />
 	</svg>
-	<p>tracey needs a bigger screen —<br />please open it on a laptop</p>
+	<p>Relay needs a bigger screen —<br />please open it on a laptop</p>
+	<button class="pass-link" onclick={passLink}>{linkCopied ? 'link copied ✓' : 'send the link to my laptop'}</button>
 </div>
 
-<div class="app">
+<div class="app" use:dragMotion>
 	<aside class="rail">
 		<Sidebar {plan} ontour={() => (tourRequested = true)} />
 		<HintsPanel {plan} />
@@ -83,15 +107,16 @@
 			{/if}
 		</div>
 
-		<!-- tracey is still being built and students are already using it, so the
-		     board says so plainly at the bottom rather than letting anyone take a
-		     rough edge for the finished thing -->
+		<!-- relay is still being built and students are already using it, so the
+		     board says so plainly at the bottom — with how current the course
+		     data is, and the way to say when something's off -->
 		<p class="wip">
 			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 				<path d="M14.7 6.3a4 4 0 0 0 5 5l-8.4 8.4a2.4 2.4 0 0 1-3.4-3.4z" />
 				<path d="M14.7 6.3 17.5 3.5" />
 			</svg>
-			still under development
+			beta ·{#if dataMonth}&nbsp;course data from {dataMonth} ·{/if}
+			<button class="wip-feedback" onclick={() => (plan.feedbackDraft = '')}>something wrong? tell me</button>
 		</p>
 
 		<!-- the flash lives out here, not on the grid: a refused drop has to be
@@ -101,10 +126,17 @@
 		{/if}
 	</main>
 
+	<!-- a fixed column, so picking a course never shoves a panel over the board -->
 	<aside class="rightbar" data-tour="details">
 		<DetailsPanel {plan} />
 	</aside>
 </div>
+
+{#if plan.feedbackDraft !== null}
+	<Modal title="feedback" onclose={() => (plan.feedbackDraft = null)}>
+		<FeedbackForm {plan} prefill={plan.feedbackDraft} onsent={() => (plan.feedbackDraft = null)} />
+	</Modal>
+{/if}
 
 <style lang="scss">
 	@use '$lib/styles/mixins' as *;
@@ -135,17 +167,35 @@
 		}
 	}
 
-	// transient one-liner: a refused drop, a rule the board just applied
+	.wip-feedback {
+		padding: 0;
+		font: inherit;
+		color: var(--color-accent);
+		background: none;
+		border: 0;
+		cursor: pointer;
+		text-decoration: underline;
+		text-underline-offset: 0.2em;
+
+		&:hover {
+			color: var(--color-text);
+		}
+	}
+
+	// transient one-liner: a refused drop, a rule the board just applied —
+	// a plain white card, nothing more
 	.flash {
 		position: fixed;
 		bottom: 2.4rem;
 		right: 2.4rem;
 		z-index: 40;
 		padding: 1rem 1.6rem;
-		font-size: 1.4rem;
-		background: var(--color-hint-warn);
-		border-radius: 4px;
-		@include card-shine;
+		font-size: 1.35rem;
+		color: var(--color-text);
+		background: var(--color-bg-card-start);
+		border: 1px solid var(--color-border-card);
+		border-radius: 8px;
+		box-shadow: 0 4px 16px rgba(98, 58, 82, 0.14);
 	}
 
 	// on a phone the app hides entirely and the gate below takes over
@@ -178,11 +228,23 @@
 		}
 	}
 
+	.pass-link {
+		padding: 1rem 2rem;
+		font: inherit;
+		font-size: 1.5rem;
+		font-weight: 600;
+		color: var(--color-on-accent);
+		background-color: var(--color-accent);
+		border: 1px solid var(--color-control-deep);
+		border-radius: 8px;
+		@include glossy-accent;
+	}
+
 	// the app is locked to the viewport — each column scrolls on its own,
 	// so nothing ever runs past the page
 	.app {
 		display: grid;
-		grid-template-columns: 24rem 30rem 1fr 28rem;
+		grid-template-columns: 24rem 30rem minmax(0, 1fr) 28rem;
 		height: 100vh;
 		background: var(--color-bg);
 
@@ -192,6 +254,7 @@
 	}
 
 	.rail {
+		--rail-radius: 4px;
 		display: flex;
 		flex-direction: column;
 		min-height: 0;

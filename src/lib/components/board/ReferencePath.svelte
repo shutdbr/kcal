@@ -41,11 +41,11 @@
 	}
 </script>
 
-<Modal title="reference plan" width="62rem" {onclose}>
+<Modal title="suggested path" width="62rem" {onclose}>
 	<p class="lead">
 		{degree} — {total} courses in the order the department suggests, ticked where they're already on
 		your plan.{#if plan.recommendedElectiveCredits}
-			The blue boxes are the <b>{plan.recommendedElectiveCredits} elective credits</b> the degree leaves
+			The dashed boxes are the <b>{plan.recommendedElectiveCredits} elective credits</b> the degree leaves
 			you to choose for yourself.{/if}
 	</p>
 
@@ -66,11 +66,12 @@
 							class="rc"
 							class:have
 							data-type={plan.courseType(code)}
-							title={have ? `${code} is on your plan` : `add ${code} to your plan`}
+							style:--hue={plan.hueOf(code)}
+							title={have ? `${plan.courseLabel(code)} is on your plan` : `add ${plan.courseLabel(code)} to your plan`}
 							onclick={() => (have ? (plan.selected = byCode(code)) : plan.acceptSuggestion(code))}
 						>
 							<span class="rc-mark" aria-hidden="true">{have ? '✓' : '+'}</span>
-							<span class="rc-code">{plan.shownCode(code)}</span>
+							{#if plan.showCodes}<span class="rc-code">{plan.shownCode(code)}</span>{/if}
 							<span class="rc-title">{byCode(code).title}</span>
 						</button>
 					{/each}
@@ -185,7 +186,7 @@
 		&.have {
 			opacity: 1;
 			border-style: solid;
-			@include course-type-fill;
+			@include course-type-fill(false);
 		}
 
 		.rc-mark {
@@ -284,20 +285,6 @@
 		padding: 0.6rem 1.4rem;
 		font: inherit;
 		font-size: 1.25rem;
-		color: var(--color-text);
-		background: var(--color-bg-light);
-		border: 1px solid var(--color-border-card);
-		border-radius: 5px;
-		cursor: pointer;
-
-		&:hover {
-			background: var(--color-hover-medium);
-		}
-
-		&.confirming {
-			color: var(--color-on-accent);
-			background-color: var(--color-danger);
-			border-color: var(--color-danger-deep);
-		}
+		@include store-button($armable: true);
 	}
 </style>

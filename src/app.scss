@@ -6,3 +6,29 @@
 
 @use '$lib/styles/variables';
 @use '$lib/styles/reset';
+
+// Shared interaction language: crisp focus, recessed presses, quiet motion.
+:where(button, input, select, textarea, [tabindex]):focus-visible {
+	outline: 2px solid var(--color-accent);
+	outline-offset: 3px;
+}
+:where(button):not(:disabled) { transition: background-color 140ms ease, box-shadow 140ms ease; }
+:where(button):not(:disabled):active { box-shadow: var(--shadow-well); }
+// the tick box's pixel checkmark drawing itself in, a column of blocks at a
+// time (see the tick mixin) — global so every component's tick shares it
+@keyframes relay-tick-draw {
+	from {
+		clip-path: inset(0 100% 0 0);
+	}
+	to {
+		clip-path: inset(0 0 0 0);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*, *::before, *::after {
+		animation-duration: 0.01ms !important;
+		transition-duration: 0.01ms !important;
+		scroll-behavior: auto !important;
+	}
+}

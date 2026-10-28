@@ -1,7 +1,8 @@
 <script lang="ts">
 	// the shell every dialog in the app shares: backdrop, titled card, close
 	// button, esc-to-close, click-outside-to-close
-	import { fade, fly } from 'svelte/transition';
+	import { fade, scale } from 'svelte/transition';
+	import { quintOut } from 'svelte/easing';
 	import type { Snippet } from 'svelte';
 
 	let {
@@ -28,7 +29,8 @@
 		aria-modal="true"
 		aria-label={title}
 		style="--w: {width}"
-		transition:fly={{ y: 14, duration: 220 }}
+		in:scale={{ start: 0.96, duration: 260, easing: quintOut }}
+		out:scale={{ start: 0.98, duration: 140 }}
 	>
 		<header>
 			<h2>{title}</h2>
@@ -52,6 +54,7 @@
 		justify-content: center;
 		padding: 2.4rem;
 		background: var(--color-backdrop);
+		backdrop-filter: blur(2px);
 	}
 
 	.box {

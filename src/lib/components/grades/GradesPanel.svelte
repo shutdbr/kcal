@@ -16,7 +16,9 @@
 	} from '$lib/grades';
 	import Modal from '../Modal.svelte';
 
-	let { plan, onclose }: { plan: Plan; onclose: () => void } = $props();
+	// `year` narrows the window to one year's courses — opened from that
+	// year's GPA capsule on the grid, to grade just those
+	let { plan, onclose, year = undefined }: { plan: Plan; onclose: () => void; year?: number } = $props();
 
 	type Term = { year: number; trim: number; codes: string[] };
 
@@ -26,6 +28,7 @@
 		const groups = new Map<string, Term>();
 		for (const p of [...plan.placed].sort((a, b) => a.year - b.year || a.trim - b.trim)) {
 			if (seen.has(p.code) || !hasCode(p.code) || plan.isAudit(p.code)) continue;
+			if (year !== undefined && p.year !== year) continue;
 			seen.add(p.code);
 			const key = `${p.year}-${p.trim}`;
 			if (!groups.has(key)) groups.set(key, { year: p.year, trim: p.trim, codes: [] });
@@ -56,6 +59,9 @@
 	const termKey = (t: Term) => `${t.year}-${t.trim}`;
 	let open = $state<string[]>([]);
 	let allOpen = $derived(terms.length > 0 && open.length === terms.length);
+	// one year's window starts with every trimester open — that's the point
+	// of opening it — so there a click on a trimester folds it instead
+	const isOpen = (key: string) => (year !== undefined) !== open.includes(key);
 
 	function toggleTerm(key: string) {
 		open = open.includes(key) ? open.filter((k) => k !== key) : [...open, key];
@@ -77,7 +83,18 @@
 	const fmt = (n: number) => n.toFixed(2);
 </script>
 
-<Modal title="grades & cgpa" width="46rem" {onclose}>
+<Modal title={year === undefined ? 'grades & cgpa' : `year ${year} grades`} width="46rem" {onclose}>
+	{#if year !== undefined}
+		{@const yg = plan.yearGpa(year)}
+		<div class="hero">
+			{#if yg === null}
+				<div class="cgpa-empty">no grades in year {year} yet — fill them in below</div>
+			{:else}
+				<div class="cgpa"><span class="num">{fmt(yg)}</span><span class="den">/10</span></div>
+				<div class="cgpa-sub">year {year} GPA</div>
+			{/if}
+		</div>
+	{:else}
 	<div class="hero">
 		{#if plan.cgpa === null}
 			<div class="cgpa-empty">no grades yet — open a trimester below and fill them in</div>
@@ -126,22 +143,25 @@
 			{/if}
 		</p>
 	</section>
+	{/if}
 
 	{#if terms.length}
 		<section class="terms">
 			<div class="terms-head">
 				<span>by trimester</span>
-				<button class="all-btn" onclick={toggleAll}>{allOpen ? 'close all' : 'open all'}</button>
+				{#if year === undefined}
+					<button class="all-btn" onclick={toggleAll}>{allOpen ? 'close all' : 'open all'}</button>
+				{/if}
 			</div>
 			{#each terms as term (termKey(term))}
 				{@const key = termKey(term)}
 				{@const t = tgpa(term.codes)}
-				{@const isOpen = open.includes(key)}
+				{@const termOpen = isOpen(key)}
 				<div class="term">
 					<button
 						class="term-row"
-						class:open={isOpen}
-						aria-expanded={isOpen}
+						class:open={termOpen}
+						aria-expanded={termOpen}
 						title="enter grades for this trimester"
 						onclick={() => toggleTerm(key)}
 					>
@@ -151,13 +171,14 @@
 						<span class="tr-tgpa">{t.gpa === null ? '—' : fmt(t.gpa)}</span>
 					</button>
 
-					{#if isOpen}
+					{#if termOpen}
 						<div class="term-courses" transition:slide={{ duration: 160 }}>
 							{#each term.codes as code (code)}
 								{@const c = byCode(code)}
 								<label class="c-row">
-									<span class="c-code">{plan.shownCode(code)}</span>
-									<span class="c-title">{c.title}</span>
+									<span class="c-label" title="{plan.shownCode(code)} {c.title}"
+										>{#if plan.showCodes}<b>{plan.shownCode(code)}</b> {/if}{c.title}</span
+									>
 									<span class="c-cr">{c.credits} cr</span>
 									<select
 										class="c-grade"
@@ -183,10 +204,12 @@
 				</div>
 			{/each}
 		</section>
+	{:else if year !== undefined}
+		<p class="hint">nothing on year {year} to grade yet.</p>
 	{/if}
 
 	<p class="hint">
-		open a trimester above to grade its courses, or set a grade from any course's panel on the right.
+		{year === undefined ? 'open a trimester above to grade its courses' : 'grade the courses above'}, or set a grade from any course's panel on the right.
 		audits carry no grade and stay out of the maths.
 	</p>
 </Modal>
@@ -381,20 +404,17 @@
 	}
 	.c-row {
 		display: grid;
-		grid-template-columns: 6.5rem 1fr auto 8.5rem;
+		grid-template-columns: minmax(0, 1fr) auto 8.5rem;
 		align-items: center;
 		gap: 0.8rem;
 		padding: 0.3rem 0;
 		font-size: 1.2rem;
-		.c-code {
-			font-weight: 700;
-			color: var(--color-text);
-		}
-		.c-title {
+		.c-label {
+			min-width: 0;
 			overflow: hidden;
-			white-space: nowrap;
 			text-overflow: ellipsis;
-			color: var(--color-text-muted);
+			white-space: nowrap;
+			color: var(--color-text);
 		}
 		.c-cr {
 			font-size: 1.1rem;
