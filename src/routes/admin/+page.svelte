@@ -505,7 +505,7 @@
 	// ── export / import: everything /admin edits, in one file ──
 	function exportAll() {
 		const bundle = {
-			relay: 'admin-edits',
+			kcal: 'admin-edits',
 			batchRequirements: loadBatchEdits(),
 			version: 1,
 			exported: new Date().toISOString(),
@@ -518,7 +518,7 @@
 		const blob = new Blob([JSON.stringify(bundle, null, '\t')], { type: 'application/json' });
 		const a = document.createElement('a');
 		a.href = URL.createObjectURL(blob);
-		a.download = `relay-admin-edits-${new Date().toISOString().slice(0, 10)}.json`;
+		a.download = `kcal-admin-edits-${new Date().toISOString().slice(0, 10)}.json`;
 		a.click();
 		URL.revokeObjectURL(a.href);
 		say('exported every edit to one JSON file');
@@ -548,7 +548,7 @@
 				}
 			}
 		} catch {
-			say('that file is not a readable relay edit file');
+			say('that file is not a readable kcal edit file');
 		}
 		importEl.value = '';
 	}

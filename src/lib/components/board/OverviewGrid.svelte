@@ -23,7 +23,7 @@
 	// grade view changes what the whole board means — credits become TGPA, chips
 	// take a mark — so the first time it's switched on, say so. Once dismissed
 	// (or once they've read it and turned grade view off) it stays gone.
-	const GRADE_HINT_KEY = 'relay-grade-hint-seen';
+	const GRADE_HINT_KEY = 'kcal-grade-hint-seen';
 	let showGradeHint = $state(false);
 	function dismissGradeHint() {
 		showGradeHint = false;

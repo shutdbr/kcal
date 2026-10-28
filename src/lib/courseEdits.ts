@@ -2,7 +2,7 @@
 // Hand-edited course properties and university rules — what /admin writes,
 // alongside the prerequisite edges in prereqEdits.ts.
 //
-// Same model as those: relay has no server, so an edit lives in this
+// Same model as those: kcal has no server, so an edit lives in this
 // browser, data.ts applies it at load (so the planner, the hints and the
 // seeder all answer to it at once), and /admin exports the lot as one JSON
 // file to be folded back into the pipeline.
@@ -16,10 +16,10 @@
 
 import type { TrimNum } from './types';
 
-export const COURSE_EDITS_KEY = 'relay-course-edits';
-export const RULE_EDITS_KEY = 'relay-rule-edits';
-export const NEW_COURSES_KEY = 'relay-new-courses';
-export const SHARE_DEFAULT_KEY = 'relay-credit-sharing';
+export const COURSE_EDITS_KEY = 'kcal-course-edits';
+export const RULE_EDITS_KEY = 'kcal-rule-edits';
+export const NEW_COURSES_KEY = 'kcal-new-courses';
+export const SHARE_DEFAULT_KEY = 'kcal-credit-sharing';
 
 /** how a course that counts toward more than one of a student's programmes
  *  is credited: to ONE of them (the first that claims it — majors before

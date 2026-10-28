@@ -8,6 +8,7 @@
 	import TrimesterZoom from '$lib/components/board/TrimesterZoom.svelte';
 	import DetailsPanel from '$lib/components/details/DetailsPanel.svelte';
 	import Intro from '$lib/components/Intro.svelte';
+	import Welcome from '$lib/components/Welcome.svelte';
 	import Modal from '$lib/components/Modal.svelte';
 	import FeedbackForm from '$lib/components/FeedbackForm.svelte';
 	import { DATA_UPDATED } from '$lib/data';
@@ -16,8 +17,10 @@
 	import { onMount } from 'svelte';
 
 	const plan = new Plan();
-	const INTRO_KEY = 'relay-intro-seen';
+	const INTRO_KEY = 'kcal-intro-seen';
 	let tourRequested = $state(false);
+	// a first visit opens on the welcome card (your degree), then the tour
+	let welcomeOpen = $state(false);
 	let desktop = $state(false);
 
 	onMount(() => {
@@ -27,9 +30,9 @@
 		update();
 		media.addEventListener('change', update);
 		try {
-			tourRequested = !localStorage.getItem(INTRO_KEY);
+			welcomeOpen = !localStorage.getItem(INTRO_KEY);
 		} catch {
-			tourRequested = true;
+			welcomeOpen = true;
 		}
 		return () => media.removeEventListener('change', update);
 	});
@@ -52,7 +55,7 @@
 	async function passLink() {
 		const url = location.origin;
 		try {
-			if (navigator.share) await navigator.share({ title: 'Relay', url });
+			if (navigator.share) await navigator.share({ title: 'kcal', url });
 			else {
 				await navigator.clipboard.writeText(url);
 				linkCopied = true;
@@ -70,12 +73,22 @@
 	});
 </script>
 
+{#if welcomeOpen && desktop}
+	<Welcome
+		{plan}
+		ondone={() => {
+			welcomeOpen = false;
+			tourRequested = true;
+		}}
+	/>
+{/if}
+
 {#if tourRequested && desktop}
 	<Intro onclose={dismissTour} />
 {/if}
 
 <svelte:head>
-	<title>Relay</title>
+	<title>kcal</title>
 </svelte:head>
 
 <!-- phones get a polite "use a laptop" note instead of a cramped grid -->
@@ -84,7 +97,7 @@
 		<rect x="3" y="5" width="18" height="12" rx="1.5" />
 		<path d="M1.5 19.5h21" />
 	</svg>
-	<p>Relay needs a bigger screen —<br />please open it on a laptop</p>
+	<p>kcal needs a bigger screen —<br />please open it on a laptop</p>
 	<button class="pass-link" onclick={passLink}>{linkCopied ? 'link copied ✓' : 'send the link to my laptop'}</button>
 </div>
 
@@ -107,7 +120,7 @@
 			{/if}
 		</div>
 
-		<!-- relay is still being built and students are already using it, so the
+		<!-- kcal is still being built and students are already using it, so the
 		     board says so plainly at the bottom — with how current the course
 		     data is, and the way to say when something's off -->
 		<p class="wip">
@@ -244,7 +257,7 @@
 	// so nothing ever runs past the page
 	.app {
 		display: grid;
-		grid-template-columns: 24rem 30rem minmax(0, 1fr) 28rem;
+		grid-template-columns: 24rem 30rem minmax(0, 1fr) 32rem;
 		height: 100vh;
 		background: var(--color-bg);
 

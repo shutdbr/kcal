@@ -3,15 +3,19 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>Relay</title>
-		<!-- Preserve browser data from before the Relay rename before app modules load. -->
+		<title>kcal</title>
+		<!-- Preserve browser data from before the kcal rename (tracey → relay → kcal)
+		     before app modules load. Newest name first, so its data wins. -->
 		<script>
 			try {
-				for (var key of Object.keys(localStorage)) {
-					if (!key.startsWith('tracey-')) continue;
-					var nextKey = 'relay-' + key.slice(7);
-					if (localStorage.getItem(nextKey) === null) {
-						localStorage.setItem(nextKey, localStorage.getItem(key));
+				var keys = Object.keys(localStorage);
+				for (var prefix of ['relay-', 'tracey-']) {
+					for (var key of keys) {
+						if (!key.startsWith(prefix)) continue;
+						var nextKey = 'kcal-' + key.slice(prefix.length);
+						if (localStorage.getItem(nextKey) === null) {
+							localStorage.setItem(nextKey, localStorage.getItem(key));
+						}
 					}
 				}
 			} catch (e) {
@@ -23,7 +27,7 @@
 		     shape in $lib/settings.svelte.ts — change both together. -->
 		<script>
 			try {
-				var s = JSON.parse(localStorage.getItem('relay-settings') || '{}');
+				var s = JSON.parse(localStorage.getItem('kcal-settings') || '{}');
 				var t = s.theme || 'light';
 				if (t === 'system') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 				document.documentElement.dataset.theme = t;

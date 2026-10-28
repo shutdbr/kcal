@@ -6,8 +6,8 @@
 	const steps = [
 		{
 			target: 'programme',
-			title: 'make this your degree',
-			body: 'hi, this is Relay! start here: choose your major, add a minor or concentration, and pick a 3- or 4-year degree. the starting grid is an example to help you get going.'
+			title: 'your degree lives here',
+			body: 'change your batch, major, minor or concentration any time. until you start editing the grid yourself, it re-lays itself out to match.'
 		},
 		{
 			target: 'catalogue',
@@ -32,7 +32,7 @@
 		{
 			target: 'details',
 			title: 'get to know a course',
-			body: 'click any course to see its details here: credits, when it is offered, what you need to take first, and the courses it unlocks.'
+			body: 'click any course to see its details here: credits, when it runs, who has taught it and their office hours, what you need to take first, and what it unlocks.'
 		},
 		{
 			target: 'hints',

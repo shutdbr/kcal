@@ -9,7 +9,7 @@
 
 import { browser } from '$app/environment';
 
-const STORAGE_KEY = 'relay-settings';
+const STORAGE_KEY = 'kcal-settings';
 
 export type ThemeChoice = 'light' | 'dark' | 'system';
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Assemble the comprehensive programme-requirements database for relay.
+"""Assemble the comprehensive programme-requirements database for kcal.
 
 This is the second half of the pipeline the scrape docstring promises:
 scrape_programmes.py pulls the two sections that actually matter from
@@ -14,7 +14,7 @@ CSV-derived catalog (courses.json) so every website course title gets:
 
 and normalises the credit tables into a flat per-programme schema.  The
 result is one self-contained src/lib/data/requirements.json (mirrored to
-kreabot) — the whole requirements picture relay needs, nothing else.
+kreabot) — the whole requirements picture kcal needs, nothing else.
 
 Title -> code resolution reuses common.TitleIndex (exact, then subtitle-
 stripped, then conservative fuzzy).  On top of that a "prefix" tier
@@ -40,11 +40,11 @@ from datetime import datetime, timezone
 from common import DISCIPLINE_TO_SUBJECT, TitleIndex, norm_title, strip_subtitle
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-RELAY_ROOT = os.path.dirname(HERE)
-KREABOT_ROOT = os.path.join(os.path.dirname(RELAY_ROOT), "kreabot")
+KCAL_ROOT = os.path.dirname(HERE)
+KREABOT_ROOT = os.path.join(os.path.dirname(KCAL_ROOT), "kreabot")
 
 SCRAPED = os.path.join(HERE, "scraped_programmes.json")
-COURSES = os.path.join(RELAY_ROOT, "src", "lib", "data", "courses.json")
+COURSES = os.path.join(KCAL_ROOT, "src", "lib", "data", "courses.json")
 
 # leading qualifiers the website adds to a title the catalog lists plain
 PREFIXES = [
@@ -399,7 +399,7 @@ class Resolver:
 # ── main assembly ───────────────────────────────────────────────────
 def course_ref(code, site_title, kind, cat_title, catalog, alias2canon):
     """One entry in a track's course list: the website title plus, when
-    the code is a real catalog course, the CSV facts relay needs."""
+    the code is a real catalog course, the CSV facts kcal needs."""
     ref = {"title": site_title, "code": code, "match": kind}
     if kind and kind != "exact":
         ref["catalog_title"] = cat_title
@@ -713,9 +713,9 @@ def main():
         "subjects": out_subjects,
     }
 
-    relay_out = os.path.join(RELAY_ROOT, "src", "lib", "data", "requirements.json")
+    kcal_out = os.path.join(KCAL_ROOT, "src", "lib", "data", "requirements.json")
     kreabot_out = os.path.join(KREABOT_ROOT, "src", "lib", "requirements.json")
-    for path in (relay_out, kreabot_out):
+    for path in (kcal_out, kreabot_out):
         if not os.path.isdir(os.path.dirname(path)):
             continue
         with open(path, "w", encoding="utf-8") as fh:

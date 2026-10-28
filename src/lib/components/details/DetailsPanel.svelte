@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Plan } from '$lib/plan.svelte';
-	import { canAudit, hasCode, isCore } from '$lib/data';
+	import { canAudit, facultyOf, hasCode, isCore, taughtBy, termLabel } from '$lib/data';
 	import { descriptionOf, loadDescriptions } from '$lib/descriptions.svelte';
 	import { GRADE_SCALE, OTHER_MARKS, type GradeMark } from '$lib/grades';
 
@@ -17,6 +17,10 @@
 	$effect(() => {
 		if (plan.selected) loadDescriptions();
 	});
+
+	// a lecturer's other courses: the first few, the rest behind "+N more"
+	const TAUGHT_SHOWN = 4;
+	let taughtOpenFor = $state<string | null>(null);
 
 	// a long description folds to its first few lines; each course opens folded
 	const DESC_FOLD = 280;
@@ -58,6 +62,7 @@
 {#if plan.selected}
 	{@const c = plan.selected}
 	{@const desc = descriptionOf(c.code)}
+	{@const profs = facultyOf(c.code)}
 	<div class="details">
 		<div class="d-head">
 			{#if plan.showCodes}<span class="d-code">{c.code}</span>{/if}
@@ -176,8 +181,52 @@
 			</div>
 		{/if}
 
-		<!-- profs rotate every year, so this is context, not a promise -->
-		{#if c.faculty}
+		<!-- profs rotate every year, so this is context, not a promise — but
+		     who they are and when to find them is what a student asks next -->
+		{#if profs.length}
+			<div class="label">recently taught by</div>
+			<div class="d-profs">
+				{#each profs as p (p.id)}
+					{@const others = taughtBy(p).filter((t) => t.code !== c.code)}
+					{@const allShown = taughtOpenFor === p.id}
+					<div class="d-prof">
+						{#if p.image_url}
+							<img class="d-photo" src={p.image_url} alt="" loading="lazy" referrerpolicy="no-referrer" />
+						{:else}
+							<span class="d-photo d-initials" aria-hidden="true">{p.name.split(' ').map((w) => w[0]).slice(0, 2).join('')}</span>
+						{/if}
+						<div class="d-prof-text">
+							<b>{p.name}</b>
+							{#if p.position}<span class="d-muted">{p.position}</span>{/if}
+							{#if p.office_hours}<span><span class="d-muted">office hours</span> {p.office_hours}</span>{/if}
+							<span class="d-prof-links">
+								{#if p.email}<a href="mailto:{p.email}">email</a>{/if}
+								{#if p.url}<a href={p.url} target="_blank" rel="noopener">profile ↗</a>{/if}
+							</span>
+							<!-- what else they've taught, and when — each a jump to that course -->
+							{#if others.length}
+								<div class="d-taught">
+									<span class="d-muted">also taught</span>
+									<ul>
+										{#each allShown ? others : others.slice(0, TAUGHT_SHOWN) as t (t.code)}
+											<li>
+												<button class="d-taught-course" onclick={() => jump(t.code)}>{plan.courseLabel(t.code)}</button>
+												<span class="d-muted">{termLabel(t.term)}</span>
+											</li>
+										{/each}
+									</ul>
+									{#if others.length > TAUGHT_SHOWN}
+										<button class="d-more" onclick={() => (taughtOpenFor = allShown ? null : p.id)}>
+											{allShown ? 'show fewer' : `+${others.length - TAUGHT_SHOWN} more`}
+										</button>
+									{/if}
+								</div>
+							{/if}
+						</div>
+					</div>
+				{/each}
+			</div>
+		{:else if c.faculty}
 			<p class="d-faculty">recently taught by {c.faculty}</p>
 		{/if}
 
@@ -206,7 +255,27 @@
 		</button>
 	</div>
 {:else}
-	<p class="d-empty">click a course on the grid or in the catalogue to see its details here</p>
+	<!-- the column a first-timer sees empty: how the planner works, and what
+	     the little marks on the courses mean -->
+	<div class="d-empty">
+		<p>pick a course on the grid or in the catalogue to see it here.</p>
+
+		<div class="label">how it works</div>
+		<ul class="guide">
+			<li><b>drag</b> a course from the catalogue onto a trimester, or between trimesters</li>
+			<li><b>click a trimester</b> on the grid to zoom in on it</li>
+			<li><b>hints</b> on the left flag anything that breaks a rule — click one to find its course</li>
+			<li><b>grade view</b>, above the grid, turns the plan into your transcript</li>
+		</ul>
+
+		<div class="label">reading the marks</div>
+		<ul class="marks">
+			<li><span class="m-dot" aria-hidden="true"></span>required by your programme</li>
+			<li><span class="m-mark" data-kind="warn" aria-hidden="true"></span>breaks a rule — a prerequisite out of order, say</li>
+			<li><span class="m-mark" data-kind="caution" aria-hidden="true"></span>worth a look — under the credit minimum, say</li>
+			<li><span class="m-mark" data-kind="info" aria-hidden="true"></span>a note — counts on the transcript only, say</li>
+		</ul>
+	</div>
 {/if}
 
 <style lang="scss">
@@ -225,10 +294,150 @@
 	}
 
 	.d-empty {
+		display: flex;
+		flex-direction: column;
+		gap: 0.8rem;
 		padding: 1.6rem;
 		font-size: var(--text-body);
 		line-height: 1.5;
 		color: var(--color-text-muted);
+
+		.label {
+			@include section-label;
+			margin-top: 0.8rem;
+			padding-top: 1rem;
+			border-top: 1px dotted var(--color-border-light);
+		}
+
+		ul {
+			display: flex;
+			flex-direction: column;
+			gap: 0.6rem;
+			margin: 0;
+			padding: 0;
+			list-style: none;
+		}
+
+		b {
+			color: var(--color-text);
+		}
+
+		.marks li {
+			display: flex;
+			align-items: baseline;
+			gap: 0.8rem;
+		}
+	}
+
+	.m-dot {
+		@include required-dot;
+		align-self: center;
+	}
+
+	.m-mark {
+		@include severity-mark;
+		align-self: center;
+	}
+
+	// a lecturer: photo, name, role, and how to reach them
+	.d-profs {
+		display: flex;
+		flex-direction: column;
+		gap: 0.8rem;
+	}
+
+	.d-prof {
+		display: flex;
+		gap: 1rem;
+		padding: 0.9rem 1rem;
+		font-size: var(--text-body);
+		line-height: 1.45;
+		background: var(--color-bg-light);
+		border: 1px solid var(--color-border-divider);
+		border-radius: 6px;
+	}
+
+	.d-photo {
+		flex: none;
+		width: 4.4rem;
+		height: 4.4rem;
+		object-fit: cover;
+		border-radius: 50%;
+		border: 1px solid var(--color-border-card);
+		background: var(--color-subtle);
+	}
+
+	.d-initials {
+		display: grid;
+		place-items: center;
+		font-weight: 700;
+		color: var(--color-text-muted);
+	}
+
+	.d-prof-text {
+		display: flex;
+		flex-direction: column;
+		min-width: 0;
+	}
+
+	.d-muted {
+		color: var(--color-text-muted);
+	}
+
+	.d-taught {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.3rem;
+		margin-top: 0.8rem;
+		padding-top: 0.7rem;
+		border-top: 1px dotted var(--color-border-light);
+
+		ul {
+			display: flex;
+			flex-direction: column;
+			gap: 0.2rem;
+			margin: 0;
+			padding: 0;
+			list-style: none;
+		}
+
+		li {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: baseline;
+			column-gap: 0.6rem;
+		}
+	}
+
+	.d-taught-course {
+		padding: 0;
+		font: inherit;
+		text-align: left;
+		color: var(--color-text);
+		background: none;
+		border: 0;
+		cursor: pointer;
+
+		&:hover {
+			text-decoration: underline;
+			text-underline-offset: 0.2em;
+		}
+	}
+
+	.d-prof-links {
+		display: flex;
+		gap: 1.2rem;
+		margin-top: 0.2rem;
+
+		a {
+			color: var(--color-accent);
+			text-underline-offset: 0.2em;
+
+			&:hover {
+				color: var(--color-text);
+			}
+		}
 	}
 
 	.close {

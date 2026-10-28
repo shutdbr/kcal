@@ -235,7 +235,7 @@
 		$pixel-tick: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 14' shape-rendering='crispEdges'%3E%3Cpath d='M10 3h2v1h-2zM9 4h3v1H9zM8 5h3v1H8zM2 6h2v1H2zM7 6h3v1H7zM2 7h3v1H2zM6 7h3v1H6zM3 8h5v1H3zM4 9h3v1H4zM5 10h1v1H5z'/%3E%3C/svg%3E");
 		-webkit-mask: $pixel-tick center / 100% 100% no-repeat;
 		mask: $pixel-tick center / 100% 100% no-repeat;
-		animation: relay-tick-draw 0.16s steps(5, end) both;
+		animation: kcal-tick-draw 0.16s steps(5, end) both;
 	}
 }
 

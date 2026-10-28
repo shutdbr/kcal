@@ -16,7 +16,7 @@
 :where(button):not(:disabled):active { box-shadow: var(--shadow-well); }
 // the tick box's pixel checkmark drawing itself in, a column of blocks at a
 // time (see the tick mixin) — global so every component's tick shares it
-@keyframes relay-tick-draw {
+@keyframes kcal-tick-draw {
 	from {
 		clip-path: inset(0 100% 0 0);
 	}

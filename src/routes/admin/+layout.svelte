@@ -1,5 +1,5 @@
 <script lang="ts">
-	// The maintainer's side of relay: the catalogue and the prerequisite graph
+	// The maintainer's side of kcal: the catalogue and the prerequisite graph
 	// the whole planner rests on are generated from messy CSV text, and the
 	// drop-form rules change from year to year — so they need somewhere to be
 	// read, corrected and checked. Three pages, one shared header.
@@ -20,13 +20,13 @@
 </script>
 
 <svelte:head>
-	<title>Relay admin</title>
+	<title>kcal admin</title>
 	<meta name="robots" content="noindex" />
 </svelte:head>
 
 <header class="admin-bar">
 	<div class="brand">
-		<span class="logo">Relay</span>
+		<span class="logo">kcal</span>
 		<span class="badge">admin</span>
 	</div>
 	<nav>

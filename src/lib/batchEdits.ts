@@ -1,5 +1,5 @@
 import type { ProgrammeRole } from './types';
-export const BATCH_EDITS_KEY = 'relay-batch-edits';
+export const BATCH_EDITS_KEY = 'kcal-batch-edits';
 export type BatchRule = { courses: Record<string, 'required' | 'elective'>; requiredCredits?: number };
 export type BatchEdits = Record<string, BatchRule>;
 export const batchKey = (year: number, subject: string, role: ProgrammeRole, fourYear: boolean, double: boolean) =>

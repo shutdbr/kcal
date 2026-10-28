@@ -1,7 +1,7 @@
 <script lang="ts">
 	import PixelIcon from '../PixelIcon.svelte';
 	import type { Plan } from '$lib/plan.svelte';
-	import { MAJOR_SUBJECTS, OPEN_MINOR, PROGRAMME_SUBJECTS } from '$lib/data';
+	import { MAJOR_SUBJECTS } from '$lib/data';
 	import Settings from '$lib/components/Settings.svelte';
 
 	let { plan, ontour }: { plan: Plan; ontour: () => void } = $props();
@@ -12,26 +12,15 @@
 	// and leaves an edited one alone — see Plan.programmeChanged
 
 	// a subject already claimed by an earlier role disappears from the later
-	// roles' lists (cs major → no cs minor); changing an earlier role onto a
-	// later one's subject bumps the later pick instead (ensureDistinctPicks)
+	// roles' lists (plan.minorOpts …); changing an earlier role onto a later
+	// one's subject bumps the later pick instead (ensureDistinctPicks)
 	const distinct = () => {
 		plan.programmeChanged();
 	};
-	let major2Opts = $derived(MAJOR_SUBJECTS.filter((s) => s.id !== plan.picks.major1));
-	// the open minor (free courses, no declared subject) leads the minor list
-	let minorOpts = $derived([OPEN_MINOR, ...PROGRAMME_SUBJECTS.filter((s) => s.id !== plan.picks.major1)]);
-	// the minor only blocks a concentration subject when a minor is in play
-	let concOpts = $derived(
-		PROGRAMME_SUBJECTS.filter(
-			(s) =>
-				s.id !== plan.picks.major1 &&
-				(plan.structure !== 'major-minor-conc' || s.id !== plan.picks.minor)
-		)
-	);
 </script>
 
 <header class="col-header">
-	<h2>Relay</h2>
+	<h2>kcal</h2>
 	<button class="gear" data-tour="settings" aria-label="settings" title="settings" onclick={() => (showSettings = true)}>
 		<PixelIcon name="gear" size="1.6rem" snap />
 	</button>
@@ -87,7 +76,7 @@
 		<label class="row">
 			<span class="row-label">major</span>
 			<select bind:value={plan.picks.major2} onchange={distinct}>
-				{#each major2Opts as s (s.id)}
+				{#each plan.major2Opts as s (s.id)}
 					<option value={s.id}>{s.label}</option>
 				{/each}
 			</select>
@@ -98,7 +87,7 @@
 		<label class="row">
 			<span class="row-label">minor</span>
 			<select bind:value={plan.picks.minor} onchange={distinct}>
-				{#each minorOpts as s (s.id)}
+				{#each plan.minorOpts as s (s.id)}
 					<option value={s.id}>{s.label}</option>
 				{/each}
 			</select>
@@ -109,7 +98,7 @@
 		<label class="row">
 			<span class="row-label" title="concentration">conc.</span>
 			<select bind:value={plan.picks.conc} onchange={distinct}>
-				{#each concOpts as s (s.id)}
+				{#each plan.concOpts as s (s.id)}
 					<option value={s.id}>{s.label}</option>
 				{/each}
 			</select>

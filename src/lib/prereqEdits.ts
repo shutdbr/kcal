@@ -12,7 +12,7 @@
 // a meaningful edit ("this course has no prerequisites"), which is why the
 // key's presence, not its length, is what counts as overridden.
 //
-// relay has no server, so edits live in this browser: data.ts applies them
+// kcal has no server, so edits live in this browser: data.ts applies them
 // at load, so the planner, the hints, the seeder and the tree all answer to
 // them at once, and the admin page can export them as JSON to be folded back
 // into the pipeline.
@@ -20,7 +20,7 @@
 // Kept free of any import from data.ts — data.ts imports THIS.
 // ─────────────────────────────────────────────
 
-export const PREREQ_EDITS_KEY = 'relay-prereq-edits';
+export const PREREQ_EDITS_KEY = 'kcal-prereq-edits';
 
 /** course code → its full replacement prerequisite list */
 export type PrereqEdits = Record<string, string[]>;

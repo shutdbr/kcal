@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 // ─────────────────────────────────────────────
 // src/lib/data/*.json is generated for the whole kreabot project (misc/
-// generate.py, build_requirements.py), so it carries plenty relay never
+// generate.py, build_requirements.py), so it carries plenty kcal never
 // reads: faculty emails, the scraper's raw credit tables, and — inside every
 // programme track — a full copy of each course's metadata. Left alone that is
 // 1.15 MB of JavaScript to download and parse before the planner answers a
@@ -93,7 +93,7 @@ function slimRequirements(json: Json): Json {
 
 function slimData(): Plugin {
 	return {
-		name: 'relay-slim-data',
+		name: 'kcal-slim-data',
 		enforce: 'pre',
 		resolveId(id) {
 			return id === DESCRIPTIONS ? '\0' + DESCRIPTIONS : null;

@@ -21,6 +21,7 @@ import {
 	TRIM_MIN,
 	TRIM_NORMAL_MAX,
 	MAJOR_SUBJECTS,
+	OPEN_MINOR,
 	MATHS_COVERS,
 	PROGRAMME_SUBJECTS,
 	Y1_CORE_MAX,
@@ -66,9 +67,9 @@ import {
 
 const TRIMS: TrimNum[] = [1, 2, 3];
 
-const STORAGE_KEY = 'relay-plan';
+const STORAGE_KEY = 'kcal-plan';
 // the previous save, kept so a torn or rejected write can't lose the plan
-const BACKUP_KEY = 'relay-plan-backup';
+const BACKUP_KEY = 'kcal-plan-backup';
 // bump only when the saved shape changes in a way applySave can't read
 const SAVE_VERSION = 1;
 // the most years the grid can run to: a 4-year degree plus one
@@ -764,6 +765,18 @@ export class Plan {
 					.join(' · ') + ' — see the buttons under the grid'
 			);
 	}
+
+	// what each later role may pick: a subject already claimed by an earlier
+	// role drops out of the later roles' lists (cs major → no cs minor)
+	major2Opts = $derived(MAJOR_SUBJECTS.filter((s) => s.id !== this.picks.major1));
+	// the open minor (free courses, no declared subject) leads the minor list
+	minorOpts = $derived([OPEN_MINOR, ...PROGRAMME_SUBJECTS.filter((s) => s.id !== this.picks.major1)]);
+	// the minor only blocks a concentration subject when a minor is in play
+	concOpts = $derived(
+		PROGRAMME_SUBJECTS.filter(
+			(s) => s.id !== this.picks.major1 && (this.structure !== 'major-minor-conc' || s.id !== this.picks.minor)
+		)
+	);
 
 	/** no two active roles may point at the same subject — after a pick or
 	 *  structure change, later roles bump off a collision (minor = cs when
