@@ -140,12 +140,13 @@
 				out:courseOut={{ key: code }}
 				ondragstart={(e) => dragstart(e, code)}
 				ondragend={() => (plan.dragging = null)}
-				onclick={() => (plan.selected = course)}
 			>
 				<button class="x" aria-label="remove {plan.courseLabel(code)}" onclick={(e) => { e.stopPropagation(); plan.remove(code); }}>×</button>
+				<button class="course-open" onclick={() => (plan.selected = course)} aria-label="view {plan.courseLabel(code)}">
 				{#if plan.showCodes}<span class="code">{#if plan.flagKinds.has(code)}<span class="flag" data-kind={plan.flagKinds.get(code)} role="img" aria-label="named in a hint" title="named in a hint — see hints"></span>{/if}{#if type === 'required'}<span class="req-dot" role="img" aria-label="required"></span>{/if}{plan.shownCode(code)}</span>{/if}
 				<span class="title">{#if !plan.showCodes && plan.flagKinds.has(code)}<span class="flag" data-kind={plan.flagKinds.get(code)} role="img" aria-label="named in a hint" title="named in a hint — see hints"></span>{/if}{#if type === 'required' && !plan.showCodes}<span class="req-dot" role="img" aria-label="required"></span>{/if}{course.title}</span>
 				<span class="credits">{course.credits} cr</span>
+				</button>
 			</div>
 		{/each}
 	</div>
@@ -409,4 +410,48 @@
 		}
 	}
 
+	.course-open {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.4rem;
+		min-width: 0;
+		text-align: left;
+		width: 100%;
+		height: 100%;
+		color: inherit;
+		border: 0;
+		background: none;
+		font: inherit;
+		cursor: pointer;
+	}
+	@include mobile {
+		header {
+			flex-wrap: wrap;
+			gap: 0.8rem 1.2rem;
+			padding: 1.6rem;
+		}
+		header h1 {
+			font-size: 2rem;
+		}
+		.how,
+		.slot-hints {
+			margin: 0 1.6rem 1.6rem;
+		}
+		.canvas {
+			margin: 0 1.6rem 1.6rem;
+		}
+		.placed {
+			padding: 1rem;
+		}
+		.placed .x {
+			opacity: 1;
+			min-width: 4.4rem;
+			position: static;
+			align-self: flex-end;
+		}
+		.course-open {
+			height: auto;
+		}
+	}
 </style>

@@ -9,12 +9,14 @@
 		course,
 		type,
 		placed = false,
+		mobile = false,
 		contextSubject = undefined
 	}: {
 		plan: Plan;
 		course: Course;
 		type: CourseType;
 		placed?: boolean;
+		mobile?: boolean;
 		contextSubject?: string;
 	} = $props();
 
@@ -33,10 +35,10 @@
 	// a 1-credit card is only a quarter of the row wide — too narrow for a
 	// title or crosslist row without clipping; clamp the title to two lines.
 	let pending = $derived(course.pendingCredits && course.credits === 0);
-	let compact = $derived(!pending && course.credits <= 1);
+	let compact = $derived(!mobile && !pending && course.credits <= 1);
 	// a card with the whole catalogue row to itself (see Catalogue's spans) —
 	// the only width with room for a worded "on plan" button
-	let fullRow = $derived(pending || course.credits >= 3);
+	let fullRow = $derived(mobile || pending || course.credits >= 3);
 	// the fill alone doesn't say "required" to someone who hasn't read the
 	// legend, so required courses also lead with a dot (no room on a chip)
 	let showReq = $derived(type === 'required' && !compact);
@@ -52,11 +54,20 @@
 	<!-- a course already on the grid leaves a dashed placeholder; the ↩ button
 	     lifts it back off, which flies it home to this slot (see the grid's
 	     out:sendCourse) -->
-	<div data-course-card tabindex="-1" class="card placed" class:compact title="{label} is already on your plan">
-		{#if plan.showCodes || compact}<span class="code">{compact ? compactText : shownCode}</span>{/if}
-		{#if !compact}
-			<span class="title">{course.title}</span>
-		{/if}
+	<div
+		data-course-card
+		tabindex="-1"
+		class="card placed"
+		class:compact
+		title="{label} is already on your plan"
+	>
+		<button class="placed-open" onclick={() => (plan.selected = course)} aria-label="view {label}">
+			{#if plan.showCodes || compact}<span class="code">{compact ? compactText : shownCode}</span
+				>{/if}
+			{#if !compact}
+				<span class="title">{course.title}</span>
+			{/if}
+		</button>
 		<button
 			class="unplace"
 			class:icon={!fullRow}
@@ -68,7 +79,8 @@
 			}}
 		>
 			<!-- says what it is ("on plan") and, under the cursor, what it does -->
-			{#if fullRow}<span class="state">on plan ↩</span><span class="act">remove ↩</span>{:else}↩{/if}
+			{#if fullRow}<span class="state">on plan ↩</span><span class="act">remove ↩</span
+				>{:else}↩{/if}
 		</button>
 	</div>
 {:else}
@@ -80,7 +92,7 @@
 		class:dragging={plan.dragging === course.code}
 		data-type={type}
 		style:--hue={plan.hueOf(course.code)}
-		draggable={!pending}
+		draggable={!mobile && !pending}
 		in:courseIn={{ key: course.code }}
 		out:courseOut={{ key: course.code }}
 		ondragstart={dragstart}
@@ -89,19 +101,31 @@
 		title={pending ? `${label} — credits awaiting confirmation` : `drag ${label} onto the grid`}
 	>
 		{#if plan.showCodes || compact}
-		<span class="code">
-			{#if showReq}<span class="req-dot" role="img" aria-label="required" title="required by your programme"></span>{/if}
-			{compact ? compactText : shownCode}
-			{#if alsoCodes.length && !compact}
-				<span class="xlist" title="cross-listed as {alsoCodes.join(', ')}">
-					⇄ {xlistShown.join(' · ')}{xlistExtra > 0 ? ` +${xlistExtra}` : ''}
-				</span>
-			{/if}
-		</span>
+			<span class="code">
+				{#if showReq}<span
+						class="req-dot"
+						role="img"
+						aria-label="required"
+						title="required by your programme"
+					></span>{/if}
+				{compact ? compactText : shownCode}
+				{#if alsoCodes.length && !compact}
+					<span class="xlist" title="cross-listed as {alsoCodes.join(', ')}">
+						⇄ {xlistShown.join(' · ')}{xlistExtra > 0 ? ` +${xlistExtra}` : ''}
+					</span>
+				{/if}
+			</span>
 		{/if}
 		{#if !compact}
 			<!-- with codes switched off there's no code row, so the dot leads the title -->
-			<span class="title">{#if showReq && !plan.showCodes}<span class="req-dot" role="img" aria-label="required" title="required by your programme"></span>{/if}{course.title}</span>
+			<span class="title"
+				>{#if showReq && !plan.showCodes}<span
+						class="req-dot"
+						role="img"
+						aria-label="required"
+						title="required by your programme"
+					></span>{/if}{course.title}</span
+			>
 			<!-- with codes off there's no code row to carry the cross-listing,
 			     so it gets a line of its own under the title -->
 			{#if !plan.showCodes && alsoCodes.length}
@@ -111,13 +135,24 @@
 			{/if}
 		{/if}
 		{#if pending}<span class="pending">credits to confirm</span>{/if}
+		{#if mobile}<span class="mobile-meta"
+				><span
+					>{pending ? 'credits to confirm' : `${course.credits} credits`} · {course.offered
+						.map((t) => `T${t}`)
+						.join(' / ') || 'term to confirm'}</span
+				><span aria-hidden="true">details →</span></span
+			>{/if}
 	</button>
 {/if}
 
 <style lang="scss">
 	@use '$lib/styles/mixins' as *;
 
-	.pending { font-size: var(--text-body); color: var(--color-text-muted); margin-top: .5rem; }
+	.pending {
+		font-size: var(--text-body);
+		color: var(--color-text-muted);
+		margin-top: 0.5rem;
+	}
 	.card {
 		position: relative;
 		text-align: left;
@@ -280,5 +315,56 @@
 
 	.unplace.icon {
 		padding: 0;
+	}
+	.placed-open {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+		text-align: left;
+		padding: 0;
+		font: inherit;
+		color: inherit;
+		border: 0;
+		background: none;
+		cursor: pointer;
+	}
+	.mobile-meta {
+		display: flex;
+		justify-content: space-between;
+		gap: 1rem;
+		width: 100%;
+		padding-top: 1rem;
+		margin-top: 0.8rem;
+		border-top: 1px solid var(--color-border-divider);
+		font-size: 1.2rem;
+		color: var(--color-text-muted);
+	}
+	@include mobile {
+		.card {
+			padding: 1.6rem;
+			border-radius: 1rem;
+			cursor: pointer;
+		}
+		.code {
+			font-size: 1.3rem;
+		}
+		.title {
+			font-size: 1.6rem;
+			line-height: 1.45;
+			margin-top: 0.4rem;
+			-webkit-line-clamp: unset;
+			line-clamp: unset;
+		}
+		.placed-open {
+			padding-right: 6rem;
+			min-height: 4.4rem;
+			width: 100%;
+		}
+		.unplace {
+			top: 0.8rem;
+			right: 0.8rem;
+			min-width: 5.6rem;
+			font-size: 1.2rem;
+		}
 	}
 </style>

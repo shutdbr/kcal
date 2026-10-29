@@ -28,7 +28,9 @@ const QUIET_MS = 150;
 let quietUntil = 0;
 const now = () => (typeof performance === 'undefined' ? Date.now() : performance.now());
 export const reducedMotion = () => typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
-const quiet = () => now() < quietUntil || reducedMotion();
+// A hidden phone tab has no useful crossfade position. Fade locally instead.
+const quiet = () => now() < quietUntil || reducedMotion() ||
+	(typeof matchMedia !== 'undefined' && matchMedia('(max-width: 1100px)').matches);
 /** called by the plan whenever it replaces the whole board at once */
 export const quietRedraw = () => (quietUntil = now() + QUIET_MS);
 

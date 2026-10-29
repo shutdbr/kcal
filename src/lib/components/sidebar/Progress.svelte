@@ -31,9 +31,8 @@
 	let split = $derived(share(required.needed));
 	let reqFill = $derived(share(Math.min(required.done, required.needed)));
 	let elFill = $derived(share(Math.min(elective.done, elective.needed)));
-	// past 16 notches they stop reading as courses, so the bar goes plain
 	let cells = $derived(Math.max(1, Math.ceil(total / CELL)));
-	let notches = $derived(cells <= 16 ? cells - 1 : 0);
+	let notches = $derived(cells - 1);
 
 	// one figure over the bar: credits counted toward the programme, out of
 	// all it needs — the bar itself shows the required/elective split

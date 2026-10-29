@@ -32,3 +32,12 @@
 		scroll-behavior: auto !important;
 	}
 }
+
+// A 16px input avoids automatic zoom in iOS. Keep touch controls usable even
+// when the desktop text-size preference is small.
+@media (max-width: 1100px) {
+	:root { --text-body: 1.5rem; -webkit-tap-highlight-color: rgba(137, 74, 109, 0.12); }
+	input:not([type='checkbox']):not([type='radio']), select, textarea { font-size: max(16px, 1.6rem) !important; }
+	button, select, input:not([type='checkbox']):not([type='radio']) { min-height: 44px; }
+	button, a, input, select, textarea { touch-action: manipulation; }
+}

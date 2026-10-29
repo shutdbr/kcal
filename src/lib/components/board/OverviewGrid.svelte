@@ -4,7 +4,8 @@
 	import type { TrimNum } from '$lib/types';
 	import { byCode, isCore, subjectById } from '$lib/data';
 	import { flip } from 'svelte/animate';
-	import { fly } from 'svelte/transition';
+	import { fade, fly, scale } from 'svelte/transition';
+	import { backOut } from 'svelte/easing';
 	import { courseIn, courseOut, courseShift, reducedMotion, roll } from '$lib/transitions';
 	import { tick } from 'svelte';
 	import { GRAD_MIN_CGPA } from '$lib/grades';
@@ -28,6 +29,21 @@
 	function dismissGradeHint() {
 		showGradeHint = false;
 		localStorage.setItem(GRADE_HINT_KEY, '1');
+	}
+
+	// the colour key's dropdown: shuts on a click anywhere else or Escape,
+	// and lets go of any chips it had lit
+	const TYPE_KEYS = [
+		{ type: 'core', label: 'kccs', note: 'the foundation core every student takes, mostly in year 1' },
+		{ type: 'required', label: 'required', note: 'required by your major, minor or concentration' },
+		{ type: 'elective', label: 'elective', note: 'an elective that counts toward your programme' },
+		{ type: 'other', label: 'other dept.', note: 'counts toward none of your programmes' }
+	] as const;
+	let keyEl: HTMLDivElement;
+	let keyOpen = $state(false);
+	function setKeyOpen(open: boolean) {
+		keyOpen = open;
+		if (!open) plan.highlight = [];
 	}
 
 	// The eligible cell nearest the cursor. Drops are resolved against the whole
@@ -162,6 +178,9 @@
 		plan.clearPlan();
 	}
 
+	// "1 required course", "3 required courses" — the bulk actions' labels
+	const count = (n: number, noun: string) => `${n} ${noun}${n === 1 ? '' : 's'}`;
+
 	function open(year: number, trim: TrimNum) {
 		plan.zoom = { year, trim };
 	}
@@ -220,6 +239,11 @@
 
 </script>
 
+<svelte:window
+	onpointerdown={(e) => keyOpen && !keyEl.contains(e.target as Node) && setKeyOpen(false)}
+	onkeydown={(e) => keyOpen && e.key === 'Escape' && setKeyOpen(false)}
+/>
+
 <div class="board-bar" data-tour="board-toggles">
 	<!-- grade view: unlocks grade entry on chips, in the details panel, and the
 	     CGPA / recovery panel -->
@@ -250,26 +274,51 @@
 
 	<span class="bar-rule" aria-hidden="true"></span>
 
-	<!-- both colour keys share one recessed well: something to read, set
-	     apart from the keys you press -->
-	<div class="legend-well">
-	<!-- the type keys wear the major's hue, the colour you'll see most -->
-	<div class="legend" aria-label="course colour legend" style:--hue={plan.programmes[0] && subjectById(plan.programmes[0].subject).hue}>
-		<span class="key" title="KCCS — the foundation core every student takes, mostly in year 1"><i data-type="core"></i>kccs</span>
-		<span class="key" title="required by your major, minor or concentration"><i data-type="required"><b class="req-dot"></b></i>required</span>
-		<span class="key" title="an elective that counts toward your programme"><i data-type="elective"></i>elective</span>
-		<span class="key" title="counts toward none of your programmes"><i data-type="other"></i>other dept.</span>
-	</div>
-
-	<!-- which hue is which subject — each keeps its colour on every plan -->
-	<span class="bar-rule" aria-hidden="true"></span>
-	<div class="legend" aria-label="subject colour legend">
-		{#each plan.programmes as prog (prog.role + prog.subject)}
-			{#if prog.subject !== 'open'}
-				<span class="key"><i data-type="required" style:--hue={subjectById(prog.subject).hue}></i>{subjectById(prog.subject).short} {prog.role === 'concentration' ? 'conc.' : prog.role}</span>
-			{/if}
-		{/each}
-	</div>
+	<!-- what the chip colours mean, folded into one key: laid out along the
+	     bar it read as a row of checkboxes and pushed the credit count onto
+	     a line of its own. Hovering a row lights its chips on the board, the
+	     way hovering a hint does. -->
+	<div class="colour-key" bind:this={keyEl} style:--hue={plan.programmes[0] && subjectById(plan.programmes[0].subject).hue}>
+		<div class="keys">
+			<button class:active={keyOpen} aria-expanded={keyOpen} aria-controls="colour-key" onclick={() => setKeyOpen(!keyOpen)}>
+				<!-- just the essentials: a square per subject in the hue its courses
+				     wear, then required and elective — kccs and other dept. wait
+				     in the dropdown -->
+				{#if plan.programmes.some((p) => p.subject !== 'open')}
+					<span class="key-swatches" aria-hidden="true">
+						{#each plan.programmes as prog (prog.role + prog.subject)}
+							{#if prog.subject !== 'open'}<i data-type="required" style:--hue={subjectById(prog.subject).hue}></i>{/if}
+						{/each}
+					</span>
+				{/if}
+				<span class="key-swatches" aria-hidden="true"><i data-type="required"></i><i data-type="elective"></i></span>
+				colours <span class="caret" aria-hidden="true">▾</span>
+			</button>
+		</div>
+		{#if keyOpen}
+			<div id="colour-key" class="key-pop" in:scale={{ start: 0.94, duration: reducedMotion() ? 0 : 260, easing: backOut }} out:fade={{ duration: reducedMotion() ? 0 : 100 }}>
+				<!-- the type rows wear the major's hue, the colour you'll see most -->
+				<ul class="legend" aria-label="course colour legend">
+					{#each TYPE_KEYS as k (k.type)}
+						<li class="key" title={k.note} onmouseenter={() => (plan.highlight = [...plan.placedCodes].filter((c) => plan.courseType(c) === k.type))} onmouseleave={() => (plan.highlight = [])}>
+							<i data-type={k.type}>{#if k.type === 'required'}<b class="req-dot"></b>{/if}</i>{k.label}
+						</li>
+					{/each}
+				</ul>
+				<!-- which hue is which subject — each keeps its colour on every plan -->
+				{#if plan.programmes.some((p) => p.subject !== 'open')}
+					<ul class="legend" aria-label="subject colour legend">
+						{#each plan.programmes as prog, i (prog.role + prog.subject)}
+							{#if prog.subject !== 'open'}
+								<li class="key" onmouseenter={() => (plan.highlight = [...plan.placedCodes].filter((c) => plan.programmeOf(c) === i))} onmouseleave={() => (plan.highlight = [])}>
+									<i data-type="required" style:--hue={subjectById(prog.subject).hue}></i>{subjectById(prog.subject).label}<em>{prog.role === 'concentration' ? 'concentration' : prog.role}</em>
+								</li>
+							{/if}
+						{/each}
+					</ul>
+				{/if}
+			</div>
+		{/if}
 	</div>
 
 	<!-- where the plan stands, at the far end: the CGPA in grade view,
@@ -397,7 +446,7 @@
 				</button>
 				<span class="yh-year">y{y}</span>
 			{:else}
-				y{y}
+				<span class="year-short">y{y}</span><span class="year-long">year {y}</span>
 			{/if}
 		</div>
 		{#each plan.trims as t (t)}
@@ -421,8 +470,13 @@
 				tabindex="0"
 				aria-label="open year {y} trimester {t}"
 				onclick={() => open(y, t)}
-				onkeydown={(e) => e.key === 'Enter' && open(y, t)}
+				onkeydown={(e) => {
+					if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) {
+						e.preventDefault(); open(y, t);
+					}
+				}}
 			>
+				<button class="mobile-term" aria-label="view year {y} trimester {t}" onclick={(e) => { e.stopPropagation(); open(y, t); }}>trimester {t}<span>view trimester →</span></button>
 				<!-- the core-only rule, named only while there's nothing in the
 				     cell at all — not over the suggestions waiting in it -->
 				{#if coreSlot && plan.slotCourses(y, t).length === 0 && (plan.gradeMode || plan.suggestionsFor(y, t).length === 0)}
@@ -448,11 +502,9 @@
 						out:courseOut={{ key: code }}
 						ondragstart={(e) => chipDragstart(e, code)}
 						ondragend={() => (plan.dragging = null)}
-						onclick={(e) => {
-							e.stopPropagation();
-							plan.selected = byCode(code);
-						}}
+
 					>
+						<button class="chip-open" onclick={(e) => { e.stopPropagation(); plan.selected = byCode(code); }} aria-label="view {plan.courseLabel(code)}">
 						{#if plan.gradeMode && plan.showGradeLabels && plan.gradeOf(code)}
 							<span class="chip-grade" class:fail={plan.gradeOf(code) === 'U'}>{plan.gradeOf(code)}</span>
 						{/if}
@@ -460,7 +512,8 @@
 						     mark, the way a required one leads with its dot -->
 						{#if plan.flagKinds.has(code)}<span class="flag" data-kind={plan.flagKinds.get(code)} role="img" aria-label="named in a hint" title="named in a hint — see hints"></span>{/if}
 						{#if type === 'required'}<span class="req-dot" role="img" aria-label="required"></span>{/if}
-						<span class="label">{plan.courseLabel(code)}</span>
+						<span class="label">{plan.courseLabel(code)}{#if !plan.showTitles}<span class="mobile-title">{byCode(code).title}</span>{/if}</span>
+						</button>
 						<button
 							class="x"
 							aria-label="remove {plan.courseLabel(code)}"
@@ -561,51 +614,56 @@
 
 <!-- Bulk grid actions. Changing the degree never moves a course on its own —
      the new recommendation shows as dotted ghosts, and these are how the
-     student brings the grid in line with it, all at once or not at all. -->
+     student brings the grid in line with it, all at once or not at all.
+     Each shows only while it has something to do and says what it will move
+     in plain words — greyed-out buttons reading "0" confused people. Clearing
+     sits apart at the far end. -->
 {#if !plan.gradeMode}
 	<div class="acts-row" data-tour="board-actions">
-		<button
-			class="fill"
-			disabled={!plan.missingRequiredCodes.length}
-			title={plan.missingRequiredCodes.length
-				? 'place every required course of your programmes that is not on the grid yet'
-				: 'every required course is already on the grid'}
-			onclick={() => plan.addRequiredCourses()}
-		>
-			{#if plan.missingRequiredCodes.length}
-				+ add required courses <em>{plan.missingRequiredCodes.length}</em>
-			{:else}
-				✓ all required courses placed
-			{/if}
-		</button>
+		{#if plan.missingRequiredCodes.length}
+			<button
+				class="fill"
+				title="place every required course of your programmes that is not on the grid yet"
+				onclick={() => plan.addRequiredCourses()}
+				transition:fade={{ duration: reducedMotion() ? 0 : 150 }}
+			>
+				+ add {count(plan.missingRequiredCodes.length, 'required course')}
+			</button>
+		{/if}
 
-		<button
-			class="strip"
-			disabled={!plan.suggestionCount}
-			title="take every dotted suggestion on the grid"
-			onclick={() => plan.acceptAllSuggestions()}
-		>
-			+ add all suggested <em>{plan.suggestionCount}</em>
-		</button>
+		{#if plan.suggestionCount}
+			<button
+				class="strip"
+				title="take every dotted suggestion on the grid"
+				onclick={() => plan.acceptAllSuggestions()}
+				transition:fade={{ duration: reducedMotion() ? 0 : 150 }}
+			>
+				+ add {count(plan.suggestionCount, 'suggested course')}
+			</button>
+		{/if}
 
-		<button
-			class="strip"
-			disabled={!plan.otherPlacedCodes.length}
-			title="drop every course that counts toward none of your major / minor / concentration"
-			onclick={() => plan.removeOtherCourses()}
-		>
-			− remove non-programme courses <em>{plan.otherPlacedCodes.length}</em>
-		</button>
+		{#if plan.otherPlacedCodes.length}
+			<button
+				class="strip"
+				title="drop every course that counts toward none of your major / minor / concentration"
+				onclick={() => plan.removeOtherCourses()}
+				transition:fade={{ duration: reducedMotion() ? 0 : 150 }}
+			>
+				− remove {count(plan.otherPlacedCodes.length, 'course')} outside your programmes
+			</button>
+		{/if}
 
-		<button
-			class="strip danger"
-			class:confirming={clearing}
-			disabled={!plan.placed.length}
-			title="take every course off the grid"
-			onclick={clearGrid}
-		>
-			{clearing ? 'click again to clear everything' : '− clear grid'}
-		</button>
+		{#if plan.placed.length}
+			<button
+				class="strip danger clear"
+				class:confirming={clearing}
+				title="take every course off the grid"
+				onclick={clearGrid}
+				transition:fade={{ duration: reducedMotion() ? 0 : 150 }}
+			>
+				{clearing ? 'click again to clear everything' : '− clear grid'}
+			</button>
+		{/if}
 	</div>
 {/if}
 
@@ -1160,18 +1218,82 @@
 		}
 	}
 
-	.legend-well {
-		display: flex;
-		align-items: center;
-		gap: 1.4rem;
-		padding: 0.5rem 1.2rem;
-		background: var(--bar-well);
-		border-radius: 6px;
-		box-shadow: inset 0 1px 2px rgba(20, 30, 50, 0.14), 0 1px 0 var(--bar-hi);
+	// the colour key: shaped like the bar's keys, but plain white with a steel
+	// edge — it opens a menu rather than switching anything, so it doesn't
+	// wear the toggles' pink. Its face previews the colours it explains.
+	.colour-key {
+		position: relative;
 
-		.bar-rule {
-			margin: 0.2rem 0;
+		.keys {
+			border-color: var(--bar-edge);
 		}
+
+		.keys button,
+		.keys button.active {
+			color: var(--bar-text);
+			text-shadow: none;
+			background: var(--color-bg-card-start);
+			box-shadow: none;
+		}
+
+		.keys button:hover {
+			background: color-mix(in srgb, var(--color-bg-card-start) 90%, var(--bar-edge));
+		}
+
+		// open, it stays white and just sits pressed in
+		.keys button.active {
+			box-shadow: inset 0 1px 3px rgba(20, 30, 50, 0.22);
+		}
+
+		.caret {
+			font-size: 1rem;
+			transition: transform 260ms var(--spring);
+		}
+
+		.active .caret {
+			transform: rotate(180deg);
+		}
+	}
+
+	.key-swatches {
+		display: flex;
+		gap: 2px;
+
+		// the subjects' squares and the roles' sit a little apart
+		& + & {
+			margin-left: -0.2rem;
+		}
+
+		// only required and elective appear here, so only their fills
+		i {
+			width: 0.9rem;
+			height: 0.9rem;
+			border-radius: 2px;
+
+			&[data-type='required'] {
+				background: subject-tone(required);
+				border: 1px solid subject-tone(required-deep);
+			}
+
+			&[data-type='elective'] {
+				background: subject-tone(elective);
+				border: 1px solid subject-tone(elective-deep);
+			}
+		}
+	}
+
+	.key-pop {
+		position: absolute;
+		top: calc(100% + 0.6rem);
+		left: 0;
+		z-index: 3;
+		width: max-content;
+		padding: 0.5rem;
+		background: var(--color-bg-card-start);
+		border: 1px solid var(--bar-edge);
+		border-radius: 6px;
+		box-shadow: 0 6px 18px rgba(20, 30, 50, 0.18);
+		transform-origin: top left;
 	}
 
 	// A suggestion wears the same shape as the real chip it would become, at a
@@ -1357,9 +1479,9 @@
 		}
 	}
 
-	// both bulk actions sit together at the left edge of the grid, in one row,
+	// the bulk actions sit together at the left edge of the grid, in one row,
 	// at identical size — they are the same KIND of thing, so only the fill
-	// colour separates the one that adds from the one that removes
+	// colour separates the one that matters most from the tidy-ups
 	.acts-row {
 		display: flex;
 		flex-wrap: wrap;
@@ -1378,15 +1500,10 @@
 		border: 1px solid var(--color-border-card);
 		border-radius: 6px;
 		cursor: pointer;
-
-		em {
-			font-style: normal;
-			font-size: 1.15rem;
-		}
 	}
 
-	// the one that fills the board in — accent, so it reads as the primary of
-	// the two without being any bigger
+	// the one that fills the board in — accent, so it reads as the primary
+	// without being any bigger
 	.fill {
 		font-weight: 600;
 		color: var(--color-on-accent);
@@ -1394,31 +1511,20 @@
 		border-color: var(--color-control-deep);
 		@include glossy-accent;
 
-		em {
-			font-weight: 400;
-			opacity: 0.8;
-		}
-
 		&:hover {
 			filter: brightness(1.07);
 		}
-	}
-
-	.fill:disabled,
-	.strip:disabled {
-		opacity: 0.6;
-		cursor: default;
-		filter: none;
 	}
 
 	// the tidy-ups — App Store price-tag buttons, so they never compete with
 	// the plum one beside them
 	.strip {
 		@include store-button($armable: true);
+	}
 
-		em {
-			color: var(--color-text-muted);
-		}
+	// wiping the grid is a different kind of thing — off at the far end
+	.clear {
+		margin-left: auto;
 	}
 
 	.fill {
@@ -1447,25 +1553,44 @@
 		margin-left: auto;
 	}
 
-	.legend {
+	// the roles, then a dotted rule, then the subjects
+	.legend + .legend {
+		margin-top: 0.4rem;
+		padding-top: 0.4rem;
+		border-top: 1px dotted color-mix(in srgb, var(--bar-text-muted) 55%, transparent);
+	}
+
+	.legend .key {
 		display: flex;
 		align-items: center;
-		gap: 1.4rem;
+		gap: 0.8rem;
+		padding: 0.5rem 1rem 0.5rem 0.6rem;
+		font-size: 1.25rem;
+		color: var(--color-text);
+		border-radius: 4px;
+		cursor: default;
 
-		.key {
-			display: flex;
-			align-items: center;
-			gap: 0.5rem;
-			font-size: 1.25rem;
+		&:hover {
+			background: var(--bar-well);
+		}
+
+		em {
+			margin-left: -0.3rem;
+			font-style: normal;
 			color: var(--color-text-muted);
+		}
+	}
 
+	.legend {
+		.key {
+			// a swatch shaped like the chip it stands for, not a checkbox
 			i {
 				display: grid;
 				place-items: center;
-				width: 1.2rem;
-				height: 1.2rem;
+				width: 1.8rem;
+				height: 1.1rem;
 				border-radius: 3px;
-				@include course-type-fill;
+				@include course-type-fill($audits: false);
 			}
 
 			.req-dot {
@@ -1585,4 +1710,138 @@
 		}
 	}
 
+	.year-long,
+	.mobile-term,
+	.mobile-title {
+		display: none;
+	}
+	.chip-open {
+		display: flex;
+		align-items: center;
+		flex: 1;
+		min-width: 0;
+		gap: 0.4rem;
+		text-align: left;
+		color: inherit;
+		background: none;
+		border: 0;
+		padding: 0;
+		font: inherit;
+		cursor: pointer;
+	}
+	@include mobile {
+		.board-bar {
+			position: relative;
+			padding: 1.2rem 1.6rem;
+			gap: 0.8rem;
+		}
+		.bar-rule {
+			display: none;
+		}
+		.bar-end {
+			margin-left: 0;
+		}
+		.overview,
+		.overview.graded {
+			grid-template-columns: minmax(0, 1fr);
+			padding: 1.6rem;
+			gap: 1.2rem;
+			transition: none;
+		}
+		.corner,
+		.trim-head {
+			display: none;
+		}
+		.year-head {
+			display: flex;
+			align-items: center;
+			gap: 1rem;
+			text-align: left;
+			padding: 1.2rem 0 0.2rem;
+			font-weight: 600;
+		}
+		.year-short { display: none; }
+		.year-long { display: inline; }
+
+		.cell {
+			min-height: 13rem;
+			padding: 1.4rem 1.4rem 4.8rem;
+			gap: 0.8rem;
+		}
+		.mobile-term {
+			background: none;
+			border: 0;
+			padding: 0;
+			text-align: left;
+			cursor: pointer;
+			order: -1;
+			display: flex;
+			width: 100%;
+			align-items: center;
+			justify-content: space-between;
+			gap: 1rem;
+			padding-bottom: 0.8rem;
+			font-size: 1.5rem;
+			font-weight: 600;
+			color: var(--color-text);
+		}
+		.mobile-term span {
+			font-size: 1.1rem;
+			font-weight: 400;
+			color: var(--color-text-muted);
+		}
+		.chip,
+		.chip.showing-title {
+			flex-basis: 100%;
+			max-width: 100%;
+			width: 100%;
+			padding: 0.4rem 0.8rem;
+		}
+		.chip-open {
+			font-size: 1.4rem;
+			min-height: 4.4rem;
+		}
+		.chip .label {
+			white-space: normal;
+			overflow: visible;
+		}
+		.mobile-title {
+			display: block;
+			font-size: 1.4rem;
+			font-weight: 400;
+			line-height: 1.4;
+			margin-top: 0.2rem;
+		}
+		.chip .x {
+			position: static;
+			opacity: 1;
+			min-width: 4.4rem;
+			flex-shrink: 0;
+		}
+		.cell-credits {
+			font-size: 1.3rem;
+		}
+		.cell-credits .clear {
+			opacity: 1;
+			min-width: 4.4rem;
+		}
+		.example-note,
+		.grade-hint {
+			margin: 1.6rem;
+			font-size: 1.4rem;
+		}
+		.year-acts {
+			grid-column: 1 / -1;
+		}
+		.year-head,
+		.cell {
+			grid-column: 1;
+			min-width: 0;
+		}
+		.year-acts,
+		.acts-row {
+			padding: 1.6rem;
+			flex-wrap: wrap;
+		}
+	}
 </style>

@@ -5,7 +5,7 @@ import { importUrl } from '../../extensions/canvas-import/transfer.js';
 
 test('extracts current rows only, keeps unlinked courses, and ignores nicknames and duplicate rows', async ({ page }) => {
   const html = await readFile(new URL('../fixtures/canvas-courses.html', import.meta.url), 'utf8');
-  await page.route('https://canvas.krea.edu.in/courses', (route) => route.fulfill({ body: html, contentType: 'text/html' }));
+  await page.route('https://canvas.krea.edu.in/courses', (route) => route.fulfill({ body: html, contentType: 'text/html; charset=utf-8' }));
   await page.goto('https://canvas.krea.edu.in/courses');
   const payload = await page.evaluate(extractCourses);
   expect(payload.courses).toEqual([
@@ -20,7 +20,7 @@ test('extracts current rows only, keeps unlinked courses, and ignores nicknames 
 test('extractor refuses other sites and Canvas dashboard', async ({ page }) => {
   await page.goto('/');
   await expect(page.evaluate(extractCourses)).rejects.toThrow('All Courses');
-  await page.route('https://canvas.krea.edu.in/', (route) => route.fulfill({ body: '<h1>Dashboard</h1>', contentType: 'text/html' }));
+  await page.route('https://canvas.krea.edu.in/', (route) => route.fulfill({ body: '<h1>Dashboard</h1>', contentType: 'text/html; charset=utf-8' }));
   await page.goto('https://canvas.krea.edu.in/');
   await expect(page.evaluate(extractCourses)).rejects.toThrow('All Courses');
 });
@@ -41,11 +41,11 @@ test('import previews escaped content, preserves the saved plan, and does not ad
   await expect(page).toHaveURL('http://127.0.0.1:4173/');
   await expect(dialog.getByText('<img src=x onerror=alert(1)> Unknown course', { exact: true })).toBeVisible();
   await expect(dialog.locator('img')).toHaveCount(0);
-  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('kcal-plan')).placements)).toEqual({ '2-1': ['MATH201'] });
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('kcal-plan') ?? '{}').placements)).toEqual({ '2-1': ['MATH201'] });
   await dialog.getByLabel('Add new courses to').selectOption('2-2');
   await dialog.getByRole('button', { name: 'Add 1 new course', exact: true }).click();
   await expect(dialog.getByRole('status')).toContainText('Added 1 course');
-  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('kcal-plan')).placements)).toEqual({ '2-1': ['MATH201'], '2-2': ['KCCS101'] });
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('kcal-plan') ?? '{}').placements)).toEqual({ '2-1': ['MATH201'], '2-2': ['KCCS101'] });
   await expect(dialog.getByRole('button', { name: 'Add 0 new courses', exact: true })).toBeDisabled();
 });
 

@@ -1,7 +1,8 @@
 <script lang="ts">
 	import type { Plan } from '$lib/plan.svelte';
 	import CourseReviews from '$lib/components/CourseReviews.svelte';
-	import { canAudit, facultyOf, hasCode, isCore, taughtBy, termLabel } from '$lib/data';
+	import CourseFaculty from './CourseFaculty.svelte';
+	import { canAudit, hasCode, isCore } from '$lib/data';
 	import { descriptionOf, loadDescriptions } from '$lib/descriptions.svelte';
 	import { GRADE_SCALE, OTHER_MARKS, type GradeMark } from '$lib/grades';
 
@@ -19,13 +20,6 @@
 		if (plan.selected) loadDescriptions();
 	});
 
-	// "01-Jan-19" → "2019"
-	const joinedYear = (date?: string) => {
-		const yy = date?.match(/(\d{2})$/)?.[1];
-		return yy ? `20${yy}` : '';
-	};
-
-	// a long description folds to its first few lines; each course opens folded
 	const DESC_FOLD = 280;
 	let descOpenFor = $state<string | null>(null);
 	let descOpen = $derived(descOpenFor !== null && descOpenFor === plan.selected?.code);
@@ -38,7 +32,8 @@
 		const code = plan.selected?.code;
 		if (!code) return '';
 		if (placedAt) return `${placedAt.year}-${placedAt.trim}`;
-		for (const y of plan.years) for (const t of plan.trims) if (plan.canDrop(code, y, t)) return `${y}-${t}`;
+		for (const y of plan.years)
+			for (const t of plan.trims) if (plan.canDrop(code, y, t)) return `${y}-${t}`;
 		return '2-1';
 	});
 	function placeIt() {
@@ -50,7 +45,8 @@
 
 	// shut on Esc — unless a dialog is open, which Esc closes first
 	function onkey(e: KeyboardEvent) {
-		if (e.key === 'Escape' && plan.selected && !document.querySelector('.backdrop')) plan.selected = null;
+		if (e.key === 'Escape' && plan.selected && !document.querySelector('.backdrop'))
+			plan.selected = null;
 	}
 </script>
 
@@ -59,23 +55,32 @@
 <header class="col-header">
 	<h2>course</h2>
 	{#if plan.selected}
-		<button class="close" aria-label="close course details" title="close (Esc)" onclick={() => (plan.selected = null)}>×</button>
+		<button
+			class="close"
+			aria-label="close course details"
+			title="close (Esc)"
+			onclick={() => (plan.selected = null)}>×</button
+		>
 	{/if}
 </header>
 {#if plan.selected}
 	{@const c = plan.selected}
 	{@const desc = descriptionOf(c.code)}
-	{@const profs = facultyOf(c.code)}
 	<div class="details">
 		<div class="d-head">
 			{#if plan.showCodes}<span class="d-code">{c.code}</span>{/if}
 			<span class="d-title">{c.title}</span>
 			{#if plan.showCodes && c.codes.length > 1}
-				<span class="d-xlist">cross-listed as {c.codes.filter((x) => x !== c.code).join(' · ')}</span>
+				<span class="d-xlist"
+					>cross-listed as {c.codes.filter((x) => x !== c.code).join(' · ')}</span
+				>
 			{/if}
 		</div>
 
-		{#if c.pendingCredits && c.credits === 0}<p class="d-no-audit">Offered in T2. Credits and prerequisites were not supplied; confirm these in admin before planning this course.</p>{/if}
+		{#if c.pendingCredits && c.credits === 0}<p class="d-no-audit">
+				Offered in T2. Credits and prerequisites were not supplied; confirm these in admin before
+				planning this course.
+			</p>{/if}
 		<div class="d-meta">
 			<div class="d-stat">
 				<span class="d-stat-label">credits</span>
@@ -95,7 +100,8 @@
 		     dragging — keyboard, touch, or just quicker -->
 		<div class="d-place">
 			<span class="d-place-where">
-				{#if placedAt}on your plan in <b>year {placedAt.year}, t{placedAt.trim}</b>{:else}not on your plan yet{/if}
+				{#if placedAt}on your plan in <b>year {placedAt.year}, t{placedAt.trim}</b>{:else}not on
+					your plan yet{/if}
 			</span>
 			<div class="d-place-row">
 				<select bind:value={target} aria-label="trimester to put {c.code} in">
@@ -177,68 +183,26 @@
 			<div class="d-desc">
 				<p class:folded={long && !descOpen}>{desc}</p>
 				{#if long}
-					<button class="d-more" aria-expanded={descOpen} onclick={() => (descOpenFor = descOpen ? null : c.code)}>
+					<button
+						class="d-more"
+						aria-expanded={descOpen}
+						onclick={() => (descOpenFor = descOpen ? null : c.code)}
+					>
 						{descOpen ? 'read less' : 'read more'}
 					</button>
 				{/if}
 			</div>
 		{/if}
 
-		<!-- profs rotate every year, so this is context, not a promise — but
-		     who they are and when to find them is what a student asks next -->
-		{#if !isCore(c.code) && profs.length}
-			<div class="label">recently taught by</div>
-			<div class="d-profs">
-				{#each profs as p (p.id)}
-					{@const terms = taughtBy(p)}
-					<div class="d-prof">
-						{#if p.image_url}
-							<img class="d-photo" src={p.image_url} alt="" loading="lazy" referrerpolicy="no-referrer" />
-						{:else}
-							<span class="d-photo d-initials" aria-hidden="true">{p.name.split(' ').map((w) => w[0]).slice(0, 2).join('')}</span>
-						{/if}
-						<div class="d-prof-text">
-							<b>{p.name}</b>
-							{#if p.position}<span class="d-muted">{p.position}{#if joinedYear(p.date_of_joining)} · at Krea since {joinedYear(p.date_of_joining)}{/if}</span>{/if}
-							{#if p.office_hours}<span><span class="d-muted">office hours</span> {p.office_hours}</span>{/if}
-							<span class="d-prof-links">
-								{#if p.email}<a href="mailto:{p.email}">email</a>{/if}
-								{#if p.url}<a href={p.url} target="_blank" rel="noopener">profile ↗</a>{/if}
-							</span>
-							<!-- what they've taught lately, term by term (as kreabot lists it) —
-							     each another course to jump to -->
-							{#if terms.length}
-								<div class="d-taught">
-									<span class="d-muted">courses taught</span>
-									{#each terms as t (t.term)}
-										<span class="d-term">{termLabel(t.term)}</span>
-										<ul>
-											{#each t.codes as code (code)}
-												<li>
-													{#if code === c.code}
-														<span class="d-this">{plan.courseLabel(code)}</span>
-													{:else}
-														<button class="d-taught-course" onclick={() => jump(code)}>{plan.courseLabel(code)}</button>
-													{/if}
-												</li>
-											{/each}
-										</ul>
-									{/each}
-								</div>
-							{/if}
-						</div>
-					</div>
-				{/each}
-			</div>
-		{:else if !isCore(c.code) && c.faculty}
-			<p class="d-faculty">recently taught by {c.faculty}</p>
-		{/if}
+		<CourseFaculty {plan} course={c} />
 
 		{#if c.prereqs.length}
 			<div class="label">needs first</div>
 			<div class="d-chips">
 				{#each c.prereqs as p (p)}
-					<button class="d-chip" disabled={!hasCode(p)} onclick={() => jump(p)}>{hasCode(p) ? plan.courseLabel(p) : p}</button>
+					<button class="d-chip" disabled={!hasCode(p)} onclick={() => jump(p)}
+						>{hasCode(p) ? plan.courseLabel(p) : p}</button
+					>
 				{/each}
 			</div>
 		{/if}
@@ -254,7 +218,10 @@
 
 		<!-- the data is scraped and hand-kept, so the course itself is where
 		     a wrong offering or prerequisite gets reported -->
-		<button class="d-report" onclick={() => (plan.feedbackDraft = `About ${c.code} (${c.title}): `)}>
+		<button
+			class="d-report"
+			onclick={() => (plan.feedbackDraft = `About ${c.code} (${c.title}): `)}
+		>
 			something wrong with this course? tell me
 		</button>
 		{#key c.code}<CourseReviews code={c.code} />{/key}
@@ -269,16 +236,27 @@
 		<ul class="guide">
 			<li><b>drag</b> a course from the catalogue onto a trimester, or between trimesters</li>
 			<li><b>click a trimester</b> on the grid to zoom in on it</li>
-			<li><b>hints</b> on the left flag anything that breaks a rule — click one to find its course</li>
+			<li>
+				<b>hints</b> on the left flag anything that breaks a rule — click one to find its course
+			</li>
 			<li><b>grade view</b>, above the grid, turns the plan into your transcript</li>
 		</ul>
 
 		<div class="label">reading the marks</div>
 		<ul class="marks">
 			<li><span class="m-dot" aria-hidden="true"></span>required by your programme</li>
-			<li><span class="m-mark" data-kind="warn" aria-hidden="true"></span>breaks a rule — a prerequisite out of order, say</li>
-			<li><span class="m-mark" data-kind="caution" aria-hidden="true"></span>worth a look — under the credit minimum, say</li>
-			<li><span class="m-mark" data-kind="info" aria-hidden="true"></span>a note — counts on the transcript only, say</li>
+			<li>
+				<span class="m-mark" data-kind="warn" aria-hidden="true"></span>breaks a rule — a
+				prerequisite out of order, say
+			</li>
+			<li>
+				<span class="m-mark" data-kind="caution" aria-hidden="true"></span>worth a look — under the
+				credit minimum, say
+			</li>
+			<li>
+				<span class="m-mark" data-kind="info" aria-hidden="true"></span>a note — counts on the
+				transcript only, say
+			</li>
 		</ul>
 	</div>
 {/if}
@@ -342,117 +320,6 @@
 	.m-mark {
 		@include severity-mark;
 		align-self: center;
-	}
-
-	// a lecturer: photo, name, role, and how to reach them
-	.d-profs {
-		display: flex;
-		flex-direction: column;
-		gap: 0.8rem;
-	}
-
-	.d-prof {
-		display: flex;
-		gap: 1rem;
-		padding: 0.9rem 1rem;
-		font-size: var(--text-body);
-		line-height: 1.45;
-		background: var(--color-bg-light);
-		border: 1px solid var(--color-border-divider);
-		border-radius: 6px;
-	}
-
-	.d-photo {
-		flex: none;
-		width: 4.4rem;
-		height: 4.4rem;
-		object-fit: cover;
-		border-radius: 50%;
-		border: 1px solid var(--color-border-card);
-		background: var(--color-subtle);
-	}
-
-	.d-initials {
-		display: grid;
-		place-items: center;
-		font-weight: 700;
-		color: var(--color-text-muted);
-	}
-
-	.d-prof-text {
-		display: flex;
-		flex-direction: column;
-		min-width: 0;
-	}
-
-	.d-muted {
-		color: var(--color-text-muted);
-	}
-
-	.d-taught {
-		display: flex;
-		flex-direction: column;
-		align-items: flex-start;
-		gap: 0.3rem;
-		margin-top: 0.8rem;
-		padding-top: 0.7rem;
-		border-top: 1px dotted var(--color-border-light);
-
-		ul {
-			display: flex;
-			flex-direction: column;
-			gap: 0.2rem;
-			margin: 0;
-			padding: 0;
-			list-style: none;
-		}
-
-		ul + .d-term {
-			margin-top: 0.3rem;
-		}
-	}
-
-	// the term a group of courses ran in — a small label over its list
-	.d-term {
-		font-size: 1.1rem;
-		font-weight: 700;
-		letter-spacing: 0.03em;
-		color: var(--color-text-muted);
-	}
-
-	// the course already open — named, not linked
-	.d-this {
-		font-weight: 600;
-	}
-
-	.d-taught-course {
-		padding: 0;
-		font: inherit;
-		text-align: left;
-		color: var(--color-text);
-		background: none;
-		border: 0;
-		cursor: pointer;
-
-		&:hover {
-			text-decoration: underline;
-			text-underline-offset: 0.2em;
-		}
-	}
-
-	.d-prof-links {
-		display: flex;
-		gap: 1.2rem;
-		margin-top: 0.2rem;
-
-		a {
-			color: var(--color-accent);
-			text-underline-offset: 0.2em;
-
-			&:hover {
-				color: var(--color-text);
-			}
-		}
 	}
 
 	.close {
@@ -637,7 +504,11 @@
 		align-items: stretch;
 		overflow: hidden;
 		min-height: 3.6rem;
-		background: linear-gradient(to bottom, var(--color-bg-card-start) 0%, var(--color-bg-card-end) 100%);
+		background: linear-gradient(
+			to bottom,
+			var(--color-bg-card-start) 0%,
+			var(--color-bg-card-end) 100%
+		);
 		border: 1px solid var(--color-border-card);
 		border-radius: 9px;
 		box-shadow: var(--shadow-inset);
@@ -684,12 +555,6 @@
 		input {
 			@include tick(1.5rem);
 		}
-	}
-
-	.d-faculty {
-		font-size: 1.2rem;
-		font-style: italic;
-		color: var(--color-text-muted);
 	}
 
 	.d-no-audit {
@@ -750,6 +615,52 @@
 
 		&:hover {
 			color: var(--color-text);
+		}
+	}
+	@include mobile {
+		.col-header {
+			position: sticky;
+			top: 0;
+			z-index: 2;
+			flex-shrink: 0;
+			background: var(--color-bg-sidebar);
+			padding: 0.8rem 1.8rem;
+		}
+		.close {
+			width: 4.4rem;
+			height: 4.4rem;
+			font-size: 2.6rem;
+		}
+		.details {
+			padding: 1.8rem;
+			gap: 1.6rem;
+		}
+		.d-head .d-title {
+			font-size: 2.4rem;
+			line-height: 1.3;
+		}
+		.d-desc,
+		.d-place-where,
+		.d-audit {
+			font-size: 1.5rem;
+		}
+		.d-place-row {
+			flex-wrap: wrap;
+		}
+		.d-place-row select {
+			flex: 1 0 100%;
+			width: 100%;
+		}
+		.d-place-go {
+			flex: 1;
+		}
+		.d-place-remove {
+			padding: 0.8rem 1.6rem;
+		}
+		.d-more,
+		.d-report {
+			padding-top: 1rem;
+			padding-bottom: 1rem;
 		}
 	}
 </style>

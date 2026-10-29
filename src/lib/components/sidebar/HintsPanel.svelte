@@ -568,20 +568,9 @@
 		color: var(--color-text-muted);
 	}
 
-	// a small chevron that turns down as the row opens, on the app's spring
 	.chev {
-		flex: none;
-		width: 0.7rem;
-		height: 0.7rem;
+		@include fold-chevron;
 		margin: 0.6rem 0.4rem 0 0;
-		border-right: 1.5px solid var(--color-text-muted);
-		border-bottom: 1.5px solid var(--color-text-muted);
-		transform: rotate(-45deg);
-		transition: transform 0.3s var(--spring);
-
-		.open & {
-			transform: rotate(45deg);
-		}
 	}
 
 	// an open group's hints read as subtext under its heading — no box,

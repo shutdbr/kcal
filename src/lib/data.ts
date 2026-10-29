@@ -477,35 +477,86 @@ export type Professor = {
 
 /** Full directory, including lecturers without a linked catalogue course. */
 export const departmentFaculty = departmentData as Record<string, Professor[]>;
+
+// a name with its parts in any order and without the dots, so the term
+// sheets' "T.V.H. Prathamesh" finds the directory's "Prathamesh T V H"
+const nameKey = (name: string) => (name.toLowerCase().match(/[a-z]+/g) ?? []).sort().join(' ');
+
+// The same people under another email or spelling in the term sheets and the
+// T2 timetable, checked by hand: matching on shared name parts alone pairs
+// strangers (Rakesh Nigam with Rakesh Sengupta, Shilpi Sarkar with Shilpi Singh).
+// Each maps to the name they go by — the directory's, typos and all, where
+// it lists them.
+const FACULTY_ALIASES: Record<string, string> = {
+	'prathamesh.turaga@krea.edu.in': 'Prathamesh T V H',
+	'meesum.syed@krea.edu.in': 'Syed Mohammad Meesum',
+	'jonathanandrew.jarrett@krea.edu.in': 'Jonathan Andrew Jarrett',
+	'vidyabharathi.rajkumar@krea.edu.in': 'Vidya Bharathi Rajkumar',
+	'raghavan.komaranapuram@krea.edu.in': 'Raghavan K N',
+	'annu.jalais@krea.edu.in': 'Annu Jalaias',
+	'Annu Jalais': 'Annu Jalaias',
+	Ksviswanathan: 'Viswanathan K S',
+	'K Vishwanath': 'Viswanathan K S',
+	'K. Vishwanathan': 'Viswanathan K S',
+	'KS. Vishwanathan': 'Viswanathan K S',
+	'Shyam Sudhakar': 'Shyam Kumar Sudhakar',
+	'Shyamkumar Sudhakar': 'Shyam Kumar Sudhakar',
+	'Ravi Prakash G Iyer': 'Ravi Prakash Iyer',
+	'Subha Venkatraman': 'Subha V',
+	'sankara.subramanian@krea.edu.in': 'Shankar Subramanian',
+	// not in the directory
+	'arindam.chatterjee@krea.edu.in': 'Arindam Chatterjee',
+	Arindham: 'Arindam Chatterjee',
+	'Aswin Sai Narain Seshasayee': 'Aswin Seshasayee'
+};
+const facultyAliases = new Map(
+	Object.entries(FACULTY_ALIASES).map(([alias, name]) => [alias.includes('@') ? alias : nameKey(alias), name])
+);
+
 const professors = new Map<string, Professor>();
 for (const list of Object.values(departmentData as Record<string, Professor[]>)) {
 	for (const p of list) {
 		professors.set(p.id, p);
 		if (p.email) professors.set(p.email.toLowerCase(), p);
-		// the manual offerings name their lecturers without an id or email
-		professors.set(p.name.toLowerCase(), p);
+		// the catalogue reaches the bundle with its lecturers' names only
+		// (vite.config.ts drops the emails), so most are found by name
+		professors.set(nameKey(p.name), p);
 	}
 }
 
+// someone the directory doesn't list, once per name: the T2 timetable knows
+// Rakesh Nigam by email, the catalogue only by name
+const strangers = new Map<string, Professor>();
+
 // a lecturer on a course: the department's record where there is one,
-// just the name and email otherwise (keyed by email, else name)
-const resolveFaculty = (f: RawCourse['faculty'][number]): Professor =>
-	(f.id ? professors.get(f.id) : undefined) ??
-	professors.get(f.email?.toLowerCase() || '-') ??
-	professors.get(f.name.toLowerCase()) ?? {
-		id: f.email || f.name,
-		name: f.name,
-		email: f.email,
-		position: '',
-		office_hours: '',
-		image_url: '',
-		url: ''
-	};
+// just the name and email otherwise
+const resolveFaculty = (f: RawCourse['faculty'][number]): Professor => {
+	const email = f.email?.toLowerCase() ?? '';
+	const name = facultyAliases.get(email) ?? facultyAliases.get(nameKey(f.name)) ?? f.name;
+	const known =
+		(f.id ? professors.get(f.id) : undefined) ?? professors.get(email || '-') ?? professors.get(nameKey(name));
+	if (known) return known;
+	// the T2 timetable names those it can't place by email alone
+	const key = name.includes('@') ? name.toLowerCase() : nameKey(name);
+	let p = strangers.get(key);
+	if (!p) {
+		p = { id: key, name, email: f.email, position: '', office_hours: '', image_url: '', url: '' };
+		strangers.set(key, p);
+	}
+	p.email ||= f.email;
+	return p;
+};
 
 /** who has taught a course — position, office hours, photo where known */
 export function facultyOf(code: string): Professor[] {
-	return (rawCourses[byCode(code).code]?.faculty ?? []).map(resolveFaculty);
+	return [...new Set((rawCourses[byCode(code).code]?.faculty ?? []).map(resolveFaculty))];
 }
+
+/** who teaches a course, as the search bar reads it: the names lecturers go
+ *  by and the spellings the term sheets used, so "Subha V" and "Venkatraman"
+ *  both find DATA238 */
+export const facultySearchText = (c: Course): string =>
+	[c.faculty, ...facultyOf(c.code).map((p) => p.name)].join(' ').toLowerCase();
 
 // the hand-entered T2 timetable carries no year: it's the T2 after the
 // newest term in the spreadsheets

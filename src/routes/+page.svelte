@@ -1,4 +1,7 @@
 <script lang="ts">
+	import PanelResizers from '$lib/components/layout/PanelResizers.svelte';
+	import MobileNavigation from '$lib/components/layout/MobileNavigation.svelte';
+	import { focusScope } from '$lib/focusScope';
 	import { dragMotion } from '$lib/dragMotion';
 	import { Plan } from '$lib/plan.svelte';
 	import CanvasImportPanel from '$lib/components/CanvasImport.svelte';
@@ -24,6 +27,12 @@
 	// a first visit opens on the welcome card (your degree), then the tour
 	let welcomeOpen = $state(false);
 	let desktop = $state(false);
+	let ready = $state(false);
+	let mobileView = $state<'catalogue' | 'board' | 'rail'>('catalogue');
+	let detailsEl: HTMLElement;
+	$effect(() => {
+		if (!desktop && plan.selected?.code) detailsEl?.scrollTo({ top: 0 });
+	});
 	let canvasTransfer = $state<CanvasImport | null>(null);
 	let canvasError = $state('');
 
@@ -34,13 +43,17 @@
 		if (importing) {
 			const fragment = location.hash.slice('#canvas-import='.length);
 			history.replaceState(history.state, '', location.pathname + location.search);
-			try { canvasTransfer = parseCanvasImport(decodeURIComponent(fragment)); }
-			catch (e) { canvasError = e instanceof Error ? e.message : 'Could not read the Canvas import.'; }
+			try {
+				canvasTransfer = parseCanvasImport(decodeURIComponent(fragment));
+			} catch (e) {
+				canvasError = e instanceof Error ? e.message : 'Could not read the Canvas import.';
+			}
 		}
-		// Match the mobile gate: a phone visit must not consume the first tour.
-		const media = window.matchMedia('(min-width: 769px)');
+		// Keep the desktop walkthrough available after a phone visit.
+		const media = window.matchMedia('(min-width: 1101px)');
 		const update = () => (desktop = media.matches);
 		update();
+		ready = true;
 		media.addEventListener('change', update);
 		try {
 			welcomeOpen = !importing && !reviewCode && !localStorage.getItem(INTRO_KEY);
@@ -62,27 +75,18 @@
 	// how current the course data is, said plainly in the footer
 	const dataMonth = DATA_UPDATED?.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });
 
-	// on a phone: hand the link on to a laptop (the share sheet where there
-	// is one, the clipboard otherwise)
-	let linkCopied = $state(false);
-	async function passLink() {
-		const url = location.origin;
-		try {
-			if (navigator.share) await navigator.share({ title: 'kcal', url });
-			else {
-				await navigator.clipboard.writeText(url);
-				linkCopied = true;
-			}
-		} catch {
-			// share sheet dismissed, or clipboard blocked — the address bar has it
-		}
-	}
+	let panelWidths = $state<Partial<Record<'rail' | 'catalogue' | 'details', number>>>({});
+	let resizing = $state<'rail' | 'catalogue' | 'details' | null>(null);
 
 	// the catalogue prose is a separate chunk so it can't hold up first paint —
 	// pull it in once the planner is up and the browser has a spare moment
-	$effect(() => {
-		if ('requestIdleCallback' in window) requestIdleCallback(() => loadDescriptions());
-		else setTimeout(loadDescriptions, 400);
+	onMount(() => {
+		if ('requestIdleCallback' in window) {
+			const id = requestIdleCallback(() => loadDescriptions());
+			return () => cancelIdleCallback(id);
+		}
+		const id = setTimeout(loadDescriptions, 400);
+		return () => clearTimeout(id);
 	});
 </script>
 
@@ -96,34 +100,60 @@
 	/>
 {/if}
 
-{#if tourRequested && desktop}
-	<Intro onclose={dismissTour} />
+{#if tourRequested}
+	{#if desktop}
+		<Intro onclose={dismissTour} />
+	{:else}
+		<Modal title="a quick tour" onclose={dismissTour}>
+			<div class="mobile-help">
+				<p>
+					<b>Catalogue</b> — search courses or lecturers, filter by department, and tap any course for
+					its description, prerequisites and reviews.
+				</p>
+				<p>
+					<b>Your plan</b> — tap a course to add, move, remove or grade it. Tap a trimester for a closer
+					look.
+				</p>
+				<p>
+					<b>Your degree</b> — choose your programme, check progress and hints, import from Canvas, and
+					open settings to save copies or change the theme.
+				</p>
+				<p>Your plan saves automatically in this browser.</p>
+			</div>
+		</Modal>
+	{/if}
 {/if}
 
 <svelte:head>
 	<title>kcal</title>
 </svelte:head>
 
-<!-- phones get a polite "use a laptop" note instead of a cramped grid -->
-<div class="mobile-gate">
-	<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-		<rect x="3" y="5" width="18" height="12" rx="1.5" />
-		<path d="M1.5 19.5h21" />
-	</svg>
-	<p>kcal needs a bigger screen —<br />please open it on a laptop</p>
-	<button class="pass-link" onclick={passLink}>{linkCopied ? 'link copied ✓' : 'send the link to my laptop'}</button>
-</div>
+<div
+	class="app"
+	data-ready={ready}
+	inert={!ready}
+	class:resizing
+	data-mobile-view={mobileView}
+	class:details-open={!!plan.selected}
+	use:dragMotion
+	style:--rail-w={panelWidths.rail && `${panelWidths.rail}rem`}
+	style:--catalogue-w={panelWidths.catalogue && `${panelWidths.catalogue}rem`}
+	style:--details-w={panelWidths.details && `${panelWidths.details}rem`}
+>
+	<MobileNavigation bind:view={mobileView} credits={plan.totalPlacedCredits} />
+	<PanelResizers bind:panelWidths bind:resizing />
 
-<div class="app" use:dragMotion>
-	<aside class="rail">
+	<aside class="rail" inert={!desktop && (mobileView !== 'rail' || !!plan.selected)}>
 		<Sidebar {plan} ontour={() => (tourRequested = true)} />
 		<CanvasImportPanel {plan} initial={canvasTransfer} initialError={canvasError} />
 		<HintsPanel {plan} />
 	</aside>
 
-	<Catalogue {plan} />
+	<div class="catalogue-panel" inert={!desktop && (mobileView !== 'catalogue' || !!plan.selected)}>
+		<Catalogue {plan} mobile={!desktop} />
+	</div>
 
-	<main class="board">
+	<main class="board" inert={!desktop && (mobileView !== 'board' || !!plan.selected)}>
 		<!-- wrapped so the footer below can be pushed to the bottom of the column
 		     on a short plan, and stay pinned there while a long one scrolls -->
 		<div class="board-main" data-tour="board">
@@ -138,26 +168,41 @@
 		     board says so plainly at the bottom — with how current the course
 		     data is, and the way to say when something's off -->
 		<p class="wip">
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+			<svg
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="1.7"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+				aria-hidden="true"
+			>
 				<path d="M14.7 6.3a4 4 0 0 0 5 5l-8.4 8.4a2.4 2.4 0 0 1-3.4-3.4z" />
 				<path d="M14.7 6.3 17.5 3.5" />
 			</svg>
 			beta ·{#if dataMonth}&nbsp;course data from {dataMonth} ·{/if}
-			<button class="wip-feedback" onclick={() => (plan.feedbackDraft = '')}>something wrong? tell me</button>
+			<button class="wip-feedback" onclick={() => (plan.feedbackDraft = '')}
+				>something wrong? tell me</button
+			>
 		</p>
-
-		<!-- the flash lives out here, not on the grid: a refused drop has to be
-		     explained in the zoom view too, and the grid isn't mounted there -->
-		{#if plan.flash}
-			<div class="flash" transition:fly={{ y: 12, duration: 220 }}>{plan.flash}</div>
-		{/if}
 	</main>
 
 	<!-- a fixed column, so picking a course never shoves a panel over the board -->
-	<aside class="rightbar" data-tour="details">
+	<aside
+		class="rightbar"
+		data-tour="details"
+		bind:this={detailsEl}
+		use:focusScope={!desktop && !!plan.selected}
+		inert={!desktop && !plan.selected}
+		aria-label="course details"
+	>
 		<DetailsPanel {plan} />
 	</aside>
 </div>
+
+{#if plan.flash}
+	<div class="flash" role="status" transition:fly={{ y: 12, duration: 220 }}>{plan.flash}</div>
+{/if}
 
 {#if plan.feedbackDraft !== null}
 	<Modal title="feedback" onclose={() => (plan.feedbackDraft = null)}>
@@ -224,59 +269,30 @@
 		border-radius: 8px;
 	}
 
-	// on a phone the app hides entirely and the gate below takes over
-	.mobile-gate {
-		display: none;
-
-		@include mobile {
-			display: flex;
-			flex-direction: column;
-			align-items: center;
-			justify-content: center;
-			gap: 1.6rem;
-			height: 100vh;
-			padding: 2.4rem;
-			background: var(--color-bg);
-			color: var(--color-text);
-
-			svg {
-				width: 7.2rem;
-				height: 7.2rem;
-				color: var(--color-accent);
-			}
-
-			p {
-				font-size: 1.6rem;
-				line-height: 1.5;
-				text-align: center;
-				color: var(--color-text-muted);
-			}
-		}
-	}
-
-	.pass-link {
-		padding: 1rem 2rem;
-		font: inherit;
-		font-size: 1.5rem;
-		font-weight: 600;
-		color: var(--color-on-accent);
-		background-color: var(--color-accent);
-		border: 1px solid var(--color-control-deep);
-		border-radius: 8px;
-		@include glossy-accent;
-	}
-
 	// the app is locked to the viewport — each column scrolls on its own,
 	// so nothing ever runs past the page
 	.app {
+		--rail-w: 24rem;
+		--catalogue-w: 30rem;
+		--details-w: 32rem;
+		position: relative;
 		display: grid;
-		grid-template-columns: 24rem 30rem minmax(0, 1fr) 32rem;
-		height: 100vh;
+		grid-template-columns: var(--rail-w) var(--catalogue-w) minmax(0, 1fr) var(--details-w);
+		height: 100dvh;
 		background: var(--color-bg);
 
-		@include mobile {
-			display: none;
+		// mid-drag, the cursor holds wherever it wanders and no text gets
+		// selected on the way
+		&.resizing {
+			cursor: col-resize;
+			user-select: none;
 		}
+	}
+
+	.catalogue-panel {
+		min-width: 0;
+		min-height: 0;
+		overflow: hidden;
 	}
 
 	.rail {
@@ -286,10 +302,6 @@
 		min-height: 0;
 		border-right: 1px solid var(--color-border-warm);
 		overflow-y: auto;
-
-		@include mobile {
-			overflow-y: visible;
-		}
 	}
 
 	.board {
@@ -299,10 +311,6 @@
 		min-height: 0;
 		// the middle column is its own cool zone — a very pale blue-grey field
 		background: var(--color-bg-board-page);
-
-		@include mobile {
-			overflow-y: visible;
-		}
 	}
 
 	// grows to fill a short board so the footer sits at the bottom, never
@@ -318,9 +326,57 @@
 		overflow-y: auto;
 		background: linear-gradient(to bottom, var(--color-bg-sidebar), var(--color-bg-sidebar-end));
 		border-left: 1px solid var(--color-border-warm);
+	}
+	.mobile-help {
+		display: grid;
+		gap: 1.6rem;
+		font-size: 1.6rem;
+		line-height: 1.6;
+	}
 
-		@include mobile {
-			overflow-y: visible;
+	@include mobile {
+		.app {
+			display: grid;
+			grid-template-columns: minmax(0, 1fr);
+			grid-template-rows: auto minmax(0, 1fr) auto;
+			overflow: hidden;
+		}
+		.rail,
+		.board,
+		.catalogue-panel {
+			grid-area: 2 / 1;
+			min-width: 0;
+			border: 0;
+		}
+		.app:not([data-mobile-view='rail']) .rail,
+		.app:not([data-mobile-view='board']) .board,
+		.app:not([data-mobile-view='catalogue']) .catalogue-panel {
+			display: none;
+		}
+		.rightbar {
+			display: none;
+			position: fixed;
+			inset: 0;
+			z-index: 30;
+			padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
+				env(safe-area-inset-left);
+			overscroll-behavior: contain;
+			border: 0;
+		}
+		.details-open .rightbar {
+			display: flex;
+		}
+		.wip {
+			position: static;
+			flex-wrap: wrap;
+			padding: 1.6rem;
+			line-height: 1.6;
+		}
+		.flash {
+			left: 1.6rem;
+			right: 1.6rem;
+			bottom: calc(8rem + env(safe-area-inset-bottom));
+			font-size: 1.5rem;
 		}
 	}
 </style>

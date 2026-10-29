@@ -1,3 +1,4 @@
+/** @param {string} value */
 export function destinationUrl(value) {
   let url;
   try { url = new URL(value.trim()); } catch { throw new Error('Enter the full kcal address, including https://.'); }
@@ -11,6 +12,8 @@ export function destinationUrl(value) {
   return url;
 }
 
+/** @param {string} destination
+ * @param {unknown} payload */
 export function importUrl(destination, payload) {
   const url = destinationUrl(destination);
   // Fragments are not sent in the HTTP request. kcal removes this on arrival.

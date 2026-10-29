@@ -90,4 +90,25 @@ src/
 misc/                          # the data pipeline (see below)
 ```
 
-# kcal
+## Phone and tablet layout
+
+At widths up to 1100px, the same planner uses three tabs: **catalogue**, **your
+plan**, and **your degree**. The catalogue supports department filters and searches
+course titles, cross-listed codes and lecturer names. Course details open over the
+current tab, with controls to add, move, remove, audit and grade courses without
+dragging. The plan stacks trimesters vertically. Settings, saved plans, Canvas
+import, reviews, programme progress and hints remain available.
+
+The desktop layout retains its resizable columns and drag-and-drop grid. Both
+layouts share the same `Plan` instance and saved data.
+
+The layout and catalogue code is split into small modules:
+
+- `lib/catalogue.ts`: filtering, cached search text and programme ranking.
+- `components/layout/`: mobile navigation and persisted desktop panel resizing.
+- `components/details/CourseFaculty.svelte`: lecturer profiles and teaching history.
+- `lib/focusScope.ts` and `lib/portal.ts`: overlay focus and mounting outside hidden tabs.
+
+Run `npm run test:browser` for mobile touch workflows, responsive layout checks,
+desktop dragging/resizing and Canvas import regressions. Set `KCAL_TEST_BROWSER`
+to a Chromium executable when using a system browser instead of Playwright's.

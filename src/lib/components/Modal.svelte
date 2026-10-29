@@ -1,6 +1,8 @@
 <script lang="ts">
 	// the shell every dialog in the app shares: backdrop, titled card, close
 	// button, esc-to-close, click-outside-to-close
+	import { portal } from '$lib/portal';
+	import { focusScope } from '$lib/focusScope';
 	import { fade, scale } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import type { Snippet } from 'svelte';
@@ -19,12 +21,14 @@
      the card is a click on the card -->
 <div
 	class="backdrop"
+	use:portal
 	role="presentation"
 	onclick={(e) => e.target === e.currentTarget && onclose()}
 	transition:fade={{ duration: 150 }}
 >
 	<div
 		class="box"
+		use:focusScope
 		role="dialog"
 		aria-modal="true"
 		aria-label={title}
@@ -63,7 +67,11 @@
 		width: var(--w);
 		max-width: 100%;
 		max-height: 100%;
-		background: linear-gradient(to bottom, var(--color-bg-card-start) 0%, var(--color-bg-card-end) 100%);
+		background: linear-gradient(
+			to bottom,
+			var(--color-bg-card-start) 0%,
+			var(--color-bg-card-end) 100%
+		);
 		border: 1px solid var(--color-border-card);
 		border-radius: 8px;
 		@include card-shine;
@@ -109,5 +117,21 @@
 		min-height: 0;
 		overflow-y: auto;
 		padding: 1.8rem;
+	}
+	@include mobile {
+		.backdrop {
+			padding: max(1rem, env(safe-area-inset-top)) max(1rem, env(safe-area-inset-right))
+				max(1rem, env(safe-area-inset-bottom)) max(1rem, env(safe-area-inset-left));
+		}
+		.box {
+			max-height: calc(100dvh - 2rem);
+		}
+		.x {
+			width: 4.4rem;
+			height: 4.4rem;
+		}
+		header {
+			padding: 0.8rem 1.6rem;
+		}
 	}
 </style>

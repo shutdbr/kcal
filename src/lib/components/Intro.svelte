@@ -27,7 +27,7 @@
 		{
 			target: 'board-actions',
 			title: 'let it do the busywork',
-			body: 'fill in the rest adds every course the recommended path still suggests, in one click — or click a single dashed course on the grid to add just that one. remove non-programme courses clears out anything on your grid that doesn’t count toward your major, minor, or concentration.'
+			body: 'these buttons add the courses you’re still missing or the dashed suggestions on the grid, in one click — or click a single dashed course to add just that one. they also clear out courses that don’t count toward your major, minor, or concentration. each one only shows up when there’s something for it to do.'
 		},
 		{
 			target: 'details',

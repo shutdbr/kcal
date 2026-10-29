@@ -7,6 +7,7 @@ import { browser } from '$app/environment';
 // the board's motion is a plan concern: only the plan knows when a change is
 // one course moving (worth watching fly) and when it is a whole-board redraw
 import { quietRedraw } from './transitions';
+import { selectCatalogue } from './catalogue';
 import { mergeCanvasCourses } from './canvasImport';
 import {
 	AUDIT_LIMIT,
@@ -1848,27 +1849,14 @@ export class Plan {
 	);
 
 	// ── catalogue (filtered + sorted) ──
-	catalogue: Course[] = $derived.by(() => {
-		let list = COURSES;
-		if (this.zoom) {
-			const trim = this.zoom.trim;
-			list = list.filter((c) => c.offered.includes(trim));
-		}
-		// the foundation-core filter is always available, on top of whatever
-		// subjects the chosen programmes bring — but its courses only show
-		// while it's checked, so the everyday browse stays your departments
-		const checked = this.filters.filter((f) => f === 'core' || this.selectedSubjects.includes(f));
-		if (!checked.includes('core')) list = list.filter((c) => c.subject !== 'core');
-		if (checked.length > 0) list = list.filter((c) => c.subjects.some((s) => checked.includes(s)));
-		const q = this.search.trim().toLowerCase();
-		if (q) list = list.filter((c) => c.code.toLowerCase().includes(q) || c.title.toLowerCase().includes(q));
-		// A linked prerequisite remains reachable without discarding search or filters.
-		if (this.catalogueReveal && !list.some((c) => c.code === this.catalogueReveal!.code)) {
-			list = [...list, byCode(this.catalogueReveal.code)];
-		}
-		const rank: Record<CourseType, number> = { core: 0, required: 1, elective: 2, other: 3 };
-		return [...list].sort(
-			(a, b) => rank[this.courseType(a.code)] - rank[this.courseType(b.code)] || a.code.localeCompare(b.code)
-		);
-	});
+	catalogueSubject = $state('');
+	catalogue: Course[] = $derived(selectCatalogue({
+		search: this.search,
+		filters: this.filters,
+		selectedSubjects: this.selectedSubjects,
+		subject: this.catalogueSubject,
+		trim: this.zoom?.trim,
+		reveal: this.catalogueReveal?.code,
+		courseType: (code) => this.courseType(code)
+	}));
 }

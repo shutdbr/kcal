@@ -8,6 +8,7 @@ export function extractCourses() {
   if (!table) {
     throw new Error('The current Courses table is missing. Check that you are signed in and the page has finished loading.');
   }
+  /** @param {string | null | undefined} value */
   const clean = (value) => (value || '').replace(/\s+/g, ' ').trim();
   const courses = [];
   const seen = new Set();

@@ -1215,14 +1215,9 @@
 				background: var(--color-hover-medium);
 			}
 
-			&.on {
-				background: var(--color-bg);
-			}
-
-			&.bad b {
-				color: var(--color-danger);
-			}
 		}
+		button.on { background: var(--color-bg); }
+		button.bad b { color: var(--color-danger); }
 	}
 
 	.tools {

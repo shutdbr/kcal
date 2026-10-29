@@ -1,0 +1,175 @@
+import { test, expect } from '@playwright/test';
+
+test.describe('phone planner', () => {
+	test.use({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true });
+	test.beforeEach(async ({ page }) => {
+		await page.addInitScript(() => {
+			localStorage.setItem('kcal-intro-seen', '1');
+			if (!localStorage.getItem('kcal-plan'))
+				localStorage.setItem(
+					'kcal-plan',
+					JSON.stringify({ version: 1, placements: {}, touched: true })
+				);
+		});
+	});
+
+	test('search, add, move, reload, grade and remove entirely by touch', async ({ page }) => {
+		const errors: string[] = [];
+		page.on('pageerror', (error) => errors.push(error.message));
+		await page.goto('/');
+		await expect(page.locator('.app')).toHaveAttribute('data-ready', 'true');
+		await expect(page.getByRole('navigation', { name: 'main navigation' })).toBeVisible();
+		const search = page.getByRole('searchbox');
+		await search.fill('MATH201');
+		await page.locator('.catalogue [data-course="MATH201"] button.card').tap();
+		await expect(page.locator('.rightbar')).toBeVisible();
+		await page.getByLabel('trimester to put MATH201 in').selectOption('2-1');
+		await page.getByRole('button', { name: 'add to plan', exact: true }).tap();
+		await expect(page.locator('.d-place-where')).toContainText('year 2, t1');
+		await page.getByLabel('trimester to put MATH201 in').selectOption('2-2');
+		await page.getByRole('button', { name: 'move', exact: true }).tap();
+		await expect(page.locator('.d-place-where')).toContainText('year 2, t2');
+		await page.getByRole('button', { name: 'close course details' }).tap();
+		await expect(search).toHaveValue('MATH201');
+		await page.reload();
+		await expect(page.locator('.app')).toHaveAttribute('data-ready', 'true');
+		await search.fill('MATH201');
+		await page.locator('[data-course="MATH201"] .placed-open').tap();
+		await expect(page.locator('.rightbar .d-place')).toBeVisible();
+		await page.screenshot({ path: '/tmp/kcal-mobile-after-tap.png' });
+		expect(errors).toEqual([]);
+		await expect(page.locator('.d-place-where')).toContainText('year 2, t2');
+		await page.getByRole('button', { name: 'close course details' }).tap();
+		await page.getByRole('navigation').getByRole('button', { name: 'your plan' }).tap();
+		await page.getByRole('button', { name: 'grade view', exact: true }).tap();
+		await page.locator('.chip[data-code="MATH201"] .chip-open').tap();
+		await page.getByRole('combobox', { name: 'grade', exact: true }).selectOption('A');
+		await page.getByRole('button', { name: 'close course details' }).tap();
+		await expect(page.locator('.cgpa-btn')).toContainText('9.60');
+		await page.locator('.chip[data-code="MATH201"] .chip-open').tap();
+		await page.getByRole('button', { name: 'remove', exact: true }).tap();
+		await expect(page.locator('.d-place-where')).toContainText('not on your plan');
+		expect(errors).toEqual([]);
+	});
+
+	test('filters, empty results, degree settings and modal focus', async ({ page }) => {
+		await page.goto('/');
+		await expect(page.locator('.app')).toHaveAttribute('data-ready', 'true');
+		await page.getByLabel('browse department').selectOption('mathematics');
+		await expect(page.locator('.catalogue .cell').first()).toBeVisible();
+		await page.getByRole('searchbox').fill('no-course-matches-this');
+		await expect(page.getByText('no courses found', { exact: true })).toBeVisible();
+		await page.getByRole('button', { name: 'clear search & filters' }).tap();
+		await page.getByRole('searchbox').fill('Prathamesh');
+		await expect(page.locator('.catalogue .cell').first()).toBeVisible();
+		await page.getByRole('navigation').getByRole('button', { name: 'your degree' }).tap();
+		await page.getByRole('combobox', { name: 'major', exact: true }).selectOption('mathematics');
+		await page.getByRole('button', { name: 'settings', exact: true }).tap();
+		const dialog = page.getByRole('dialog', { name: 'settings' });
+		await expect(dialog).toBeVisible();
+		await expect(dialog.getByRole('button', { name: 'close', exact: true })).toBeFocused();
+		await page.keyboard.press('Shift+Tab');
+		expect(await dialog.evaluate((el) => el.contains(document.activeElement))).toBe(true);
+		await page.keyboard.press('Escape');
+		await expect(dialog).not.toBeVisible();
+		await expect(page.getByRole('button', { name: 'settings', exact: true })).toBeFocused();
+		await page.getByRole('navigation').getByRole('button', { name: 'catalogue' }).tap();
+		await expect(page.getByRole('searchbox')).toHaveValue('Prathamesh');
+	});
+
+	test('review and Canvas deep links open above the active tab', async ({ page }) => {
+		await page.goto('/?review=MATH201');
+		await expect(page.locator('.rightbar .d-place')).toBeVisible();
+		await expect(page.locator('.rightbar')).toBeVisible();
+		await expect(
+			page.getByText('Course reviews are coming soon. Sign-in is not available yet.')
+		).toBeVisible();
+		await page.goto('/#canvas-import=%7Bbad');
+		await expect(page.getByRole('dialog', { name: 'import from Canvas' })).toBeVisible();
+		await expect(page.getByRole('alert')).toContainText('not a valid course list');
+	});
+
+	test('trimester browsing and large text in dark mode', async ({ page }) => {
+		await page.addInitScript(() =>
+			localStorage.setItem('kcal-settings', JSON.stringify({ theme: 'dark', textSize: 'huge' }))
+		);
+		await page.goto('/');
+		await expect(page.locator('.app')).toHaveAttribute('data-ready', 'true');
+		await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
+		await page.getByRole('navigation').getByRole('button', { name: 'your plan' }).tap();
+		await page.getByRole('button', { name: 'view year 2 trimester 1', exact: true }).tap();
+		await expect(page.getByRole('heading', { name: 'year 2 · trimester 1' })).toBeVisible();
+		await page
+			.getByRole('navigation')
+			.getByRole('button', { name: 'catalogue', exact: true })
+			.tap();
+		await expect(page.getByText('offered in trimester 1', { exact: true })).toBeVisible();
+		await page.getByRole('button', { name: 'show all terms ×' }).tap();
+		await expect(page.getByText('offered in trimester 1', { exact: true })).not.toBeVisible();
+		await page.screenshot({ path: '/tmp/kcal-mobile-dark.png' });
+		expect(
+			await page.locator('.catalogue').evaluate((el) => el.scrollWidth - el.clientWidth)
+		).toBeLessThanOrEqual(1);
+	});
+
+	for (const width of [320, 390, 768, 1024]) {
+		test(`fits catalogue, plan, degree and details at ${width}px`, async ({ page }) => {
+			await page.setViewportSize({ width, height: 844 });
+			await page.goto('/');
+			await expect(page.locator('.app')).toHaveAttribute('data-ready', 'true');
+			if (width === 390) await page.screenshot({ path: '/tmp/kcal-mobile-catalogue.png' });
+			for (const name of ['catalogue', 'your plan', 'your degree']) {
+				await page.getByRole('navigation').getByRole('button', { name, exact: true }).tap();
+				if (name === 'your plan') {
+					const cells = await page
+						.locator('.overview .cell')
+						.evaluateAll((nodes) => nodes.map((node) => node.getBoundingClientRect().toJSON()));
+					for (let i = 1; i < cells.length; i++)
+						expect(cells[i].top).toBeGreaterThanOrEqual(cells[i - 1].bottom);
+				}
+				if (width === 390 && name === 'your plan')
+					await page.screenshot({ path: '/tmp/kcal-mobile-plan.png' });
+				const overflow = await page.evaluate(() => {
+					const nodes = [
+						document.documentElement,
+						...document.querySelectorAll<HTMLElement>('.rail, .board, .catalogue-panel')
+					];
+					return nodes
+						.filter((el) => el.getClientRects().length)
+						.map((el) => ({ name: el.className, overflow: el.scrollWidth - el.clientWidth }));
+				});
+				for (const item of overflow) expect(item.overflow, item.name).toBeLessThanOrEqual(1);
+			}
+			await page.goto('/?review=MATH201');
+			await expect(page.locator('.rightbar .d-place')).toBeVisible();
+			if (width === 390) await page.screenshot({ path: '/tmp/kcal-mobile-details.png' });
+			expect(
+				await page.locator('.rightbar').evaluate((el) => el.scrollWidth - el.clientWidth)
+			).toBeLessThanOrEqual(1);
+		});
+	}
+});
+
+test('desktop retains resizers, catalogue and drag placement', async ({ page }) => {
+	await page.addInitScript(() => {
+		localStorage.setItem('kcal-intro-seen', '1');
+		localStorage.setItem(
+			'kcal-plan',
+			JSON.stringify({ version: 1, placements: {}, touched: true })
+		);
+	});
+	await page.goto('/');
+	await expect(page.locator('.app')).toHaveAttribute('data-ready', 'true');
+	await expect(page.getByRole('navigation', { name: 'main navigation' })).not.toBeVisible();
+	const splitter = page.getByRole('separator', { name: 'resize the catalogue' });
+	await splitter.focus();
+	await page.keyboard.press('ArrowRight');
+	await expect(splitter).toHaveAttribute('aria-valuenow', '31.6');
+	await page.getByRole('searchbox').fill('MATH201');
+	await page
+		.locator('[data-course="MATH201"] button.card')
+		.dragTo(page.locator('.overview .cell[data-year="2"][data-trim="1"]'));
+	await expect(page.locator('.chip[data-code="MATH201"]')).toBeVisible();
+	await page.locator('.chip[data-code="MATH201"] .chip-open').click();
+	await expect(page.locator('.d-place-where')).toContainText('year 2, t1');
+});
