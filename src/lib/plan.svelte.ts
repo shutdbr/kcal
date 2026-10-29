@@ -7,6 +7,7 @@ import { browser } from '$app/environment';
 // the board's motion is a plan concern: only the plan knows when a change is
 // one course moving (worth watching fly) and when it is a whole-board redraw
 import { quietRedraw } from './transitions';
+import { mergeCanvasCourses } from './canvasImport';
 import {
 	AUDIT_LIMIT,
 	CORE_COURSES,
@@ -641,6 +642,21 @@ export class Plan {
 	}
 
 	// ── actions ──
+	/** Canvas imports are additive: existing placements, grades and audits stay put. */
+	importCanvasCourses(codes: string[], year: number, trim: TrimNum) {
+		if (!this.years.includes(year) || !TRIMS.includes(trim)) return [];
+		const accepted = codes.filter((code) => hasCode(code) &&
+			!(byCode(code).pendingCredits && byCode(code).credits === 0) &&
+			(!this.coreOnly(year, trim) || isCore(code))).map((code) => byCode(code).code);
+		const result = mergeCanvasCourses(this.placements, accepted, slotKey(year, trim));
+		if (result.added.length) {
+			quietRedraw();
+			this.#touch();
+			this.placements = result.placements;
+		}
+		return result.added;
+	}
+
 	/** put a course in a slot — at position `at` among the slot's other
 	 *  courses (where it was dropped between them), or on the end */
 	place(code: string, year: number, trim: TrimNum, at?: number) {

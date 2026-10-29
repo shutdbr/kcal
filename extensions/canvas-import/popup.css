@@ -1,0 +1,17 @@
+:root { color-scheme: light dark; font: 14px/1.5 system-ui, sans-serif; }
+body { width: 340px; margin: 0; padding: 22px; background: light-dark(#faf9f6, #1d2021); color: light-dark(#242b29, #ecf0eb); }
+header > span { font-size: 22px; font-weight: 750; color: light-dark(#267052, #96d8b7); }
+h1 { font-size: 20px; line-height: 1.25; margin: 8px 0 16px; }
+a { color: light-dark(#267052, #96d8b7); }
+label { display: block; font-weight: 600; margin-top: 18px; }
+input { box-sizing: border-box; width: 100%; padding: 10px; margin-top: 6px; border: 1px solid #8888; border-radius: 6px; font: inherit; }
+button { width: 100%; border: 0; border-radius: 6px; padding: 11px; margin-top: 12px; background: #276448; color: white; font: inherit; font-weight: 600; cursor: pointer; }
+button.secondary { background: transparent; color: inherit; border: 1px solid #8888; }
+button:disabled { opacity: .45; cursor: default; }
+button:focus-visible, a:focus-visible, input:focus-visible { outline: 3px solid #b99538; outline-offset: 3px; }
+.hint, footer { font-size: 12px; opacity: .8; }
+footer { border-top: 1px solid #8885; padding-top: 14px; margin-top: 18px; }
+#status { margin-bottom: 0; }
+#status.error { color: light-dark(#a82020, #ffaaaa); }
+ul { padding-left: 20px; max-height: 160px; overflow-y: auto; }
+li { margin: 6px 0; }

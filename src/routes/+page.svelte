@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { dragMotion } from '$lib/dragMotion';
 	import { Plan } from '$lib/plan.svelte';
+	import CanvasImportPanel from '$lib/components/CanvasImport.svelte';
+	import { parseCanvasImport, type CanvasImport } from '$lib/canvasImport';
 	import Sidebar from '$lib/components/sidebar/Sidebar.svelte';
 	import HintsPanel from '$lib/components/sidebar/HintsPanel.svelte';
 	import Catalogue from '$lib/components/catalogue/Catalogue.svelte';
@@ -11,7 +13,7 @@
 	import Welcome from '$lib/components/Welcome.svelte';
 	import Modal from '$lib/components/Modal.svelte';
 	import FeedbackForm from '$lib/components/FeedbackForm.svelte';
-	import { DATA_UPDATED } from '$lib/data';
+	import { DATA_UPDATED, hasCode } from '$lib/data';
 	import { fly } from 'svelte/transition';
 	import { loadDescriptions } from '$lib/descriptions.svelte';
 	import { onMount } from 'svelte';
@@ -22,17 +24,28 @@
 	// a first visit opens on the welcome card (your degree), then the tour
 	let welcomeOpen = $state(false);
 	let desktop = $state(false);
+	let canvasTransfer = $state<CanvasImport | null>(null);
+	let canvasError = $state('');
 
 	onMount(() => {
+		const reviewCode = new URL(location.href).searchParams.get('review');
+		if (reviewCode && hasCode(reviewCode)) plan.revealCourse(reviewCode);
+		const importing = location.hash.startsWith('#canvas-import=');
+		if (importing) {
+			const fragment = location.hash.slice('#canvas-import='.length);
+			history.replaceState(history.state, '', location.pathname + location.search);
+			try { canvasTransfer = parseCanvasImport(decodeURIComponent(fragment)); }
+			catch (e) { canvasError = e instanceof Error ? e.message : 'Could not read the Canvas import.'; }
+		}
 		// Match the mobile gate: a phone visit must not consume the first tour.
 		const media = window.matchMedia('(min-width: 769px)');
 		const update = () => (desktop = media.matches);
 		update();
 		media.addEventListener('change', update);
 		try {
-			welcomeOpen = !localStorage.getItem(INTRO_KEY);
+			welcomeOpen = !importing && !reviewCode && !localStorage.getItem(INTRO_KEY);
 		} catch {
-			welcomeOpen = true;
+			welcomeOpen = !importing && !reviewCode;
 		}
 		return () => media.removeEventListener('change', update);
 	});
@@ -104,6 +117,7 @@
 <div class="app" use:dragMotion>
 	<aside class="rail">
 		<Sidebar {plan} ontour={() => (tourRequested = true)} />
+		<CanvasImportPanel {plan} initial={canvasTransfer} initialError={canvasError} />
 		<HintsPanel {plan} />
 	</aside>
 
@@ -208,7 +222,6 @@
 		background: var(--color-bg-card-start);
 		border: 1px solid var(--color-border-card);
 		border-radius: 8px;
-		box-shadow: 0 4px 16px rgba(98, 58, 82, 0.14);
 	}
 
 	// on a phone the app hides entirely and the gate below takes over

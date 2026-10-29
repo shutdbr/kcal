@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Import into kcal</title>
+    <link rel="stylesheet" href="popup.css">
+    <script type="module" src="popup.js"></script>
+  </head>
+  <body>
+    <header><span>kcal</span><h1>Your courses, in your plan.</h1></header>
+    <p>Sign in to Krea Canvas, open <b>Courses → All Courses</b>, then read your course list.</p>
+    <a href="https://canvas.krea.edu.in/courses" target="_blank" rel="noreferrer">Open Canvas Courses ↗</a>
+    <button id="read" type="button">Read my courses</button>
+    <p id="status" role="status" aria-live="polite"></p>
+    <ul id="courses"></ul>
+    <label for="destination">Your kcal website address</label>
+    <input id="destination" type="url" placeholder="https://your-kcal-site.example" autocomplete="off">
+    <p class="hint">Use the address where your plan is saved. For local development: http://localhost:5173/</p>
+    <button id="send" type="button" disabled>Review in kcal →</button>
+    <button id="download" class="secondary" type="button" disabled>Save course list as a file</button>
+    <footer>Only course names and terms are transferred, when you click. No passwords, tokens, grades, or background syncing.</footer>
+  </body>
+</html>

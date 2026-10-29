@@ -17,3 +17,5 @@ vite.config.ts.timestamp-*
 
 # local assistant/editor state
 .claude/
+/test-results/
+/playwright-report/

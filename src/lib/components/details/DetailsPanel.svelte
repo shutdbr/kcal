@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Plan } from '$lib/plan.svelte';
+	import CourseReviews from '$lib/components/CourseReviews.svelte';
 	import { canAudit, facultyOf, hasCode, isCore, taughtBy, termLabel } from '$lib/data';
 	import { descriptionOf, loadDescriptions } from '$lib/descriptions.svelte';
 	import { GRADE_SCALE, OTHER_MARKS, type GradeMark } from '$lib/grades';
@@ -18,9 +19,11 @@
 		if (plan.selected) loadDescriptions();
 	});
 
-	// a lecturer's other courses: the first few, the rest behind "+N more"
-	const TAUGHT_SHOWN = 4;
-	let taughtOpenFor = $state<string | null>(null);
+	// "01-Jan-19" → "2019"
+	const joinedYear = (date?: string) => {
+		const yy = date?.match(/(\d{2})$/)?.[1];
+		return yy ? `20${yy}` : '';
+	};
 
 	// a long description folds to its first few lines; each course opens folded
 	const DESC_FOLD = 280;
@@ -183,12 +186,11 @@
 
 		<!-- profs rotate every year, so this is context, not a promise — but
 		     who they are and when to find them is what a student asks next -->
-		{#if profs.length}
+		{#if !isCore(c.code) && profs.length}
 			<div class="label">recently taught by</div>
 			<div class="d-profs">
 				{#each profs as p (p.id)}
-					{@const others = taughtBy(p).filter((t) => t.code !== c.code)}
-					{@const allShown = taughtOpenFor === p.id}
+					{@const terms = taughtBy(p)}
 					<div class="d-prof">
 						{#if p.image_url}
 							<img class="d-photo" src={p.image_url} alt="" loading="lazy" referrerpolicy="no-referrer" />
@@ -197,36 +199,38 @@
 						{/if}
 						<div class="d-prof-text">
 							<b>{p.name}</b>
-							{#if p.position}<span class="d-muted">{p.position}</span>{/if}
+							{#if p.position}<span class="d-muted">{p.position}{#if joinedYear(p.date_of_joining)} · at Krea since {joinedYear(p.date_of_joining)}{/if}</span>{/if}
 							{#if p.office_hours}<span><span class="d-muted">office hours</span> {p.office_hours}</span>{/if}
 							<span class="d-prof-links">
 								{#if p.email}<a href="mailto:{p.email}">email</a>{/if}
 								{#if p.url}<a href={p.url} target="_blank" rel="noopener">profile ↗</a>{/if}
 							</span>
-							<!-- what else they've taught, and when — each a jump to that course -->
-							{#if others.length}
+							<!-- what they've taught lately, term by term (as kreabot lists it) —
+							     each another course to jump to -->
+							{#if terms.length}
 								<div class="d-taught">
-									<span class="d-muted">also taught</span>
-									<ul>
-										{#each allShown ? others : others.slice(0, TAUGHT_SHOWN) as t (t.code)}
-											<li>
-												<button class="d-taught-course" onclick={() => jump(t.code)}>{plan.courseLabel(t.code)}</button>
-												<span class="d-muted">{termLabel(t.term)}</span>
-											</li>
-										{/each}
-									</ul>
-									{#if others.length > TAUGHT_SHOWN}
-										<button class="d-more" onclick={() => (taughtOpenFor = allShown ? null : p.id)}>
-											{allShown ? 'show fewer' : `+${others.length - TAUGHT_SHOWN} more`}
-										</button>
-									{/if}
+									<span class="d-muted">courses taught</span>
+									{#each terms as t (t.term)}
+										<span class="d-term">{termLabel(t.term)}</span>
+										<ul>
+											{#each t.codes as code (code)}
+												<li>
+													{#if code === c.code}
+														<span class="d-this">{plan.courseLabel(code)}</span>
+													{:else}
+														<button class="d-taught-course" onclick={() => jump(code)}>{plan.courseLabel(code)}</button>
+													{/if}
+												</li>
+											{/each}
+										</ul>
+									{/each}
 								</div>
 							{/if}
 						</div>
 					</div>
 				{/each}
 			</div>
-		{:else if c.faculty}
+		{:else if !isCore(c.code) && c.faculty}
 			<p class="d-faculty">recently taught by {c.faculty}</p>
 		{/if}
 
@@ -253,6 +257,7 @@
 		<button class="d-report" onclick={() => (plan.feedbackDraft = `About ${c.code} (${c.title}): `)}>
 			something wrong with this course? tell me
 		</button>
+		{#key c.code}<CourseReviews code={c.code} />{/key}
 	</div>
 {:else}
 	<!-- the column a first-timer sees empty: how the planner works, and what
@@ -402,12 +407,22 @@
 			list-style: none;
 		}
 
-		li {
-			display: flex;
-			flex-wrap: wrap;
-			align-items: baseline;
-			column-gap: 0.6rem;
+		ul + .d-term {
+			margin-top: 0.3rem;
 		}
+	}
+
+	// the term a group of courses ran in — a small label over its list
+	.d-term {
+		font-size: 1.1rem;
+		font-weight: 700;
+		letter-spacing: 0.03em;
+		color: var(--color-text-muted);
+	}
+
+	// the course already open — named, not linked
+	.d-this {
+		font-weight: 600;
 	}
 
 	.d-taught-course {

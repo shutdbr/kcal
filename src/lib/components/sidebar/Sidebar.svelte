@@ -3,10 +3,12 @@
 	import type { Plan } from '$lib/plan.svelte';
 	import { MAJOR_SUBJECTS } from '$lib/data';
 	import Settings from '$lib/components/Settings.svelte';
+	import DepartmentGuide from '$lib/components/DepartmentGuide.svelte';
 
 	let { plan, ontour }: { plan: Plan; ontour: () => void } = $props();
 
 	let showSettings = $state(false);
+	let showGuide = $state(false);
 
 	// changing the programme re-lays-out a plan the student has never edited,
 	// and leaves an edited one alone — see Plan.programmeChanged
@@ -35,6 +37,10 @@
 			ontour();
 		}}
 	/>
+{/if}
+
+{#if showGuide}
+	<DepartmentGuide {plan} onclose={() => (showGuide = false)} />
 {/if}
 
 <div class="controls" data-tour="programme">
@@ -104,6 +110,7 @@
 			</select>
 		</label>
 	{/if}
+	<button class="guide-link" onclick={() => (showGuide = true)}>department guide →</button>
 </div>
 
 <style lang="scss">
@@ -178,5 +185,17 @@
 
 	.tick {
 		@include tick(1.6rem);
+	}
+
+	.guide-link {
+		text-align: left;
+		font: inherit;
+		font-size: var(--text-body);
+		color: var(--color-accent);
+		background: none;
+		border: 0;
+		padding: 0.4rem 0;
+		cursor: pointer;
+		&:hover { text-decoration: underline; }
 	}
 </style>

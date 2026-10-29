@@ -469,7 +469,14 @@ export type Professor = {
 	office_hours: string;
 	image_url: string;
 	url: string;
+	date_of_joining?: string; // "01-Jan-19"
+	location?: string;
+	education?: string[];
+	role?: string;
 };
+
+/** Full directory, including lecturers without a linked catalogue course. */
+export const departmentFaculty = departmentData as Record<string, Professor[]>;
 const professors = new Map<string, Professor>();
 for (const list of Object.values(departmentData as Record<string, Professor[]>)) {
 	for (const p of list) {
@@ -500,32 +507,56 @@ export function facultyOf(code: string): Professor[] {
 	return (rawCourses[byCode(code).code]?.faculty ?? []).map(resolveFaculty);
 }
 
-/** "24_T1" → "2024–25 T1". The hand-entered T2 timetable carries no year. */
+// the hand-entered T2 timetable carries no year: it's the T2 after the
+// newest term in the spreadsheets
+const latestYear =
+	Object.values(rawCourses)
+		.flatMap((c) => c.terms)
+		.map((t) => t.match(/^(\d{2})_T\d$/)?.[1])
+		.filter((y): y is string => !!y)
+		.sort()
+		.at(-1) ?? '26';
+const realTerm = (term: string) => (term === 'manual_T2' ? `${latestYear}_T2` : term);
+
+/** "24_T1" → "2024 T1", the way kreabot shows terms */
 export const termLabel = (term: string): string => {
-	if (term === 'manual_T2') return 'T2 timetable';
-	const m = term.match(/^(\d{2})_T(\d)$/);
-	return m ? `20${m[1]}–${String(Number(m[1]) + 1).padStart(2, '0')} T${m[2]}` : term;
+	const [year, trim] = realTerm(term).split('_');
+	return year && trim ? `20${year} ${trim.toUpperCase()}` : term;
 };
 
-// The data keeps only each course's most recent lecturers (the latest term's,
-// or the T2 timetable's where that overrode them) — so for every course a
-// lecturer is listed on, that term is the one it can vouch for.
-const manualCodes = new Set(manualOfferings.courses.map((e) => e.code));
-const taught = new Map<string, { code: string; term: string }[]>();
+// Like kreabot's department pages, a lecturer is credited with every term a
+// course of theirs ran. The data keeps only each course's latest lecturers,
+// so an older term may have been a colleague's — close enough to show what
+// someone teaches and how recently.
+const taught = new Map<string, string[]>(); // lecturer id → canonical codes
 for (const c of Object.values(rawCourses)) {
-	if (!index.has(c.code) || !c.faculty?.length) continue;
-	const term = manualCodes.has(c.code) ? 'manual_T2' : c.terms.filter((t) => t !== 'manual_T2').sort().at(-1);
-	if (!term) continue;
-	for (const f of c.faculty) {
+	if (!index.has(c.code)) continue;
+	for (const f of c.faculty ?? []) {
 		const id = resolveFaculty(f).id;
 		if (!taught.has(id)) taught.set(id, []);
-		taught.get(id)!.push({ code: c.code, term });
+		taught.get(id)!.push(c.code);
 	}
 }
 
-/** every course a lecturer is on record for, latest first */
-export const taughtBy = (prof: Professor): { code: string; term: string }[] =>
-	[...(taught.get(prof.id) ?? [])].sort((a, b) => (a.term === b.term ? 0 : a.term === 'manual_T2' || a.term > b.term ? -1 : 1));
+/** a lecturer's courses by term, newest first — the latest three terms */
+export function taughtBy(prof: Professor, terms = 3): { term: string; codes: string[] }[] {
+	const byTerm = new Map<string, string[]>();
+	for (const code of taught.get(prof.id) ?? []) {
+		for (const term of new Set(rawCourses[code].terms.map(realTerm))) {
+			if (!byTerm.has(term)) byTerm.set(term, []);
+			byTerm.get(term)!.push(code);
+		}
+	}
+	return [...byTerm]
+		.sort(([a], [b]) => b.localeCompare(a))
+		.slice(0, terms)
+		.map(([term, codes]) => ({ term, codes }));
+}
+
+/** Course associations in the imported directory; not a promise of future teaching. */
+export function facultyCourses(prof: Professor): Course[] {
+	return [...new Set(taught.get(prof.id) ?? [])].map(byCode).sort((a, b) => a.title.localeCompare(b.title));
+}
 
 /** the code a course is shown under when browsing a given subject
  *  (HIST235 under history) — falls back to the canonical code */

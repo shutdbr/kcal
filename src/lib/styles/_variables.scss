@@ -91,8 +91,11 @@
 	// ── Shadows ──
 	// two-part drop shadow: a tight contact shadow plus a wider soft one, so
 	// surfaces sit on the page rather than being outlined on it
-	--shadow-card: 0 1px 2px rgba(144, 114, 114, 0.10), 0 3px 8px rgba(144, 114, 114, 0.08);
-	--shadow-card-hover: 0 2px 4px rgba(144, 114, 114, 0.13), 0 6px 14px rgba(144, 114, 114, 0.12);
+	// no drop shadows anywhere — surfaces read by their borders and inset
+	// shine. A zero shadow (not `none`) so `inset …, var(--shadow-card)`
+	// lists stay valid.
+	--shadow-card: 0 0 0 transparent;
+	--shadow-card-hover: 0 0 0 transparent;
 	// the gloss: a crisp lit top edge, that light bleeding a few px down the
 	// face, and a soft shade along the bottom — a gently domed surface, kept
 	// faint enough to read as a sheen rather than a gel button
@@ -255,8 +258,8 @@
 	--color-danger: #d98a92;
 	--color-danger-deep: #8f3b45;
 
-	--shadow-card: 0 1px 2px rgba(0, 0, 0, 0.45), 0 3px 8px rgba(0, 0, 0, 0.3);
-	--shadow-card-hover: 0 2px 4px rgba(0, 0, 0, 0.5), 0 6px 14px rgba(0, 0, 0, 0.36);
+	--shadow-card: 0 0 0 transparent;
+	--shadow-card-hover: 0 0 0 transparent;
 	// same domed surface, lit by a much weaker highlight — a bright white top
 	// edge on a dark fill reads as a scratch, not a sheen
 	--shadow-inset:

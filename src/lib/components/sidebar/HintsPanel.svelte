@@ -14,7 +14,6 @@
 	let showPath = $state(false);
 	// one hint open at a time — opening another folds the last
 	let openKey = $state<string | null>(null);
-	const hintKey = (hint: Hint, i: number) => hint.id ?? hint.text + i;
 	function toggle(key: string) {
 		openKey = openKey === key ? null : key;
 	}
@@ -33,6 +32,9 @@
 		return hint.text.length > 48 ? hint.text.slice(0, 45) + '…' : hint.text;
 	}
 
+	// a hint that names a real course can jump to it in the details panel
+	const targetOf = (codes: string[]) => codes.find(hasCode);
+
 	// worst first — a broken prerequisite matters more than "2 audits
 	// remaining", and the panel is long enough that the reds were scrolling
 	// off the bottom under a stack of yellows
@@ -44,19 +46,44 @@
 	let notes = $derived(sorted.filter((h) => h.kind === 'info' || h.kind === 'good'));
 	let problems = $derived(issues.length);
 
+	// hints with the same heading fold into one row — three "prerequisite
+	// order" rows read as one problem in three places, not three problems
+	type Group = { key: string; kind: Hint['kind']; title: string; hints: Hint[]; courses: string[] };
+	function grouped(list: Hint[]): Group[] {
+		const groups = new Map<string, Group>();
+		for (const hint of list) {
+			const title = heading(hint);
+			const key = `${hint.kind}:${title}`;
+			let g = groups.get(key);
+			if (!g) groups.set(key, (g = { key, kind: hint.kind, title, hints: [], courses: [] }));
+			g.hints.push(hint);
+			// the course each hint is about (its first code) — the row's tags
+			const target = targetOf(hint.codes);
+			if (target && !g.courses.includes(byCode(target).code)) g.courses.push(byCode(target).code);
+		}
+		return [...groups.values()];
+	}
+	let issueGroups = $derived(grouped(issues));
+	let noteGroups = $derived(grouped(notes));
+	const TAGS_SHOWN = 2;
+	// does a hint name this course? (a hint can name it by a cross-listed
+	// alias — a prerequisite as the catalogue lists it — so match canonically)
+	const names = (hint: Hint, code: string | undefined) =>
+		!!code && hint.codes.some((c) => hasCode(c) && byCode(c).code === code);
+	let warns = $derived(issues.filter((h) => h.kind === 'warn').length);
+	let cautions = $derived(problems - warns);
+
 	// picking a course a hint names (the ▲ on its chip) unfolds its first —
-	// worst — hint and brings it into view — only on the pick itself, so a hint folded by hand
-	// stays folded as the plan changes around it
+	// worst — group and brings it into view — only on the pick itself, so a
+	// group folded by hand stays folded as the plan changes around it
 	$effect(() => {
 		const code = plan.selected?.code;
 		if (!code) return;
 		untrack(() => {
-			// a hint can name a course by a cross-listed alias (a prerequisite
-			// as the catalogue lists it), so match on the canonical code
-			const names = (hint: Hint) => hint.codes.some((c) => hasCode(c) && byCode(c).code === code);
-			const hit = [...issues, ...notes].findIndex(names);
+			const groups = [...issueGroups, ...noteGroups];
+			const hit = groups.findIndex((g) => g.hints.some((h) => names(h, code)));
 			if (hit < 0) return;
-			openKey = hintKey([...issues, ...notes][hit], hit);
+			openKey = groups[hit].key;
 			tick().then(() =>
 				document.getElementById(`hint-detail-${hit}`)?.parentElement?.scrollIntoView({
 					block: 'nearest',
@@ -66,51 +93,68 @@
 		});
 	});
 
-	// a hint that names a real course can jump to it in the details panel
-	const targetOf = (codes: string[]) => codes.find(hasCode);
 </script>
 
-{#snippet hintChip(hint: Hint, i: number)}
-	{@const target = targetOf(hint.codes)}
-	{@const key = hintKey(hint, i)}
-	<!-- pointing at a hint lights up the courses it names on the grid -->
+{#snippet hintGroup(group: Group, gi: number)}
+	{@const open = openKey === group.key}
+	{@const codes = group.hints.flatMap((h) => h.codes)}
+	<!-- pointing at a group lights up every course it names on the grid -->
 	<div
-		class="chip {hint.kind}"
+		class="chip"
+		class:open
 		role="group"
-		onmouseenter={() => (plan.highlight = hint.codes)}
+		onmouseenter={() => (plan.highlight = codes)}
 		onmouseleave={() => (plan.highlight = [])}
-		onfocusin={() => (plan.highlight = hint.codes)}
+		onfocusin={() => (plan.highlight = codes)}
 		onfocusout={() => (plan.highlight = [])}
 	>
-		<button class="hint-heading" aria-expanded={openKey === key} aria-controls={`hint-detail-${i}`} onclick={() => toggle(key)}>
-			<span class="hint-title"><i class="tone-dot" data-kind={hint.kind} aria-hidden="true"></i>{heading(hint)}{#if target}<small>{target}</small>{/if}</span>
-			<span class="toggle-mark" aria-hidden="true">{openKey === key ? '−' : '+'}</span>
-		</button>
-		{#if openKey === key}
-			<div class="hint-detail" id={`hint-detail-${i}`} transition:slide={{ duration: reducedMotion() ? 0 : 210, easing: cubicOut }}>
-				<div class="detail-body">
-					{#if target}
-						<button class="chip-text jump" title="show {plan.courseLabel(target)}" onclick={() => plan.revealCourse(target)}>
-							{hint.text}
-						</button>
-					{:else}
-						<!-- a click here folds the hint back up, rather than starting
-						     a text selection on a line that does nothing -->
-						<button class="chip-text" onclick={() => toggle(key)}>{hint.text}</button>
-					{/if}
-				</div>
-				<!-- a red hint states a rule the registry enforces, not us — and
-				     waivers, one-off offerings and year exemptions are ordinary.
-				     So it can be crossed off, and stops counting against the plan. -->
-				{#if hint.id}
-					<button
-						class="waive"
-						title="cross this off — e.g. you have a waiver for it"
-						aria-label="cross off: {hint.text}"
-						onclick={() => plan.waiveHint(hint.id!)}>×</button
-					>
+		<button class="hint-heading" aria-expanded={open} aria-controls={`hint-detail-${gi}`} onclick={() => toggle(group.key)}>
+			<span class="hint-main">
+				<span class="hint-title">
+					<i class="tone-dot" data-kind={group.kind} aria-hidden="true"></i>{group.title}
+					{#if group.hints.length > 1}<span class="g-count">{group.hints.length}</span>{/if}
+				</span>
+				<!-- the courses it's about, as small chips in their own colours -->
+				{#if group.courses.length}
+					<span class="tags">
+						{#each group.courses.slice(0, TAGS_SHOWN) as code (code)}
+							<span class="tag" data-type={plan.courseType(code)} style:--hue={plan.hueOf(code)}>{plan.shownCode(code)}</span>
+						{/each}
+						{#if group.courses.length > TAGS_SHOWN}<span class="tag-more">+{group.courses.length - TAGS_SHOWN}</span>{/if}
+					</span>
 				{/if}
-			</div>
+			</span>
+			<span class="chev" aria-hidden="true"></span>
+		</button>
+		{#if open}
+			<ul class="hint-detail" id={`hint-detail-${gi}`} transition:slide={{ duration: reducedMotion() ? 0 : 210, easing: cubicOut }}>
+				{#each group.hints as hint, i (hint.id ?? hint.text + i)}
+					{@const target = targetOf(hint.codes)}
+					<!-- the line about the course open on the right stands out -->
+					<li class:here={names(hint, plan.selected?.code)}>
+						{#if target}
+							<button class="chip-text jump" title="show {plan.courseLabel(target)}" onclick={() => plan.revealCourse(target)}>
+								{hint.text}
+							</button>
+						{:else}
+							<!-- a click here folds the group back up, rather than starting
+							     a text selection on a line that does nothing -->
+							<button class="chip-text" onclick={() => toggle(group.key)}>{hint.text}</button>
+						{/if}
+						<!-- a red hint states a rule the registry enforces, not us — and
+						     waivers, one-off offerings and year exemptions are ordinary.
+						     So it can be crossed off, and stops counting against the plan. -->
+						{#if hint.id}
+							<button
+								class="waive"
+								title="cross this off — e.g. you have a waiver for it"
+								aria-label="cross off: {hint.text}"
+								onclick={() => plan.waiveHint(hint.id!)}>×</button
+							>
+						{/if}
+					</li>
+				{/each}
+			</ul>
 		{/if}
 	</div>
 {/snippet}
@@ -148,16 +192,12 @@
 		<div class="choices">
 			{#each plan.choices as prog (prog.role + prog.label)}
 				{#each prog.groups as group, gi (group.rule + gi)}
-					{@const picked = group.courses.filter((c) => c.code && plan.placedCodes.has(c.code)).length}
 					<div class="choice">
 						<div class="choice-rule">
 							<span>
 								choose {group.pick}{group.topic ? ` ${group.topic}` : ''}
 								<em class="counts" title="these picks count toward your {group.counts} credits">· {group.counts}{plan.choices.length > 1 ? ` · ${prog.label}` : ''}</em>
 							</span>
-							{#if group.courses.length}
-								<span class="picked" class:done={picked >= group.pick}>{picked} of {group.pick} picked</span>
-							{/if}
 						</div>
 						{#if group.courses.length}
 							<!-- courses you can actually take first; the ones no term has
@@ -194,8 +234,13 @@
 <div class="section" data-tour="hints">
 	<h3>
 		hints
+		<!-- what's waiting, by severity — the same marks as the rows below -->
 		{#if problems}
-			<span class="count" title="{problems} thing{problems === 1 ? '' : 's'} to fix">{problems}</span>
+			<span class="tally" title="{problems} thing{problems === 1 ? '' : 's'} to fix">
+				{#each [['warn', warns], ['caution', cautions]] as [kind, n] (kind)}
+					{#if n}<span class="tally-item" data-kind={kind}><i class="tally-mark" data-kind={kind}></i>{n}</span>{/if}
+				{/each}
+			</span>
 		{/if}
 	</h3>
 
@@ -205,26 +250,26 @@
 	     board mode — see ReferencePath. -->
 	<div class="ref">
 		<button class="ref-btn" onclick={() => (showPath = true)}>
-			suggested path
+			<span>see the suggested path <span aria-hidden="true">→</span></span>
 			{#if plan.suggestionCount}<em>{plan.suggestionCount} missing</em>{/if}
 		</button>
 	</div>
 
-	{#if issues.length}
+	{#if issueGroups.length}
 		<div class="chips">
-			{#each issues as hint, i (hint.id ?? hint.text + i)}
-				{@render hintChip(hint, i)}
+			{#each issueGroups as group, gi (group.key)}
+				{@render hintGroup(group, gi)}
 			{/each}
 		</div>
 	{:else}
-		<p class="all-clear">nothing to fix right now ✓</p>
+		<p class="all-clear"><i class="tone-dot" data-kind="good" aria-hidden="true"></i>nothing to fix right now</p>
 	{/if}
 
-	{#if notes.length}
+	{#if noteGroups.length}
 		<div class="notes-head">notes</div>
 		<div class="chips notes">
-			{#each notes as hint, i (hint.id ?? hint.text + i)}
-				{@render hintChip(hint, issues.length + i)}
+			{#each noteGroups as group, gi (group.key)}
+				{@render hintGroup(group, issueGroups.length + gi)}
 			{/each}
 		</div>
 	{/if}
@@ -266,21 +311,41 @@
 			padding: 1.2rem 1.6rem 0;
 		}
 
-		// how many of the chips below are actually something to fix
-		.count {
+		// how many of the hints below need fixing, one badge per severity
+		.tally {
+			display: inline-flex;
+			gap: 0.4rem;
+		}
+
+		.tally-item {
 			display: inline-flex;
 			align-items: center;
-			justify-content: center;
-			min-width: 1.8rem;
-			height: 1.8rem;
-			padding: 0 0.5rem;
-			font-size: 1.1rem;
+			gap: 0.4rem;
+			height: 1.9rem;
+			padding: 0 0.6rem;
+			font-size: 1.15rem;
 			font-weight: 700;
-			color: var(--color-danger-deep);
-			background-color: var(--color-hint-warn);
-			border: 1px solid color-mix(in srgb, var(--color-danger-deep) 25%, transparent);
+			letter-spacing: 0;
 			border-radius: var(--rail-radius, 4px);
 			box-shadow: var(--shadow-inset);
+
+			&[data-kind='warn'] {
+				color: var(--color-danger-deep);
+				background-color: var(--color-hint-warn);
+				border: 1px solid color-mix(in srgb, var(--color-hint-warn-deep) 60%, transparent);
+			}
+
+			&[data-kind='caution'] {
+				color: color-mix(in srgb, var(--color-hint-caution-deep) 55%, var(--color-text));
+				background-color: var(--color-hint-caution);
+				border: 1px solid color-mix(in srgb, var(--color-hint-caution-deep) 60%, transparent);
+			}
+		}
+
+		.tally-mark {
+			@include severity-mark;
+			width: 0.85rem;
+			height: 0.85rem;
 		}
 	}
 
@@ -356,14 +421,6 @@
 			color: var(--color-text-muted);
 		}
 
-		.picked {
-			font-weight: 600;
-			color: var(--color-text-muted);
-
-			&.done {
-				color: var(--color-hint-good-deep);
-			}
-		}
 	}
 
 	// one line per course — long titles ellipsize (full title on hover) so a
@@ -437,35 +494,140 @@
 	}
 
 	.hint-heading {
-		display: flex; align-items: center; justify-content: space-between;
-		gap: 1rem; width: 100%; padding: .7rem .6rem;
-		font: inherit; font-weight: 500; text-align: left;
-		color: inherit; background: transparent; border: 0; cursor: pointer;
-		small { margin-left: .6rem; font-weight: 400; color: var(--color-text-muted); }
-		&:hover { background: var(--color-hover); }
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 1rem;
+		width: 100%;
+		padding: 0.75rem 0.6rem;
+		font: inherit;
+		font-weight: 500;
+		text-align: left;
+		color: inherit;
+		background: transparent;
+		border: 0;
+		border-radius: var(--rail-radius, 4px);
+		cursor: pointer;
+		transition: background-color 0.15s ease;
+
+		&:hover {
+			background: var(--color-hover);
+		}
 	}
-	// a wrapped heading hangs off its dot: the second line lines up with the
-	// first word, not under the dot
-	.hint-title { padding-left: 1.6rem; text-indent: -1.6rem; }
-	.toggle-mark { flex: none; font-family: monospace; font-size: 1.6rem; color: var(--color-text-muted); }
-	// an open hint's text reads as subtext under its heading — no box, muted,
-	// indented to start where the heading's words do
-	.hint-detail { display: flex; align-items: flex-start; gap: .6rem; width: 100%; padding: 0 .6rem .9rem 2.2rem; }
+
+	.hint-main {
+		display: flex;
+		flex-direction: column;
+		gap: 0.4rem;
+		min-width: 0;
+	}
+
+	// a wrapped heading hangs off its mark: the second line lines up with
+	// the first word, not under the mark
+	.hint-title {
+		padding-left: 1.6rem;
+		text-indent: -1.6rem;
+	}
+
+	// how many hints the row stands for
+	.g-count {
+		display: inline-block;
+		margin-left: 0.5rem;
+		padding: 0 0.5rem;
+		font-size: 1.05rem;
+		font-weight: 700;
+		line-height: 1.6rem;
+		text-indent: 0;
+		color: var(--color-text-muted);
+		background: var(--color-subtle);
+		border-radius: 999px;
+	}
+
+	// the courses a row is about, as tiny chips in their own colours —
+	// the same fill they wear on the grid
+	.tags {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.4rem;
+		padding-left: 1.6rem;
+	}
+
+	.tag {
+		padding: 0.05rem 0.5rem;
+		font-size: 1.1rem;
+		font-weight: 600;
+		line-height: 1.5;
+		color: var(--color-text);
+		border-radius: 3px;
+		@include course-type-fill(false);
+	}
+
+	.tag-more {
+		font-size: 1.1rem;
+		color: var(--color-text-muted);
+	}
+
+	// a small chevron that turns down as the row opens, on the app's spring
+	.chev {
+		flex: none;
+		width: 0.7rem;
+		height: 0.7rem;
+		margin: 0.6rem 0.4rem 0 0;
+		border-right: 1.5px solid var(--color-text-muted);
+		border-bottom: 1.5px solid var(--color-text-muted);
+		transform: rotate(-45deg);
+		transition: transform 0.3s var(--spring);
+
+		.open & {
+			transform: rotate(45deg);
+		}
+	}
+
+	// an open group's hints read as subtext under its heading — no box,
+	// muted, indented to start where the heading's words do
+	.hint-detail {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		width: 100%;
+		margin: 0;
+		padding: 0 0.6rem 1rem 2.2rem;
+		list-style: none;
+
+		li {
+			display: flex;
+			align-items: flex-start;
+			gap: 0.6rem;
+		}
+
+		li + li {
+			padding-top: 0.5rem;
+			border-top: 1px dotted var(--color-border-light);
+		}
+
+		// the hint about the course open on the right
+		li.here .chip-text {
+			color: var(--color-text);
+		}
+	}
+
 	// severity rides on a small mark — its shape says how bad — not a whole
 	// tinted box per hint
 	.tone-dot {
 		@include severity-mark;
-		margin-right: .68rem; // mark + gap = the 1.6rem the wrapped line hangs by
+		margin-right: 0.68rem; // mark + gap = the 1.6rem the wrapped line hangs by
 		vertical-align: -0.05em;
 	}
+
 	.chips {
 		display: flex;
 		flex-direction: column;
 		padding: 0.6rem 1rem 1.2rem;
 	}
 
-	// one row per hint on a dotted rule — a stack of tinted boxes read as a
-	// wall of warnings; the dot in front carries the severity
+	// one row per kind of hint, on a dotted rule — a stack of tinted boxes
+	// read as a wall of warnings; the mark in front carries the severity
 	.chip {
 		display: flex;
 		flex-direction: column;
@@ -483,13 +645,9 @@
 
 		// the text fills the row beside the cross-off ×
 		// (a button can't nest inside a button)
-		.detail-body {
+		.chip-text {
 			flex: 1;
 			min-width: 0;
-		}
-
-		.chip-text {
-			width: 100%;
 			padding: 0;
 			font: inherit;
 			line-height: inherit;
@@ -522,26 +680,6 @@
 				opacity: 1;
 			}
 		}
-
-		&.warn {
-			--tone: var(--color-hint-warn);
-			--tone-deep: var(--color-hint-warn-deep);
-		}
-
-		&.caution {
-			--tone: var(--color-hint-caution);
-			--tone-deep: var(--color-hint-caution-deep);
-		}
-
-		&.info {
-			--tone: var(--color-hint-info);
-			--tone-deep: var(--color-hint-info-deep);
-		}
-
-		&.good {
-			--tone: var(--color-hint-good);
-			--tone-deep: var(--color-hint-good-deep);
-		}
 	}
 
 	// the notes under the issues: facts, not problems — quieter, so they
@@ -561,9 +699,9 @@
 	}
 
 	.all-clear {
-		padding: 1rem 1.6rem 1.4rem;
+		padding: 1.2rem 1.6rem 1.4rem;
 		font-size: var(--text-body);
-		color: var(--color-hint-good-deep);
+		color: var(--color-text-muted);
 	}
 
 	.wrong {
@@ -593,6 +731,7 @@
 
 	.ref-btn {
 		display: flex;
+		flex-wrap: wrap;
 		align-items: baseline;
 		justify-content: space-between;
 		gap: 0.6rem;
@@ -600,22 +739,34 @@
 		padding: 0.7rem 1rem;
 		font: inherit;
 		font-size: var(--text-body);
-		white-space: nowrap;
+		white-space: normal;
+		text-align: left;
 		color: var(--color-text);
-		background: var(--color-bg-light);
+		background-color: var(--color-bg-light);
 		border: 1px solid var(--color-border-card);
-		border-radius: var(--rail-radius, 4px);
+		border-radius: 6px;
 		cursor: pointer;
+		@include glossy;
 
-		// the count stays small so the label never wraps in the narrow rail
-		em {
-			font-style: normal;
-			font-size: 1.1rem;
-			color: var(--color-text-muted);
+		> span {
+			flex: 1 1 12rem;
+			min-width: 0;
+			overflow-wrap: anywhere;
 		}
 
-		&:hover {
-			background: var(--color-hover-medium);
+		// Wrap onto a new line when the label and badge cannot fit together.
+		em {
+			flex: 0 1 auto;
+			max-width: 100%;
+			overflow-wrap: anywhere;
+			padding: 0 0.6rem;
+			font-style: normal;
+			font-size: 1.1rem;
+			font-weight: 600;
+			line-height: 1.8rem;
+			color: var(--color-text-muted);
+			background: var(--color-subtle);
+			border-radius: 999px;
 		}
 	}
 

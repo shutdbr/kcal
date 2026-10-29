@@ -1077,7 +1077,7 @@
 			rgba(40, 56, 84, 0.12) 100%
 		);
 		--shadow-inset: inset 0 1px 0 var(--bar-hi);
-		--shadow-card: 0 1px 2px rgba(20, 30, 50, 0.14);
+		--shadow-card: 0 0 0 transparent;
 		--key-pressed: inset 0 2px 3px rgba(20, 30, 50, 0.32), inset 0 1px 1px rgba(20, 30, 50, 0.2);
 	}
 
@@ -1090,7 +1090,7 @@
 		overflow: hidden; // clips the end segments to the rounded corners
 		border: 1px solid var(--bar-key-edge);
 		border-radius: 6px;
-		box-shadow: 0 1px 0 var(--bar-hi), 0 1px 2px rgba(60, 20, 40, 0.12);
+		box-shadow: 0 1px 0 var(--bar-hi);
 
 		button {
 			display: flex;
