@@ -486,4 +486,13 @@
 			grid-column: 1 / -1 !important;
 		}
 	}
+	@include mobile {
+		@container catalogue (min-width: 600px) {
+			.cards { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+			.cell { grid-column: auto !important; }
+		}
+		@container catalogue (min-width: 1000px) {
+			.cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+		}
+	}
 </style>

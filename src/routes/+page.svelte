@@ -1,6 +1,7 @@
 <script lang="ts">
 	import PanelResizers from '$lib/components/layout/PanelResizers.svelte';
 	import MobileNavigation from '$lib/components/layout/MobileNavigation.svelte';
+	import { COMPACT_LAYOUT_QUERY, TABLET_WIDTH_QUERY } from '$lib/layout';
 	import { focusScope } from '$lib/focusScope';
 	import { dragMotion } from '$lib/dragMotion';
 	import { Plan } from '$lib/plan.svelte';
@@ -27,6 +28,8 @@
 	// a first visit opens on the welcome card (your degree), then the tour
 	let welcomeOpen = $state(false);
 	let desktop = $state(false);
+	let tablet = $state(false);
+	let overlayDetails = $derived(!desktop && !tablet && !!plan.selected);
 	let ready = $state(false);
 	let mobileView = $state<'catalogue' | 'board' | 'rail'>('catalogue');
 	let detailsEl: HTMLElement;
@@ -50,17 +53,25 @@
 			}
 		}
 		// Keep the desktop walkthrough available after a phone visit.
-		const media = window.matchMedia('(min-width: 1101px)');
-		const update = () => (desktop = media.matches);
+		const media = window.matchMedia(COMPACT_LAYOUT_QUERY);
+		const tabletWidth = window.matchMedia(TABLET_WIDTH_QUERY);
+		const update = () => {
+			desktop = !media.matches;
+			tablet = media.matches && tabletWidth.matches;
+		};
 		update();
 		ready = true;
 		media.addEventListener('change', update);
+		tabletWidth.addEventListener('change', update);
 		try {
 			welcomeOpen = !importing && !reviewCode && !localStorage.getItem(INTRO_KEY);
 		} catch {
 			welcomeOpen = !importing && !reviewCode;
 		}
-		return () => media.removeEventListener('change', update);
+		return () => {
+			media.removeEventListener('change', update);
+			tabletWidth.removeEventListener('change', update);
+		};
 	});
 
 	function dismissTour() {
@@ -131,6 +142,7 @@
 <div
 	class="app"
 	data-ready={ready}
+	data-layout={desktop ? 'desktop' : tablet ? 'tablet' : 'phone'}
 	inert={!ready}
 	class:resizing
 	data-mobile-view={mobileView}
@@ -143,24 +155,24 @@
 	<MobileNavigation bind:view={mobileView} credits={plan.totalPlacedCredits} />
 	<PanelResizers bind:panelWidths bind:resizing />
 
-	<aside class="rail" inert={!desktop && (mobileView !== 'rail' || !!plan.selected)}>
+	<aside class="rail" inert={!desktop && (mobileView !== 'rail' || overlayDetails)}>
 		<Sidebar {plan} ontour={() => (tourRequested = true)} />
 		<CanvasImportPanel {plan} initial={canvasTransfer} initialError={canvasError} />
 		<HintsPanel {plan} />
 	</aside>
 
-	<div class="catalogue-panel" inert={!desktop && (mobileView !== 'catalogue' || !!plan.selected)}>
+	<div class="catalogue-panel" inert={!desktop && (mobileView !== 'catalogue' || overlayDetails)}>
 		<Catalogue {plan} mobile={!desktop} />
 	</div>
 
-	<main class="board" inert={!desktop && (mobileView !== 'board' || !!plan.selected)}>
+	<main class="board" inert={!desktop && (mobileView !== 'board' || overlayDetails)}>
 		<!-- wrapped so the footer below can be pushed to the bottom of the column
 		     on a short plan, and stay pinned there while a long one scrolls -->
 		<div class="board-main" data-tour="board">
 			{#if plan.zoom}
-				<TrimesterZoom {plan} />
+				<TrimesterZoom {plan} touchLayout={!desktop} />
 			{:else}
-				<OverviewGrid {plan} />
+				<OverviewGrid {plan} touchLayout={!desktop} />
 			{/if}
 		</div>
 
@@ -192,7 +204,7 @@
 		class="rightbar"
 		data-tour="details"
 		bind:this={detailsEl}
-		use:focusScope={!desktop && !!plan.selected}
+		use:focusScope={overlayDetails}
 		inert={!desktop && !plan.selected}
 		aria-label="course details"
 	>
@@ -341,6 +353,8 @@
 			grid-template-rows: auto minmax(0, 1fr) auto;
 			overflow: hidden;
 		}
+		.catalogue-panel { container: catalogue / inline-size; }
+		.board { container: plan / inline-size; }
 		.rail,
 		.board,
 		.catalogue-panel {
@@ -378,5 +392,17 @@
 			bottom: calc(8rem + env(safe-area-inset-bottom));
 			font-size: 1.5rem;
 		}
+	}
+	@include tablet {
+		.app.details-open { grid-template-columns: minmax(0, 1fr) clamp(32rem, 40vw, 48rem); }
+		.rightbar {
+			position: static;
+			grid-area: 2 / 2;
+			min-width: 0;
+			padding: 0 env(safe-area-inset-right) 0 0;
+			border-left: 1px solid var(--color-border-warm);
+			z-index: auto;
+		}
+		.flash { left: auto; max-width: min(46rem, calc(100vw - 3.2rem)); }
 	}
 </style>

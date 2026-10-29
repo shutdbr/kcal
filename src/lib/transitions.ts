@@ -3,6 +3,7 @@
 // catalogue and the zoom view animate as a single surface.
 // ─────────────────────────────────────────────
 
+import { COMPACT_LAYOUT_QUERY } from './layout';
 import { crossfade, fade, scale, type TransitionConfig } from 'svelte/transition';
 import { cubicOut } from 'svelte/easing';
 
@@ -30,7 +31,7 @@ const now = () => (typeof performance === 'undefined' ? Date.now() : performance
 export const reducedMotion = () => typeof matchMedia !== 'undefined' && matchMedia('(prefers-reduced-motion: reduce)').matches;
 // A hidden phone tab has no useful crossfade position. Fade locally instead.
 const quiet = () => now() < quietUntil || reducedMotion() ||
-	(typeof matchMedia !== 'undefined' && matchMedia('(max-width: 1100px)').matches);
+	(typeof matchMedia !== 'undefined' && matchMedia(COMPACT_LAYOUT_QUERY).matches);
 /** called by the plan whenever it replaces the whole board at once */
 export const quietRedraw = () => (quietUntil = now() + QUIET_MS);
 

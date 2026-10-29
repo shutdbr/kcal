@@ -12,7 +12,7 @@
 	import CreditRules from './CreditRules.svelte';
 	import GradesPanel from '../grades/GradesPanel.svelte';
 
-	let { plan }: { plan: Plan } = $props();
+	let { plan, touchLayout = false }: { plan: Plan; touchLayout?: boolean } = $props();
 
 	let gridEl: HTMLDivElement;
 	let dropTarget = $state<string | null>(null);
@@ -495,7 +495,7 @@
 						style="order: {chipOrder(`${y}-${t}`, codes, code, i)}"
 						data-type={type}
 						style:--hue={plan.hueOf(code)}
-						draggable="true"
+						draggable={!touchLayout}
 						role="listitem"
 						animate:flip={courseShift}
 						in:courseIn={{ key: code }}
@@ -1842,6 +1842,14 @@
 		.acts-row {
 			padding: 1.6rem;
 			flex-wrap: wrap;
+		}
+	}
+	@include mobile {
+		@container plan (min-width: 720px) {
+			.overview, .overview.graded { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+			.cell { grid-column: auto; }
+			.year-head, .year-acts { grid-column: 1 / -1; }
+			.mobile-term { flex-wrap: wrap; gap: 0.5rem; }
 		}
 	}
 </style>

@@ -4,7 +4,7 @@
 	import { flip } from 'svelte/animate';
 	import { courseIn, courseOut, courseShift } from '$lib/transitions';
 
-	let { plan }: { plan: Plan } = $props();
+	let { plan, touchLayout = false }: { plan: Plan; touchLayout?: boolean } = $props();
 
 	// zoom is guaranteed non-null while this component is mounted
 	let year = $derived(plan.zoom!.year);
@@ -133,7 +133,7 @@
 				style={cell !== undefined
 					? `grid-column: ${(cell % COLS) + 1} / span ${span.col}; grid-row: ${Math.floor(cell / COLS) + 1} / span ${span.row};`
 					: `grid-column: span ${span.col}; grid-row: span ${span.row};`}
-				draggable="true"
+				draggable={!touchLayout}
 				role="listitem"
 				animate:flip={courseShift}
 				in:courseIn={{ key: code }}

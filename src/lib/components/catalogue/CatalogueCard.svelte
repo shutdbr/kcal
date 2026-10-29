@@ -98,7 +98,7 @@
 		ondragstart={dragstart}
 		ondragend={() => (plan.dragging = null)}
 		onclick={() => (plan.selected = course)}
-		title={pending ? `${label} — credits awaiting confirmation` : `drag ${label} onto the grid`}
+		title={pending ? `${label} — credits awaiting confirmation` : mobile ? `view ${label}` : `drag ${label} onto the grid`}
 	>
 		{#if plan.showCodes || compact}
 			<span class="code">
