@@ -58,7 +58,7 @@
 				if (typeof w === 'number' && w >= p.min && w <= p.max) panelWidths[p.id] = w;
 			}
 		} catch {
-			// unreadable or blocked storage — the default widths stand
+			// unreadable or blocked storage, the default widths stand
 		}
 	});
 </script>

@@ -5,8 +5,8 @@
 	//
 	// Three columns, so a whole department can be worked through without ever
 	// losing your place: find a course → edit it → watch the change log. Every
-	// property the planner reads is editable — title, credits, the required /
-	// elective flag, when it runs, who can take it, and its prerequisites —
+	// property the planner reads is editable, title, credits, the required /
+	// elective flag, when it runs, who can take it, and its prerequisites,
 	// and every edit sits next to what the pipeline shipped, so it is always
 	// clear what changed and what it changed from.
 	//
@@ -60,12 +60,12 @@
 	const STEPS = [
 		['find a course', 'search by code or title, or narrow to a department.'],
 		['change anything', 'title, credits, when it runs, who can take it, prerequisites, cross-listing.'],
-		['it saves instantly', 'every change is listed on the right — undo with Ctrl+Z.'],
+		['it saves instantly', 'every change is listed on the right, undo with Ctrl+Z.'],
 		['check the planner', '“open planner” loads it exactly as students will see it.'],
 		['publish', '“export” saves every change as one file for the next data build.']
 	];
 
-	// the prerequisite lists as generated, before any edit — the "was" for the
+	// the prerequisite lists as generated, before any edit, the "was" for the
 	// prerequisite editor, read straight from the file so it can't drift
 	const shippedPrereqs: Record<string, string[]> = Object.fromEntries(
 		Object.entries((shippedCourses as { courses: Record<string, { prereqs: string[] }> }).courses).map(
@@ -101,7 +101,7 @@
 		if (linked && allIndex.has(linked)) selectedCode = linked;
 	});
 
-	// every course, retired ones too — the admin is where they come back from
+	// every course, retired ones too, the admin is where they come back from
 	const allIndex = new Map(ALL_COURSES.map((c) => [c.code, c]));
 	const known = (code: string) => allIndex.has(code);
 
@@ -239,7 +239,7 @@
 		!newCodeClean
 			? ''
 			: !CODE_RE.test(newCodeClean)
-				? 'a code looks like MATH499 — four letters, three digits'
+				? 'a code looks like MATH499, four letters, three digits'
 				: known(newCodeClean) || newCodeClean in newCourses
 					? `${newCodeClean} already exists`
 					: ''
@@ -250,7 +250,7 @@
 		const next = { ...newCourses, [newCodeClean]: { code: newCodeClean, title: newTitle.trim(), subject: newSubject } };
 		saveNewCourses(next);
 		// the catalogue is built once per page load, so a new course joins it
-		// on a fresh load — straight to its own editor
+		// on a fresh load, straight to its own editor
 		location.href = `/admin?course=${newCodeClean}`;
 	}
 
@@ -377,7 +377,7 @@
 
 	function issuesOf(code: string): string[] {
 		const out: string[] = [];
-		if (isRetired(code)) return out; // retired on purpose — nothing to fix
+		if (isRetired(code)) return out; // retired on purpose, nothing to fix
 		if (!valueOf(code, 'offered').length) out.push('not offered in any trimester');
 		if (!valueOf(code, 'eligibleYears').length) out.push('open to no year');
 		if (valueOf(code, 'credits') === 0) out.push('worth 0 credits');
@@ -417,7 +417,7 @@
 			url.searchParams.set('course', code);
 			replaceState(url, {});
 		} catch {
-			// before the router is ready — harmless
+			// before the router is ready, harmless
 		}
 	}
 
@@ -449,7 +449,7 @@
 	// ── the change log ──
 	type Change = { code: string; field: string; was: string; now: string };
 	const show1 = (v: unknown): string =>
-		Array.isArray(v) ? v.join(', ') || 'none' : typeof v === 'boolean' ? (v ? 'required' : 'elective') : String(v || '—');
+		Array.isArray(v) ? v.join(', ') || 'none' : typeof v === 'boolean' ? (v ? 'required' : 'elective') : String(v || '–');
 	const fmtField = (field: CourseField, v: unknown) =>
 		field === 'offered'
 			? (v as number[]).map((t) => `t${t}`).join(' ') || 'none'
@@ -460,7 +460,7 @@
 	let changes = $derived.by(() => {
 		const out: Change[] = [];
 		for (const code of Object.keys(newCourses).sort())
-			out.push({ code, field: 'new course', was: '—', now: newCourses[code].title });
+			out.push({ code, field: 'new course', was: '–', now: newCourses[code].title });
 		for (const code of [...new Set([...Object.keys(edits), ...Object.keys(prereqEdits)])].sort()) {
 			if (!known(code)) continue;
 			const e = edits[code] ?? {};
@@ -564,7 +564,7 @@
 		clearTimeout(clearTimer);
 		clearing = false;
 		commit({}, {}, 'cleared every course edit');
-		// added courses go too — they leave the catalogue on a fresh load
+		// added courses go too, they leave the catalogue on a fresh load
 		if (Object.keys(newCourses).length) {
 			saveNewCourses({});
 			location.reload();
@@ -803,7 +803,7 @@
 
 					{#if isRetired(code)}
 						<div class="note">
-							Retired — students can't see or place it.
+							Retired, students can't see or place it.
 							<button class="link" onclick={() => setRetired(code, false)}>bring it back</button>
 						</div>
 					{/if}
@@ -1080,7 +1080,7 @@
 			<div class="log-body">
 				{#if cycles.length}
 					<div class="note bad cycles">
-						<b>{cycles.length} prerequisite loop{cycles.length === 1 ? '' : 's'}</b> — no course in a loop can
+						<b>{cycles.length} prerequisite loop{cycles.length === 1 ? '' : 's'}</b>: no course in a loop can
 						ever be scheduled.
 						{#each cycles as cyc, i (i)}
 							<button class="link" onclick={() => pick(cyc[0])}>{cyc.join(' → ')}</button>
@@ -1095,7 +1095,7 @@
 					</button>
 				{:else}
 					{#if loaded}
-						<p class="empty">no changes — the catalogue is as generated</p>
+						<p class="empty">no changes, the catalogue is as generated</p>
 					{/if}
 				{/each}
 			</div>
@@ -1128,7 +1128,7 @@
 				transition:fly={{ y: 12, duration: 180 }}
 			>
 				<h2>new course</h2>
-				<p class="help">starts as a 4-credit elective, every trimester, every year — refine it next.</p>
+				<p class="help">starts as a 4-credit elective, every trimester, every year, refine it next.</p>
 				<label class="m-field">
 					<span>code</span>
 					<!-- svelte-ignore a11y_autofocus -->

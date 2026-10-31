@@ -1,5 +1,5 @@
 // A plan shared as a link: the planning state, deflated and base64url-encoded
-// into the URL fragment, so it never reaches a server. Grades stay out — they
+// into the URL fragment, so it never reaches a server. Grades stay out, they
 // are the student's own record, not part of the plan they're showing someone.
 import type { Json } from '../../infrastructure/supabase/database.types';
 import { planDocument } from './document';

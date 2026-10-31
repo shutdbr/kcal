@@ -1,7 +1,7 @@
 <script lang="ts">
 	// The maintainer's side of kcal: the catalogue and the prerequisite graph
 	// the whole planner rests on are generated from messy CSV text, and the
-	// drop-form rules change from year to year — so they need somewhere to be
+	// drop-form rules change from year to year, so they need somewhere to be
 	// read, corrected and checked. Three pages, one shared header.
 	import '../../app.scss';
 	import './admin.scss';

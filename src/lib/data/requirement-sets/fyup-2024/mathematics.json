@@ -6,7 +6,8 @@
 		"Probability is MATH313 (listed as MATH213); Geometry: Curves and Surfaces is MATH344 (listed as MATH444/445); Numerical Methods is MATH328.",
 		"Pathways are the primary (recommended) ones, required courses only; the bold choices are left to the student.",
 		"The minor and concentration required courses are not named in the document; the website list stays.",
-		"COMP201 taken in T1 of 2023-24 or 2024-25 counts as MATH191 (they are interchangeable in the planner)."
+		"COMP201 taken in T1 of 2023-24 or 2024-25 counts as MATH191 (they are interchangeable in the planner).",
+		"Elective credits come from any mathematics course (\"mathematics elective courses\"), not a fixed list."
 	],
 	"programmes": {
 		"single_major_4yr": {
@@ -85,7 +86,8 @@
 						"MATH304"
 					]
 				}
-			}
+			},
+			"electives": "subject"
 		},
 		"double_major_4yr": {
 			"credits": {
@@ -143,7 +145,8 @@
 						"MATH332"
 					]
 				}
-			}
+			},
+			"electives": "subject"
 		},
 		"single_major_3yr": {
 			"credits": {
@@ -201,7 +204,8 @@
 						"MATH332"
 					]
 				}
-			}
+			},
+			"electives": "subject"
 		},
 		"double_major_3yr": {
 			"credits": {
@@ -259,28 +263,32 @@
 						"MATH332"
 					]
 				}
-			}
+			},
+			"electives": "subject"
 		},
 		"minor_4yr": {
 			"credits": {
 				"total": 32,
 				"required": 16,
 				"elective": 16
-			}
+			},
+			"electives": "subject"
 		},
 		"minor_3yr": {
 			"credits": {
 				"total": 24,
 				"required": 16,
 				"elective": 8
-			}
+			},
+			"electives": "subject"
 		},
 		"concentration": {
 			"credits": {
 				"total": 16,
 				"required": 16,
 				"elective": 0
-			}
+			},
+			"electives": "subject"
 		}
 	}
 }

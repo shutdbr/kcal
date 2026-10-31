@@ -7,7 +7,7 @@
 	// (or an edge pointing the wrong way) shows up at a glance.
 	//
 	// Layout is computed, never measured: a node's column is its longest
-	// prerequisite chain — "how many trimesters must come before this" — and
+	// prerequisite chain, "how many trimesters must come before this", and
 	// its row is picked to sit near its prerequisites. Because both are known
 	// numbers, edge endpoints are exact and the SVG needs no DOM reading.
 	// ─────────────────────────────────────────────
@@ -82,9 +82,9 @@
 	// Two ways to read a degree as a progression, because only one of them
 	// exists for every department:
 	//
-	//   'prereq' — a course's column is its longest prerequisite chain. The
+	//   'prereq', a course's column is its longest prerequisite chain. The
 	//     real structure, wherever the department states it.
-	//   'level'  — its column is its course band (100/200 → 300 → 400). Every
+	//   'level' , its column is its course band (100/200 → 300 → 400). Every
 	//     course has one, and it is enforced (eligibleYears), so it is a real
 	//     progression and not a guess.
 	//
@@ -183,7 +183,7 @@
 
 	// ── hover: the whole chain a course belongs to ──
 	// Both directions, because the question a student's chain raises is "what
-	// do I need before this, and what does it open up" — one without the other
+	// do I need before this, and what does it open up", one without the other
 	// only answers half of it.
 	let lit = $derived.by(() => {
 		if (!hovered) return null;
@@ -204,7 +204,7 @@
 	const kindOf = (code: string) =>
 		core.has(code) ? 'core' : electives.has(code) ? 'elective' : 'external';
 
-	// the longest chain on the board — the number that decides whether a
+	// the longest chain on the board, the number that decides whether a
 	// programme actually fits in its trimesters
 	let longest = $derived(Math.max(0, ...[...levels.values()]) + 1);
 </script>
@@ -268,12 +268,12 @@
 		{:else}
 			<!-- a department can be flat because nobody filled the column in, or
 			     because it genuinely gates nothing. History, sociology and arts
-			     are the second kind — every prerequisite cell in the term CSVs
+			     are the second kind, every prerequisite cell in the term CSVs
 			     reads "--NA--" or "none except an open mind". Say so, rather than
 			     letting a flat row read as a bug. -->
 			{#if mode === 'prereq' && !edges.length}
 				<p class="flat-note">
-					{subjectById(subject).label} states no prerequisites anywhere in the term CSVs — nothing
+					{subjectById(subject).label} states no prerequisites anywhere in the term CSVs, nothing
 					here gates anything. Switch <b>columns</b> to <b>course level</b> to see the degree's
 					progression.
 				</p>
@@ -402,7 +402,7 @@
 		}
 	}
 
-	// the whole tree scrolls as one surface — a wide programme is genuinely
+	// the whole tree scrolls as one surface, a wide programme is genuinely
 	// wide, and squeezing it would cost the thing the page is for
 	.canvas-scroll {
 		flex: 1;
@@ -515,7 +515,7 @@
 			background: var(--color-course-elective);
 		}
 
-		// a prerequisite from another department — on the chain, but not part
+		// a prerequisite from another department, on the chain, but not part
 		// of the programme's own list
 		&.external {
 			background: none;

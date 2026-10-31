@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Plan } from '$lib/plan.svelte';
 	import { TRIM_HARD_MAX, TRIM_MIN, byCode } from '$lib/data';
-	import { flip } from 'svelte/animate';
+		import { flip } from 'svelte/animate';
 	import { courseIn, courseOut, courseShift } from '$lib/transitions';
 
 	let { plan, touchLayout = false }: { plan: Plan; touchLayout?: boolean } = $props();
@@ -11,12 +11,12 @@
 	let trim = $derived(plan.zoom!.trim);
 
 	// Each background cell = 1 credit. Courses are laid out as squares (4 cr =
-	// 2×2), and five squares don't tile a 20-cell 4×5 canvas — so the canvas is
+	// 2×2), and five squares don't tile a 20-cell 4×5 canvas, so the canvas is
 	// 4 columns × 6 rows, enough room to actually park five (even six)
 	// 4-credit courses without them being squeezed out of the grid.
 	const COLS = 4;
 	const ROWS = 6;
-	// The 12-credit minimum reads as three 2×2 boxes — the exact footprint of
+	// The 12-credit minimum reads as three 2×2 boxes, the exact footprint of
 	// the three 4-credit courses it takes to reach it. Then plain cells up to
 	// the 20-credit cap, and a final faint strip that is laying-out space past
 	// the cap rather than credits you're meant to fill.
@@ -37,7 +37,7 @@
 
 	let canvasEl: HTMLDivElement;
 
-	// a drop pins the course to the canvas cell under the cursor — it can sit
+	// a drop pins the course to the canvas cell under the cursor, it can sit
 	// anywhere in the 4×5 credit grid, like on paper (clamped so its credit
 	// footprint stays inside)
 	function drop(e: DragEvent) {
@@ -68,7 +68,7 @@
 		plan.dragging = code;
 	}
 
-	// what's wrong with THIS trimester — the hints that name its courses — so
+	// what's wrong with THIS trimester, the hints that name its courses, so
 	// opening a red cell answers "why is it red?"
 	let slotHints = $derived(
 		plan.hints.filter(
@@ -86,7 +86,7 @@
 </header>
 
 <p class="how">
-	each square is one credit{exempt ? '' : ` — the shaded blocks are the ${TRIM_MIN}-credit minimum, three 4-credit courses`}.
+	each square is one credit{exempt ? '' : `, the shaded blocks are the ${TRIM_MIN}-credit minimum, three 4-credit courses`}.
 	arrange the courses however helps you think; where they sit here doesn't change your plan.
 </p>
 
@@ -143,8 +143,8 @@
 			>
 				<button class="x" aria-label="remove {plan.courseLabel(code)}" onclick={(e) => { e.stopPropagation(); plan.remove(code); }}>×</button>
 				<button class="course-open" onclick={() => (plan.selected = course)} aria-label="view {plan.courseLabel(code)}">
-				{#if plan.showCodes}<span class="code">{#if plan.flagKinds.has(code)}<span class="flag" data-kind={plan.flagKinds.get(code)} role="img" aria-label="named in a hint" title="named in a hint — see hints"></span>{/if}{#if type === 'required'}<span class="req-dot" role="img" aria-label="required"></span>{/if}{plan.shownCode(code)}</span>{/if}
-				<span class="title">{#if !plan.showCodes && plan.flagKinds.has(code)}<span class="flag" data-kind={plan.flagKinds.get(code)} role="img" aria-label="named in a hint" title="named in a hint — see hints"></span>{/if}{#if type === 'required' && !plan.showCodes}<span class="req-dot" role="img" aria-label="required"></span>{/if}{course.title}</span>
+				{#if plan.showCodes}<span class="code">{#if plan.flagKinds.has(code)}<span class="flag" data-kind={plan.flagKinds.get(code)} role="img" aria-label="named in a hint" title="named in a hint, see hints"></span>{/if}{#if type === 'required'}<span class="req-dot" role="img" aria-label="required"></span>{/if}{plan.shownCode(code)}</span>{/if}
+				<span class="title">{#if !plan.showCodes && plan.flagKinds.has(code)}<span class="flag" data-kind={plan.flagKinds.get(code)} role="img" aria-label="named in a hint" title="named in a hint, see hints"></span>{/if}{#if type === 'required' && !plan.showCodes}<span class="req-dot" role="img" aria-label="required"></span>{/if}{course.title}</span>
 				<span class="credits">{course.credits} cr</span>
 				</button>
 			</div>
@@ -152,7 +152,7 @@
 	</div>
 </div>
 
-<!-- what the recommended path puts in THIS trimester and isn't on the grid —
+<!-- what the recommended path puts in THIS trimester and isn't on the grid,
      the same suggestions the overview shows, in the view you'd be arranging
      the trimester from -->
 {#if !plan.gradeMode && plan.suggestionsFor(year, trim).length}
@@ -284,7 +284,7 @@
 		overflow: hidden;
 	}
 
-	// 24 one-credit cells (COLS × ROWS in the script) — the 20-credit cap plus
+	// 24 one-credit cells (COLS × ROWS in the script), the 20-credit cap plus
 	// a row of slack, so five 2×2 courses have somewhere to sit
 	.layer {
 		position: absolute;
@@ -378,7 +378,6 @@
 		.credits {
 			margin-top: auto;
 			font-size: 1.2rem;
-			color: var(--color-text-muted);
 		}
 
 		// a course named in a hint leads with that hint's severity mark
@@ -397,13 +396,12 @@
 			border: none;
 			font-size: 1.6rem;
 			line-height: 1;
-			color: var(--color-text-muted);
+			color: inherit; // the card's ink, like its text
 			cursor: pointer;
 			-webkit-tap-highlight-color: transparent;
 			transition: transform 0.2s var(--spring);
 
 			&:hover {
-				color: var(--color-text);
 				transform: scale(1.1);
 			}
 		}

@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────
-// Shared motion — one place for the app's transitions so the grid, the
+// Shared motion, one place for the app's transitions so the grid, the
 // catalogue and the zoom view animate as a single surface.
 // ─────────────────────────────────────────────
 
@@ -20,7 +20,7 @@ const [sendCourse, receiveCourse] = crossfade({
 
 // ── redraws ──
 // ONE course flying from the catalogue to the grid is worth watching. A
-// REDRAW — changing a major, filling in every suggestion, resetting —
+// REDRAW, changing a major, filling in every suggestion, resetting,
 // replaces every chip at once, and twenty cards flying across the screen
 // together reads as noise, not motion. A redraw opens a short quiet window
 // (long enough to cover the render it triggered): chips that appear, vanish
@@ -38,18 +38,18 @@ export const quietRedraw = () => (quietUntil = now() + QUIET_MS);
 type CourseParams = { key: string };
 type Motion = TransitionConfig | (() => TransitionConfig);
 
-/** a course arriving on a surface — flies from wherever it left, or fades in on a redraw */
+/** a course arriving on a surface, flies from wherever it left, or fades in on a redraw */
 export const courseIn = (node: Element, params: CourseParams): Motion =>
 	quiet() ? fade(node, { duration: reducedMotion() ? 0 : 120, easing: cubicOut }) : receiveCourse(node, params);
 
-/** a course leaving a surface — flies to wherever it lands, or fades out on a redraw */
+/** a course leaving a surface, flies to wherever it lands, or fades out on a redraw */
 export const courseOut = (node: Element, params: CourseParams): Motion =>
 	quiet() ? fade(node, { duration: reducedMotion() ? 0 : 90, easing: cubicOut }) : sendCourse(node, params);
 
-/** `animate:flip` duration — a redraw reshuffles every slot, so it snaps instead */
+/** `animate:flip` duration, a redraw reshuffles every slot, so it snaps instead */
 export const courseShift = { duration: () => (quiet() ? 0 : 220) };
 
-/** a number rolling over to its next value — the old one slides out one way
+/** a number rolling over to its next value, the old one slides out one way
  *  while the new one slides in after it, slightly blurred in motion, like a
  *  mechanical counter (or iOS's numeric text). Stack old and new in one grid
  *  cell so they cross. dir 1 = enters from below, -1 = leaves upward. */

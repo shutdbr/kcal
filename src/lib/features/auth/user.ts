@@ -1,5 +1,5 @@
 /** Who is signed in, as the app needs it. Built from verified JWT claims (server)
- *  or the session's user (browser) — never from anything the client can edit:
+ *  or the session's user (browser), never from anything the client can edit:
  *  `app_metadata` is writable only with the service role. */
 export type AuthUser = {
 	id: string;

@@ -1,11 +1,11 @@
 <script lang="ts">
 	// The credit rules the ERP drop form imposes, checked against the plan
-	// that's actually on the grid — so "20 credits, twice in your tenure"
+	// that's actually on the grid, so "20 credits, twice in your tenure"
 	// arrives as "you've used 1 of 2" instead of as a paragraph to re-read.
 	// Below them, the standing and progression rules from the SIAS Exams &
 	// Assessments Manual, checked against whatever grades are entered.
 	import type { Plan } from '$lib/plan.svelte';
-	import type { TrimNum } from '$lib/types';
+	import { trimesterName, type TrimNum } from '$lib/types';
 	import {
 		AUDIT_LIMIT,
 		HEAVY_TRIMS_ALLOWED,
@@ -45,7 +45,7 @@
 
 	const LOADS = [12, 14, 16, 18, 20];
 
-	// a rule card jumps you to what it's about — the trimester, or the course
+	// a rule card jumps you to what it's about, the trimester, or the course
 	function jump(year: number, trim: TrimNum) {
 		plan.zoom = { year, trim };
 		onclose();
@@ -209,13 +209,13 @@
 	const FORM_NOTES = [
 		`Registering for more than ${TRIM_NORMAL_MAX} or fewer than ${TRIM_MIN} credits needs prior approval from Dr Aahique Iqbal, forwarded to the Academic Office.`,
 		'The same course can’t be picked twice in a group.',
-		'Once the drop form is submitted nothing can be changed — check it twice.',
+		'Once the drop form is submitted nothing can be changed, check it twice.',
 		'Suspended students write to the Academic Office with their final course list inside the stated window.'
 	];
 
 	const MANUAL_NOTES = [
 		'You need 75% attendance to sit a course’s end-term exam. Between 60% and 75% you still sit it, but a grade level lower unless a request letter (with documents) is accepted; under 60% you can’t.',
-		'A U can be cleared by a supplementary exam if you met the attendance and did 40% of the assignments — once per course, at most two per cycle, three cycles a year. Otherwise you retake the course.',
+		'A U can be cleared by a supplementary exam if you met the attendance and did 40% of the assignments, once per course, at most two per cycle, three cycles a year. Otherwise you retake the course.',
 		'A D or E can be raised once through an improvement exam; the higher of the two grades stands.',
 		'An I (incomplete) gives you six weeks after exam week to finish the missing work.',
 		'At most two reading courses across your whole degree.',
@@ -314,8 +314,8 @@
 								<button
 									class="bar {barKind(y, credits)}"
 									style="--v: {credits}; --i: {yi * plan.trims.length + ti}"
-									title="Y{y} T{t} · {credits} cr — {barText(y, credits)}. Click to open."
-									aria-label="year {y} trimester {t}: {credits} credits, {barText(y, credits)}. Open it."
+									title="Y{y} T{t} · {credits} cr, {barText(y, credits)}. Click to open."
+									aria-label="{trimesterName(y, t)}: {credits} credits, {barText(y, credits)}. Open it."
 									onclick={() => jump(y, t)}
 								>
 									<i></i>
@@ -727,7 +727,7 @@
 		list-style: none;
 	}
 
-	// one row per rule, tinted by where the plan stands on it — a single
+	// one row per rule, tinted by where the plan stands on it, a single
 	// line until it's opened
 	.rule {
 		--tone: var(--color-hint-good);
@@ -752,7 +752,7 @@
 			--tone-deep: var(--color-hint-warn-deep);
 		}
 
-		// a fact, not a check — or a check with nothing to check yet
+		// a fact, not a check, or a check with nothing to check yet
 		&.info {
 			--tone: var(--color-hint-info);
 			--tone-deep: var(--color-hint-info-deep);
@@ -879,7 +879,7 @@
 		}
 	}
 
-	// the exact trimesters (or courses) a rule is about — each one opens it,
+	// the exact trimesters (or courses) a rule is about, each one opens it,
 	// so there is nothing to hunt for
 	.slots {
 		display: flex;

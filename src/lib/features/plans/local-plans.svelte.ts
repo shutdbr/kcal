@@ -4,7 +4,7 @@
 // The board holds ONE plan, autosaved as you work. This is the other thing a
 // student needs: a way to keep a version of it. "What if I did a double major
 // instead" is answered by saving what you have, changing the degree, and
-// loading the old one back if you liked it better — no second grid to keep
+// loading the old one back if you liked it better, no second grid to keep
 // track of, no mode to be in, and nothing that can quietly overwrite work.
 //
 // Kept apart from the autosave key on purpose: a saved schedule must survive
@@ -15,7 +15,7 @@ import { browser } from '$app/environment';
 
 const SAVES_KEY = 'kcal-saved-plans';
 // A snapshot is a whole plan (~10-30 KB of JSON). localStorage is a few MB, so
-// this is nowhere near the ceiling — it is a list-length limit, to keep the
+// this is nowhere near the ceiling, it is a list-length limit, to keep the
 // settings panel readable and stop an accidental save loop filling the quota.
 export const MAX_SAVES = 20;
 
@@ -50,7 +50,7 @@ function read(): SavedPlan[] {
 }
 
 /** The saved list, reactive so every surface answers at once. Exported as a
- *  single instance — there is one localStorage, so there is one list. */
+ *  single instance, there is one localStorage, so there is one list. */
 class SavedPlans {
 	items = $state<SavedPlan[]>([]);
 	/** set when a write fails, so the panel can say so instead of silently
@@ -66,7 +66,7 @@ class SavedPlans {
 			localStorage.setItem(SAVES_KEY, JSON.stringify(this.items));
 			this.error = null;
 		} catch {
-			this.error = "this browser wouldn't store that — it may be out of space";
+			this.error = "this browser wouldn't store that, it may be out of space";
 		}
 	}
 

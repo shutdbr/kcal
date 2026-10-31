@@ -1,5 +1,5 @@
 // Page data for the public site (/courses, /lecturers, /programmes). Runs at
-// build time only — those pages are prerendered and ship no JavaScript — so
+// build time only, those pages are prerendered and ship no JavaScript, so
 // it may read the whole curriculum freely.
 import descriptions from '$lib/data/course-descriptions.json';
 import {
@@ -43,7 +43,7 @@ export const subjectSlug = (id: string) => id.replace(/ /g, '-');
 export const subjectFromSlug = (slug: string): Subject | undefined =>
 	PROGRAMME_SUBJECTS.find((s) => subjectSlug(s.id) === slug);
 
-/** "2024–2026" — the batches today's rules are for */
+/** "2024–2026", the batches today's rules are for */
 export const currentBatches = () => {
 	const b = CURRENT_REQUIREMENTS.batches;
 	return b.length ? `${Math.min(...b)}–${Math.max(...b)}` : '';
@@ -160,7 +160,7 @@ export function coursePage(code: string) {
 		credits: c.credits,
 		creditsPending: !!c.pendingCredits,
 		subject: subjectById(c.subject).label,
-		// each code links to its subject's programmes — the foundation core has
+		// each code links to its subject's programmes, the foundation core has
 		// none, so its courses link to their place in the catalogue
 		listings: c.subjects.map((id) => ({
 			subject: subjectById(id).label,

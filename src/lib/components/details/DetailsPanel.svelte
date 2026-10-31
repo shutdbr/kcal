@@ -2,6 +2,7 @@
 	import type { Plan } from '$lib/plan.svelte';
 	import CourseFaculty from './CourseFaculty.svelte';
 	import { byCode, canAudit, hasCode, isCore, satisfiedBy, termsOffered } from '$lib/data';
+	import { trimesterName } from '$lib/types';
 	import { descriptionOf, loadDescriptions } from '$lib/descriptions.svelte';
 	import { GRADE_SCALE, OTHER_MARKS, type GradeMark } from '$lib/grades';
 
@@ -13,7 +14,7 @@
 	}
 
 	// descriptions ship in their own chunk. The page asks for it on idle; if a
-	// course is selected before that, ask right now — whichever lands first,
+	// course is selected before that, ask right now, whichever lands first,
 	// every course fills in from then on
 	$effect(() => {
 		if (plan.selected) loadDescriptions();
@@ -43,17 +44,17 @@
 	}
 
 	// ── a prerequisite against the plan: placed earlier (fine), placed too
-	//    late, or nowhere yet — an interchangeable course counts as placed ──
+	//    late, or nowhere yet, an interchangeable course counts as placed ──
 	function prereqStatus(pre: string): { kind: 'ok' | 'late' | 'missing'; text: string } {
 		const options = [byCode(pre).code, ...satisfiedBy(pre)];
 		const at = plan.placed.filter((p) => options.includes(p.code)).sort((a, b) => a.year - b.year || a.trim - b.trim)[0];
 		if (!at) return { kind: 'missing', text: 'not on plan' };
-		const where = `y${at.year} t${at.trim}`;
+		const where = trimesterName(at.year, at.trim);
 		if (placedAt && at.year * 10 + at.trim >= placedAt.year * 10 + placedAt.trim) return { kind: 'late', text: `${where} · too late` };
 		return { kind: 'ok', text: `✓ ${where}` };
 	}
 
-	// shut on Esc — unless a dialog is open, which Esc closes first
+	// shut on Esc, unless a dialog is open, which Esc closes first
 	function onkey(e: KeyboardEvent) {
 		if (e.key === 'Escape' && plan.selected && !document.querySelector('.backdrop'))
 			plan.selected = null;
@@ -99,7 +100,7 @@
 			</div>
 			<div class="d-stat">
 				<span class="d-stat-label">offered</span>
-				<span class="d-stat-value">{c.offered.map((t) => `t${t}`).join(' ') || '—'}</span>
+				<span class="d-stat-value">{c.offered.map((t) => `t${t}`).join(' ') || '–'}</span>
 				{#if ran.length}<span class="d-stat-sub" title="every term it ran: {ran.join(', ')}">last {ran[0]}</span>{/if}
 			</div>
 			<div class="d-stat">
@@ -108,7 +109,7 @@
 			</div>
 		</div>
 
-		<!-- what it needs and what it opens up — the planning decisions — come
+		<!-- what it needs and what it opens up, the planning decisions, come
 		     before the controls and the prose; each prerequisite says where it
 		     is on the plan -->
 		{#if c.prereqs.length}
@@ -136,39 +137,11 @@
 			</div>
 		{/if}
 
-		<!-- a required course that isn't on the plan: the other ways to meet it,
-		     each backed by the curriculum's own rules -->
-		{#if !placedAt && plan.courseType(c.code) === 'required'}
-			{@const alt = plan.alternativesFor(c.code)}
-			<div class="label">ways to meet it</div>
-			<div class="d-alts">
-				<p>
-					{#if alt.fits.length}
-						fits cleanly in {alt.fits.slice(0, 4).map((f) => `y${f.year} t${f.trim}`).join(', ')}{alt.fits.length > 4 ? ', …' : ''}
-					{:else}
-						no trimester on the plan takes it cleanly right now — check when it runs and its prerequisites above
-					{/if}
-				</p>
-				{#if alt.equivalents.length}
-					<p>accepted in its place (a stated equivalence — take one, not both):</p>
-					<div class="d-chips">
-						{#each alt.equivalents as e (e)}<button class="d-chip" onclick={() => jump(e)}>{plan.courseLabel(e)}</button>{/each}
-					</div>
-				{/if}
-				{#each alt.pools as pool (pool.rule)}
-					<p>one of “{pool.rule}” — the others in that choice:</p>
-					<div class="d-chips">
-						{#each pool.others as o (o)}<button class="d-chip" onclick={() => jump(o)}>{plan.courseLabel(o)}</button>{/each}
-					</div>
-				{/each}
-			</div>
-		{/if}
-
 		<!-- where it is on the plan, and a way to put it there without
-		     dragging — keyboard, touch, or just quicker -->
+		     dragging, keyboard, touch, or just quicker -->
 		<div class="d-place">
 			<span class="d-place-where">
-				{#if placedAt}on your plan in <b>year {placedAt.year}, t{placedAt.trim}</b>{:else}not on
+				{#if placedAt}on your plan in <b>{trimesterName(placedAt.year, placedAt.trim)}</b>{:else}not on
 					your plan yet{/if}
 			</span>
 			<div class="d-place-row">
@@ -176,7 +149,7 @@
 					{#each plan.years as y (y)}
 						{#each plan.trims as t (t)}
 							<option value="{y}-{t}" disabled={plan.coreOnly(y, t) && !isCore(c.code)}>
-								year {y}, t{t}{c.offered.length && !c.offered.includes(t) ? ' — not offered' : ''}
+								{trimesterName(y, t)}{c.offered.length && !c.offered.includes(t) ? ' (not offered)' : ''}
 							</option>
 						{/each}
 					{/each}
@@ -204,7 +177,7 @@
 							onchange={(e) =>
 								plan.setGrade(c.code, (e.currentTarget.value || null) as GradeMark | null)}
 						>
-							<option value="">— not graded —</option>
+							<option value="">not graded</option>
 							{#each OTHER_MARKS as m (m.mark)}
 								<option value={m.mark}>{m.label}</option>
 							{/each}
@@ -276,7 +249,7 @@
 			<li><b>drag</b> a course from the catalogue onto a trimester, or between trimesters</li>
 			<li><b>click a trimester</b> on the grid to zoom in on it</li>
 			<li>
-				<b>hints</b> on the left flag anything that breaks a rule — click one to find its course
+				<b>hints</b> on the left flag anything that breaks a rule, click one to find its course
 			</li>
 			<li><b>grade view</b>, above the grid, turns the plan into your transcript</li>
 		</ul>
@@ -285,15 +258,15 @@
 		<ul class="marks">
 			<li><span class="m-dot" aria-hidden="true"></span>required by your programme</li>
 			<li>
-				<span class="m-mark" data-kind="warn" aria-hidden="true"></span>breaks a rule — a
+				<span class="m-mark" data-kind="warn" aria-hidden="true"></span>breaks a rule, a
 				prerequisite out of order, say
 			</li>
 			<li>
-				<span class="m-mark" data-kind="caution" aria-hidden="true"></span>worth a look — under the
+				<span class="m-mark" data-kind="caution" aria-hidden="true"></span>worth a look, under the
 				credit minimum, say
 			</li>
 			<li>
-				<span class="m-mark" data-kind="info" aria-hidden="true"></span>a note — counts on the
+				<span class="m-mark" data-kind="info" aria-hidden="true"></span>a note, counts on the
 				transcript only, say
 			</li>
 		</ul>
@@ -496,7 +469,7 @@
 		justify-content: center;
 		gap: 0.3rem;
 		// a fixed height so credits / offered / type stay the same size box no
-		// matter how long their value is — the panel doesn't jump between courses
+		// matter how long their value is, the panel doesn't jump between courses
 		min-height: 5.6rem;
 		padding: 0.6rem 0.4rem;
 		background: var(--color-bg-light);
@@ -525,7 +498,7 @@
 		}
 	}
 
-	// SMS-bar: two flush segments in one tray, with a little retro depth — a
+	// SMS-bar: two flush segments in one tray, with a little retro depth, a
 	// beveled tray, a lit groove between, and a recessed field
 	.d-grade {
 		display: flex;
@@ -589,14 +562,6 @@
 		@include empty-text;
 	}
 
-	.d-alts {
-		display: flex;
-		flex-direction: column;
-		gap: 0.6rem;
-		font-size: 1.3rem;
-		color: var(--color-text-muted);
-	}
-
 	.d-chips {
 		display: flex;
 		flex-wrap: wrap;
@@ -623,7 +588,7 @@
 			box-shadow: var(--shadow-inset-hover);
 		}
 
-		// where the prerequisite stands — in words, with colour as a second cue
+		// where the prerequisite stands, in words, with colour as a second cue
 		.d-chip-status {
 			font-size: 1.1rem;
 			font-weight: 500;

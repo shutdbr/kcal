@@ -2,8 +2,8 @@
 	// ─────────────────────────────────────────────
 	// University rules editor.
 	//
-	// The drop form's numbers — the per-trimester minimum and caps, how many
-	// heavy trimesters and audits a student gets, the tenure ceilings — are
+	// The drop form's numbers, the per-trimester minimum and caps, how many
+	// heavy trimesters and audits a student gets, the tenure ceilings, are
 	// what every hint, the credit-rules panel and the grid's colours answer
 	// to. They change from year to year, so they are editable here rather than
 	// baked into the code. Same storage model as the course edits: saved in
@@ -25,7 +25,7 @@
 		{
 			title: 'each trimester',
 			note: 'how many credits one trimester may hold. The grid colours a trimester against these.',
-			keys: ['TRIM_MIN', 'TRIM_NORMAL_MAX', 'TRIM_HARD_MAX']
+			keys: ['TRIM_MIN', 'TRIM_NORMAL_MAX', 'TRIM_STANDARD_MAX', 'TRIM_HARD_MAX']
 		},
 		{
 			title: 'across the whole degree',

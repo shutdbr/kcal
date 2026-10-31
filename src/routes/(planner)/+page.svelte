@@ -19,7 +19,7 @@
 	import Welcome from '$lib/components/Welcome.svelte';
 	import Modal from '$lib/components/Modal.svelte';
 	import FeedbackForm from '$lib/components/FeedbackForm.svelte';
-	import { DATA_UPDATED, hasCode } from '$lib/data';
+	import { hasCode } from '$lib/data';
 	import { fade, fly } from 'svelte/transition';
 	import { loadDescriptions } from '$lib/descriptions.svelte';
 	import { onMount, tick } from 'svelte';
@@ -67,7 +67,7 @@
 			if (hasCode(linkedCourse)) plan.revealCourse(linkedCourse);
 		}
 		// a plan someone shared (#plan=…): read it, tidy the address bar, and
-		// ask before anything changes — it is a copy, never a silent overwrite
+		// ask before anything changes, it is a copy, never a silent overwrite
 		const sharedEncoded = sharedPlanIn(location.hash);
 		if (sharedEncoded) {
 			history.replaceState(history.state, '', location.pathname + location.search);
@@ -120,7 +120,7 @@
 		}
 	}
 
-	// ⌘Z / Ctrl+Z undo, ⇧⌘Z / Ctrl+Y redo — not while typing in a field,
+	// ⌘Z / Ctrl+Z undo, ⇧⌘Z / Ctrl+Y redo, not while typing in a field,
 	// where the browser's own undo belongs
 	function onKey(e: KeyboardEvent) {
 		if (e.key === 'Escape' && plan.railOpen) plan.railOpen = false;
@@ -165,13 +165,11 @@
 		}
 	}
 
-	// how current the course data is, said plainly in the footer
-	const dataMonth = DATA_UPDATED?.toLocaleDateString('en-GB', { month: 'short', year: 'numeric' });
 
 	let panelWidths = $state<Partial<Record<'rail' | 'catalogue' | 'details', number>>>({});
 	let resizing = $state<'rail' | 'catalogue' | 'details' | null>(null);
 
-	// the catalogue prose is a separate chunk so it can't hold up first paint —
+	// the catalogue prose is a separate chunk so it can't hold up first paint,
 	// pull it in once the planner is up and the browser has a spare moment
 	onMount(() => {
 		if ('requestIdleCallback' in window) {
@@ -193,7 +191,7 @@
 				<p>Someone shared their plan with you: {sharedSummary}</p>
 				<p class="shared-note">
 					{savedPlans.full
-						? 'Opening it replaces your board — your saved-plans list is full, so delete one in settings first to keep a copy.'
+						? 'Opening it replaces your board, your saved-plans list is full, so delete one in settings first to keep a copy.'
 						: 'Opening it keeps your current plan as a saved copy (settings → saved plans).'}
 				</p>
 				<div class="shared-actions">
@@ -231,15 +229,15 @@
 		<Modal title="a quick tour" onclose={dismissTour}>
 			<div class="mobile-help">
 				<p>
-					<b>Catalogue</b> — search courses or lecturers, filter by department, and tap any course for
+					<b>Catalogue</b>: search courses or lecturers, filter by department, and tap any course for
 					its description, prerequisites and lecturers.
 				</p>
 				<p>
-					<b>Your plan</b> — tap a course to add, move, remove or grade it. Tap a trimester for a closer
+					<b>Your plan</b>: tap a course to add, move, remove or grade it. Tap a trimester for a closer
 					look.
 				</p>
 				<p>
-					<b>Your degree</b> — choose your programme, check progress and hints, import courses and grades, and
+					<b>Your degree</b>: choose your programme, check progress and hints, import courses and grades, and
 					open settings to save copies or change the theme.
 				</p>
 				<p>Your plan saves automatically in this browser.</p>
@@ -328,28 +326,6 @@
 			{/if}
 		</div>
 
-		<!-- kcal is still being built and students are already using it, so the
-		     board says so plainly at the bottom — with how current the course
-		     data is, and the way to say when something's off -->
-		<p class="wip">
-			<svg
-				viewBox="0 0 24 24"
-				fill="none"
-				stroke="currentColor"
-				stroke-width="1.7"
-				stroke-linecap="round"
-				stroke-linejoin="round"
-				aria-hidden="true"
-			>
-				<path d="M14.7 6.3a4 4 0 0 0 5 5l-8.4 8.4a2.4 2.4 0 0 1-3.4-3.4z" />
-				<path d="M14.7 6.3 17.5 3.5" />
-			</svg>
-			beta ·{#if dataMonth}&nbsp;course data from {dataMonth} ·{/if}
-			<button class="wip-feedback" onclick={() => (plan.feedbackDraft = '')}
-				>something wrong? tell me</button
-			>
-			<span class="site-links">· <a href="/courses">courses</a> · <a href="/programmes">programmes</a> · <a href="/lecturers">lecturers</a></span>
-		</p>
 	</main>
 
 	<!-- a fixed column, so picking a course never shoves a panel over the board -->
@@ -387,52 +363,7 @@
 		height: 100%;
 	}
 
-	// pinned to the foot of the board column: pushed there by .board-main on a
-	// short plan, held there by `sticky` while a long one scrolls past
-	.wip {
-		position: sticky;
-		bottom: 0;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 0.6rem;
-		padding: 1rem 3.2rem;
-		font-size: 1.3rem;
-		color: var(--color-text-muted);
-		background: var(--color-bg-board-page);
-		border-top: 1px solid var(--color-border-light);
-
-		svg {
-			width: 1.5rem;
-			height: 1.5rem;
-		}
-	}
-
-	.site-links a {
-		color: var(--color-accent);
-		text-underline-offset: 0.2em;
-
-		&:hover {
-			color: var(--color-text);
-		}
-	}
-
-	.wip-feedback {
-		padding: 0;
-		font: inherit;
-		color: var(--color-accent);
-		background: none;
-		border: 0;
-		cursor: pointer;
-		text-decoration: underline;
-		text-underline-offset: 0.2em;
-
-		&:hover {
-			color: var(--color-text);
-		}
-	}
-
-	// transient one-liner: a refused drop, a rule the board just applied —
+	// transient one-liner: a refused drop, a rule the board just applied,
 	// a plain white card, nothing more
 	.flash {
 		position: fixed;
@@ -447,7 +378,7 @@
 		border-radius: 8px;
 	}
 
-	// the app is locked to the viewport — each column scrolls on its own,
+	// the app is locked to the viewport, each column scrolls on its own,
 	// so nothing ever runs past the page
 	.app {
 		--rail-w: 24rem;
@@ -488,7 +419,7 @@
 		flex-direction: column;
 		overflow-y: auto;
 		min-height: 0;
-		// the middle column is its own cool zone — a very pale blue-grey field
+		// the middle column is its own cool zone, a very pale blue-grey field
 		background: var(--color-bg-board-page);
 	}
 
@@ -584,12 +515,6 @@
 		.details-open .rightbar {
 			display: flex;
 		}
-		.wip {
-			position: static;
-			flex-wrap: wrap;
-			padding: 1.6rem;
-			line-height: 1.6;
-		}
 		.flash {
 			left: 1.6rem;
 			right: 1.6rem;
@@ -597,7 +522,7 @@
 			font-size: 1.5rem;
 		}
 	}
-	// the folded sidebar's strip — only where the sidebar doesn't fit
+	// the folded sidebar's strip, only where the sidebar doesn't fit
 	.rail-strip {
 		display: none;
 		min-height: 0;
@@ -642,7 +567,7 @@
 		cursor: default;
 	}
 
-	// Tablets: the desktop columns, less the details — they slide in from the
+	// Tablets: the desktop columns, less the details, they slide in from the
 	// right over the board when a course is picked, and back out after
 	@include details-overlay {
 		.app {

@@ -8,7 +8,7 @@ import type { Course, ProgrammeRole, Subject, TrimNum } from '$lib/types';
  */
 export type CurriculumSnapshot = {
 	format: 1;
-	/** content hash — changes whenever anything in the snapshot does */
+	/** content hash, changes whenever anything in the snapshot does */
 	release: string;
 	/** when the catalogue was last scraped (YYYY-MM-DD), shown to students */
 	updatedOn: string | null;
@@ -44,6 +44,7 @@ export type Lecturer = {
 export type PlannerRules = {
 	TRIM_MIN: number;
 	TRIM_NORMAL_MAX: number;
+	TRIM_STANDARD_MAX: number;
 	TRIM_HARD_MAX: number;
 	HEAVY_TRIMS_ALLOWED: number;
 	AUDIT_LIMIT: number;
@@ -89,7 +90,7 @@ export type ProgrammeRequirements = {
 	variant: Variant;
 	credits: { total: number; required: number | null; elective: number | null };
 	required: string[];
-	/** courses in 'choose N' pools — they count toward the required credits */
+	/** courses in 'choose N' pools, they count toward the required credits */
 	picks: string[];
 	electives: string[];
 	choices: ChoiceGroup[];

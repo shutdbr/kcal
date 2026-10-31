@@ -15,18 +15,32 @@
 	// one programme's breakdown open at a time
 	let openProg = $state<string | null>(null);
 	const left = (done: number, needed: number) => (done >= needed ? '✓ done' : `${needed - done} cr left`);
-	// one hint open at a time — opening another folds the last
+	// one hint open at a time, opening another folds the last
 	let openKey = $state<string | null>(null);
 	// the open hint's courses stay lit on the grid; pointing at another hint
 	// previews its courses, then the grid goes back to the open one's
-	let pinned: string[] = [];
-	function toggle(key: string, codes: string[] = []) {
+	// A heading only unfolds. A hint's own line, clicked, lights its courses
+	// on the grid and brings them into view; pointing at a line previews them.
+	let pinned = $state<string | null>(null); // the line whose courses stay lit
+	let pinnedCodes: string[] = [];
+	function toggle(key: string) {
 		openKey = openKey === key ? null : key;
-		pinned = openKey ? codes.filter(hasCode) : [];
-		plan.highlight = pinned;
-		if (pinned.length) focusOnGrid(pinned[0]);
+		unpin();
 	}
-	const restoreHighlight = () => (plan.highlight = pinned);
+	function unpin() {
+		pinned = null;
+		pinnedCodes = [];
+		plan.highlight = [];
+	}
+	function pin(lineKey: string, codes: string[]) {
+		if (pinned === lineKey) return unpin();
+		pinned = lineKey;
+		pinnedCodes = codes.filter(hasCode);
+		plan.highlight = pinnedCodes;
+		if (pinnedCodes.length) focusOnGrid(pinnedCodes[0]);
+	}
+	const preview = (codes: string[]) => (plan.highlight = codes.filter(hasCode));
+	const restoreHighlight = () => (plan.highlight = pinnedCodes);
 	/** bring a course's chip into view on the grid */
 	function focusOnGrid(code: string) {
 		tick().then(() =>
@@ -39,7 +53,7 @@
 	function heading(hint: Hint) {
 		const text = hint.text.toLowerCase();
 		if (/applied version/.test(text)) return 'maths covers the applied one';
-		if (/earlier|prerequisite|before/.test(text)) return 'prerequisites first';
+		if (/earlier|prerequisite|before|needs .+ first/.test(text)) return 'prerequisites first';
 		if (/usually open|not year|only.*year/.test(text)) return 'wrong year';
 		if (/required courses?.*place/.test(text)) return 'required courses missing';
 		if (/credit.*minimum|under.*credit/.test(text)) return 'too few credits';
@@ -48,7 +62,7 @@
 		if (/foundation/.test(text)) return 'foundation courses';
 		if (/audit/.test(text)) return 'audits';
 		if (/transcript/.test(text)) return "doesn't count";
-		if (/offered|trimester/.test(text)) return 'wrong trimester';
+		if (/offered|trimester|doesn't run in/.test(text)) return 'wrong trimester';
 		if (/cgpa/.test(text)) return 'CGPA too low';
 		if (/merit list/.test(text)) return "dean's list";
 		if (/\(fail\)|incomplete|d\/e/.test(text)) return 'grades to sort out';
@@ -60,20 +74,20 @@
 	// a hint that names a real course can jump to it in the details panel
 	const targetOf = (codes: string[]) => codes.find(hasCode);
 
-	// worst first — a broken prerequisite matters more than "2 audits
+	// worst first, a broken prerequisite matters more than "2 audits
 	// remaining", and the panel is long enough that the reds were scrolling
 	// off the bottom under a stack of yellows
 	const RANK = { warn: 0, caution: 1, info: 2, good: 3 };
 	let sorted = $derived([...plan.hints].sort((a, b) => RANK[a.kind] - RANK[b.kind]));
-	// things to fix, and — quieter, below them — notes that are just facts
+	// things to fix, and, quieter, below them, notes that are just facts
 	// ("2 audits left"); the badge counts only the first, so it matches
 	let issues = $derived(sorted.filter((h) => h.kind === 'warn' || h.kind === 'caution'));
-	// "all foundation courses placed" and "3 audits left" were noise — only
+	// "all foundation courses placed" and "3 audits left" were noise, only
 	// notes that change a decision are listed
 	let notes = $derived(sorted.filter((h) => h.kind === 'info'));
 	let problems = $derived(issues.length);
 
-	// hints with the same heading fold into one row — three "prerequisite
+	// hints with the same heading fold into one row, three "prerequisite
 	// order" rows read as one problem in three places, not three problems
 	type Group = { key: string; kind: Hint['kind']; title: string; hints: Hint[]; courses: string[] };
 	function grouped(list: Hint[]): Group[] {
@@ -84,7 +98,7 @@
 			let g = groups.get(key);
 			if (!g) groups.set(key, (g = { key, kind: hint.kind, title, hints: [], courses: [] }));
 			g.hints.push(hint);
-			// the course each hint is about (its first code) — the row's tags
+			// the course each hint is about (its first code), the row's tags
 			const target = targetOf(hint.codes);
 			if (target && !g.courses.includes(byCode(target).code)) g.courses.push(byCode(target).code);
 		}
@@ -94,7 +108,7 @@
 	let noteGroups = $derived(grouped(notes));
 	const TAGS_SHOWN = 2;
 	// does a hint name this course? (a hint can name it by a cross-listed
-	// alias — a prerequisite as the catalogue lists it — so match canonically)
+	// alias, a prerequisite as the catalogue lists it, so match canonically)
 	const names = (hint: Hint, code: string | undefined) =>
 		!!code && hint.codes.some((c) => hasCode(c) && byCode(c).code === code);
 	let warns = $derived(issues.filter((h) => h.kind === 'warn').length);
@@ -112,8 +126,8 @@
 	const shown = (group: Group) =>
 		(group.kind !== 'warn' && group.kind !== 'caution') || showKind[group.kind];
 
-	// picking a course a hint names (the ▲ on its chip) unfolds its first —
-	// worst — group and brings it into view — only on the pick itself, so a
+	// picking a course a hint names (the ▲ on its chip) unfolds its first,
+	// worst, group and brings it into view, only on the pick itself, so a
 	// group folded by hand stays folded as the plan changes around it
 	$effect(() => {
 		const code = plan.selected?.code;
@@ -136,18 +150,8 @@
 
 {#snippet hintGroup(group: Group, gi: number)}
 	{@const open = openKey === group.key}
-	{@const codes = group.hints.flatMap((h) => h.codes)}
-	<!-- pointing at a group lights up every course it names on the grid -->
-	<div
-		class="chip"
-		class:open
-		role="group"
-		onmouseenter={() => (plan.highlight = codes)}
-		onmouseleave={restoreHighlight}
-		onfocusin={() => (plan.highlight = codes)}
-		onfocusout={restoreHighlight}
-	>
-		<button class="hint-heading" aria-expanded={open} aria-controls={`hint-detail-${gi}`} onclick={() => toggle(group.key, codes)}>
+	<div class="chip" class:open role="group">
+		<button class="hint-heading" aria-expanded={open} aria-controls={`hint-detail-${gi}`} onclick={() => toggle(group.key)}>
 			<span class="hint-main">
 				<span class="hint-title">
 					<i class="tone-dot" data-kind={group.kind} aria-hidden="true"></i>{group.title}
@@ -167,11 +171,21 @@
 		{#if open}
 			<ul class="hint-detail" id={`hint-detail-${gi}`} transition:slide={{ duration: reducedMotion() ? 0 : 210, easing: cubicOut }}>
 				{#each group.hints as hint, i (hint.id ?? hint.text + i)}
-					{@const target = targetOf(hint.codes)}
-					<!-- the line about the course open on the right stands out -->
-					<li class:here={names(hint, plan.selected?.code)}>
-						{#if target}
-							<button class="chip-text jump" title="show {plan.courseLabel(target)}" onclick={() => plan.revealCourse(target)}>
+					{@const lineKey = hint.id ?? `${group.key}:${i}`}
+					<!-- the line about the course open on the right stands out; the
+					     line clicked keeps its courses lit on the grid -->
+					<li class:here={names(hint, plan.selected?.code)} class:lit={pinned === lineKey}>
+						{#if hint.codes.some(hasCode)}
+							<button
+								class="chip-text jump"
+								aria-pressed={pinned === lineKey}
+								title="show these courses on the grid"
+								onclick={() => pin(lineKey, hint.codes)}
+								onmouseenter={() => preview(hint.codes)}
+								onmouseleave={restoreHighlight}
+								onfocus={() => preview(hint.codes)}
+								onblur={restoreHighlight}
+							>
 								{hint.text}
 							</button>
 						{:else}
@@ -179,13 +193,13 @@
 							     a text selection on a line that does nothing -->
 							<button class="chip-text" onclick={() => toggle(group.key)}>{hint.text}</button>
 						{/if}
-						<!-- a red hint states a rule the registry enforces, not us — and
+						<!-- a red hint states a rule the registry enforces, not us, and
 						     waivers, one-off offerings and year exemptions are ordinary.
 						     So it can be crossed off, and stops counting against the plan. -->
 						{#if hint.id}
 							<button
 								class="waive"
-								title="cross this off — e.g. you have a waiver for it"
+								title="cross this off, e.g. you have a waiver for it"
 								aria-label="cross off: {hint.text}"
 								onclick={() => plan.waiveHint(hint.id!)}>×</button
 							>
@@ -309,7 +323,7 @@
 <div class="section" data-tour="hints">
 	<h3>
 		hints
-		<!-- what's waiting, by severity — the same marks as the rows below -->
+		<!-- what's waiting, by severity, the same marks as the rows below -->
 		{#if problems}
 			<span class="tally">
 				{#each tally as t (t.kind)}
@@ -331,7 +345,7 @@
 	<!-- The reference plan opens from here: this panel is where a student comes
 	     when something is wrong with their plan, and "what does the department
 	     suggest instead" is the next question. It opens as a window, not a
-	     board mode — see ReferencePath. -->
+	     board mode, see ReferencePath. -->
 	<div class="ref">
 		<button class="ref-btn" onclick={() => (showPath = true)}>
 			<span>suggested path <span aria-hidden="true">→</span></span>
@@ -363,7 +377,7 @@
 			<span class="waived-head">crossed off</span>
 			{#each plan.waivedHints as hint (hint.id)}
 				{@const target = targetOf(hint.codes)}
-				<button class="wv" title="{hint.text} — click to bring it back" onclick={() => plan.unwaiveHint(hint.id!)}>
+				<button class="wv" title="{hint.text}, click to bring it back" onclick={() => plan.unwaiveHint(hint.id!)}>
 					<s>{target ? plan.shownCode(target) : heading(hint)}</s>
 				</button>
 			{/each}
@@ -616,7 +630,7 @@
 
 	}
 
-	// one line per course — long titles ellipsize (full title on hover) so a
+	// one line per course, long titles ellipsize (full title on hover) so a
 	// pool reads as a tidy list instead of a wall of wrapped text
 	.choice-list {
 		margin: 0.4rem 0 0;
@@ -634,7 +648,7 @@
 			text-overflow: ellipsis;
 
 			// own bullet, so a course already on the grid can swap it for a
-			// tick — the pool then reads "3 chosen, 2 to go" at a glance
+			// tick, the pool then reads "3 chosen, 2 to go" at a glance
 			&::before {
 				content: '•';
 				position: absolute;
@@ -673,7 +687,7 @@
 			}
 		}
 
-		// a course the university lists but no term has taught yet — dimmed,
+		// a course the university lists but no term has taught yet, dimmed,
 		// so it reads as "offered on paper, not on the plan"
 		li.missing {
 			color: var(--color-text-muted);
@@ -696,19 +710,19 @@
 		justify-content: space-between;
 		gap: 1rem;
 		width: 100%;
-		padding: 0.75rem 0.6rem;
+		padding: 0.9rem 1.6rem;
 		font: inherit;
 		font-weight: 500;
 		text-align: left;
 		color: inherit;
 		background: transparent;
 		border: 0;
-		border-radius: var(--rail-radius, 4px);
+		border-radius: 0;
 		cursor: pointer;
 		transition: background-color 0.15s ease;
 
 		&:hover {
-			background: var(--color-hover);
+			background: color-mix(in srgb, var(--color-text) 7%, transparent);
 		}
 	}
 
@@ -726,7 +740,7 @@
 		text-indent: -1.6rem;
 	}
 
-	// the courses a row is about, as tiny chips in their own colours —
+	// the courses a row is about, as tiny chips in their own colours,
 	// the same fill they wear on the grid
 	.tags {
 		display: flex;
@@ -756,7 +770,7 @@
 		margin: 0.6rem 0.4rem 0 0;
 	}
 
-	// an open group's hints read as subtext under its heading — no box,
+	// an open group's hints read as subtext under its heading, no box,
 	// muted, indented to start where the heading's words do
 	.hint-detail {
 		display: flex;
@@ -764,7 +778,7 @@
 		gap: 0.5rem;
 		width: 100%;
 		margin: 0;
-		padding: 0 0.6rem 1rem 2.2rem;
+		padding: 0 1.6rem 1rem 3.2rem;
 		list-style: none;
 
 		li {
@@ -781,9 +795,15 @@
 		li.here .chip-text {
 			color: var(--color-text);
 		}
+
+		// the line whose courses are lit on the grid
+		li.lit .chip-text {
+			color: var(--color-text);
+			font-weight: 600;
+		}
 	}
 
-	// severity rides on a small mark — its shape says how bad — not a whole
+	// severity rides on a small mark, its shape says how bad, not a whole
 	// tinted box per hint
 	.tone-dot {
 		@include severity-mark;
@@ -791,13 +811,19 @@
 		vertical-align: -0.05em;
 	}
 
+	// hint rows run edge to edge, each on a dotted rule, so a row's hover
+	// fills the panel's full width
 	.chips {
 		display: flex;
 		flex-direction: column;
-		padding: 0.6rem 1rem 1.2rem;
+		padding: 0.6rem 0 1.2rem;
 	}
 
-	// one row per kind of hint, on a dotted rule — a stack of tinted boxes
+	.chip + .chip {
+		border-top: 1px dotted var(--color-border);
+	}
+
+	// one row per kind of hint, on a dotted rule, a stack of tinted boxes
 	// read as a wall of warnings; the mark in front carries the severity
 	.chip {
 		display: flex;
@@ -831,7 +857,7 @@
 			text-decoration: underline;
 		}
 
-		// only ever on a warn chip — the rules a student can hold a waiver for
+		// only ever on a warn chip, the rules a student can hold a waiver for
 		.waive {
 			flex: none;
 			padding: 0 0.2rem;
@@ -849,10 +875,12 @@
 		}
 	}
 
-	// the notes under the issues: facts, not problems — quieter, so they
+	// the notes under the issues: facts, not problems, quieter, so they
 	// never read as a second wall of warnings
+	// the notes under the issues, set off by a dotted rule that runs edge to edge
 	.chips.notes {
 		padding-top: 0;
+		border-top: 1px dotted var(--color-border);
 
 		.chip {
 			color: var(--color-text-muted);
@@ -895,7 +923,7 @@
 		}
 	}
 
-	// crossed-off rules live below the live hints, quiet and struck through —
+	// crossed-off rules live below the live hints, quiet and struck through,
 	// still visible, so a waiver is a decision the student can see and undo,
 	// not a hint that silently vanished
 	.waived {

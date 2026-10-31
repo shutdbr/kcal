@@ -291,6 +291,10 @@
 // programmes (untinted); an audit is a separate student-set flag layered on
 // top (see .is-audit).
 @mixin course-type-fill($audits: true) {
+	// text, dot and × all in the card's ink (see --color-course-ink)
+	--course-ink: var(--color-course-ink);
+	color: var(--course-ink);
+
 	&[data-type='required'] {
 		background: subject-tone(required);
 		border: 1px solid subject-tone(required-deep);
@@ -301,9 +305,12 @@
 		background: var(--color-course-core);
 		border: 1px solid var(--color-course-core-deep);
 	}
+	// an elective: a pale card edged in its subject's colour — outlined where
+	// a required course is filled
 	&[data-type='elective'] {
 		background: subject-tone(elective);
-		border: 1px solid subject-tone(elective-deep);
+		border: 1px solid color-mix(in srgb, subject-tone(elective-deep) 70%, transparent);
+		border-left: 4px solid subject-tone(required-deep);
 	}
 	&[data-type='other'] {
 		background: var(--color-course-audit);
@@ -322,16 +329,15 @@
 // the leading markers on a course (required dot, warning ×) share one size
 $mark-size: 0.8rem;
 
-// The required marker: a small dot leading a course's first line, in its
-// subject's ink
+// The required marker: a small dot leading a course's first line, in the
+// card's ink on a course card, its subject's ink anywhere else
 @mixin required-dot {
 	flex-shrink: 0;
 	display: inline-block;
 	width: $mark-size;
 	height: $mark-size;
 	border-radius: 50%;
-	background: subject-tone(ink);
-	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4); // one fine lit edge
+	background: var(--course-ink, #{subject-tone(ink)});
 }
 
 // Severity markers: how bad a hint is, told by its mark's shape as well

@@ -4,6 +4,7 @@
 	import { settings, TEXT_SIZES, type ThemeChoice } from '$lib/settings.svelte';
 	import { savedPlans, MAX_SAVES } from '$lib/features/plans/local-plans.svelte';
 	import { shareLink } from '$lib/features/plans/share';
+	import { trimesterName } from '$lib/types';
 	import { byCode, subjectById } from '$lib/data';
 	import Modal from './Modal.svelte';
 	import FeedbackForm from './FeedbackForm.svelte';
@@ -40,7 +41,7 @@
 		saveName = '';
 	}
 
-	// loading replaces what is on the board, so it asks twice — same guard as
+	// loading replaces what is on the board, so it asks twice, same guard as
 	// "start over", for the same reason
 	let confirmLoad = $state<string | null>(null);
 	let confirmDelete = $state<string | null>(null);
@@ -81,7 +82,7 @@
 		new Date(ms).toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
 
 	// ── share ──
-	// the plan as plain text, trimester by trimester — something to paste to
+	// the plan as plain text, trimester by trimester, something to paste to
 	// an advisor or a friend, since saved plans never leave this browser
 	let shared = $state(false);
 	async function copyPlan() {
@@ -92,7 +93,7 @@
 				const codes = plan.slotCourses(y, t);
 				if (codes.length)
 					lines.push(
-						`Y${y} T${t} (${plan.slotCredits(y, t)} cr): ${codes.map((c) => `${byCode(c).code} ${byCode(c).title}`).join('; ')}`
+						`${trimesterName(y, t)} (${plan.slotCredits(y, t)} cr): ${codes.map((c) => `${byCode(c).code} ${byCode(c).title}`).join('; ')}`
 					);
 			}
 		lines.push('', `${plan.totalPlacedCredits} of ${plan.creditMinimum} credits placed`);
@@ -101,11 +102,11 @@
 			shared = true;
 			setTimeout(() => (shared = false), 1800);
 		} catch {
-			// clipboard blocked — nothing else to fall back to here
+			// clipboard blocked, nothing else to fall back to here
 		}
 	}
 
-	// a link that opens a copy of this plan — for a friend or an advisor, no
+	// a link that opens a copy of this plan, for a friend or an advisor, no
 	// account needed. Their own board is never replaced without asking.
 	let linkCopied = $state(false);
 	let linkError = $state('');
@@ -168,10 +169,14 @@
 
 	<section>
 		<h3>help</h3>
-		<p class="note">a walk around the board — what each part does and where things live.</p>
+		<p class="note">a walk around the board, what each part does and where things live.</p>
 		<div class="actions">
 			<button onclick={ontour}><PixelIcon name="help" size="1.3rem" /> quick tour</button>
 		</div>
+		<p class="note browse">
+			browse every <a href="/courses">course</a>, <a href="/programmes">programme</a> and
+			<a href="/lecturers">lecturer</a>.
+		</p>
 	</section>
 
 	<section>
@@ -207,7 +212,7 @@
 	<section>
 		<h3>saved plans</h3>
 		<p class="note">
-			your board autosaves on its own. this keeps a named copy you can come back to — all in this
+			your board autosaves on its own. this keeps a named copy you can come back to, all in this
 			browser, nothing leaves it.
 		</p>
 
@@ -222,7 +227,7 @@
 		</div>
 
 		{#if savedPlans.full}
-			<p class="note warn">that's {MAX_SAVES} saved plans — delete one to save another.</p>
+			<p class="note warn">that's {MAX_SAVES} saved plans, delete one to save another.</p>
 		{/if}
 		{#if savedPlans.error}
 			<p class="note warn">{savedPlans.error}</p>
@@ -255,7 +260,7 @@
 	<section>
 		<h3>your plan</h3>
 		<p class="note">
-			saved in this browser only. share a link — whoever opens it gets their own copy, without your grades — or
+			saved in this browser only. share a link, whoever opens it gets their own copy, without your grades, or
 			copy it as text.
 		</p>
 		<div class="actions">
@@ -357,7 +362,7 @@
 		font-size: 1.2rem;
 		@include store-button($armable: true);
 
-		// a second tap is what actually does it — the button says so, and
+		// a second tap is what actually does it, the button says so, and
 		// turns red (store-button's armed state)
 	}
 
@@ -420,6 +425,15 @@
 		font-size: 1.2rem;
 		line-height: 1.45;
 		color: var(--color-text-muted);
+
+		a {
+			color: var(--color-accent);
+			text-underline-offset: 0.2em;
+
+			&:hover {
+				color: var(--color-text);
+			}
+		}
 	}
 
 	.actions {

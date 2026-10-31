@@ -30,7 +30,7 @@
 	});
 
 	// filter chips: one per distinct selected subject, plus the foundation
-	// core — always on offer, whatever the programmes are. The open minor
+	// core, always on offer, whatever the programmes are. The open minor
 	// has no courses of its own, so it gets no chip.
 	let filterSubjects = $derived([
 		...new Set([...plan.selectedSubjects.filter((s) => s !== 'open'), 'core'])
@@ -38,7 +38,7 @@
 
 	// which subject's code a cross-listed course should be shown under: the
 	// active filter if it pins one down, else the single programme subject it
-	// belongs to — otherwise leave it on its canonical code
+	// belongs to, otherwise leave it on its canonical code
 	function contextFor(subjects: string[]): string | undefined {
 		if (plan.catalogueSubject && subjects.includes(plan.catalogueSubject))
 			return plan.catalogueSubject;
@@ -144,7 +144,7 @@
 		<div class="cards">
 			{#each plan.catalogue as course (course.code)}
 				<!-- card width IS the credit weight: 4cr fills the row, 2cr ½,
-				     1cr ¼ — so they pack into rows of 4 (2+2, 2+1+1, …). A 3cr
+				     1cr ¼, so they pack into rows of 4 (2+2, 2+1+1, …). A 3cr
 				     course (the KCCS foundation set) also takes the full row:
 				     span-3 cards would strand a dead quarter-column beside
 				     every one of them, since nothing 1cr sits nearby to fill it -->
@@ -210,9 +210,12 @@
 		}
 	}
 
+	// search and filters, closed off from the cards below by a hairline that
+	// runs edge to edge, like the sidebar's section rules
 	.controls {
 		flex-shrink: 0;
 		padding: 1.6rem 1.4rem 0;
+		border-bottom: 1px solid var(--color-border-light);
 	}
 
 	.scroll {
@@ -229,7 +232,7 @@
 		display: flex;
 	}
 
-	// a text field is something you type INTO — recessed, not raised like the
+	// a text field is something you type INTO, recessed, not raised like the
 	// buttons around it
 	.search-icon {
 		position: absolute;
@@ -266,13 +269,13 @@
 			color: var(--color-text-muted);
 		}
 
-		// the button covers clearing — hide any native duplicate ×
+		// the button covers clearing, hide any native duplicate ×
 		&::-webkit-search-cancel-button {
 			display: none;
 		}
 	}
 
-	// the round grey clear button iOS puts in its search field — springs in
+	// the round grey clear button iOS puts in its search field, springs in
 	// when there's something to clear
 	.clear-search {
 		position: absolute;
@@ -314,14 +317,11 @@
 		}
 	}
 
-	// a plain hairline under the filters closes off the search area from the
-	// cards scrolling below it — the same rule the sidebar's sections use
 	.filters {
 		display: flex;
 		gap: 1.2rem;
 		flex-wrap: wrap;
 		padding: 1.4rem 0.4rem 1.6rem;
-		border-bottom: 1px solid var(--color-border-light);
 	}
 
 	.filter {
@@ -331,7 +331,7 @@
 		font-size: var(--text-body);
 		cursor: pointer;
 
-		// kccs is a different beast (all-or-nothing core view) — set it
+		// kccs is a different beast (all-or-nothing core view), set it
 		// apart from the subject chips with a gap and a divider
 		&.core {
 			margin-left: auto;
@@ -382,10 +382,16 @@
 	.mobile-intro {
 		display: none;
 	}
+	// a small capsule, so the count reads as a tally rather than loose text
 	.result-count {
+		padding: 0.2rem 0.9rem;
 		font-size: 1.2rem;
+		font-variant-numeric: tabular-nums; // the digits don't jitter as filters change
 		color: var(--color-text-muted);
 		white-space: nowrap;
+		background: color-mix(in srgb, var(--color-bg-light) 60%, transparent);
+		border: 1px solid var(--color-border-card);
+		border-radius: 999px;
 	}
 	.department-filter {
 		display: flex;

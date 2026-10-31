@@ -9,7 +9,7 @@
 	let showSettings = $state(false);
 
 	// changing the programme re-lays-out a plan the student has never edited,
-	// and leaves an edited one alone — see Plan.programmeChanged
+	// and leaves an edited one alone, see Plan.programmeChanged
 
 	// a subject already claimed by an earlier role disappears from the later
 	// roles' lists (plan.minorOpts …); changing an earlier role onto a later
@@ -42,7 +42,7 @@
 {/if}
 
 <div class="controls" data-tour="programme">
-	<label class="row" title="4-year degree — uncheck for the 3-year track">
+	<label class="row" title="4-year degree, uncheck for the 3-year track">
 		<span class="row-label">4-year</span>
 		<input type="checkbox" class="tick" bind:checked={plan.fourYear} onchange={distinct} />
 	</label>
@@ -166,7 +166,7 @@
 		color: var(--color-text);
 	}
 
-	// plain flat dropdowns — no gloss, no shadow
+	// plain flat dropdowns, no gloss, no shadow
 	select {
 		width: 100%;
 		min-width: 0; // long option labels must not push past the panel edge

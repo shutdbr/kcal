@@ -27,12 +27,12 @@
 	// a quarter-width card only has room for one short line
 	let compactText = $derived(plan.showCodes ? shownCode : course.title);
 	let alsoCodes = $derived(course.codes.filter((c) => c !== shownCode));
-	// the tools courses are cross-listed across every department — showing
+	// the tools courses are cross-listed across every department, showing
 	// all of them makes the card balloon, so cap it and count the rest
 	const XLIST_MAX = 2;
 	let xlistShown = $derived(alsoCodes.slice(0, XLIST_MAX));
 	let xlistExtra = $derived(alsoCodes.length - xlistShown.length);
-	// a 1-credit card is only a quarter of the row wide — too narrow for a
+	// a 1-credit card is only a quarter of the row wide, too narrow for a
 	// title or crosslist row without clipping; clamp the title to two lines.
 	let pending = $derived(course.pendingCredits && course.credits === 0);
 	let compact = $derived(!mobile && !pending && course.credits <= 1);
@@ -90,7 +90,7 @@
 		ondragstart={dragstart}
 		ondragend={() => (plan.dragging = null)}
 		onclick={() => (plan.selected = course)}
-		title={pending ? `${label} — credits awaiting confirmation` : mobile ? `view ${label}` : `drag ${label} onto the grid`}
+		title={pending ? `${label}, credits awaiting confirmation` : mobile ? `view ${label}` : `drag ${label} onto the grid`}
 	>
 		{#if plan.showCodes || compact}
 			<span class="code">
@@ -192,7 +192,7 @@
 			}
 		}
 
-		// 1-credit courses are a quarter-row wide — just the code, centred,
+		// 1-credit courses are a quarter-row wide, just the code, centred,
 		// so the little card reads as a neat chip instead of a cramped mess
 		&.compact {
 			align-items: center;
@@ -224,8 +224,8 @@
 		font-weight: 700;
 	}
 
-	// the cross-listed departments — muted so the code you're browsing
-	// under stays the anchor, but visible so it's obvious it's shared.
+	// the cross-listed departments, lighter weight so the code you're
+	// browsing under stays the anchor, but visible so it's obvious it's shared.
 	// Ellipsizes rather than pushing past the (often narrow) card edge.
 	.xlist {
 		min-width: 0;
@@ -233,7 +233,6 @@
 		overflow: hidden;
 		text-overflow: ellipsis;
 		font-weight: 400;
-		color: var(--color-text-muted);
 		white-space: nowrap;
 
 		&.alone {
@@ -251,7 +250,7 @@
 		}
 	}
 
-	// two lines then ellipsis — enough to tell courses apart without letting
+	// two lines then ellipsis, enough to tell courses apart without letting
 	// a long title stretch the card taller than its neighbours
 	.title {
 		font-size: var(--text-body);

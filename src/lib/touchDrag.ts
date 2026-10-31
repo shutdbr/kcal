@@ -1,7 +1,7 @@
 /**
  * Course dragging on a touch screen. A long press on anything draggable lifts
- * it, and from there the finger drives the same events a mouse drag fires —
- * dragstart, dragenter/over/leave, drop, dragend — so every drop zone, the
+ * it, and from there the finger drives the same events a mouse drag fires,
+ * dragstart, dragenter/over/leave, drop, dragend, so every drop zone, the
  * grid's aim and dragMotion's tethered preview work unchanged. A quick swipe
  * still scrolls and a tap is still a tap. Near a scroller's top or bottom edge
  * the drag scrolls it, as a mouse drag would.
@@ -10,7 +10,7 @@ const HOLD_MS = 280; // long enough that a scroll's touch-down never lifts anyth
 const SLOP = 8; // px a finger may wander while holding before it counts as a scroll
 const EDGE = 56; // px from a scroller's edge where a drag starts scrolling it
 
-// the parts of a DataTransfer the drag handlers use — a real one can't be
+// the parts of a DataTransfer the drag handlers use, a real one can't be
 // built on every browser that has touch
 function transfer() {
 	const store = new Map<string, string>();
@@ -89,7 +89,7 @@ export function touchDrag(root: HTMLElement) {
 		if (!dropped && over) fire('dragleave', over);
 		if (source) {
 			fire('dragend', source);
-			// a chip that moved cells was re-rendered — the page still hears it end
+			// a chip that moved cells was re-rendered, the page still hears it end
 			if (!source.isConnected) fire('dragend', root);
 		}
 		reset();
@@ -133,7 +133,7 @@ export function touchDrag(root: HTMLElement) {
 	}
 
 	function end(e: TouchEvent) {
-		if (!dragging) return reset(); // a tap — its click goes through as usual
+		if (!dragging) return reset(); // a tap, its click goes through as usual
 		e.preventDefault(); // and no click lands on whatever was under the finger
 		const el = document.elementFromPoint(x, y);
 		const dropped = !!el && fire('dragover', el).defaultPrevented && fire('drop', el).defaultPrevented;
@@ -146,7 +146,7 @@ export function touchDrag(root: HTMLElement) {
 	}
 
 	// while a finger holds a course, the browser's own long-press drag and
-	// callout stand aside — this does the dragging
+	// callout stand aside, this does the dragging
 	function native(e: Event) {
 		if (source && e.isTrusted) {
 			e.preventDefault();

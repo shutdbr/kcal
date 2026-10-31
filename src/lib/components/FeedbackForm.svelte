@@ -1,7 +1,7 @@
 <script lang="ts">
-	// The one feedback form — in settings, and in the window a course, a hint
+	// The one feedback form, in settings, and in the window a course, a hint
 	// or the footer opens (pre-filled with what it's about). Posts to the
-	// netlify form declared in app.html — no server of our own, submissions
+	// netlify form declared in app.html, no server of our own, submissions
 	// land in the netlify dashboard. Whatever plan the student is on rides
 	// along, since "the grid is wrong" needs the grid to make sense.
 	import type { Plan } from '$lib/plan.svelte';
@@ -9,7 +9,7 @@
 	let { plan, prefill = '', onsent }: { plan: Plan; prefill?: string; onsent?: () => void } = $props();
 
 	// the form is created fresh each time it opens, so taking the pre-fill once
-	// is the point — later edits are the student's
+	// is the point, later edits are the student's
 	// svelte-ignore state_referenced_locally
 	let message = $state(prefill);
 	let copied = $state(false);
@@ -34,7 +34,7 @@
 				headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
 				body: new URLSearchParams({
 					'form-name': 'feedback',
-					'bot-field': '', // honeypot — a bot fills this in, a student can't see it
+					'bot-field': '', // honeypot, a bot fills this in, a student can't see it
 					message: message.trim(),
 					plan: context,
 					credits: `${plan.totalPlacedCredits}/${plan.degreeTotal}`
@@ -48,7 +48,7 @@
 				onsent?.();
 			}, 1400);
 		} catch {
-			// offline, or running somewhere netlify isn't handling the post —
+			// offline, or running somewhere netlify isn't handling the post,
 			// the text stays in the box and "copy instead" still works
 			failed = true;
 		} finally {
@@ -63,7 +63,7 @@
 			copied = true;
 			setTimeout(() => (copied = false), 1800);
 		} catch {
-			// clipboard blocked — the textarea is right there to select from
+			// clipboard blocked, the textarea is right there to select from
 		}
 	}
 </script>
@@ -71,7 +71,7 @@
 <textarea
 	bind:value={message}
 	rows="5"
-	placeholder="something wrong, confusing or missing? tell me — a wrong prerequisite, a course that isn't offered when it says, anything."
+	placeholder="something wrong, confusing or missing? tell me, a wrong prerequisite, a course that isn't offered when it says, anything."
 ></textarea>
 
 <div class="actions">
@@ -81,7 +81,7 @@
 	<button disabled={!message.trim()} onclick={copy}>{copied ? 'copied ✓' : 'copy instead'}</button>
 </div>
 {#if sent}
-	<p class="note">thank you — it's in.</p>
+	<p class="note">thank you, it's in.</p>
 {:else if failed}
 	<p class="note">that didn't go through. try again, or copy the text and send it another way.</p>
 {/if}

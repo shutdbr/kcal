@@ -130,6 +130,7 @@
 	"rules": {
 		"TRIM_MIN": 12,
 		"TRIM_NORMAL_MAX": 16,
+		"TRIM_STANDARD_MAX": 18,
 		"TRIM_HARD_MAX": 20,
 		"HEAVY_TRIMS_ALLOWED": 2,
 		"AUDIT_LIMIT": 2,
@@ -24668,7 +24669,7 @@
 					],
 					"choices": [
 						{
-							"rule": "Also required — not in the catalogue yet",
+							"rule": "Also required, not in the catalogue yet",
 							"pick": 2,
 							"courses": [
 								{
@@ -24726,7 +24727,7 @@
 					],
 					"choices": [
 						{
-							"rule": "Also required — not in the catalogue yet",
+							"rule": "Also required, not in the catalogue yet",
 							"pick": 2,
 							"courses": [
 								{
@@ -27829,7 +27830,7 @@
 							]
 						},
 						{
-							"rule": "Also required — not in the catalogue yet",
+							"rule": "Also required, not in the catalogue yet",
 							"pick": 1,
 							"courses": [
 								{
@@ -27923,7 +27924,7 @@
 							]
 						},
 						{
-							"rule": "Also required — not in the catalogue yet",
+							"rule": "Also required, not in the catalogue yet",
 							"pick": 1,
 							"courses": [
 								{
@@ -28017,7 +28018,7 @@
 							]
 						},
 						{
-							"rule": "Also required — not in the catalogue yet",
+							"rule": "Also required, not in the catalogue yet",
 							"pick": 1,
 							"courses": [
 								{
@@ -28111,7 +28112,7 @@
 							]
 						},
 						{
-							"rule": "Also required — not in the catalogue yet",
+							"rule": "Also required, not in the catalogue yet",
 							"pick": 1,
 							"courses": [
 								{
@@ -28945,12 +28946,17 @@
 						"MATH405"
 					],
 					"electives": [
-						"COMP321",
-						"DATA237",
+						"COMP330",
+						"MATH061",
+						"MATH066",
+						"MATH256",
 						"MATH342",
+						"MATH343",
 						"MATH346",
 						"MATH352",
-						"PHYS303"
+						"MATH381",
+						"MATH307",
+						"MATH334"
 					],
 					"choices": [
 						{
@@ -29088,12 +29094,24 @@
 						"MATH328"
 					],
 					"electives": [
-						"COMP321",
-						"DATA237",
+						"COMP330",
+						"MATH061",
+						"MATH066",
+						"MATH256",
+						"MATH304",
 						"MATH342",
+						"MATH343",
+						"MATH344",
 						"MATH346",
 						"MATH352",
-						"PHYS303"
+						"MATH381",
+						"MATH405",
+						"MATH414",
+						"MATH427",
+						"MATH434",
+						"MATH442",
+						"MATH307",
+						"MATH334"
 					],
 					"choices": [
 						{
@@ -29198,12 +29216,24 @@
 						"MATH328"
 					],
 					"electives": [
-						"COMP321",
-						"DATA237",
+						"COMP330",
+						"MATH061",
+						"MATH066",
+						"MATH256",
+						"MATH304",
 						"MATH342",
+						"MATH343",
+						"MATH344",
 						"MATH346",
 						"MATH352",
-						"PHYS303"
+						"MATH381",
+						"MATH405",
+						"MATH414",
+						"MATH427",
+						"MATH434",
+						"MATH442",
+						"MATH307",
+						"MATH334"
 					],
 					"choices": [
 						{
@@ -29308,12 +29338,24 @@
 						"MATH328"
 					],
 					"electives": [
-						"COMP321",
-						"DATA237",
+						"COMP330",
+						"MATH061",
+						"MATH066",
+						"MATH256",
+						"MATH304",
 						"MATH342",
+						"MATH343",
+						"MATH344",
 						"MATH346",
 						"MATH352",
-						"PHYS303"
+						"MATH381",
+						"MATH405",
+						"MATH414",
+						"MATH427",
+						"MATH434",
+						"MATH442",
+						"MATH307",
+						"MATH334"
 					],
 					"choices": [
 						{
@@ -29407,12 +29449,34 @@
 					],
 					"picks": [],
 					"electives": [
-						"COMP321",
-						"DATA237",
+						"COMP330",
+						"MATH061",
+						"MATH066",
+						"MATH203",
+						"MATH226",
+						"MATH231",
+						"MATH256",
+						"MATH303",
+						"MATH304",
+						"MATH305",
+						"MATH313",
+						"MATH328",
+						"MATH332",
+						"MATH333",
+						"MATH341",
 						"MATH342",
+						"MATH343",
+						"MATH344",
 						"MATH346",
 						"MATH352",
-						"PHYS303"
+						"MATH381",
+						"MATH405",
+						"MATH414",
+						"MATH427",
+						"MATH434",
+						"MATH442",
+						"MATH307",
+						"MATH334"
 					],
 					"choices": [],
 					"pathway": []
@@ -29433,12 +29497,34 @@
 					],
 					"picks": [],
 					"electives": [
-						"COMP321",
-						"DATA237",
+						"COMP330",
+						"MATH061",
+						"MATH066",
+						"MATH203",
+						"MATH226",
+						"MATH231",
+						"MATH256",
+						"MATH303",
+						"MATH304",
+						"MATH305",
+						"MATH313",
+						"MATH328",
+						"MATH332",
+						"MATH333",
+						"MATH341",
 						"MATH342",
+						"MATH343",
+						"MATH344",
 						"MATH346",
 						"MATH352",
-						"PHYS303"
+						"MATH381",
+						"MATH405",
+						"MATH414",
+						"MATH427",
+						"MATH434",
+						"MATH442",
+						"MATH307",
+						"MATH334"
 					],
 					"choices": [],
 					"pathway": []
@@ -29459,12 +29545,34 @@
 					],
 					"picks": [],
 					"electives": [
-						"COMP321",
-						"DATA237",
+						"COMP330",
+						"MATH061",
+						"MATH066",
+						"MATH203",
+						"MATH226",
+						"MATH231",
+						"MATH256",
+						"MATH303",
+						"MATH304",
+						"MATH305",
+						"MATH313",
+						"MATH328",
+						"MATH332",
+						"MATH333",
+						"MATH341",
 						"MATH342",
+						"MATH343",
+						"MATH344",
 						"MATH346",
 						"MATH352",
-						"PHYS303"
+						"MATH381",
+						"MATH405",
+						"MATH414",
+						"MATH427",
+						"MATH434",
+						"MATH442",
+						"MATH307",
+						"MATH334"
 					],
 					"choices": [],
 					"pathway": []
@@ -29485,12 +29593,34 @@
 					],
 					"picks": [],
 					"electives": [
-						"COMP321",
-						"DATA237",
+						"COMP330",
+						"MATH061",
+						"MATH066",
+						"MATH203",
+						"MATH226",
+						"MATH231",
+						"MATH256",
+						"MATH303",
+						"MATH304",
+						"MATH305",
+						"MATH313",
+						"MATH328",
+						"MATH332",
+						"MATH333",
+						"MATH341",
 						"MATH342",
+						"MATH343",
+						"MATH344",
 						"MATH346",
 						"MATH352",
-						"PHYS303"
+						"MATH381",
+						"MATH405",
+						"MATH414",
+						"MATH427",
+						"MATH434",
+						"MATH442",
+						"MATH307",
+						"MATH334"
 					],
 					"choices": [],
 					"pathway": []
@@ -31378,5 +31508,5 @@
 			}
 		}
 	],
-	"release": "224911a730af"
+	"release": "f94fcb0069ef"
 }

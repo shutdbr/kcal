@@ -9,7 +9,7 @@
 
 <h1>Programmes</h1>
 <p class="lede">
-	What each major, minor and concentration asks for — credits, required courses and the choices you make. These are
+	What each major, minor and concentration asks for: credits, required courses and the choices you make. These are
 	the rules for the {data.batches} batches.
 </p>
 

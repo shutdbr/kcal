@@ -17,7 +17,7 @@
 
 <svelte:window onkeydown={(e) => e.key === 'Escape' && onclose()} />
 
-<!-- only a click on the backdrop ITSELF closes — one that bubbled up out of
+<!-- only a click on the backdrop ITSELF closes, one that bubbled up out of
      the card is a click on the card -->
 <div
 	class="backdrop"
@@ -112,7 +112,7 @@
 		}
 	}
 
-	// a long dialog scrolls inside itself — the page behind never moves
+	// a long dialog scrolls inside itself, the page behind never moves
 	.body {
 		min-height: 0;
 		overflow-y: auto;

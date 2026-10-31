@@ -32,7 +32,7 @@
 		</p>
 
 		<h3>Required</h3>
-		<CourseList courses={p.required} empty="No fixed course — see the choices below." />
+		<CourseList courses={p.required} empty="No fixed course, see the choices below." />
 
 		{#each p.choices as choice, i (i)}
 			<h3>{choice.rule} <small>choose {choice.pick}</small></h3>

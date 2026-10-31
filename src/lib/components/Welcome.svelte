@@ -2,7 +2,7 @@
 	// The first thing a new visitor sees: two questions about their degree, so
 	// the grid behind opens on their own department's suggested path instead
 	// of someone else's example. The grid re-lays itself out live as they
-	// answer, and every answer is also in the sidebar — nothing here is final.
+	// answer, and every answer is also in the sidebar, nothing here is final.
 	import type { Plan } from '$lib/plan.svelte';
 	import { MAJOR_SUBJECTS } from '$lib/data';
 	import Modal from './Modal.svelte';
@@ -15,7 +15,7 @@
 
 <Modal title="welcome to kcal" width="54rem" onclose={ondone}>
 	<p class="lede">
-		plan your whole Krea degree, trimester by trimester — what's required, what's left, and where each
+		plan your whole Krea degree, trimester by trimester, what's required, what's left, and where each
 		course fits.
 	</p>
 
@@ -100,7 +100,7 @@
 	</ol>
 
 	<p class="note">
-		I'll lay out your department's suggested path to start from — move, add or drop anything. your plan
+		I'll lay out your department's suggested path to start from, move, add or drop anything. your plan
 		saves in this browser, and you can change all of this later in the sidebar.
 	</p>
 

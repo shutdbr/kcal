@@ -1,8 +1,8 @@
 <script lang="ts">
 	import PixelIcon from '../PixelIcon.svelte';
 	import { MAX_YEARS, type Plan } from '$lib/plan.svelte';
-	import type { TrimNum } from '$lib/types';
-	import { byCode, isCore, subjectById } from '$lib/data';
+	import { trimesterName, type TrimNum } from '$lib/types';
+	import { TRIM_HARD_MAX, TRIM_NORMAL_MAX, byCode, isCore, subjectById } from '$lib/data';
 	import { flip } from 'svelte/animate';
 	import { fade, fly, scale } from 'svelte/transition';
 	import { backOut } from 'svelte/easing';
@@ -21,8 +21,8 @@
 	// a year's GPA capsule opens the grades window on just that year
 	let gradesYear = $state<number | undefined>(undefined);
 
-	// grade view changes what the whole board means — credits become TGPA, chips
-	// take a mark — so the first time it's switched on, say so. Once dismissed
+	// grade view changes what the whole board means, credits become TGPA, chips
+	// take a mark, so the first time it's switched on, say so. Once dismissed
 	// (or once they've read it and turned grade view off) it stays gone.
 	const GRADE_HINT_KEY = 'kcal-grade-hint-seen';
 	let showGradeHint = $state(false);
@@ -35,8 +35,8 @@
 	// and lets go of any chips it had lit
 	const TYPE_KEYS = [
 		{ type: 'core', label: 'kccs', note: 'the foundation core every student takes, mostly in year 1' },
-		{ type: 'required', label: 'required', note: 'required by your major, minor or concentration' },
-		{ type: 'elective', label: 'elective', note: 'an elective that counts toward your programme' },
+		{ type: 'required', label: 'required (filled)', note: 'required by your major, minor or concentration' },
+		{ type: 'elective', label: 'elective (outlined)', note: 'an elective that counts toward your programme' },
 		{ type: 'other', label: 'other dept.', note: 'counts toward none of your programmes' }
 	] as const;
 	let keyEl: HTMLDivElement;
@@ -47,10 +47,10 @@
 	}
 
 	// The eligible cell nearest the cursor. Drops are resolved against the whole
-	// grid, so releasing anywhere over it — even in the gap between cells — lands
+	// grid, so releasing anywhere over it, even in the gap between cells, lands
 	// the course in the closest slot instead of snapping back to the catalogue.
 	// The year-1 core-only cells only attract a foundation course. The dropped
-	// code is passed in — plan.dragging is already cleared by drop time.
+	// code is passed in, plan.dragging is already cleared by drop time.
 	function nearestSlot(x: number, y: number, code: string): { year: number; trim: TrimNum } | null {
 		if (!gridEl) return null;
 		const draggingCore = isCore(code);
@@ -72,7 +72,7 @@
 	}
 
 	// Where in the target cell a course would go: its position among the
-	// cell's other courses, read off the chips under the cursor — before a
+	// cell's other courses, read off the chips under the cursor, before a
 	// chip if the cursor is above its row, or in its row and short of its
 	// middle (its vertical middle when titles stack the chips in rows). The
 	// dashed landing slot opens up right there. Dropping a course back where
@@ -143,7 +143,7 @@
 
 	function drop(e: DragEvent) {
 		e.preventDefault();
-		// land where the open slot is showing — re-measuring now would read
+		// land where the open slot is showing, re-measuring now would read
 		// chips that have already stepped aside for it
 		const shown = aimed;
 		const shownIn = dropTarget;
@@ -178,8 +178,12 @@
 		plan.clearPlan();
 	}
 
-	// "1 required course", "3 required courses" — the bulk actions' labels
+	// "1 required course", "3 required courses", the bulk actions' labels
 	const count = (n: number, noun: string) => `${n} ${noun}${n === 1 ? '' : 's'}`;
+
+	// the trimester load meter: one segment per ordinary 4-credit course, up to the cap
+	const LOAD_STEP = 4;
+	const LOAD_SEGMENTS = Array.from({ length: Math.ceil(TRIM_HARD_MAX / LOAD_STEP) }, (_, i) => i * LOAD_STEP);
 
 	function open(year: number, trim: TrimNum) {
 		plan.zoom = { year, trim };
@@ -187,7 +191,7 @@
 
 	// a press that starts on a course, a suggestion or a clear button is about
 	// that thing: if the pointer slips off it before release (the chip shrinks
-	// under the press), the click lands on the cell — it mustn't zoom
+	// under the press), the click lands on the cell, it mustn't zoom
 	let pressOnItem = false;
 
 	// a cell takes on the colours of the courses in it, weighted by how many
@@ -264,7 +268,7 @@
 	<button
 		class:active={plan.gradeMode}
 		aria-pressed={plan.gradeMode}
-		title="grade view — enter grades and track your CGPA"
+		title="grade view, enter grades and track your CGPA"
 		onclick={() => {
 			plan.gradeMode = !plan.gradeMode;
 			if (plan.gradeMode && !localStorage.getItem(GRADE_HINT_KEY)) showGradeHint = true;
@@ -295,7 +299,7 @@
 		<div class="keys">
 			<button class:active={keyOpen} aria-expanded={keyOpen} aria-controls="colour-key" onclick={() => setKeyOpen(!keyOpen)}>
 				<!-- just the essentials: a square per subject in the hue its courses
-				     wear, then required and elective — kccs and other dept. wait
+				     wear, then required and elective, kccs and other dept. wait
 				     in the dropdown -->
 				{#if plan.programmes.some((p) => p.subject !== 'open')}
 					<span class="key-swatches" aria-hidden="true">
@@ -318,7 +322,7 @@
 						</li>
 					{/each}
 				</ul>
-				<!-- which hue is which subject — each keeps its colour on every plan -->
+				<!-- which hue is which subject, each keeps its colour on every plan -->
 				{#if plan.programmes.some((p) => p.subject !== 'open')}
 					<ul class="legend" aria-label="subject colour legend">
 						{#each plan.programmes as prog, i (prog.role + prog.subject)}
@@ -349,7 +353,7 @@
 		</button>
 	{:else}
 		<!-- the count and what it counts against, as one capsule: the number
-		     first, then the switch for its denominator — the minimum the degree
+		     first, then the switch for its denominator, the minimum the degree
 		     needs, or the most you may register across your tenure -->
 		<div class="credit-goal bar-end">
 			<button
@@ -357,8 +361,8 @@
 				class:over={plan.totalPlacedCredits > plan.creditTarget}
 				class:conflict={plan.creditsConflict}
 				title={plan.creditsConflict
-					? `your programmes need ${plan.creditMinimum} credits, more than the ${plan.creditCeiling} a ${plan.fourYear ? 'four' : 'three'}-year degree allows — only courses counting for two programmes can make it fit. Click for the credit rules`
-					: `${plan.totalPlacedCredits} placed of the ${plan.creditTarget} ${plan.creditTargetMode === 'minimum' ? 'you need to graduate' : 'you may register at most'} — click for the credit rules`}
+					? `your programmes need ${plan.creditMinimum} credits, more than the ${plan.creditCeiling} a ${plan.fourYear ? 'four' : 'three'}-year degree allows, only courses counting for two programmes can make it fit. Click for the credit rules`
+					: `${plan.totalPlacedCredits} placed of the ${plan.creditTarget} ${plan.creditTargetMode === 'minimum' ? 'you need to graduate' : 'you may register at most'}, click for the credit rules`}
 				onclick={() => (showCredits = true)}
 			>
 				{plan.totalPlacedCredits}<em>/</em>{plan.creditTarget} cr
@@ -368,9 +372,9 @@
 				class="goal-seg"
 				class:maximum={plan.creditTargetMode === 'maximum'}
 				title={plan.creditTargetMode === 'minimum'
-					? `counting against the credits you need to graduate (${plan.creditMinimum}) — click for the maximum`
-					: `counting against the most you may register over your tenure (${plan.creditCeiling}) — click for the minimum`}
-				aria-label="count credits against the {plan.creditTargetMode} — click to switch"
+					? `counting against the credits you need to graduate (${plan.creditMinimum}), click for the maximum`
+					: `counting against the most you may register over your tenure (${plan.creditCeiling}), click for the minimum`}
+				aria-label="count credits against the {plan.creditTargetMode}, click to switch"
 				onclick={() =>
 					(plan.creditTargetMode = plan.creditTargetMode === 'minimum' ? 'maximum' : 'minimum')}
 			>
@@ -407,7 +411,7 @@
 {#if !plan.touched && !plan.gradeMode}
 	<p class="example-note">
 		<b>this is the suggested path for your degree, filled in to start you off.</b> change anything and it's
-		yours — until then, picking a different degree on the left lays it out again.
+		yours, until then, picking a different degree on the left lays it out again.
 	</p>
 {/if}
 
@@ -443,12 +447,12 @@
 				<!-- the year's GPA on a little glossy readout; the digits roll
 				     over when a grade changes, and it opens the full breakdown -->
 				{@const yg = plan.yearGpa(y)}
-				{@const shown = yg === null ? '—' : yg.toFixed(2)}
+				{@const shown = yg === null ? '–' : yg.toFixed(2)}
 				<button
 					class="yh-gpa"
 					class:empty={yg === null}
 					class:low={yg !== null && yg < GRAD_MIN_CGPA}
-					title={yg === null ? `no grades in year ${y} yet — grade its courses` : `year ${y} GPA ${shown} — grade its courses`}
+					title={yg === null ? `no grades in year ${y} yet, grade its courses` : `year ${y} GPA ${shown}, grade its courses`}
 					onclick={() => {
 						gradesYear = y;
 						showGrades = true;
@@ -483,7 +487,7 @@
 				data-core-only={coreSlot || undefined}
 				role="button"
 				tabindex="0"
-				aria-label="open year {y} trimester {t}"
+				aria-label="open {trimesterName(y, t)}"
 				onpointerdown={(e) => (pressOnItem = !!(e.target as Element).closest('.chip, .ghost, .cell-credits'))}
 				onclick={() => !pressOnItem && open(y, t)}
 				onkeydown={(e) => {
@@ -492,9 +496,9 @@
 					}
 				}}
 			>
-				<button class="mobile-term" aria-label="view year {y} trimester {t}" onclick={(e) => { e.stopPropagation(); open(y, t); }}>trimester {t}<span>view trimester →</span></button>
+				<button class="mobile-term" aria-label="view {trimesterName(y, t)}" onclick={(e) => { e.stopPropagation(); open(y, t); }}>trimester {t}<span>view trimester →</span></button>
 				<!-- the core-only rule, named only while there's nothing in the
-				     cell at all — not over the suggestions waiting in it -->
+				     cell at all, not over the suggestions waiting in it -->
 				{#if coreSlot && plan.slotCourses(y, t).length === 0 && (plan.gradeMode || plan.suggestionsFor(y, t).length === 0)}
 					<span class="core-note">kccs courses</span>
 				{/if}
@@ -520,13 +524,13 @@
 						ondragend={() => (plan.dragging = null)}
 
 					>
-						<button class="chip-open" onclick={(e) => { e.stopPropagation(); plan.selected = byCode(code); }} aria-label="view {plan.courseLabel(code)}">
+						<button class="chip-open" onclick={(e) => { e.stopPropagation(); plan.selected = byCode(code); }} aria-label="view {plan.courseLabel(code)}" title="{plan.courseLabel(code)}, {plan.roleLabel(code)}">
 						{#if plan.gradeMode && plan.showGradeLabels && plan.gradeOf(code)}
 							<span class="chip-grade" class:fail={plan.gradeOf(code) === 'U'}>{plan.gradeOf(code)}</span>
 						{/if}
 						<!-- a course named in a hint leads with that hint's severity
 						     mark, the way a required one leads with its dot -->
-						{#if plan.flagKinds.has(code)}<span class="flag" data-kind={plan.flagKinds.get(code)} role="img" aria-label="named in a hint" title="named in a hint — see hints"></span>{/if}
+						{#if plan.flagKinds.has(code)}<span class="flag" data-kind={plan.flagKinds.get(code)} role="img" aria-label="named in a hint" title="named in a hint, see hints"></span>{/if}
 						{#if type === 'required'}<span class="req-dot" role="img" aria-label="required"></span>{/if}
 						<span class="label"
 							>{#if plan.showCodes}<b class="chip-code">{plan.shownCode(code)}</b>{/if}{#if plan.showCodes && plan.showTitles}{' · '}{/if}{#if plan.showTitles}{byCode(code).title}{/if}{#if !plan.showTitles}<span class="mobile-title">{byCode(code).title}</span>{/if}</span
@@ -544,7 +548,7 @@
 				{/each}
 
 				<!-- where the course in hand would land: an empty dashed slot the
-				     size of its chip, opening up right where it would drop — between
+				     size of its chip, opening up right where it would drop, between
 				     two courses or after the last (placed by CSS order, see chipOrder) -->
 				{#if plan.dragging && dropTarget === `${y}-${t}` && aimed && !aimed.noop}
 					<span
@@ -569,7 +573,7 @@
 							class="ghost"
 							class:showing-title={plan.showTitles}
 							data-type={plan.courseType(code)}
-							title="suggested here — click to add {plan.courseLabel(code)}"
+							title="suggested here, click to add {plan.courseLabel(code)}"
 							animate:flip={courseShift}
 							onclick={(e) => {
 								e.stopPropagation();
@@ -585,21 +589,29 @@
 				{#if slotCredits > 0}
 					{@const load = plan.slotLoad(y, t)}
 					<span class="cell-credits" data-status={plan.gradeMode ? undefined : load.status}>
+						<!-- a small capsule of 4-credit segments up to the cap; the last
+						     one, past the normal load, is the faintly striped extra load -->
+						{#if !plan.gradeMode && load.status !== 'exempt'}
+							<span class="load-meter" aria-hidden="true">
+								{#each LOAD_SEGMENTS as from, i (i)}
+									<i class:extra={from >= TRIM_NORMAL_MAX}>
+										<b style:width="{Math.max(0, Math.min(1, (load.credits - from) / LOAD_STEP)) * 100}%"></b>
+									</i>
+								{/each}
+							</span>
+						{/if}
 						{#if plan.gradeMode}
 							{@const tg = plan.slotTgpa(y, t)}
-							<span class="cell-tgpa" title="term GPA — this trimester's grade average">TGPA {tg === null ? '—' : tg.toFixed(2)}</span>
+							<span class="cell-tgpa" title="term GPA, this trimester's grade average">TGPA {tg === null ? '–' : tg.toFixed(2)}</span>
 						{:else}
-							<!-- the load as a fraction of the bound that matters: 4/12 under the
-							     minimum, 14/16 within the normal load, 20/16 heavy, 24/20 over
-							     the cap — in words on hover, colour only a second cue -->
-							<span class="credits-text" title={load.note || undefined}
-								>{slotCredits}{#if load.limit !== null}<span class="load-limit">/{load.limit}</span>{/if} cr</span
-							>
+							<!-- just the credits; red past the hard cap, or when more trimesters
+							     are heavy than allowed, hover says how the load stands -->
+							<span class="credits-text" title={load.note || undefined}>{slotCredits} cr</span>
 						{/if}
 						<button
 							class="clear"
 							title="clear this trimester"
-							aria-label="clear year {y} trimester {t}"
+							aria-label="clear {trimesterName(y, t)}"
 							onclick={(e) => {
 								e.stopPropagation();
 								plan.clearSlot(y, t);
@@ -628,7 +640,7 @@
 					onclick={dropYear}
 				>
 					{droppingYear
-						? `click again — ${lastYearCourses} course${lastYearCourses === 1 ? ' comes' : 's come'} off`
+						? `click again: ${lastYearCourses} course${lastYearCourses === 1 ? ' comes' : 's come'} off`
 						: `− remove year ${lastYear}`}
 				</button>
 			{/if}
@@ -636,11 +648,11 @@
 	{/if}
 </div>
 
-<!-- Bulk grid actions. Changing the degree never moves a course on its own —
+<!-- Bulk grid actions. Changing the degree never moves a course on its own,
      the new recommendation shows as dotted ghosts, and these are how the
      student brings the grid in line with it, all at once or not at all.
      Each shows only while it has something to do and says what it will move
-     in plain words — greyed-out buttons reading "0" confused people. Adding
+     in plain words, greyed-out buttons reading "0" confused people. Adding
      first, taking away after; clearing sits apart at the far end. -->
 {#if !plan.gradeMode}
 	<div class="acts-row" data-tour="board-actions">
@@ -718,8 +730,8 @@
 		text-align: center;
 	}
 
-	// grade view: the year's GPA on a small glossy capsule — a readout from an
-	// old desktop app — with the y-tag underneath. It springs up under the
+	// grade view: the year's GPA on a small glossy capsule, a readout from an
+	// old desktop app, with the y-tag underneath. It springs up under the
 	// cursor and squeezes when pressed, and its digits roll on change.
 	.yh-gpa {
 		display: inline-grid;
@@ -768,7 +780,7 @@
 			box-shadow: none;
 		}
 
-		// under the standing line — tinted the warning red, still legible
+		// under the standing line, tinted the warning red, still legible
 		&.low {
 			color: var(--color-danger-deep);
 			background-color: var(--color-hint-warn);
@@ -808,13 +820,13 @@
 		// drop only the outer shadow, keep the inset shine
 		box-shadow: var(--shadow-inset);
 
-		// hovering darkens whatever the cell already is — its course colours,
-		// the KCCS blush — by laying 10% black over it
+		// hovering darkens whatever the cell already is, its course colours,
+		// the KCCS blush, by laying 10% black over it
 		&:hover {
 			box-shadow: var(--shadow-inset), inset 0 0 0 100vmax rgba(0, 0, 0, 0.1);
 		}
 
-		// year-1 t1/t2: reserved for the foundation core — tinted like the
+		// year-1 t1/t2: reserved for the foundation core, tinted like the
 		// core chips so the pairing is obvious at a glance
 		&.core-slot {
 			background: var(--mix, color-mix(in srgb, var(--color-course-core) 45%, var(--color-grid-cell)));
@@ -822,14 +834,14 @@
 		}
 
 		// a cell holding a course involved in a warning keeps its course
-		// colours — the warning rides on the red dashed rule instead
+		// colours, the warning rides on the red dashed rule instead
 		&.problem {
 			outline-color: var(--color-hint-warn-deep);
 		}
 
 		// while dragging: mint, ringed solid, where the course fits cleanly,
 		// and every trimester it doesn't fit (not offered then, wrong year,
-		// prerequisite after it) fades back. Still, not pulsing — the whole
+		// prerequisite after it) fades back. Still, not pulsing, the whole
 		// grid breathing at once was noise. A faded slot still takes the drop;
 		// the hints flag it.
 		&.can-drop {
@@ -843,7 +855,7 @@
 		}
 	}
 
-	// the trimester's credits, in its bottom-right corner
+	// the trimester's load meter and credits, in its bottom-right corner
 	.cell-credits {
 		position: absolute;
 		bottom: 0.7rem;
@@ -854,11 +866,6 @@
 		font-size: 1.2rem;
 		font-weight: 700;
 		color: var(--color-text-muted);
-
-		&[data-status='under'],
-		&[data-status='heavy'] {
-			color: color-mix(in srgb, var(--color-hint-caution-deep) 60%, var(--color-text));
-		}
 
 		&[data-status='over'] {
 			color: var(--color-danger);
@@ -871,9 +878,6 @@
 			white-space: nowrap;
 		}
 
-		.load-limit {
-			font-weight: 500;
-		}
 
 		.clear {
 			background: none;
@@ -895,11 +899,60 @@
 		}
 	}
 
+	// a glossy capsule like the sidebar's progress bars, one segment per
+	// 4 credits; colour follows the corner's status
+	.load-meter {
+		display: inline-flex;
+		flex: none;
+		gap: 2px;
+		height: 0.8rem;
+		padding: 1px;
+		margin-right: 0.4rem;
+		@include progress-track;
+		--load: var(--color-hint-good-deep);
+
+		i {
+			width: 0.8rem;
+			overflow: hidden;
+			border-radius: 1px;
+			background: color-mix(in srgb, var(--color-text) 7%, transparent);
+
+			&:first-child {
+				border-radius: 999px 1px 1px 999px;
+			}
+
+			&:last-child {
+				border-radius: 1px 999px 999px 1px;
+			}
+
+			&.extra {
+				background: repeating-linear-gradient(
+					-45deg,
+					color-mix(in srgb, var(--color-text) 10%, transparent) 0 2px,
+					transparent 2px 4px
+				);
+			}
+		}
+
+		b {
+			display: block;
+			height: 100%;
+			background-color: var(--load);
+			@include progress-fill;
+			box-shadow: none;
+			transition: width 0.35s var(--spring);
+		}
+	}
+
+	[data-status='over'] .load-meter {
+		--load: var(--color-danger);
+	}
+
 	.cell:hover .cell-credits .clear {
 		opacity: 1;
 	}
 
-	// the core-only rule, named only while the cell is EMPTY — once courses
+	// the core-only rule, named only while the cell is EMPTY, once courses
 	// are in, the pink core tint alone marks the slot and the text goes
 	.core-note {
 		@include section-label;
@@ -913,7 +966,7 @@
 		pointer-events: none;
 	}
 
-	// grade badge on a chip (grade view only) — a small fixed-size capsule so
+	// grade badge on a chip (grade view only), a small fixed-size capsule so
 	// every grade (A+, B, U) is the same width and the chip never bulks up when
 	// a grade is entered. Faded and lowkey; red for a U.
 	.chip-grade {
@@ -968,7 +1021,7 @@
 			transform: scale(0.97);
 		}
 
-		// the source of an in-flight drag leaves its outline behind — an empty
+		// the source of an in-flight drag leaves its outline behind, an empty
 		// dashed slot the size of the course, so you can see where it came from
 		// (and where it snaps back to if the drop is cancelled)
 		&.dragging {
@@ -1013,7 +1066,7 @@
 		}
 
 		// remove button, anchored to the chip's top-right corner (not inline
-		// after the label) so it sits in the same place for every chip — code
+		// after the label) so it sits in the same place for every chip, code
 		// chips and full-width title chips alike
 		.x {
 			position: absolute;
@@ -1030,24 +1083,14 @@
 			border: none;
 			font-size: 1.4rem;
 			line-height: 1;
-			color: var(--color-text-muted);
-			opacity: 0.35; // always there, so removing a course isn't a secret
+			color: inherit; // the card's ink, like its text
 			cursor: pointer;
 			-webkit-tap-highlight-color: transparent;
-			transition:
-				opacity 0.15s ease,
-				color 0.15s ease,
-				transform 0.2s var(--spring);
+			transition: transform 0.2s var(--spring);
 
 			&:hover {
-				color: var(--color-text);
 				transform: translateY(-50%) scale(1.1);
 			}
-		}
-
-		&:hover .x,
-		&:focus-within .x {
-			opacity: 1;
 		}
 
 		// a course a hint is about, while that hint is pointed at
@@ -1064,7 +1107,7 @@
 	}
 
 	// until the student changes something, the grid is the suggested path
-	// filled in for them — say so, so it doesn't read as someone else's plan
+	// filled in for them, say so, so it doesn't read as someone else's plan
 	.example-note {
 		margin: 1.6rem 3.2rem 0;
 		padding: 0.9rem 1.4rem;
@@ -1081,8 +1124,8 @@
 
 	// the bar above the grid: the titles switch (one switch for every chip,
 	// instead of tapping them one by one), the colour legend, and the
-	// placed-credits total — sticky so it stays readable while scrolling
-	// the board's header strip — the exact aesthetic of the column headers
+	// placed-credits total, sticky so it stays readable while scrolling
+	// the board's header strip, the exact aesthetic of the column headers
 	// (same gradient shape, card shadow, border), recoloured grey / greyish-blue
 	// so the middle reads as its own grayed zone
 	// sits under the board bar the first time grade view is switched on
@@ -1167,7 +1210,7 @@
 		border-bottom: 1px solid var(--bar-edge);
 
 		// everything inside takes the bar's own palette (see --bar-* in
-		// _variables) — the legend swatches keep theirs, since they're a key
+		// _variables), the legend swatches keep theirs, since they're a key
 		--color-text: var(--bar-text);
 		--color-text-muted: var(--bar-text-muted);
 		--color-accent: var(--bar-key-on);
@@ -1186,7 +1229,7 @@
 		--key-pressed: inset 0 2px 3px rgba(20, 30, 50, 0.32), inset 0 1px 1px rgba(20, 30, 50, 0.2);
 	}
 
-	// the bar's toggles: an old-iPhone segmented control — joined glossy
+	// the bar's toggles: an old-iPhone segmented control, joined glossy
 	// segments with a hard crease across the middle, light pink when off,
 	// dark pink and sunk in when on, embossed labels. A single key (grade
 	// view) is just a one-segment control.
@@ -1207,7 +1250,7 @@
 			font-size: 1.2rem;
 			font-weight: 700;
 			color: var(--bar-key-text);
-			text-shadow: 0 1px 0 var(--bar-hi); // embossed — faint on the dark theme
+			text-shadow: 0 1px 0 var(--bar-hi); // embossed, faint on the dark theme
 			background-color: var(--bar-key);
 			// lit top half, hard crease, deeper bottom half that lifts again
 			background-image: linear-gradient(
@@ -1260,7 +1303,7 @@
 	}
 
 	// the colour key: shaped like the bar's keys, but plain white with a steel
-	// edge — it opens a menu rather than switching anything, so it doesn't
+	// edge, it opens a menu rather than switching anything, so it doesn't
 	// wear the toggles' pink. Its face previews the colours it explains.
 	.colour-key {
 		position: relative;
@@ -1338,7 +1381,7 @@
 	}
 
 	// A suggestion wears the same shape as the real chip it would become, at a
-	// fraction of the weight — so the grid reads as "your plan, plus what's
+	// fraction of the weight, so the grid reads as "your plan, plus what's
 	// missing" rather than as two different kinds of thing.
 	.ghost {
 		order: 9999; // after every placed chip (and the landing slot), whatever their order
@@ -1353,7 +1396,7 @@
 		font-size: 1.3rem;
 		text-align: left;
 		color: var(--color-text-muted);
-		background: transparent; // just the dashed outline — it isn't on the plan yet
+		background: transparent; // just the dashed outline, it isn't on the plan yet
 		border: 1px dashed var(--ghost-edge);
 		border-radius: 5px;
 		cursor: pointer;
@@ -1413,7 +1456,7 @@
 		}
 	}
 
-	// the drop preview — the chip's own footprint, dashed, popping in on a
+	// the drop preview, the chip's own footprint, dashed, popping in on a
 	// spring wherever the course would land
 	.landing {
 		position: relative;
@@ -1541,12 +1584,12 @@
 		cursor: pointer;
 	}
 
-	// wiping the grid is a different kind of thing — off at the far end
+	// wiping the grid is a different kind of thing, off at the far end
 	.clear {
 		margin-left: auto;
 	}
 
-	// the one that fills the board in — accent, so it reads as the primary
+	// the one that fills the board in, accent, so it reads as the primary
 	// without being any bigger
 	.fill {
 		font-weight: 600;
@@ -1560,7 +1603,7 @@
 		}
 	}
 
-	// the tidy-ups — App Store price-tag buttons, so they never compete with
+	// the tidy-ups, App Store price-tag buttons, so they never compete with
 	// the plum one beside them
 	.strip {
 		@include store-button($armable: true);
@@ -1660,7 +1703,7 @@
 		gap: 0.4rem;
 		padding: 3px;
 		background: var(--bar-well);
-		border: 0; // the recess alone frames it — no ring around the rings
+		border: 0; // the recess alone frames it, no ring around the rings
 		border-radius: 999px;
 		box-shadow: inset 0 1px 2px rgba(20, 30, 50, 0.14), 0 1px 0 var(--bar-hi);
 	}
@@ -1671,7 +1714,7 @@
 		display: inline-grid;
 		grid-template-columns: 1fr 1fr;
 		// the knob: slides across on a spring, and squashes under the finger
-		// while the switch is held — released, it springs over and back to shape
+		// while the switch is held, released, it springs over and back to shape
 		--knob-x: 0%;
 		--knob-s: 1;
 		&::before {
@@ -1787,7 +1830,7 @@
 		font: inherit;
 		cursor: pointer;
 
-		// the whole chip opens the course, padding and all — a click there
+		// the whole chip opens the course, padding and all, a click there
 		// used to fall through to the cell and open the trimester instead
 		&::before {
 			content: '';

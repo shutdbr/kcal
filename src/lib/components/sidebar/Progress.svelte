@@ -2,8 +2,8 @@
 	// A programme's credits as one iOS 6 slider track without its knob: the
 	// required stretch first, filled in the subject's deep ink, then the
 	// elective stretch in its paler tone, with a small triangle over the
-	// hand-over point. Notched every 4 credits — one notch per ordinary
-	// course — so "two to go" reads at a glance. The fills glide when a
+	// hand-over point. Notched every 4 credits, one notch per ordinary
+	// course, so "two to go" reads at a glance. The fills glide when a
 	// target changes (3-year ⇄ 4-year, a new major) instead of the bar
 	// being rebuilt.
 	import { fade } from 'svelte/transition';
@@ -35,7 +35,7 @@
 	let notches = $derived(cells - 1);
 
 	// one figure over the bar: credits counted toward the programme, out of
-	// all it needs — the bar itself shows the required/elective split
+	// all it needs, the bar itself shows the required/elective split
 	let done = $derived(Math.min(required.done, required.needed) + Math.min(elective.done, elective.needed));
 	let complete = $derived(total > 0 && done >= total);
 	let summary = $derived(
@@ -80,11 +80,13 @@
 	@use '$lib/styles/mixins' as *;
 
 	// the subject's own hue, deeper than on a card so it reads on the white
-	// track: the dot's ink for required, the required border for electives —
+	// track: the dot's ink for required, the required border for electives,
 	// required still the darker of the two
 	.progress {
 		--fill-req: #{subject-tone(ink)};
-		--fill-el: #{subject-tone(required-deep)};
+		// electives: a much lighter tint of the subject, so the bar reads as
+		// required (deep) then elective (pale)
+		--fill-el: color-mix(in srgb, #{subject-tone(required)} 55%, white);
 		margin-top: 0.7rem;
 	}
 

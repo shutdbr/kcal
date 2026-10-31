@@ -25,10 +25,10 @@ test.describe('phone planner', () => {
 		await expect(page.locator('.rightbar')).toBeVisible();
 		await page.getByLabel('trimester to put MATH201 in').selectOption('2-1');
 		await page.getByRole('button', { name: 'add to plan', exact: true }).tap();
-		await expect(page.locator('.d-place-where')).toContainText('year 2, t1');
+		await expect(page.locator('.d-place-where')).toContainText('y2 t1');
 		await page.getByLabel('trimester to put MATH201 in').selectOption('2-2');
 		await page.getByRole('button', { name: 'move', exact: true }).tap();
-		await expect(page.locator('.d-place-where')).toContainText('year 2, t2');
+		await expect(page.locator('.d-place-where')).toContainText('y2 t2');
 		await page.getByRole('button', { name: 'close course details' }).tap();
 		await expect(search).toHaveValue('MATH201');
 		await page.reload();
@@ -38,7 +38,7 @@ test.describe('phone planner', () => {
 		await expect(page.locator('.rightbar .d-place')).toBeVisible();
 		await page.screenshot({ path: '/tmp/kcal-mobile-after-tap.png' });
 		expect(errors).toEqual([]);
-		await expect(page.locator('.d-place-where')).toContainText('year 2, t2');
+		await expect(page.locator('.d-place-where')).toContainText('y2 t2');
 		await page.getByRole('button', { name: 'close course details' }).tap();
 		await page.getByRole('navigation').getByRole('button', { name: 'your plan' }).tap();
 		await page.getByRole('button', { name: 'grade view', exact: true }).tap();
@@ -98,7 +98,7 @@ test.describe('phone planner', () => {
 		await expect(page.locator('.app')).toHaveAttribute('data-ready', 'true');
 		await expect(page.locator('html')).toHaveAttribute('data-theme', 'dark');
 		await page.getByRole('navigation').getByRole('button', { name: 'your plan' }).tap();
-		await page.getByRole('button', { name: 'view year 2 trimester 1', exact: true }).tap();
+		await page.getByRole('button', { name: 'view y2 t1', exact: true }).tap();
 		await expect(page.getByRole('heading', { name: 'year 2 · trimester 1' })).toBeVisible();
 		await page
 			.getByRole('navigation')
@@ -181,7 +181,7 @@ test('desktop retains resizers, catalogue and drag placement', async ({ page }) 
 		.dragTo(page.locator('.overview .cell[data-year="2"][data-trim="1"]'));
 	await expect(page.locator('.chip[data-code="MATH201"]')).toBeVisible();
 	await page.locator('.chip[data-code="MATH201"] .chip-open').click();
-	await expect(page.locator('.d-place-where')).toContainText('year 2, t1');
+	await expect(page.locator('.d-place-where')).toContainText('y2 t1');
 	// a course's padding opens the course, and a press that slips off the chip
 	// onto its trimester doesn't open the trimester zoom
 	const chip = page.locator('.chip[data-code="MATH201"]');

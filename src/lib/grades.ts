@@ -26,12 +26,12 @@ export const GRADE_POINTS = Object.fromEntries(GRADE_SCALE.map((g) => [g.letter,
 >;
 export const GRADE_LETTERS: GradeLetter[] = GRADE_SCALE.map((g) => g.letter);
 export const MAX_GRADE_POINT = GRADE_SCALE[0].points; // 10 (A+)
-export const MIN_PASS_POINT = GRADE_POINTS['E']; // 5.5 — 'U' is the only fail
+export const MIN_PASS_POINT = GRADE_POINTS['E']; // 5.5, 'U' is the only fail
 
 export const isGradeLetter = (v: unknown): v is GradeLetter =>
 	typeof v === 'string' && (GRADE_LETTERS as string[]).includes(v);
 
-// non-graded statuses a course can carry — they show on the course but earn no
+// non-graded statuses a course can carry, they show on the course but earn no
 // grade points and never enter the CGPA (Withdrawn / Incomplete). Audit is a
 // fourth status, tracked separately since it also drives the drop-form rules.
 export type GradeMark = GradeLetter | 'W' | 'I';
@@ -44,7 +44,7 @@ export const isGradeMark = (v: unknown): v is GradeMark => isGradeLetter(v) || v
 // graduation thresholds from the manual's Graduation Requirements section
 export const gradMinCredits = (fourYear: boolean): number => (fourYear ? 160 : 120);
 export const gradMaxCredits = (fourYear: boolean): number => (fourYear ? 176 : 128);
-export const GRAD_MIN_CGPA = 5.5; // and "E and above in all courses" — i.e. no U
+export const GRAD_MIN_CGPA = 5.5; // and "E and above in all courses", i.e. no U
 // the manual's other two standing lines (CGPA Requirements section)
 export const AID_MIN_CGPA = 6.5; // to keep receiving financial aid
 export const EXIT_CGPA = 3.5; // below this the student is asked to leave
@@ -53,7 +53,7 @@ export const EXIT_CGPA = 3.5; // below this the student is asked to leave
 export const cgpaToPercent = (cgpa: number): number => (cgpa / 10) * 100;
 
 /** credit-weighted mean grade point (a TGPA over one trimester, or a CGPA over
- *  the lot) — null when there's nothing graded to average */
+ *  the lot), null when there's nothing graded to average */
 export function weightedGpa(items: { points: number; credits: number }[]): number | null {
 	let points = 0;
 	let credits = 0;
@@ -64,7 +64,7 @@ export function weightedGpa(items: { points: number; credits: number }[]): numbe
 	return credits > 0 ? points / credits : null;
 }
 
-/** the easiest letter that still clears a required average — for "you need at
+/** the easiest letter that still clears a required average, for "you need at
  *  least a ___". The scale is high→low, so the smallest sufficient grade is the
  *  last one scanning from the bottom up. */
 export function letterForAtLeast(points: number): GradeInfo | undefined {
@@ -73,7 +73,7 @@ export function letterForAtLeast(points: number): GradeInfo | undefined {
 
 export type Recovery =
 	| { kind: 'no-grades' } // nothing graded yet
-	| { kind: 'complete'; cgpa: number } // every credit is graded — CGPA is final
+	| { kind: 'complete'; cgpa: number } // every credit is graded, CGPA is final
 	| { kind: 'secured' } // target already guaranteed, whatever comes next
 	| { kind: 'reachable'; needed: number; letter: GradeInfo | undefined; remaining: number }
 	| { kind: 'impossible'; needed: number; max: number }; // even all A+ falls short

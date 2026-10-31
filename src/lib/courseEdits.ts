@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────
-// Hand-edited course properties and university rules — what /admin writes,
+// Hand-edited course properties and university rules, what /admin writes,
 // alongside the prerequisite edges in prereqEdits.ts.
 //
 // Same model as those: kcal has no server, so an edit lives in this
@@ -11,7 +11,7 @@
 // keeps the shipped value. Rule edits are the same: a missing key is the
 // drop-form default.
 //
-// Kept free of any import from data.ts — data.ts imports THIS.
+// Kept free of any import from data.ts, data.ts imports THIS.
 // ─────────────────────────────────────────────
 
 import type { TrimNum } from './types';
@@ -22,7 +22,7 @@ export const NEW_COURSES_KEY = 'kcal-new-courses';
 export const SHARE_DEFAULT_KEY = 'kcal-credit-sharing';
 
 /** how a course that counts toward more than one of a student's programmes
- *  is credited: to ONE of them (the first that claims it — majors before
+ *  is credited: to ONE of them (the first that claims it, majors before
  *  minors before concentrations), or to ALL of them at once */
 export type CreditShare = 'one' | 'all';
 
@@ -37,7 +37,7 @@ export type CourseEdit = {
 	 *  whole cross-listing (its own department is always kept) */
 	codesBySubject?: Record<string, string>;
 	share?: CreditShare;
-	/** taken out of the catalogue — students can no longer find or place it */
+	/** taken out of the catalogue, students can no longer find or place it */
 	retired?: boolean;
 };
 
@@ -59,7 +59,7 @@ const isTrim = (v: unknown): v is TrimNum => v === 1 || v === 2 || v === 3;
 const isYear = (v: unknown): v is number => v === 1 || v === 2 || v === 3 || v === 4;
 const sortedUnique = <T extends number>(list: T[]) => [...new Set(list)].sort((a, b) => a - b);
 
-/** Validate a parsed object into edits, field by field — one bad field is
+/** Validate a parsed object into edits, field by field, one bad field is
  *  dropped, never the whole file. */
 export function parseCourseEdits(raw: unknown): CourseEdits {
 	if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {};
@@ -89,13 +89,14 @@ export function parseCourseEdits(raw: unknown): CourseEdits {
 
 // ── university-wide rules ──
 // Trimester loads and audits from the ERP drop form. Graduation minimums from
-// the FYUP documents (120 / 160 — the CS and Maths documents); the 4-year
+// the FYUP documents (120 / 160, the CS and Maths documents); the 4-year
 // ceiling of 176 from the FYUP overview (Politics document); the 3-year
-// ceiling is the drop form's — no FYUP document states one.
+// ceiling is the drop form's, no FYUP document states one.
 
 export const RULE_DEFAULTS = {
 	TRIM_MIN: 12,
 	TRIM_NORMAL_MAX: 16,
+	TRIM_STANDARD_MAX: 18,
 	TRIM_HARD_MAX: 20,
 	HEAVY_TRIMS_ALLOWED: 2,
 	AUDIT_LIMIT: 2,
@@ -108,7 +109,7 @@ export const RULE_DEFAULTS = {
 export type RuleKey = keyof typeof RULE_DEFAULTS;
 export type RuleEdits = Partial<Record<RuleKey, number>>;
 
-/** what each rule means, for the admin form — and the range it may take.
+/** what each rule means, for the admin form, and the range it may take.
  *  The trimester numbers top out at 24: the zoomed trimester canvas is a
  *  24-credit grid. */
 export const RULE_INFO: Record<RuleKey, { label: string; help: string; unit: string; min: number; max: number }> = {
@@ -122,6 +123,13 @@ export const RULE_INFO: Record<RuleKey, { label: string; help: string; unit: str
 	TRIM_NORMAL_MAX: {
 		label: 'recommended load',
 		help: 'the normal registration; going above it counts as a heavy trimester',
+		unit: 'credits',
+		min: 0,
+		max: 24
+	},
+	TRIM_STANDARD_MAX: {
+		label: 'most without an extra-load allowance',
+		help: 'a trimester above this is heavy, allowed only a few times in the whole degree',
 		unit: 'credits',
 		min: 0,
 		max: 24
@@ -189,16 +197,17 @@ export function parseRuleEdits(raw: unknown): RuleEdits {
 	return out;
 }
 
-/** the effective rules — defaults with the edits laid over them */
+/** the effective rules, defaults with the edits laid over them */
 export const resolveRules = (edits: RuleEdits): Record<RuleKey, number> => ({ ...RULE_DEFAULTS, ...edits });
 
-/** problems that would make the planner's rules contradict each other —
+/** problems that would make the planner's rules contradict each other,
  *  shown in the admin, and a reason data.ts falls back to the defaults */
 export function ruleProblems(edits: RuleEdits): string[] {
 	const r = resolveRules(edits);
 	const out: string[] = [];
 	if (r.TRIM_MIN > r.TRIM_NORMAL_MAX) out.push('the minimum is above the recommended load');
 	if (r.TRIM_NORMAL_MAX > r.TRIM_HARD_MAX) out.push('the recommended load is above the hard cap');
+	if (r.TRIM_STANDARD_MAX > r.TRIM_HARD_MAX) out.push('the heavy-trimester line is above the hard cap');
 	if (r.MAX_TOTAL_3YR > r.MAX_TOTAL_4YR) out.push('the 3-year ceiling is above the 4-year one');
 	if (r.MIN_TOTAL_3YR > r.MAX_TOTAL_3YR) out.push('the 3-year graduation minimum is above its ceiling');
 	if (r.MIN_TOTAL_4YR > r.MAX_TOTAL_4YR) out.push('the 4-year graduation minimum is above its ceiling');
@@ -212,7 +221,7 @@ function load<T>(key: string, parse: (raw: unknown) => T, empty: T): T {
 		const raw = localStorage.getItem(key);
 		return raw ? parse(JSON.parse(raw)) : empty;
 	} catch {
-		return empty; // unreadable or blocked storage — the shipped data stands
+		return empty; // unreadable or blocked storage, the shipped data stands
 	}
 }
 

@@ -17,7 +17,7 @@
 					</a>
 				{:else}
 					<span class="missing">
-						<span class="code">—</span>
+						<span class="code">–</span>
 						<span class="title">{c.title}</span>
 						<span class="credits">not in the catalogue yet</span>
 					</span>

@@ -4,8 +4,8 @@
 	//
 	// It used to be a second plan you switched the board to, which meant modes:
 	// two grids that looked identical, and no way to tell which one you were
-	// editing. It isn't a plan — it is a DOCUMENT, the department's suggested
-	// order — so it lives where the app's other documents live, in a panel you
+	// editing. It isn't a plan, it is a DOCUMENT, the department's suggested
+	// order, so it lives where the app's other documents live, in a panel you
 	// open and close (see CreditRules). Nothing to switch back from, nothing
 	// that can overwrite your work, and it shows your plan against it: each
 	// course is ticked if you already have it, dashed if you don't.
@@ -24,7 +24,7 @@
 	);
 	let total = $derived(Object.values(plan.recommended).flat().length);
 
-	// replacing the board throws away real work, so it asks twice — the same
+	// replacing the board throws away real work, so it asks twice, the same
 	// guard "start over" uses, and it forgets it was asking if you walk away
 	let confirming = $state(false);
 	let timer: ReturnType<typeof setTimeout>;
@@ -43,7 +43,7 @@
 
 <Modal title="suggested path" width="62rem" {onclose}>
 	<p class="lead">
-		{degree} — {total} courses in the order the department suggests, ticked where they're already on
+		{degree}, {total} courses in the order the department suggests, ticked where they're already on
 		your plan.{#if plan.recommendedElectiveCredits}
 			The dashed boxes are the <b>{plan.recommendedElectiveCredits} elective credits</b> the degree leaves
 			you to choose for yourself.{/if}
@@ -84,7 +84,7 @@
 					{/each}
 
 					{#if !codes.length && !plan.electivesFor(y, t)}
-						<span class="none">—</span>
+						<span class="none">–</span>
 					{/if}
 				</div>
 			{/each}
@@ -111,7 +111,7 @@
 		     one. The only destructive action in the app that isn't "start over",
 		     so it asks twice and says plainly what goes. -->
 		<button class="replace" class:confirming={confirming} onclick={useInstead}>
-			{confirming ? 'yes — delete my plan and use this' : 'use this instead of my plan'}
+			{confirming ? 'yes, delete my plan and use this' : 'use this instead of my plan'}
 		</button>
 		{#if confirming}
 			<p class="note danger">
@@ -219,7 +219,7 @@
 		}
 	}
 
-	// not a course — the space the degree leaves open. Wears the elective
+	// not a course, the space the degree leaves open. Wears the elective
 	// colour so it reads as "a course of this kind goes here", and carries no
 	// action, because there is nothing to add until the student picks one.
 	.elective {
@@ -278,7 +278,7 @@
 		}
 	}
 
-	// deliberately quieter than the additive action above it — the safe one is
+	// deliberately quieter than the additive action above it, the safe one is
 	// the one that should be easy to hit
 	.replace {
 		margin-top: 1.2rem;

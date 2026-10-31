@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────
-// Settings — how the app LOOKS, kept apart from Plan (what's on the grid).
+// Settings, how the app LOOKS, kept apart from Plan (what's on the grid).
 // A single module-level instance; the settings dialog is its only UI.
 // ─────────────────────────────────────────────
 //
@@ -29,7 +29,7 @@ const scaleFor = (id: TextSize) => TEXT_SIZES.find((s) => s.id === id)?.scale ??
 class Settings {
 	theme = $state<ThemeChoice>('light');
 	textSize = $state<TextSize>('normal');
-	/** what the OS is asking for — tracked so 'system' stays live */
+	/** what the OS is asking for, tracked so 'system' stays live */
 	systemDark = $state(false);
 
 	constructor() {
@@ -55,7 +55,7 @@ class Settings {
 		this.#apply();
 	}
 
-	/** what's actually on screen — 'system' resolved against the OS */
+	/** what's actually on screen, 'system' resolved against the OS */
 	get resolved(): 'light' | 'dark' {
 		return this.theme === 'system' ? (this.systemDark ? 'dark' : 'light') : this.theme;
 	}
@@ -73,7 +73,7 @@ class Settings {
 	}
 
 	// the whole theme is CSS variables keyed off <html data-theme>, and text
-	// size is the rem base on the same element — so both are one write each
+	// size is the rem base on the same element, so both are one write each
 	#apply() {
 		if (!browser) return;
 		document.documentElement.dataset.theme = this.resolved;
@@ -85,7 +85,7 @@ class Settings {
 		try {
 			localStorage.setItem(STORAGE_KEY, JSON.stringify({ theme: this.theme, textSize: this.textSize }));
 		} catch {
-			// private mode / full quota — the app still works, it just forgets
+			// private mode / full quota, the app still works, it just forgets
 		}
 	}
 }

@@ -10,7 +10,7 @@ export type Course = {
 	codesBySubject: Record<string, string>; // subject id → the code that subject sees it under
 	credits: number;
 	pendingCredits?: boolean;
-	required: boolean; // the university's own required/elective flag — anything not clearly elective is required
+	required: boolean; // the university's own required/elective flag, anything not clearly elective is required
 	offered: TrimNum[]; // which trimesters it has run in, derived from terms taught
 	eligibleYears: number[]; // which of years 1-4 this is open to
 	prereqs: string[]; // course codes that must come in an EARLIER trimester
@@ -35,12 +35,12 @@ export type Subject = {
 	label: string; // full name shown in sidebar
 	short: string; // short name shown as catalogue filter chip
 	majorable: boolean; // some subjects are only offered as minor/concentration
-	hue?: number; // the subject's fixed OKLCH hue — its courses wear it (see SUBJECTS)
+	hue?: number; // the subject's fixed OKLCH hue, its courses wear it (see SUBJECTS)
 };
 
 export type ProgrammeRole = 'major' | 'minor' | 'concentration';
 
-/** How the degree is structured — picked in the sidebar */
+/** How the degree is structured, picked in the sidebar */
 export type StructureKind =
 	| 'single-major'
 	| 'double-major'
@@ -56,19 +56,19 @@ export type Programme = {
 // a course's role relative to your chosen major/minor. 'core' = the KCCS
 // foundation (common core) curriculum everyone must complete. 'other' =
 // anything outside those requirements (a different department, or an
-// in-department course the programme doesn't list) — NOT automatically an
+// in-department course the programme doesn't list), NOT automatically an
 // audit; the student marks audits themselves.
 export type CourseType = 'core' | 'required' | 'elective' | 'other';
 
-// warn = a hard error (prereq order, not offered) — red.
-// caution = a credit-count issue (under min / over cap / over total) — yellow.
+// warn = a hard error (prereq order, not offered), red.
+// caution = a credit-count issue (under min / over cap / over total), yellow.
 // info = neutral note, good = all-clear.
 export type HintKind = 'warn' | 'caution' | 'info' | 'good';
 
 export type Hint = {
 	kind: HintKind;
 	text: string;
-	codes: string[]; // courses involved — these get bolded / tinted on the grid
+	codes: string[]; // courses involved, these get bolded / tinted on the grid
 	// stable identity for the RULE this hint reports (not for the wording, which
 	// carries the current slot). Present on every warn hint, and only on those:
 	// it is what a student's waiver is stored against, so a red hint they've
@@ -93,6 +93,9 @@ export type ProgrammeStat = {
 export type SlotKey = string;
 
 export const slotKey = (year: number, trim: TrimNum): SlotKey => `${year}-${trim}`;
+
+/** "y2 t1", how a trimester is named in text: the year, then its trimester */
+export const trimesterName = (year: number, trim: TrimNum): string => `y${year} t${trim}`;
 
 export const parseSlot = (key: SlotKey): { year: number; trim: TrimNum } => {
 	const [y, t] = key.split('-').map(Number);

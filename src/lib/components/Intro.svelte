@@ -22,12 +22,12 @@
 		{
 			target: 'board-toggles',
 			title: 'switch how you view it',
-			body: 'grade view turns the grid into your transcript — enter grades and track your CGPA instead of credits. show codes / titles controls course labels everywhere, including hints and the catalogue.'
+			body: 'grade view turns the grid into your transcript, enter grades and track your CGPA instead of credits. show codes / titles controls course labels everywhere, including hints and the catalogue.'
 		},
 		{
 			target: 'board-actions',
 			title: 'let it do the busywork',
-			body: 'these buttons add the courses you’re still missing or the dashed suggestions on the grid, in one click — or click a single dashed course to add just that one. they also clear out courses that don’t count toward your major, minor, or concentration. each one only shows up when there’s something for it to do.'
+			body: 'these buttons add the courses you’re still missing or the dashed suggestions on the grid, in one click, or click a single dashed course to add just that one. they also clear out courses that don’t count toward your major, minor, or concentration. each one only shows up when there’s something for it to do.'
 		},
 		{
 			target: 'details',
@@ -37,7 +37,7 @@
 		{
 			target: 'hints',
 			title: 'keep your plan on track',
-			body: 'hints flag things like missing prerequisites and credit loads as you edit — point at one and its courses light up on the grid. "suggested path" shows the order your department recommends; the information section above tracks your credits and requirements.'
+			body: 'hints flag things like missing prerequisites and credit loads as you edit, point at one and its courses light up on the grid. "suggested path" shows the order your department recommends; the information section above tracks your credits and requirements.'
 		},
 		{
 			target: 'settings',

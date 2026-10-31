@@ -16,13 +16,13 @@
 	} from '$lib/grades';
 	import Modal from '../Modal.svelte';
 
-	// `year` narrows the window to one year's courses — opened from that
+	// `year` narrows the window to one year's courses, opened from that
 	// year's GPA capsule on the grid, to grade just those
 	let { plan, onclose, year = undefined }: { plan: Plan; onclose: () => void; year?: number } = $props();
 
 	type Term = { year: number; trim: number; codes: string[] };
 
-	// placed non-audit courses grouped by trimester — for the per-term TGPA
+	// placed non-audit courses grouped by trimester, for the per-term TGPA
 	let terms = $derived.by<Term[]>(() => {
 		const seen = new Set<string>();
 		const groups = new Map<string, Term>();
@@ -59,8 +59,8 @@
 	const termKey = (t: Term) => `${t.year}-${t.trim}`;
 	let open = $state<string[]>([]);
 	let allOpen = $derived(terms.length > 0 && open.length === terms.length);
-	// one year's window starts with every trimester open — that's the point
-	// of opening it — so there a click on a trimester folds it instead
+	// one year's window starts with every trimester open, that's the point
+	// of opening it, so there a click on a trimester folds it instead
 	const isOpen = (key: string) => (year !== undefined) !== open.includes(key);
 
 	function toggleTerm(key: string) {
@@ -88,7 +88,7 @@
 		{@const yg = plan.yearGpa(year)}
 		<div class="hero">
 			{#if yg === null}
-				<div class="cgpa-empty">no grades in year {year} yet — fill them in below</div>
+				<div class="cgpa-empty">no grades in year {year} yet, fill them in below</div>
 			{:else}
 				<div class="cgpa"><span class="num">{fmt(yg)}</span><span class="den">/10</span></div>
 				<div class="cgpa-sub">year {year} GPA</div>
@@ -97,7 +97,7 @@
 	{:else}
 	<div class="hero">
 		{#if plan.cgpa === null}
-			<div class="cgpa-empty">no grades yet — open a trimester below and fill them in</div>
+			<div class="cgpa-empty">no grades yet, open a trimester below and fill them in</div>
 		{:else}
 			<div class="cgpa"><span class="num">{fmt(plan.cgpa)}</span><span class="den">/10</span></div>
 			<div class="cgpa-sub">
@@ -114,7 +114,7 @@
 		</div>
 		<div class="gate" class:bad={plan.cgpa !== null && plan.cgpa < GRAD_MIN_CGPA}>
 			<span class="g-label">cgpa ≥ {GRAD_MIN_CGPA}</span>
-			<span class="g-val">{plan.cgpa === null ? '—' : fmt(plan.cgpa)}</span>
+			<span class="g-val">{plan.cgpa === null ? '–' : fmt(plan.cgpa)}</span>
 			<span class="g-note">{plan.cgpa === null ? 'no grades yet' : plan.cgpa >= GRAD_MIN_CGPA ? 'above the floor' : 'below the floor'}</span>
 		</div>
 		<div class="gate" class:bad={uCount > 0}>
@@ -133,13 +133,13 @@
 			{#if rec.kind === 'no-grades'}
 				set a few grades and I'll tell you what the rest of your plan needs to average.
 			{:else if rec.kind === 'complete'}
-				every planned credit is graded — your CGPA is final at <b>{fmt(rec.cgpa)}</b>.
+				every planned credit is graded, your CGPA is final at <b>{fmt(rec.cgpa)}</b>.
 			{:else if rec.kind === 'secured'}
-				already locked in — you stay at or above <b>{target.toFixed(1)}</b> even scoring U on every remaining credit.
+				already locked in, you stay at or above <b>{target.toFixed(1)}</b> even scoring U on every remaining credit.
 			{:else if rec.kind === 'reachable'}
 				average at least <b>{fmt(rec.needed)}</b>{#if rec.letter} (a <b>{rec.letter.letter}</b>){/if} across your remaining <b>{remaining}</b> credits.
 			{:else if rec.kind === 'impossible'}
-				out of reach for this plan — even all A+ on the remaining {remaining} credits tops out at <b>{fmt(rec.max)}</b>.
+				out of reach for this plan, even all A+ on the remaining {remaining} credits tops out at <b>{fmt(rec.max)}</b>.
 			{/if}
 		</p>
 	</section>
@@ -168,7 +168,7 @@
 						<span class="tr-caret" aria-hidden="true">▸</span>
 						<span class="tr-name">year {term.year} · t{term.trim}</span>
 						<span class="tr-count">{t.graded}/{t.total} graded</span>
-						<span class="tr-tgpa">{t.gpa === null ? '—' : fmt(t.gpa)}</span>
+						<span class="tr-tgpa">{t.gpa === null ? '–' : fmt(t.gpa)}</span>
 					</button>
 
 					{#if termOpen}
@@ -187,7 +187,7 @@
 										onchange={(e) =>
 											plan.setGrade(code, (e.currentTarget.value || null) as GradeMark | null)}
 									>
-										<option value="">—</option>
+										<option value="">–</option>
 										{#each OTHER_MARKS as m (m.mark)}
 											<option value={m.mark}>{m.label}</option>
 										{/each}

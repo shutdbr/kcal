@@ -13,12 +13,12 @@
     return yy ? `20${yy}` : "";
   };
 
-  // lecturers whose "more info" is unfolded — kept while moving between
+  // lecturers whose "more info" is unfolded, kept while moving between
   // courses, so someone you opened stays open
   let openMore = $state<string[]>([]);
 </script>
 
-<!-- profs rotate every year, so this is context, not a promise — but
+<!-- profs rotate every year, so this is context, not a promise, but
 		     who they are and when to find them is what a student asks next -->
 {#if !isCore(c.code) && profs.length}
   <div class="label">recently taught by</div>
@@ -82,15 +82,16 @@
                       <p>{p.office_hours}</p>
                     </div>{/if}
                   {#if p.email || p.url}
+                    <!-- plain text to copy, and one link out -->
                     <span class="d-prof-links">
-                      {#if p.email}<a href="mailto:{p.email}">{p.email}</a>{/if}
+                      {#if p.email}<span class="d-email">{p.email}</span>{/if}
                       {#if p.url}<a href={p.url} target="_blank" rel="noopener"
                           >Faculty profile ↗</a
                         >{/if}
                     </span>
                   {/if}
                   <!-- what they've taught lately, term by term (as kreabot
-									     lists it) — each another course to jump to -->
+									     lists it), each another course to jump to -->
                   {#if terms.length}<div class="d-eyebrow d-history-label">
                       Recent teaching
                     </div>{/if}
@@ -215,10 +216,7 @@
   }
   .d-office {
     display: grid;
-    gap: 0.4rem;
-    padding: 1rem 1.2rem;
-    background: var(--color-hover);
-    border-radius: 6px;
+    gap: 0.2rem;
   }
   .d-office p {
     margin: 0;
@@ -277,26 +275,21 @@
     text-underline-offset: 0.2em;
   }
   .d-prof-links {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.8rem;
+    display: grid;
+    justify-items: start;
+    gap: 0.4rem;
+  }
+  .d-email {
+    overflow-wrap: anywhere;
+    user-select: all; // one click selects the whole address to copy
   }
   .d-prof-links a {
-    max-width: 100%;
-    overflow-wrap: anywhere;
-    display: inline-flex;
-    align-items: center;
-    min-height: 3.2rem;
-    padding: 0.5rem 1rem;
     color: var(--color-accent);
-    font-size: 1.2rem;
-    font-weight: 550;
-    text-decoration: none;
-    border: 1px solid var(--color-border-card);
-    border-radius: 5px;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
   }
   .d-prof-links a:hover {
-    background: var(--color-hover-medium);
+    color: var(--color-text);
   }
   button:focus-visible,
   a:focus-visible {

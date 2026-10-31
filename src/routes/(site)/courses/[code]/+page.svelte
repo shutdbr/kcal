@@ -48,7 +48,7 @@
 		<h2>Before this</h2>
 		<CourseList courses={data.prerequisites} empty="No prerequisites." />
 		{#if data.equivalents.length}
-			<p class="note">Interchangeable with — take one of these, not both:</p>
+			<p class="note">Interchangeable with these (take one, not both):</p>
 			<CourseList courses={data.equivalents} />
 		{/if}
 	</section>
@@ -68,9 +68,9 @@
 				{#each data.programmes as p (p.slug)}
 					<li>
 						<a href="/programmes/{p.slug}">{p.subject}</a>
-						{#if p.required.length}<span><b>required</b> — {list(p.required)}</span>{/if}
-						{#if p.choice.length}<span><b>one of a choice</b> — {list(p.choice)}</span>{/if}
-						{#if p.elective.length}<span><b>elective</b> — {list(p.elective)}</span>{/if}
+						{#if p.required.length}<span><b>required</b>: {list(p.required)}</span>{/if}
+						{#if p.choice.length}<span><b>one of a choice</b>: {list(p.choice)}</span>{/if}
+						{#if p.elective.length}<span><b>elective</b>: {list(p.elective)}</span>{/if}
 					</li>
 				{/each}
 			</ul>

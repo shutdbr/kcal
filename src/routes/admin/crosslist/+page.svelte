@@ -5,7 +5,7 @@
 	// A cross-listed course is ONE course under several department codes
 	// (HIST235 = LITT235 = ARTS229). Which codes it carries decides which
 	// programmes it can count toward; the credit-sharing policy decides what
-	// happens when it counts toward two of a student's programmes at once —
+	// happens when it counts toward two of a student's programmes at once,
 	// do its credits go to one of them (the first that claims it: majors
 	// before minors before concentrations) or to both?
 	//
@@ -160,7 +160,7 @@
 		</header>
 
 		<div class="section">
-			<h2>credit sharing — site default</h2>
+			<h2>credit sharing, site default</h2>
 			<div class="set">
 				<span class="set-label">
 					a course that counts for two programmes
@@ -173,8 +173,8 @@
 					</div>
 					<p class="help">
 						{#if shareDefault === 'one'}
-							its credits go to the first programme that claims it — majors before minors before
-							concentrations — so a student must take more courses to finish both.
+							its credits go to the first programme that claims it, majors before minors before
+							concentrations, so a student must take more courses to finish both.
 						{:else}
 							its credits count toward every programme it belongs to, so one course can fill two
 							requirements at once.
@@ -270,7 +270,7 @@
 					<p class="empty">nothing matches</p>
 				{/each}
 				{#if listed.length > 200}
-					<p class="empty">showing 200 of {listed.length} — search to narrow down</p>
+					<p class="empty">showing 200 of {listed.length}, search to narrow down</p>
 				{/if}
 			</div>
 		</div>

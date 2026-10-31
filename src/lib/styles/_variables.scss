@@ -144,22 +144,26 @@
 	// a step paler. Each depth is one lightness + one muted chroma shared by
 	// every hue (OKLCH), so no subject reads brighter or darker than another.
 	// -ink is the required dot and the progress-bar fill.
-	// required reads a clear step deeper than elective — the fill alone has to
-	// tell them apart at a glance
-	--tone-required-l: 0.85;
-	--tone-required-c: 0.058;
+	// required is the subject's colour, filled; elective is a pale card with
+	// the subject's colour down its left edge (see course-type-fill) — so the
+	// two differ in shape, not just shade
+	--tone-required-l: 0.87;
+	--tone-required-c: 0.052;
 	--tone-required-deep-l: 0.68;
-	--tone-required-deep-c: 0.08;
-	--tone-elective-l: 0.965;
-	--tone-elective-c: 0.014;
-	--tone-elective-deep-l: 0.86;
-	--tone-elective-deep-c: 0.034;
+	--tone-required-deep-c: 0.085;
+	--tone-elective-l: 0.905;
+	--tone-elective-c: 0.042;
+	--tone-elective-deep-l: 0.73;
+	--tone-elective-deep-c: 0.07;
 	--tone-ink-l: 0.55;
 	--tone-ink-c: 0.068;
 	// a trimester cell tinted by the courses in it — only a hint of the hue,
 	// a step lighter and much greyer than the chips, so they stand off it
 	--tone-cell-l: 0.935;
 	--tone-cell-c: 0.016;
+	// the text and marks on a course card: translucent black, so over each
+	// fill it reads as a darker shade of that fill rather than a flat grey
+	--color-course-ink: rgb(0 0 0 / 0.6);
 
 	// the same depths in lavender, for anything not tied to one subject
 	// (the reference plan's open slots, the credit rules, admin pages)
@@ -290,18 +294,19 @@
 
 	// the same hues at depths flipped for a dark board: required is the
 	// brighter step and elective sits nearer the background
-	--tone-required-l: 0.43;
+	--tone-required-l: 0.41;
 	--tone-required-c: 0.06;
-	--tone-required-deep-l: 0.6;
-	--tone-required-deep-c: 0.075;
-	--tone-elective-l: 0.3;
-	--tone-elective-c: 0.016;
-	--tone-elective-deep-l: 0.42;
-	--tone-elective-deep-c: 0.03;
+	--tone-required-deep-l: 0.62;
+	--tone-required-deep-c: 0.085;
+	--tone-elective-l: 0.34;
+	--tone-elective-c: 0.04;
+	--tone-elective-deep-l: 0.6;
+	--tone-elective-deep-c: 0.08;
 	--tone-ink-l: 0.74;
 	--tone-ink-c: 0.065;
 	--tone-cell-l: 0.26;
 	--tone-cell-c: 0.014;
+	--color-course-ink: rgb(255 255 255 / 0.78); // a lighter shade of a dark fill
 	--color-course-audit: #2b2f35;
 	--color-border-audit: #515963;
 	--color-course-core: #5c3f3d;

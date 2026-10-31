@@ -1,6 +1,6 @@
 // ─────────────────────────────────────────────
 // The curriculum at runtime: indexes over the compiled snapshot and the
-// questions the planner asks of it. Nothing here reconciles source data —
+// questions the planner asks of it. Nothing here reconciles source data,
 // that is the compiler's job (curriculum/compiler.ts). Until /admin edits the
 // database, this browser's admin drafts are laid over the snapshot here.
 // ─────────────────────────────────────────────
@@ -42,7 +42,7 @@ export const DATA_UPDATED = snapshot.updatedOn ? new Date(snapshot.updatedOn) : 
 
 export const SUBJECTS: Subject[] = snapshot.subjects;
 export const MAJOR_SUBJECTS: Subject[] = SUBJECTS.filter((s) => s.majorable);
-/** what the minor/concentration pickers offer: every real subject — not the
+/** what the minor/concentration pickers offer: every real subject, not the
  *  foundation core, nor the open minor (offered separately, minor slot only) */
 export const PROGRAMME_SUBJECTS: Subject[] = SUBJECTS.filter((s) => s.id !== 'core' && s.id !== 'open');
 export const OPEN_MINOR: Subject = SUBJECTS.find((s) => s.id === 'open')!;
@@ -60,7 +60,8 @@ export const subjectById = (id: string): Subject => {
 const ruleEdits = browser ? loadRuleEdits() : {};
 const RULES = ruleProblems(ruleEdits).length ? snapshot.rules : resolveRules(ruleEdits);
 export const TRIM_MIN = RULES.TRIM_MIN; // minimum credits per trimester (full-time status)
-export const TRIM_NORMAL_MAX = RULES.TRIM_NORMAL_MAX; // recommended load — four 4-credit courses
+export const TRIM_NORMAL_MAX = RULES.TRIM_NORMAL_MAX; // recommended load, four 4-credit courses
+export const TRIM_STANDARD_MAX = RULES.TRIM_STANDARD_MAX; // above this a trimester is heavy …
 export const TRIM_HARD_MAX = RULES.TRIM_HARD_MAX; // absolute cap (a fifth course) …
 export const HEAVY_TRIMS_ALLOWED = RULES.HEAVY_TRIMS_ALLOWED; // … allowed this many terms in the whole tenure
 export const AUDIT_LIMIT = RULES.AUDIT_LIMIT; // audits allowed over the whole degree
@@ -72,7 +73,7 @@ export const MAX_TOTAL_4YR = RULES.MAX_TOTAL_4YR; // total-credit ceiling, four-
 // ── Courses ──
 
 /** how a course that satisfies more than one of a student's programmes is
- *  credited when it carries no override of its own — see Course.share */
+ *  credited when it carries no override of its own, see Course.share */
 export const CREDIT_SHARE_DEFAULT: CreditShare = browser ? loadShareDefault() : 'one';
 
 const toCourse = ({ terms: _terms, lecturers: _lecturers, ...c }: SnapshotCourse): Course => ({
@@ -86,7 +87,7 @@ const toCourse = ({ terms: _terms, lecturers: _lecturers, ...c }: SnapshotCourse
 	unlocks: []
 });
 
-/** every course, retired ones included — only /admin needs these */
+/** every course, retired ones included, only /admin needs these */
 export const ALL_COURSES: Course[] = snapshot.courses.map(toCourse);
 
 // courses /admin added: a bare record, finished by the edits below
@@ -111,7 +112,7 @@ if (browser)
 		});
 	}
 
-/** a course as the curriculum shipped it, before any /admin edit — what the
+/** a course as the curriculum shipped it, before any /admin edit, what the
  *  admin shows as "was" and what a revert goes back to */
 export type ShippedCourse = Pick<
 	Course,
@@ -152,7 +153,7 @@ if (browser) {
 	}
 }
 
-/** the live catalogue — everything the planner can show and place */
+/** the live catalogue, everything the planner can show and place */
 export const COURSES: Course[] = ALL_COURSES.filter((c) => !c.retired);
 const index = new Map(COURSES.map((c) => [c.code, c]));
 const aliases = new Map(COURSES.flatMap((c) => c.codes.map((code) => [code, c] as const)));
@@ -165,7 +166,7 @@ if (browser)
 		if (course) course.prereqs = prereqs.filter((p) => p !== code);
 	}
 for (const c of COURSES) c.prereqs = c.prereqs.filter((p) => index.has(p));
-// `unlocks` is exactly the inverse relation — derived, never stored
+// `unlocks` is exactly the inverse relation, derived, never stored
 for (const c of COURSES) for (const p of c.prereqs) index.get(p)!.unlocks.push(c.code);
 
 export const hasCode = (code: string): boolean => index.has(code) || aliases.has(code);
@@ -177,7 +178,7 @@ export const byCode = (code: string): Course => {
 };
 
 /** the code a course is shown under when browsing a subject (HIST235 under
- *  history) — its canonical code otherwise */
+ *  history), its canonical code otherwise */
 export const codeFor = (course: Course, subject?: string): string =>
 	(subject && course.codesBySubject[subject]) || course.code;
 
@@ -209,7 +210,7 @@ for (const { maths, applied } of MATHS_COVERS) {
 	a.coveredBy = [...new Set([...(a.coveredBy ?? []), maths])];
 }
 
-/** codes accepted in place of `code` — ask this wherever a requirement or
+/** codes accepted in place of `code`, ask this wherever a requirement or
  *  prerequisite needs "is this already satisfied?" */
 export const satisfiedBy = (code: string): string[] => {
 	const c = index.get(code);
@@ -246,7 +247,7 @@ const lecturers = new Map(snapshot.lecturers.map((l) => [l.id, l]));
 export const lecturerById = (id: string): Professor | undefined => lecturers.get(id);
 const courseRecords = new Map(snapshot.courses.map((c) => [c.code, c]));
 
-/** who has taught a course — position, office hours, photo where known */
+/** who has taught a course, position, office hours, photo where known */
 export function facultyOf(code: string): Professor[] {
 	return (courseRecords.get(byCode(code).code)?.lecturers ?? []).flatMap((id) => lecturers.get(id) ?? []);
 }
@@ -266,7 +267,7 @@ export const termLabel = (term: string): string => {
 export const termsOffered = (code: string): string[] =>
 	(courseRecords.get(byCode(code).code)?.terms ?? []).map(termLabel);
 
-// A lecturer is credited with every term a course of theirs ran — the data
+// A lecturer is credited with every term a course of theirs ran, the data
 // keeps each course's latest lecturers, so close enough to show what someone
 // teaches and how recently.
 const taught = new Map<string, string[]>();
@@ -275,7 +276,7 @@ for (const c of snapshot.courses) {
 	for (const id of c.lecturers) taught.set(id, [...(taught.get(id) ?? []), c.code]);
 }
 
-/** a lecturer's courses by term, newest first — the latest `terms` terms */
+/** a lecturer's courses by term, newest first, the latest `terms` terms */
 export function taughtBy(prof: Professor, terms = 3): { term: string; codes: string[] }[] {
 	const byTerm = new Map<string, string[]>();
 	for (const code of taught.get(prof.id) ?? [])
@@ -286,7 +287,7 @@ export function taughtBy(prof: Professor, terms = 3): { term: string; codes: str
 		.map(([term, codes]) => ({ term, codes }));
 }
 
-/** every course a lecturer is associated with — not a promise of future teaching */
+/** every course a lecturer is associated with, not a promise of future teaching */
 export function facultyCourses(prof: Professor): Course[] {
 	return [...new Set(taught.get(prof.id) ?? [])].map(byCode).sort((a, b) => a.title.localeCompare(b.title));
 }
@@ -342,7 +343,7 @@ export function creditsFor(subject: string, role: ProgrammeRole, fourYear: boole
 	return programmeFor(subject, role, fourYear, isDouble, batch)?.credits.total ?? 0;
 }
 
-/** the required credits the programme states — the honest denominator when
+/** the required credits the programme states, the honest denominator when
  *  its required list is choice pools */
 export const requiredCreditsFor = (subject: string, role: ProgrammeRole, fourYear: boolean, isDouble: boolean, batch?: number) =>
 	batchRuleFor(subject, role, fourYear, isDouble, batch)?.requiredCredits ??
@@ -377,7 +378,7 @@ export function electiveSetFor(subject: string, role: ProgrammeRole, fourYear: b
 	return [...result];
 }
 
-/** 'choose N from' pools — they count toward the required credits */
+/** 'choose N from' pools, they count toward the required credits */
 export function pickSetFor(subject: string, role: ProgrammeRole, fourYear: boolean, isDouble: boolean, batch?: number): string[] {
 	const edits = batchRuleFor(subject, role, fourYear, isDouble, batch)?.courses ?? {};
 	return (programmeFor(subject, role, fourYear, isDouble, batch)?.picks ?? []).filter(
