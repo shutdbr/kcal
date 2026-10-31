@@ -17,8 +17,23 @@
 	const left = (done: number, needed: number) => (done >= needed ? '✓ done' : `${needed - done} cr left`);
 	// one hint open at a time — opening another folds the last
 	let openKey = $state<string | null>(null);
-	function toggle(key: string) {
+	// the open hint's courses stay lit on the grid; pointing at another hint
+	// previews its courses, then the grid goes back to the open one's
+	let pinned: string[] = [];
+	function toggle(key: string, codes: string[] = []) {
 		openKey = openKey === key ? null : key;
+		pinned = openKey ? codes.filter(hasCode) : [];
+		plan.highlight = pinned;
+		if (pinned.length) focusOnGrid(pinned[0]);
+	}
+	const restoreHighlight = () => (plan.highlight = pinned);
+	/** bring a course's chip into view on the grid */
+	function focusOnGrid(code: string) {
+		tick().then(() =>
+			document
+				.querySelector(`.overview .chip[data-code="${CSS.escape(byCode(code).code)}"]`)
+				?.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: reducedMotion() ? 'auto' : 'smooth' })
+		);
 	}
 	// a few plain words per row; the full sentence is one click away
 	function heading(hint: Hint) {
@@ -26,7 +41,7 @@
 		if (/applied version/.test(text)) return 'maths covers the applied one';
 		if (/earlier|prerequisite|before/.test(text)) return 'prerequisites first';
 		if (/usually open|not year|only.*year/.test(text)) return 'wrong year';
-		if (/required courses.*place/.test(text)) return 'required courses missing';
+		if (/required courses?.*place/.test(text)) return 'required courses missing';
 		if (/credit.*minimum|under.*credit/.test(text)) return 'too few credits';
 		if (/credit.*max|over.*credit|ceiling|exceed/.test(text)) return 'too many credits';
 		if (/interchangeable|you can switch/.test(text)) return 'you only need one';
@@ -128,11 +143,11 @@
 		class:open
 		role="group"
 		onmouseenter={() => (plan.highlight = codes)}
-		onmouseleave={() => (plan.highlight = [])}
+		onmouseleave={restoreHighlight}
 		onfocusin={() => (plan.highlight = codes)}
-		onfocusout={() => (plan.highlight = [])}
+		onfocusout={restoreHighlight}
 	>
-		<button class="hint-heading" aria-expanded={open} aria-controls={`hint-detail-${gi}`} onclick={() => toggle(group.key)}>
+		<button class="hint-heading" aria-expanded={open} aria-controls={`hint-detail-${gi}`} onclick={() => toggle(group.key, codes)}>
 			<span class="hint-main">
 				<span class="hint-title">
 					<i class="tone-dot" data-kind={group.kind} aria-hidden="true"></i>{group.title}
@@ -191,6 +206,15 @@
 			<span>total</span>
 			<b>{plan.totalPlacedCredits}<em>/</em>{plan.creditTarget} cr</b>
 		</div>
+		<!-- planned, not earned: what stands between this plan and graduating -->
+		<button
+			class="readiness"
+			class:clear={!problems}
+			onclick={() =>
+				document.querySelector('[data-tour="hints"]')?.scrollIntoView({ block: 'start', behavior: reducedMotion() ? 'auto' : 'smooth' })}
+		>
+			{problems ? `${problems} planning issue${problems === 1 ? '' : 's'} to sort out ↓` : '✓ no planning issues'}
+		</button>
 
 		{#each plan.stats as s (s.role + s.subject)}
 			{@const key = s.role + s.subject}
@@ -420,6 +444,30 @@
 		padding: 0.6rem 1.6rem 1.4rem;
 		font-size: var(--text-body);
 		line-height: 1.5;
+
+		.readiness {
+			display: block;
+			margin-top: 0.2rem;
+			padding: 0;
+			font: inherit;
+			font-size: 1.25rem;
+			text-align: left;
+			color: color-mix(in srgb, var(--color-hint-warn-deep) 70%, var(--color-text));
+			background: none;
+			border: 0;
+			cursor: pointer;
+
+			&:hover {
+				text-decoration: underline;
+				text-underline-offset: 0.2em;
+			}
+
+			&.clear {
+				color: var(--color-hint-good-deep);
+				cursor: default;
+				text-decoration: none;
+			}
+		}
 
 		.total {
 			display: flex;

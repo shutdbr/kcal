@@ -159,7 +159,82 @@ export class Plan {
 			const json = JSON.stringify(this.snapshot());
 			try { this.storageError = saveBoard(localStorage, json) ? '' : 'Your browser could not save the latest changes.'; }
 			catch { this.storageError = 'Browser storage is unavailable. Save a cloud copy before closing.'; }
+			this.#recordHistory();
 		});
+	}
+
+	// ── undo / redo ──
+	// Each entry is a whole planning state — courses, programmes, batch,
+	// grades, audits, crossed-off hints — so undo puts back exactly what was
+	// there, however many courses one action moved. How the board is viewed
+	// (codes, titles, filters, grade view) is not history.
+	static readonly HISTORY_LIMIT = 100;
+	#past: string[] = [];
+	#future: string[] = [];
+	#present = '';
+	#travelling = false;
+	#recording = false;
+	canUndo = $state(false);
+	canRedo = $state(false);
+
+	#planningState(): string {
+		const { placements, picks, structure, fourYear, yearCount, batchStartYear, grades, audited, waived, targetLoad, touched } =
+			this.snapshot();
+		return JSON.stringify({ placements, picks, structure, fourYear, yearCount, batchStartYear, grades, audited, waived, targetLoad, touched });
+	}
+
+	/** after every change (the autosave effect): a new state pushes the last one */
+	#recordHistory() {
+		const state = this.#planningState();
+		// the change an undo/redo itself made is never a new step
+		const travelled = this.#travelling;
+		this.#travelling = false;
+		if (state === this.#present) return;
+		if (this.#recording && !travelled && this.#present) {
+			this.#past.push(this.#present);
+			if (this.#past.length > Plan.HISTORY_LIMIT) this.#past.shift();
+			this.#future = [];
+		}
+		this.#present = state;
+		this.#syncHistoryFlags();
+	}
+
+	/** Start recording once the page is up — the restore and first-render
+	 *  normalisation of a saved plan aren't steps anyone could undo. */
+	startHistory() {
+		this.#present = this.#planningState();
+		this.#past = [];
+		this.#future = [];
+		this.#recording = true;
+		this.#syncHistoryFlags();
+	}
+
+	#syncHistoryFlags() {
+		this.canUndo = this.#past.length > 0;
+		this.canRedo = this.#future.length > 0;
+	}
+
+	undo() {
+		const previous = this.#past.pop();
+		if (previous === undefined) return;
+		this.#future.push(this.#present);
+		this.#travel(previous, 'undone');
+	}
+
+	redo() {
+		const next = this.#future.pop();
+		if (next === undefined) return;
+		this.#past.push(this.#present);
+		this.#travel(next, 'redone');
+	}
+
+	#travel(state: string, done: string) {
+		quietRedraw(); // a whole state at once — fade, don't fly
+		this.#travelling = true;
+		this.#present = state;
+		this.applySave({ ...this.snapshot(), ...JSON.parse(state) });
+		this.#syncHistoryFlags();
+		this.#setFlash(done);
 	}
 
 	/** Everything that makes up a schedule, in the exact shape applySave reads.
@@ -570,6 +645,26 @@ export class Plan {
 
 	slotCredits(year: number, trim: TrimNum): number {
 		return this.slotCourses(year, trim).reduce((sum, code) => sum + byCode(code).credits, 0);
+	}
+
+	/** A trimester's credit load against the drop form, as its footer shows it.
+	 *  Year 1 (the foundation core) and a year past the degree's length are
+	 *  exempt, as in the hints. 'heavy' is allowed, but only HEAVY_TRIMS_ALLOWED
+	 *  times in the whole tenure. A fine load says nothing about other rules. */
+	slotLoad(year: number, trim: TrimNum): {
+		credits: number;
+		status: 'exempt' | 'under' | 'ok' | 'heavy' | 'over';
+		/** the bound it misses, shown as credits / limit */
+		limit: number | null;
+		note: string;
+	} {
+		const credits = this.slotCredits(year, trim);
+		if (year === 1 || year > (this.fourYear ? 4 : 3)) return { credits, status: 'exempt', limit: null, note: '' };
+		if (credits > TRIM_HARD_MAX) return { credits, status: 'over', limit: TRIM_HARD_MAX, note: `over the ${TRIM_HARD_MAX}-credit cap` };
+		if (credits > TRIM_NORMAL_MAX)
+			return { credits, status: 'heavy', limit: TRIM_NORMAL_MAX, note: `a heavy trimester — over ${TRIM_NORMAL_MAX}, allowed ${HEAVY_TRIMS_ALLOWED} times` };
+		if (credits < TRIM_MIN) return { credits, status: 'under', limit: TRIM_MIN, note: `under the ${TRIM_MIN}-credit minimum` };
+		return { credits, status: 'ok', limit: TRIM_NORMAL_MAX, note: `within the normal ${TRIM_NORMAL_MAX}-credit load` };
 	}
 
 	/** trimester GPA for a slot — credit-weighted over its letter-graded,
@@ -1165,6 +1260,32 @@ export class Plan {
 		for (const c of CORE_COURSES) if (!this.placedCodes.has(c.code)) out.add(c.code);
 		return [...out];
 	});
+
+	/** Other ways to meet a required course that isn't on the plan: courses
+	 *  the curriculum accepts in its place (its stated equivalences only —
+	 *  never a guess from a similar title), the rest of a 'choose N' pool it
+	 *  sits in, and the trimesters it would fit cleanly. */
+	alternativesFor(code: string): {
+		equivalents: string[];
+		pools: { rule: string; others: string[] }[];
+		fits: { year: number; trim: TrimNum }[];
+	} {
+		const course = byCode(code);
+		const placed = (c: string) => this.placedCodes.has(c) || satisfiedBy(c).some((s) => this.placedCodes.has(s));
+		const pools = this.programmes.flatMap((prog) =>
+			choiceGroupsFor(prog.subject, prog.role, this.fourYear, this.isDouble, this.batchStartYear)
+				.filter((g) => g.courses.some((c) => c.code && hasCode(c.code) && byCode(c.code).code === course.code))
+				.map((g) => ({
+					rule: g.rule.replace(/[\s:.]+$/, ''),
+					others: g.courses.flatMap((c) =>
+						c.code && hasCode(c.code) && byCode(c.code).code !== course.code && !placed(byCode(c.code).code) ? [byCode(c.code).code] : []
+					)
+				}))
+				.filter((g) => g.others.length)
+		);
+		const fits = this.years.flatMap((year) => TRIMS.filter((trim) => this.canDrop(course.code, year, trim)).map((trim) => ({ year, trim })));
+		return { equivalents: satisfiedBy(course.code), pools, fits };
+	}
 
 	/** one programme's required courses still to place */
 	requiredLeftFor(i: number): string[] {

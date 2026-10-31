@@ -314,20 +314,14 @@
 		}
 	}
 
-	// a rule of round plum dots under the filters closes off the search area
-	// from the cards scrolling below it — drawn, not a dotted border, so the
-	// dots come out round and evenly spaced
+	// a plain hairline under the filters closes off the search area from the
+	// cards scrolling below it — the same rule the sidebar's sections use
 	.filters {
 		display: flex;
 		gap: 1.2rem;
 		flex-wrap: wrap;
 		padding: 1.4rem 0.4rem 1.6rem;
-		background: radial-gradient(
-				circle,
-				color-mix(in srgb, var(--color-accent) 55%, transparent) 1.1px,
-				transparent 1.6px
-			)
-			left bottom / 7px 4px repeat-x;
+		border-bottom: 1px solid var(--color-border-light);
 	}
 
 	.filter {

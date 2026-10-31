@@ -22,7 +22,9 @@
 	import { DATA_UPDATED, hasCode } from '$lib/data';
 	import { fade, fly } from 'svelte/transition';
 	import { loadDescriptions } from '$lib/descriptions.svelte';
-	import { onMount } from 'svelte';
+	import { onMount, tick } from 'svelte';
+	import { readSharedPlan, sharedPlanIn } from '$lib/features/plans/share';
+	import { savedPlans } from '$lib/features/plans/local-plans.svelte';
 
 	const plan = new Plan();
 	const INTRO_KEY = 'kcal-intro-seen';
@@ -64,8 +66,17 @@
 			history.replaceState(history.state, '', url);
 			if (hasCode(linkedCourse)) plan.revealCourse(linkedCourse);
 		}
-		const importing = location.hash.startsWith('#canvas-import=');
-		if (importing) {
+		// a plan someone shared (#plan=…): read it, tidy the address bar, and
+		// ask before anything changes — it is a copy, never a silent overwrite
+		const sharedEncoded = sharedPlanIn(location.hash);
+		if (sharedEncoded) {
+			history.replaceState(history.state, '', location.pathname + location.search);
+			readSharedPlan(sharedEncoded)
+				.then((document) => (sharedPlan = document as Record<string, unknown>))
+				.catch((e) => (sharedError = e instanceof Error ? e.message : 'This share link could not be read.'));
+		}
+		const importing = !!sharedEncoded || location.hash.startsWith('#canvas-import=');
+		if (location.hash.startsWith('#canvas-import=')) {
 			const fragment = location.hash.slice('#canvas-import='.length);
 			history.replaceState(history.state, '', location.pathname + location.search);
 			try {
@@ -86,6 +97,7 @@
 		};
 		update();
 		ready = true;
+		void tick().then(() => plan.startHistory());
 		for (const m of [media, detailsMedia, railMedia]) m.addEventListener('change', update);
 		try {
 			welcomeOpen = !importing && !linkedCourse && !localStorage.getItem(INTRO_KEY);
@@ -106,6 +118,42 @@
 		} catch {
 			// Dismissal still works when browser storage is unavailable.
 		}
+	}
+
+	// ⌘Z / Ctrl+Z undo, ⇧⌘Z / Ctrl+Y redo — not while typing in a field,
+	// where the browser's own undo belongs
+	function onKey(e: KeyboardEvent) {
+		if (e.key === 'Escape' && plan.railOpen) plan.railOpen = false;
+		if (!(e.ctrlKey || e.metaKey) || e.altKey) return;
+		if ((e.target as HTMLElement | null)?.closest('input, textarea, select, [contenteditable]')) return;
+		const key = e.key.toLowerCase();
+		if (key === 'z' && !e.shiftKey) {
+			e.preventDefault();
+			plan.undo();
+		} else if ((key === 'z' && e.shiftKey) || key === 'y') {
+			e.preventDefault();
+			plan.redo();
+		}
+	}
+
+	// ── a shared plan, waiting for the student's say-so ──
+	let sharedPlan = $state<Record<string, unknown> | null>(null);
+	let sharedError = $state('');
+	let sharedSummary = $derived.by(() => {
+		if (!sharedPlan) return '';
+		const placements = sharedPlan.placements as Record<string, string[]>;
+		const courses = Object.values(placements).flat().filter(hasCode).length;
+		const years = sharedPlan.fourYear === false ? '3-year' : '4-year';
+		const batch = typeof sharedPlan.batchStartYear === 'number' ? `, batch ${sharedPlan.batchStartYear}` : '';
+		return `${courses} course${courses === 1 ? '' : 's'} on a ${years} plan${batch}.`;
+	});
+	function openSharedPlan() {
+		if (!sharedPlan) return;
+		// your own board is kept, as a saved copy you can load back
+		if (!savedPlans.full)
+			savedPlans.save(`my plan, before a shared one (${new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })})`, plan.snapshot());
+		plan.restore({ ...plan.snapshot(), grades: {}, ...sharedPlan, touched: true });
+		sharedPlan = null;
 	}
 
 	function dismissTour() {
@@ -134,6 +182,28 @@
 		return () => clearTimeout(id);
 	});
 </script>
+
+{#if sharedPlan || sharedError}
+	<Modal title="a shared plan" onclose={() => ((sharedPlan = null), (sharedError = ''))}>
+		<div class="phone-note">
+			{#if sharedError}
+				<p>{sharedError}</p>
+				<button onclick={() => (sharedError = '')}>ok</button>
+			{:else}
+				<p>Someone shared their plan with you: {sharedSummary}</p>
+				<p class="shared-note">
+					{savedPlans.full
+						? 'Opening it replaces your board — your saved-plans list is full, so delete one in settings first to keep a copy.'
+						: 'Opening it keeps your current plan as a saved copy (settings → saved plans).'}
+				</p>
+				<div class="shared-actions">
+					<button onclick={openSharedPlan}>open the shared plan</button>
+					<button class="secondary" onclick={() => (sharedPlan = null)}>keep my plan</button>
+				</div>
+			{/if}
+		</div>
+	</Modal>
+{/if}
 
 {#if phoneNote && !desktop}
 	<Modal title="better on a laptop" onclose={dismissPhoneNote}>
@@ -182,7 +252,7 @@
 	<title>kcal</title>
 </svelte:head>
 
-<svelte:window onkeydown={(e) => e.key === 'Escape' && plan.railOpen && (plan.railOpen = false)} />
+<svelte:window onkeydown={onKey} />
 
 <div
 	class="app"
@@ -436,6 +506,24 @@
 		background: linear-gradient(to bottom, var(--color-bg-sidebar), var(--color-bg-sidebar-end));
 		border-left: 1px solid var(--color-border-warm);
 	}
+	.shared-note {
+		font-size: 1.35rem;
+		color: var(--color-text-muted);
+	}
+
+	.shared-actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 1rem;
+
+		.secondary {
+			color: var(--color-text);
+			background: var(--color-bg-light);
+			background-image: none;
+			border-color: var(--color-border-card);
+		}
+	}
+
 	.phone-note {
 		display: grid;
 		gap: 2rem;

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Plan } from '$lib/plan.svelte';
 	import CourseFaculty from './CourseFaculty.svelte';
-	import { canAudit, hasCode, isCore, termsOffered } from '$lib/data';
+	import { byCode, canAudit, hasCode, isCore, satisfiedBy, termsOffered } from '$lib/data';
 	import { descriptionOf, loadDescriptions } from '$lib/descriptions.svelte';
 	import { GRADE_SCALE, OTHER_MARKS, type GradeMark } from '$lib/grades';
 
@@ -40,6 +40,17 @@
 		if (!code || !target) return;
 		const [y, t] = target.split('-').map(Number);
 		plan.place(code, y, t as 1 | 2 | 3);
+	}
+
+	// ── a prerequisite against the plan: placed earlier (fine), placed too
+	//    late, or nowhere yet — an interchangeable course counts as placed ──
+	function prereqStatus(pre: string): { kind: 'ok' | 'late' | 'missing'; text: string } {
+		const options = [byCode(pre).code, ...satisfiedBy(pre)];
+		const at = plan.placed.filter((p) => options.includes(p.code)).sort((a, b) => a.year - b.year || a.trim - b.trim)[0];
+		if (!at) return { kind: 'missing', text: 'not on plan' };
+		const where = `y${at.year} t${at.trim}`;
+		if (placedAt && at.year * 10 + at.trim >= placedAt.year * 10 + placedAt.trim) return { kind: 'late', text: `${where} · too late` };
+		return { kind: 'ok', text: `✓ ${where}` };
 	}
 
 	// shut on Esc — unless a dialog is open, which Esc closes first
@@ -96,6 +107,62 @@
 				<span class="d-stat-value">{plan.courseType(c.code)}</span>
 			</div>
 		</div>
+
+		<!-- what it needs and what it opens up — the planning decisions — come
+		     before the controls and the prose; each prerequisite says where it
+		     is on the plan -->
+		{#if c.prereqs.length}
+			<div class="label">needs first</div>
+			<div class="d-chips">
+				{#each c.prereqs as p (p)}
+					{#if hasCode(p)}
+						{@const status = prereqStatus(p)}
+						<button class="d-chip" data-status={status.kind} onclick={() => jump(p)}>
+							{plan.courseLabel(p)}<span class="d-chip-status">{status.text}</span>
+						</button>
+					{:else}
+						<span class="d-chip" data-status="missing">{p}<span class="d-chip-status">not in the catalogue</span></span>
+					{/if}
+				{/each}
+			</div>
+		{/if}
+
+		{#if c.unlocks.some(hasCode)}
+			<div class="label">unlocks</div>
+			<div class="d-chips">
+				{#each c.unlocks.filter(hasCode) as u (u)}
+					<button class="d-chip" onclick={() => jump(u)}>{plan.courseLabel(u)}</button>
+				{/each}
+			</div>
+		{/if}
+
+		<!-- a required course that isn't on the plan: the other ways to meet it,
+		     each backed by the curriculum's own rules -->
+		{#if !placedAt && plan.courseType(c.code) === 'required'}
+			{@const alt = plan.alternativesFor(c.code)}
+			<div class="label">ways to meet it</div>
+			<div class="d-alts">
+				<p>
+					{#if alt.fits.length}
+						fits cleanly in {alt.fits.slice(0, 4).map((f) => `y${f.year} t${f.trim}`).join(', ')}{alt.fits.length > 4 ? ', …' : ''}
+					{:else}
+						no trimester on the plan takes it cleanly right now — check when it runs and its prerequisites above
+					{/if}
+				</p>
+				{#if alt.equivalents.length}
+					<p>accepted in its place (a stated equivalence — take one, not both):</p>
+					<div class="d-chips">
+						{#each alt.equivalents as e (e)}<button class="d-chip" onclick={() => jump(e)}>{plan.courseLabel(e)}</button>{/each}
+					</div>
+				{/if}
+				{#each alt.pools as pool (pool.rule)}
+					<p>one of “{pool.rule}” — the others in that choice:</p>
+					<div class="d-chips">
+						{#each pool.others as o (o)}<button class="d-chip" onclick={() => jump(o)}>{plan.courseLabel(o)}</button>{/each}
+					</div>
+				{/each}
+			</div>
+		{/if}
 
 		<!-- where it is on the plan, and a way to put it there without
 		     dragging — keyboard, touch, or just quicker -->
@@ -197,25 +264,6 @@
 
 		<CourseFaculty {plan} course={c} />
 
-		{#if c.prereqs.length}
-			<div class="label">needs first</div>
-			<div class="d-chips">
-				{#each c.prereqs as p (p)}
-					<button class="d-chip" disabled={!hasCode(p)} onclick={() => jump(p)}
-						>{hasCode(p) ? plan.courseLabel(p) : p}</button
-					>
-				{/each}
-			</div>
-		{/if}
-
-		{#if c.unlocks.some(hasCode)}
-			<div class="label">unlocks</div>
-			<div class="d-chips">
-				{#each c.unlocks.filter(hasCode) as u (u)}
-					<button class="d-chip" onclick={() => jump(u)}>{plan.courseLabel(u)}</button>
-				{/each}
-			</div>
-		{/if}
 	</div>
 {:else}
 	<!-- the column a first-timer sees empty: how the planner works, and what
@@ -541,6 +589,14 @@
 		@include empty-text;
 	}
 
+	.d-alts {
+		display: flex;
+		flex-direction: column;
+		gap: 0.6rem;
+		font-size: 1.3rem;
+		color: var(--color-text-muted);
+	}
+
 	.d-chips {
 		display: flex;
 		flex-wrap: wrap;
@@ -548,6 +604,9 @@
 	}
 
 	.d-chip {
+		display: inline-flex;
+		flex-direction: column;
+		gap: 0.1rem;
 		padding: 0.5rem 1rem;
 		font-size: 1.3rem;
 		font-weight: 600;
@@ -562,6 +621,30 @@
 		box-shadow: var(--shadow-inset);
 		&:hover {
 			box-shadow: var(--shadow-inset-hover);
+		}
+
+		// where the prerequisite stands — in words, with colour as a second cue
+		.d-chip-status {
+			font-size: 1.1rem;
+			font-weight: 500;
+			color: var(--color-text-muted);
+		}
+
+		&[data-status='ok'] .d-chip-status {
+			color: var(--color-hint-good-deep);
+		}
+
+		&[data-status='late'] {
+			border-color: var(--color-danger);
+
+			.d-chip-status {
+				color: var(--color-danger);
+				font-weight: 600;
+			}
+		}
+
+		&[data-status='missing'] .d-chip-status {
+			color: color-mix(in srgb, var(--color-hint-caution-deep) 65%, var(--color-text));
 		}
 	}
 

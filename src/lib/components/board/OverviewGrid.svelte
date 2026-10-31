@@ -250,6 +250,14 @@
 />
 
 <div class="board-bar" data-tour="board-toggles">
+	<!-- undo / redo a whole planning step (also ⌘Z / ⇧⌘Z) -->
+	<div class="keys history" role="group" aria-label="history">
+		<button disabled={!plan.canUndo} title="undo (Ctrl+Z)" aria-label="undo" onclick={() => plan.undo()}>↶</button>
+		<button disabled={!plan.canRedo} title="redo (Ctrl+Shift+Z)" aria-label="redo" onclick={() => plan.redo()}>↷</button>
+	</div>
+
+	<span class="bar-rule" aria-hidden="true"></span>
+
 	<!-- grade view: unlocks grade entry on chips, in the details panel, and the
 	     CGPA / recovery panel -->
 	<div class="keys">
@@ -520,7 +528,9 @@
 						     mark, the way a required one leads with its dot -->
 						{#if plan.flagKinds.has(code)}<span class="flag" data-kind={plan.flagKinds.get(code)} role="img" aria-label="named in a hint" title="named in a hint — see hints"></span>{/if}
 						{#if type === 'required'}<span class="req-dot" role="img" aria-label="required"></span>{/if}
-						<span class="label">{plan.courseLabel(code)}{#if !plan.showTitles}<span class="mobile-title">{byCode(code).title}</span>{/if}</span>
+						<span class="label"
+							>{#if plan.showCodes}<b class="chip-code">{plan.shownCode(code)}</b>{/if}{#if plan.showCodes && plan.showTitles}{' · '}{/if}{#if plan.showTitles}{byCode(code).title}{/if}{#if !plan.showTitles}<span class="mobile-title">{byCode(code).title}</span>{/if}</span
+						>
 						</button>
 						<button
 							class="x"
@@ -573,12 +583,18 @@
 				{/if}
 
 				{#if slotCredits > 0}
-					<span class="cell-credits" class:over={!plan.gradeMode && y !== 1 && slotCredits > plan.targetLoad}>
+					{@const load = plan.slotLoad(y, t)}
+					<span class="cell-credits" data-status={plan.gradeMode ? undefined : load.status}>
 						{#if plan.gradeMode}
 							{@const tg = plan.slotTgpa(y, t)}
 							<span class="cell-tgpa" title="term GPA — this trimester's grade average">TGPA {tg === null ? '—' : tg.toFixed(2)}</span>
 						{:else}
-							{slotCredits} cr
+							<!-- the load as a fraction of the bound that matters: 4/12 under the
+							     minimum, 14/16 within the normal load, 20/16 heavy, 24/20 over
+							     the cap — in words on hover, colour only a second cue -->
+							<span class="credits-text" title={load.note || undefined}
+								>{slotCredits}{#if load.limit !== null}<span class="load-limit">/{load.limit}</span>{/if} cr</span
+							>
 						{/if}
 						<button
 							class="clear"
@@ -775,7 +791,7 @@
 		align-content: flex-start;
 		gap: 0.8rem;
 		min-height: 13rem;
-		padding: 1rem 1rem 2.2rem;
+		padding: 1rem 1rem 2.6rem;
 		background: var(--mix, var(--color-grid-cell));
 		border-radius: 8px;
 		cursor: zoom-in;
@@ -827,19 +843,36 @@
 		}
 	}
 
+	// the trimester's credits, in its bottom-right corner
 	.cell-credits {
 		position: absolute;
-		bottom: 0.5rem;
-		right: 0.8rem;
+		bottom: 0.7rem;
+		right: 0.9rem;
 		display: flex;
 		align-items: center;
-		gap: 0.3rem;
+		gap: 0.4rem;
 		font-size: 1.2rem;
 		font-weight: 700;
 		color: var(--color-text-muted);
 
-		&.over {
+		&[data-status='under'],
+		&[data-status='heavy'] {
+			color: color-mix(in srgb, var(--color-hint-caution-deep) 60%, var(--color-text));
+		}
+
+		&[data-status='over'] {
 			color: var(--color-danger);
+		}
+
+		.credits-text {
+			min-width: 0;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+		.load-limit {
+			font-weight: 500;
 		}
 
 		.clear {
@@ -963,6 +996,11 @@
 			overflow: hidden;
 			text-overflow: ellipsis;
 			white-space: nowrap;
+		}
+
+		// the code reads first: a touch bolder than the title beside it
+		.chip-code {
+			font-weight: 650;
 		}
 
 		// the show-titles switch is on → take the row and wrap
@@ -1540,6 +1578,19 @@
 		}
 	}
 
+
+	// undo / redo: glyphs, a touch larger than the bar's labels
+	.history button {
+		min-width: 3.2rem;
+		justify-content: center;
+		font-size: 1.6rem;
+		line-height: 1;
+
+		&:disabled {
+			opacity: 0.4;
+			cursor: default;
+		}
+	}
 
 	// the dotted rule between the bar's groups
 	.bar-rule {

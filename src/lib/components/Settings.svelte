@@ -3,6 +3,7 @@
 	import type { Plan } from '$lib/plan.svelte';
 	import { settings, TEXT_SIZES, type ThemeChoice } from '$lib/settings.svelte';
 	import { savedPlans, MAX_SAVES } from '$lib/features/plans/local-plans.svelte';
+	import { shareLink } from '$lib/features/plans/share';
 	import { byCode, subjectById } from '$lib/data';
 	import Modal from './Modal.svelte';
 	import FeedbackForm from './FeedbackForm.svelte';
@@ -94,13 +95,28 @@
 						`Y${y} T${t} (${plan.slotCredits(y, t)} cr): ${codes.map((c) => `${byCode(c).code} ${byCode(c).title}`).join('; ')}`
 					);
 			}
-		lines.push('', `${plan.totalPlacedCredits} of ${plan.degreeTotal} credits placed`);
+		lines.push('', `${plan.totalPlacedCredits} of ${plan.creditMinimum} credits placed`);
 		try {
 			await navigator.clipboard.writeText(lines.join('\n'));
 			shared = true;
 			setTimeout(() => (shared = false), 1800);
 		} catch {
 			// clipboard blocked — nothing else to fall back to here
+		}
+	}
+
+	// a link that opens a copy of this plan — for a friend or an advisor, no
+	// account needed. Their own board is never replaced without asking.
+	let linkCopied = $state(false);
+	let linkError = $state('');
+	async function copyShareLink() {
+		linkError = '';
+		try {
+			await navigator.clipboard.writeText(await shareLink(plan.snapshot(), location.origin));
+			linkCopied = true;
+			setTimeout(() => (linkCopied = false), 1800);
+		} catch {
+			linkError = 'The link could not be copied. Your browser may be blocking the clipboard.';
 		}
 	}
 
@@ -238,13 +254,18 @@
 
 	<section>
 		<h3>your plan</h3>
-		<p class="note">saved in this browser only. copy it as text to send to an advisor.</p>
+		<p class="note">
+			saved in this browser only. share a link — whoever opens it gets their own copy, without your grades — or
+			copy it as text.
+		</p>
 		<div class="actions">
+			<button onclick={copyShareLink}>{linkCopied ? 'link copied ✓' : 'copy share link'}</button>
 			<button onclick={copyPlan}>{shared ? 'copied ✓' : 'copy plan as text'}</button>
 			<button class="danger" onclick={startOver}>
 				{confirming ? 'really start over?' : 'start over'}
 			</button>
 		</div>
+		{#if linkError}<p class="note warn">{linkError}</p>{/if}
 	</section>
 </Modal>
 
