@@ -78,7 +78,7 @@ test('failed reads can be retried and stale updates leave the board intact', asy
 	let failRead = true;
 	await page.route('https://kcal-test.supabase.co/rest/v1/plans**', (route) => {
 		if (route.request().method() === 'PATCH') return route.fulfill({ json: [] });
-		if (failRead) return route.fulfill({ status: 503, json: { message: 'Unavailable' } });
+		if (failRead) return route.fulfill({ status: 400, json: { message: 'Read failed' } });
 		return route.fulfill({ json: [initial] });
 	});
 	await page.goto('/');

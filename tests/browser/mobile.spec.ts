@@ -122,8 +122,16 @@ test.describe('phone planner', () => {
 					const cells = await page
 						.locator('.overview .cell')
 						.evaluateAll((nodes) => nodes.map((node) => node.getBoundingClientRect().toJSON()));
-					for (let i = 1; i < cells.length; i++)
-						expect(cells[i].top).toBeGreaterThanOrEqual(cells[i - 1].bottom);
+					// Wide phone containers intentionally show three trimesters per row.
+					const columns = width >= 720 ? 3 : 1;
+					for (let i = 1; i < cells.length; i++) {
+						if (i % columns === 0)
+							expect(cells[i].top).toBeGreaterThanOrEqual(cells[i - 1].bottom);
+						else {
+							expect(cells[i].top).toBe(cells[i - 1].top);
+							expect(cells[i].left).toBeGreaterThanOrEqual(cells[i - 1].right);
+						}
+					}
 				}
 				if (width === 390 && name === 'your plan')
 					await page.screenshot({ path: '/tmp/kcal-mobile-plan.png' });

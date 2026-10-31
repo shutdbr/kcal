@@ -64,8 +64,10 @@ npm run check      # svelte-check (types + a11y)
 npm run format     # prettier
 ```
 
-Open the dev URL Vite prints. The app runs entirely client-side; your plan is
-saved to `localStorage`.
+Open the dev URL Vite prints. Your working board autosaves locally. With Supabase
+configured, Settings also provides private cloud copies and Google sign-in.
+
+See [backend setup](docs/backend.md) and [application architecture](docs/architecture.md).
 
 ## Project structure
 
@@ -75,7 +77,9 @@ src/
 │  ├─ +layout.svelte          # global stylesheet
 │  └─ +page.svelte            # the four-column app shell
 ├─ lib/
-│  ├─ plan.svelte.ts          # Plan class — all app state + the "laws" (single source of truth)
+│  ├─ features/               # auth, plans and reviews: state, validation, repositories
+│  ├─ infrastructure/supabase/ # shared typed client and schema contract
+│  ├─ plan.svelte.ts          # scheduling state and curriculum rules
 │  ├─ data.ts                 # typed access to the generated data + programme/requirement logic
 │  ├─ types.ts                # shared types
 │  ├─ transitions.ts          # the shared catalogue⇄grid crossfade
