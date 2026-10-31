@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<title>kcal</title>
+		<!-- Preserve browser data from before the kcal rename (tracey → relay → kcal)
+		     before app modules load. Newest name first, so its data wins. -->
+		<script>
+			try {
+				var keys = Object.keys(localStorage);
+				for (var prefix of ['relay-', 'tracey-']) {
+					for (var key of keys) {
+						if (!key.startsWith(prefix)) continue;
+						var nextKey = 'kcal-' + key.slice(prefix.length);
+						if (localStorage.getItem(nextKey) === null) {
+							localStorage.setItem(nextKey, localStorage.getItem(key));
+						}
+					}
+				}
+			} catch (e) {
+				// Storage may be unavailable; the app still works for this session.
+			}
+		</script>
+		<!-- theme + text size applied before first paint, so a dark-mode
+		     reload never flashes the light palette. Mirrors the storage
+		     shape in $lib/settings.svelte.ts — change both together. -->
+		<script>
+			try {
+				var s = JSON.parse(localStorage.getItem('kcal-settings') || '{}');
+				var t = s.theme || 'light';
+				if (t === 'system') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+				document.documentElement.dataset.theme = t;
+				var scales = { small: 0.9, normal: 1, large: 1.1, huge: 1.2 };
+				document.documentElement.style.setProperty('--text-scale', scales[s.textSize] || 1);
+				document.documentElement.style.fontSize = 'calc(clamp(10px, 0.52vw, 11px) * var(--text-scale, 1))';
+			} catch (e) {
+				document.documentElement.dataset.theme = 'light';
+			}
+		</script>
+		<!--bbesdc--><meta name="description" content="ARTS336 Shooting The Godfather: 4-credit course · runs in T2 · arts."/> <link rel="canonical" href="http://localhost:5173/courses/ARTS336"/><!----><title>ARTS336 Shooting The Godfather · kcal</title>
+		<link href="../_app/immutable/assets/app.DrowwiZI.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/2.BsnpgWsW.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/CourseList.CGnjhY89.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/6.QDdtBoMd.css" rel="stylesheet">
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<!-- Netlify reads forms out of the deployed HTML at build time, and the
+		     real feedback form lives inside a modal that isn't rendered until
+		     the student opens settings. This hidden twin is what gets detected;
+		     Settings.svelte posts to it by name. Keep the fields in step. -->
+		<form name="feedback" data-netlify="true" netlify-honeypot="bot-field" hidden>
+			<input type="hidden" name="form-name" value="feedback" />
+			<input type="text" name="bot-field" />
+			<textarea name="message"></textarea>
+			<input type="text" name="plan" />
+			<input type="text" name="credits" />
+		</form>
+		<div style="display: contents"><!--[--><!--[0--><!--[--><!--[0--><!--[--><div class="site svelte-1br2sqw"><header class="masthead svelte-1br2sqw"><a class="brand svelte-1br2sqw" href="/">kcal</a> <nav aria-label="site" class="svelte-1br2sqw"><!--[--><a href="/courses" aria-current="page" class="svelte-1br2sqw">courses</a><a href="/programmes" class="svelte-1br2sqw">programmes</a><a href="/lecturers" class="svelte-1br2sqw">lecturers</a><!--]--> <a class="plan svelte-1br2sqw" href="/">open the planner →</a></nav></header> <main class="svelte-1br2sqw"><!--[--><article><header class="svelte-bbesdc"><p class="codes svelte-bbesdc"><!--[--><a href="/programmes/arts" title="arts" class="svelte-bbesdc">ARTS336</a><a href="/programmes/literature" title="literature" class="svelte-bbesdc">LITT336</a><!--]--></p> <h1 class="svelte-bbesdc">Shooting The Godfather</h1> <p class="lede svelte-bbesdc">4-credit course · runs in T2 · arts</p> <a class="plan svelte-bbesdc" href="/?course=ARTS336">plan this course →</a></header> <dl class="facts svelte-bbesdc"><div class="svelte-bbesdc"><dt class="svelte-bbesdc">credits</dt><dd class="svelte-bbesdc">4</dd></div> <div class="svelte-bbesdc"><dt class="svelte-bbesdc">runs in</dt><dd class="svelte-bbesdc">T2</dd></div> <div class="svelte-bbesdc"><dt class="svelte-bbesdc">open to</dt><dd class="svelte-bbesdc">year 3, 4</dd></div> <!--[0--><div class="svelte-bbesdc"><dt class="svelte-bbesdc">last taught</dt><dd class="svelte-bbesdc">2024 T2</dd></div><!--]--></dl> <!--[0--><section class="svelte-bbesdc"><h2 class="svelte-bbesdc">About</h2> <p class="prose svelte-bbesdc">The course will begin with a reading of Mario Puzo&amp;#39;s 1969 betseller The Godfather, followed by close viewings of the two films by Francis Ford Coppola based directly on the novel – The Godfather (1972) and The Godfather Part 2 (1974). This will become the platform from which we will explore the relationship between written fictions and cinematic adaptations. Viewing the films, we will analyse the choices made by Coppola and Puzo as scriptwriters. What parts of the story were included and excluded in the first film and why? Which bits were then used as a basis for the second film? Which were the completely new story elements? How did that work? As we do this we will also discuss basic western narrative
+structures leading up to Hollywood&amp;#39;s all-pervading &amp;#39;three-act&amp;#39; structure. In the latter part of the trimester we will look at the many different &amp;#39;avatars&amp;#39; and spinoffs the basic Godfather narrative has taken on since the early 70s, both in the west and here in India.
+We will view and discuss segments from commercial Bombay cinema&amp;#39;s idea of &amp;#39;The Don&amp;#39; to the plethora of gangster films from the late 1980s onwards, such as Nayakan, Satya, The Gangs of Wasseypur etc. Towards the end of the course we will become familiar with some
+of the critiques of and alternatives to the three-act structure in cinema and in written fiction. The course will be based on intensive participative discussions that will center around how written narrative feeds into cinema and also how cinema and cinematic elements now feed
+into creative writing of all kinds.
+Course Objectives/Learning Outcomes: To understand better the interaction between written fiction and its screen adaptations. How to start thinking cinematically. Students will also gain a basic understanding of scripting, shot-breakdown, dialogue, art direction, acting, camerawork, sound, music, editing and how these contribute to the finished film. Through a process of comparison and analysis the student will better understand how a particular "base-narrative"; can become the fertile ground from which vastly different versions of itself are
+generated.</p></section><!--]--> <section class="svelte-bbesdc"><h2 class="svelte-bbesdc">Before this</h2> <!--[-1--><p class="empty svelte-jjk1y5">No prerequisites.</p><!--]--><!----> <!--[-1--><!--]--></section> <!--[-1--><!--]--> <!--[0--><section class="svelte-bbesdc"><h2 class="svelte-bbesdc">In these programmes</h2> <p class="note svelte-bbesdc">For the 2024–2026 batches.</p> <ul class="programmes svelte-bbesdc"><!--[--><li class="svelte-bbesdc"><a href="/programmes/arts" class="svelte-bbesdc">arts</a> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[0--><span class="svelte-bbesdc"><b class="svelte-bbesdc">elective</b> — 4-year minor, 3-year minor, concentration (4-year), concentration (3-year)</span><!--]--></li><li class="svelte-bbesdc"><a href="/programmes/literature" class="svelte-bbesdc">literature</a> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[0--><span class="svelte-bbesdc"><b class="svelte-bbesdc">elective</b> — concentration (4-year), concentration (3-year)</span><!--]--></li><!--]--></ul></section><!--]--> <!--[0--><section class="svelte-bbesdc"><h2 class="svelte-bbesdc">Recently taught by</h2> <ul class="people svelte-bbesdc"><!--[--><li class="svelte-bbesdc"><a href="/lecturers/ruchir-joshi" class="svelte-bbesdc">Ruchir Joshi</a><!--[-1--><!--]--></li><!--]--></ul> <!--[-1--><!--]--></section><!--]--></article><!--]--><!----></main> <footer class="svelte-1br2sqw"><p>Course data from Krea's term sheets (July 2026); programme rules from the departments' FYUP
+			documents. Check anything that matters with your department.</p></footer></div><!--]--><!--]--><!----><!--]--><!--]--> <!--[-1--><!--]--><!--]--></div>
+	</body>
+</html>

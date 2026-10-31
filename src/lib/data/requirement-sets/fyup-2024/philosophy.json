@@ -1,0 +1,54 @@
+{
+	"subject": "philosophy",
+	"source": "04 FYUP - Philosophy.docx",
+	"notes": [
+		"The document requires PHIL201, PHIL203 and PHIL306, which the catalogue lacks, and names the courses that stand in for them: PHIL205 (Philosophical Concepts), PHIL305 (Philosophical Practice) and PHIL206 (Philosophy and Society). PHIL391 Independent Study can stand in for PHIL202."
+	],
+	"programmes": {
+		"minor_4yr": {
+			"credits": {
+				"total": 32,
+				"required": 16,
+				"elective": 16
+			},
+			"required": [
+				"PHIL205",
+				"PHIL202",
+				"PHIL305",
+				"PHIL206"
+			],
+			"choices": [],
+			"electives": "subject"
+		},
+		"minor_3yr": {
+			"credits": {
+				"total": 24,
+				"required": 16,
+				"elective": 8
+			},
+			"required": [
+				"PHIL205",
+				"PHIL202",
+				"PHIL305",
+				"PHIL206"
+			],
+			"choices": [],
+			"electives": "subject"
+		},
+		"concentration": {
+			"credits": {
+				"total": 16,
+				"required": 16,
+				"elective": 0
+			},
+			"required": [
+				"PHIL205",
+				"PHIL202",
+				"PHIL305",
+				"PHIL206"
+			],
+			"choices": [],
+			"electives": "subject"
+		}
+	}
+}

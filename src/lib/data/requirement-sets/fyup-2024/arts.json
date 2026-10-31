@@ -1,0 +1,72 @@
+{
+	"subject": "arts",
+	"source": "07 FYUP - Global Arts.docx",
+	"notes": [
+		"Art, Design and New Media and Arts Immersion are not in the catalogue yet."
+	],
+	"programmes": {
+		"minor_4yr": {
+			"credits": {
+				"total": 32,
+				"required": 16,
+				"elective": 16
+			},
+			"required": [
+				"ARTS201",
+				"ARTS202",
+				{
+					"title": "Art, Design and New Media"
+				},
+				{
+					"title": "Arts Immersion (choice of practice)"
+				}
+			],
+			"choices": [],
+			"electives": "subject"
+		},
+		"minor_3yr": {
+			"credits": {
+				"total": 24,
+				"required": 12,
+				"elective": 12
+			},
+			"required": [
+				"ARTS201",
+				"ARTS202",
+				{
+					"title": "Art, Design and New Media"
+				},
+				{
+					"title": "Arts Immersion (choice of practice)"
+				}
+			],
+			"choices": [],
+			"electives": "subject"
+		},
+		"concentration": {
+			"credits": {
+				"total": 16,
+				"required": 4,
+				"elective": 12
+			},
+			"required": [],
+			"choices": [
+				{
+					"label": "Any one required course",
+					"pick": 1,
+					"from": [
+						"ARTS201",
+						"ARTS202",
+						{
+							"title": "Art, Design and New Media"
+						},
+						{
+							"title": "Arts Immersion (choice of practice)"
+						}
+					]
+				}
+			],
+			"electives": "subject"
+		}
+	}
+}

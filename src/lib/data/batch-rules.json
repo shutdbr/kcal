@@ -1,0 +1,13 @@
+{
+	"about": "Rules for one batch only, stated in a department document. Keys: batch start year → subject → <role>_<3yr|4yr> (majors: both single and double).",
+	"batches": {
+		"2022": {
+			"environmental studies": {
+				"major_4yr": {
+					"ENVS201": "required",
+					"ENVS235": "elective"
+				}
+			}
+		}
+	}
+}

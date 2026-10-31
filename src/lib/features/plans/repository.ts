@@ -1,4 +1,4 @@
-import { getSupabase } from '$lib/infrastructure/supabase/client';
+import { getSupabase } from '$lib/infrastructure/supabase/browser';
 import type { PlanRow } from '$lib/infrastructure/supabase/database.types';
 import { planDocument, planName } from './document';
 

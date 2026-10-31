@@ -1,0 +1,187 @@
+{
+	"subject": "political science",
+	"source": "05 FYUP - Politics.docx (marked provisional by the university)",
+	"notes": [
+		"Indian Politics I is POLT202 and Global Politics I is POLT207 (the document says POLT205); Methods I is SOCL304 (qualitative) and Methods II SOCL355 (quantitative).",
+		"Part II of a subfield: Indian Politics II (POLT309), Political Theory II (POLT317), Comparative Politics II (POLT307), Global Politics II (POLT308).",
+		"For the 4-year minor the document only says students may opt for courses marked W, Y and Z; reading it as any two keeps the stated 16 required credits.",
+		"The concentration is not detailed in the document; the website rules stay."
+	],
+	"programmes": {
+		"single_major_4yr": {
+			"credits": {
+				"total": 80,
+				"required": 40,
+				"elective": 40
+			},
+			"required": [
+				"POLT202",
+				"POLT203",
+				"POLT204",
+				"POLT313",
+				"POLT207",
+				"SOCL304",
+				"POLT311",
+				"SOCL355"
+			],
+			"choices": [
+				{
+					"label": "Part II of any two subfields",
+					"pick": 2,
+					"from": [
+						"POLT309",
+						"POLT317",
+						"POLT307",
+						"POLT308"
+					]
+				}
+			]
+		},
+		"double_major_4yr": {
+			"credits": {
+				"total": 64,
+				"required": 40,
+				"elective": 24
+			},
+			"required": [
+				"POLT202",
+				"POLT203",
+				"POLT204",
+				"POLT313",
+				"POLT207",
+				"SOCL304",
+				"POLT311",
+				"SOCL355"
+			],
+			"choices": [
+				{
+					"label": "Part II of any two subfields",
+					"pick": 2,
+					"from": [
+						"POLT309",
+						"POLT317",
+						"POLT307",
+						"POLT308"
+					]
+				}
+			]
+		},
+		"single_major_3yr": {
+			"credits": {
+				"total": 60,
+				"required": 36,
+				"elective": 24
+			},
+			"required": [
+				"POLT202",
+				"POLT203",
+				"POLT204",
+				"POLT313",
+				"POLT207",
+				"SOCL304",
+				"POLT311"
+			],
+			"choices": [
+				{
+					"label": "Part II of any two subfields",
+					"pick": 2,
+					"from": [
+						"POLT309",
+						"POLT317",
+						"POLT307",
+						"POLT308"
+					]
+				}
+			]
+		},
+		"double_major_3yr": {
+			"credits": {
+				"total": 48,
+				"required": 32,
+				"elective": 16
+			},
+			"required": [
+				"POLT202",
+				"POLT203",
+				"POLT204",
+				"POLT313",
+				"POLT207",
+				"SOCL304",
+				"POLT311"
+			],
+			"choices": [
+				{
+					"label": "Part II of any one subfield",
+					"pick": 1,
+					"from": [
+						"POLT309",
+						"POLT317",
+						"POLT307",
+						"POLT308"
+					]
+				}
+			]
+		},
+		"minor_4yr": {
+			"credits": {
+				"total": 32,
+				"required": 16,
+				"elective": 16
+			},
+			"required": [
+				"POLT202",
+				"POLT313"
+			],
+			"choices": [
+				{
+					"label": "Any two of the following courses",
+					"pick": 2,
+					"from": [
+						"POLT203",
+						"SOCL304",
+						"POLT204",
+						"POLT207",
+						"POLT309",
+						"POLT317"
+					]
+				}
+			]
+		},
+		"minor_3yr": {
+			"credits": {
+				"total": 24,
+				"required": 16,
+				"elective": 8
+			},
+			"required": [
+				"POLT202",
+				"POLT313"
+			],
+			"choices": [
+				{
+					"label": "Comparative or Global Politics I",
+					"pick": 1,
+					"from": [
+						"POLT204",
+						"POLT207"
+					]
+				},
+				{
+					"label": "Indian Politics II or Political Theory II",
+					"pick": 1,
+					"from": [
+						"POLT309",
+						"POLT317"
+					]
+				}
+			]
+		},
+		"concentration": {
+			"credits": {
+				"total": 16,
+				"required": 8,
+				"elective": 8
+			}
+		}
+	}
+}

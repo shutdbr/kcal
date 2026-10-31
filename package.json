@@ -6,21 +6,24 @@
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
-		"prebuild": "npm run extension:package",
-		"extension:package": "python3 scripts/package-extension.py",
+		"prebuild": "npm run extension:package && npm run curriculum:pull",
+		"preview": "vite preview",
+		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"test": "node --test tests/*.test.mjs",
 		"test:browser": "playwright test",
-		"preview": "vite preview",
+		"test:cloud": "playwright test --config playwright.cloud.config.ts",
+		"curriculum:build": "node scripts/build-curriculum.mjs",
+		"curriculum:push": "node --env-file-if-exists=.env scripts/push-curriculum.mjs",
+		"curriculum:pull": "node --env-file-if-exists=.env scripts/pull-curriculum.mjs",
+		"extension:package": "python3 scripts/package-extension.py",
 		"prepare": "svelte-kit sync || echo ''",
-		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"format": "prettier --write .",
-		"lint": "prettier --check .",
-		"test:cloud": "playwright test --config playwright.cloud.config.ts"
+		"lint": "prettier --check ."
 	},
 	"devDependencies": {
 		"@electric-sql/pglite": "^0.5.13",
 		"@playwright/test": "^1.64.1",
-		"@sveltejs/adapter-auto": "^6.0.0",
+		"@sveltejs/adapter-vercel": "^6.3.4",
 		"@sveltejs/kit": "^2.16.0",
 		"@sveltejs/vite-plugin-svelte": "^5.0.0",
 		"@types/node": "^26.1.1",
@@ -33,6 +36,7 @@
 		"vite": "^6.2.6"
 	},
 	"dependencies": {
+		"@supabase/ssr": "^0.12.7",
 		"@supabase/supabase-js": "^2.118.0"
 	}
 }

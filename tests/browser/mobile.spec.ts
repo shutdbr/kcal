@@ -77,12 +77,16 @@ test.describe('phone planner', () => {
 		await expect(page.getByRole('searchbox')).toHaveValue('Prathamesh');
 	});
 
-	test('review and Canvas deep links open above the active tab', async ({ page }) => {
-		await page.goto('/?review=MATH201');
+	test('course and Canvas deep links open above the active tab', async ({ page }) => {
+		await page.goto('/?course=MATH201');
 		await expect(page.locator('.rightbar .d-place')).toBeVisible();
 		await expect(page.locator('.rightbar')).toBeVisible();
+		// the course link is consumed, so a refresh doesn't reopen it
+		await expect(page).toHaveURL('/');
+		// an import always arrives in a fresh tab, from the extension
+		await page.goto('about:blank');
 		await page.goto('/#canvas-import=%7Bbad');
-		await expect(page.getByRole('dialog', { name: 'import from Canvas' })).toBeVisible();
+		await expect(page.getByRole('dialog', { name: 'import courses & grades' })).toBeVisible();
 		await expect(page.getByRole('alert')).toContainText('not a valid course list');
 	});
 
@@ -146,7 +150,7 @@ test.describe('phone planner', () => {
 				});
 				for (const item of overflow) expect(item.overflow, item.name).toBeLessThanOrEqual(1);
 			}
-			await page.goto('/?review=MATH201');
+			await page.goto('/?course=MATH201');
 			await expect(page.locator('.rightbar .d-place')).toBeVisible();
 			if (width === 390) await page.screenshot({ path: '/tmp/kcal-mobile-details.png' });
 			expect(

@@ -1,5 +1,5 @@
-import { extractCourses } from './extract.js';
-import { importUrl, destinationUrl, CANVAS_ORIGINS } from './transfer.js';
+import { extractCourses, extractMarkList } from './extract.js';
+import { importUrl, destinationUrl, CANVAS_ORIGINS, EXAM_ORIGIN } from './transfer.js';
 
 const api = globalThis.browser || globalThis.chrome;
 const read = document.querySelector('#read');
@@ -23,26 +23,28 @@ read.addEventListener('click', async () => {
   send.disabled = download.disabled = true;
   read.disabled = true;
   document.querySelector('#courses').replaceChildren();
-  message('Reading your Courses page…');
+  message('Reading the open page locally…');
   try {
     const [tab] = await api.tabs.query({ active: true, currentWindow: true });
     const url = new URL(tab?.url || 'about:blank');
-    if (!CANVAS_ORIGINS.includes(url.origin) || !/^\/courses\/?$/.test(url.pathname)) {
-      throw new Error('Open Krea Canvas → Courses → All Courses, then click the extension again.');
+    const exam = url.origin === EXAM_ORIGIN && /^\/krea\/my_mark\/?$/.test(url.pathname);
+    const canvas = CANVAS_ORIGINS.includes(url.origin) && /^\/courses\/?$/.test(url.pathname);
+    if (!exam && !canvas) {
+      throw new Error('Open Krea Exam → My Mark List, or Canvas → All Courses, then click the extension again.');
     }
-    const [result] = await api.scripting.executeScript({ target: { tabId: tab.id }, func: extractCourses });
+    const [result] = await api.scripting.executeScript({ target: { tabId: tab.id }, func: exam ? extractMarkList : extractCourses });
     if (result?.error) throw new Error(result.error.message || 'Could not read the Courses page.');
     if (result?.result?.error) throw new Error(result.result.error);
-    if (!result?.result?.courses?.length) throw new Error('No courses returned. Reload Canvas Courses and try again.');
+    if (!result?.result?.courses?.length) throw new Error('No results returned. Reload the mark list or Courses page and try again.');
     payload = result.result;
     for (const course of payload.courses) {
       const li = document.createElement('li');
-      li.textContent = `${course.name}${course.term ? ` · ${course.term}` : ''}${course.enrollment === 'current' ? '' : ` · ${course.enrollment}`}`;
+      li.textContent = exam ? `Term ${course.term} · ${course.code} ${course.title} · ${course.grade} · ${course.credits} credits` : `${course.name}${course.term ? ` · ${course.term}` : ''}${course.enrollment === 'current' ? '' : ` · ${course.enrollment}`}`;
       document.querySelector('#courses').append(li);
     }
     message(`${payload.courses.length} courses found. Review the list and your kcal address below.`);
     send.disabled = download.disabled = false;
-  } catch (error) { message(error.message || 'Unable to read Canvas. Try reopening the extension on the Courses page.', true); }
+  } catch (error) { message(error.message || 'Unable to read this page. Reopen the extension on My Mark List or All Courses.', true); }
   finally { read.disabled = false; }
 });
 
@@ -60,7 +62,7 @@ download.addEventListener('click', () => {
   const url = URL.createObjectURL(new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' }));
   const a = document.createElement('a');
   a.href = url;
-  a.download = 'kcal-canvas-courses.json';
+  a.download = payload.version === 3 ? 'kcal-exam-mark-list.json' : 'kcal-canvas-courses.json';
   a.click();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
 });

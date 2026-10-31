@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<title>kcal</title>
+		<!-- Preserve browser data from before the kcal rename (tracey → relay → kcal)
+		     before app modules load. Newest name first, so its data wins. -->
+		<script>
+			try {
+				var keys = Object.keys(localStorage);
+				for (var prefix of ['relay-', 'tracey-']) {
+					for (var key of keys) {
+						if (!key.startsWith(prefix)) continue;
+						var nextKey = 'kcal-' + key.slice(prefix.length);
+						if (localStorage.getItem(nextKey) === null) {
+							localStorage.setItem(nextKey, localStorage.getItem(key));
+						}
+					}
+				}
+			} catch (e) {
+				// Storage may be unavailable; the app still works for this session.
+			}
+		</script>
+		<!-- theme + text size applied before first paint, so a dark-mode
+		     reload never flashes the light palette. Mirrors the storage
+		     shape in $lib/settings.svelte.ts — change both together. -->
+		<script>
+			try {
+				var s = JSON.parse(localStorage.getItem('kcal-settings') || '{}');
+				var t = s.theme || 'light';
+				if (t === 'system') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+				document.documentElement.dataset.theme = t;
+				var scales = { small: 0.9, normal: 1, large: 1.1, huge: 1.2 };
+				document.documentElement.style.setProperty('--text-scale', scales[s.textSize] || 1);
+				document.documentElement.style.fontSize = 'calc(clamp(10px, 0.52vw, 11px) * var(--text-scale, 1))';
+			} catch (e) {
+				document.documentElement.dataset.theme = 'light';
+			}
+		</script>
+		<link href="../_app/immutable/entry/start.BeEN88mj.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/ctknpyVT.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/C1wP5KpI.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/DY9tnzTg.js" rel="modulepreload">
+		<link href="../_app/immutable/entry/app.u4yfAZvj.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/Dp1pzeXC.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/B2MZDb4N.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/CP_9IreJ.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/DgtMFaEQ.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/Dcljb8oa.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/DSE3SGGY.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/B28cTREK.js" rel="modulepreload">
+		<link href="../_app/immutable/nodes/0.CctFXu5R.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/CRW4MkPi.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/DmrPtzQ2.js" rel="modulepreload">
+		<link href="../_app/immutable/nodes/3.D41zS5K6.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/CIhgymcQ.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/r_fJudLb.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/DKB4Pb6C.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/B79LgCJy.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/998eQ_Vy.js" rel="modulepreload">
+		<link href="../_app/immutable/nodes/14.BcjyGzAj.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/7-EDNEG4.js" rel="modulepreload">
+		<link href="../_app/env.js" rel="modulepreload">
+		<!--1qg5d05--><meta name="robots" content="noindex"/><!----><title>kcal admin</title>
+		<link href="../_app/immutable/assets/app.DrowwiZI.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/3.BF-s6LUI.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/14.BzF1J0SA.css" rel="stylesheet">
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<!-- Netlify reads forms out of the deployed HTML at build time, and the
+		     real feedback form lives inside a modal that isn't rendered until
+		     the student opens settings. This hidden twin is what gets detected;
+		     Settings.svelte posts to it by name. Keep the fields in step. -->
+		<form name="feedback" data-netlify="true" netlify-honeypot="bot-field" hidden>
+			<input type="hidden" name="form-name" value="feedback" />
+			<input type="text" name="bot-field" />
+			<textarea name="message"></textarea>
+			<input type="text" name="plan" />
+			<input type="text" name="credits" />
+		</form>
+		<div style="display: contents"><!--[--><!--[0--><!--[--><!--[0--><!--[--><header class="admin-bar svelte-1qg5d05"><div class="brand svelte-1qg5d05"><span class="logo svelte-1qg5d05">kcal</span> <span class="badge svelte-1qg5d05">admin</span></div> <nav class="svelte-1qg5d05"><!--[--><a href="/admin" class="svelte-1qg5d05">courses</a><a href="/admin/crosslist" class="svelte-1qg5d05">cross-listing</a><a href="/admin/rules" class="svelte-1qg5d05 active">rules</a><a href="/admin/batches" class="svelte-1qg5d05">batches</a><a href="/admin/tree" class="svelte-1qg5d05">tree</a><!--]--></nav> <a class="to-planner svelte-1qg5d05" href="/" data-sveltekit-reload="">open planner ↗</a></header> <main class="admin-body adm svelte-1qg5d05"><!--[--><div class="page svelte-191278w"><div class="inner svelte-191278w"><header class="head svelte-191278w"><div><h1 class="svelte-191278w">university rules</h1> <p class="svelte-191278w">The numbers from the drop-form guidelines. Every hint students see, the credit panel and the
+					grid's colours all follow these.</p></div> <div class="head-acts svelte-191278w"><!--[-1--><!--]--> <!--[-1--><!--]--></div></header> <!--[-1--><!--]--> <!--[--><section class="group svelte-191278w"><h2 class="svelte-191278w">each trimester</h2> <p class="g-note svelte-191278w">how many credits one trimester may hold. The grid colours a trimester against these.</p> <div class="rules svelte-191278w"><!--[--><div class="rule svelte-191278w"><div class="r-text"><label for="r-TRIM_MIN" class="svelte-191278w">minimum per trimester</label> <p class="svelte-191278w">below this a student drops out of full-time status; the planner flags any trimester under it</p> <!--[-1--><!--]--></div> <div class="stepper svelte-191278w"><button aria-label="decrease minimum per trimester" class="svelte-191278w">−</button> <input id="r-TRIM_MIN" type="number" min="0" max="24" value="12" class="svelte-191278w"/> <button aria-label="increase minimum per trimester" class="svelte-191278w">+</button> <span class="unit svelte-191278w">credits</span></div></div><div class="rule svelte-191278w"><div class="r-text"><label for="r-TRIM_NORMAL_MAX" class="svelte-191278w">recommended load</label> <p class="svelte-191278w">the normal registration; going above it counts as a heavy trimester</p> <!--[-1--><!--]--></div> <div class="stepper svelte-191278w"><button aria-label="decrease recommended load" class="svelte-191278w">−</button> <input id="r-TRIM_NORMAL_MAX" type="number" min="0" max="24" value="16" class="svelte-191278w"/> <button aria-label="increase recommended load" class="svelte-191278w">+</button> <span class="unit svelte-191278w">credits</span></div></div><div class="rule svelte-191278w"><div class="r-text"><label for="r-TRIM_HARD_MAX" class="svelte-191278w">hard cap per trimester</label> <p class="svelte-191278w">no trimester may go above this, ever</p> <!--[-1--><!--]--></div> <div class="stepper svelte-191278w"><button aria-label="decrease hard cap per trimester" class="svelte-191278w">−</button> <input id="r-TRIM_HARD_MAX" type="number" min="0" max="24" value="20" class="svelte-191278w"/> <button aria-label="increase hard cap per trimester" class="svelte-191278w">+</button> <span class="unit svelte-191278w">credits</span></div></div><!--]--></div></section><section class="group svelte-191278w"><h2 class="svelte-191278w">across the whole degree</h2> <p class="g-note svelte-191278w">limits counted over a student’s entire tenure.</p> <div class="rules svelte-191278w"><!--[--><div class="rule svelte-191278w"><div class="r-text"><label for="r-HEAVY_TRIMS_ALLOWED" class="svelte-191278w">heavy trimesters allowed</label> <p class="svelte-191278w">how many trimesters across the whole tenure may go above the recommended load</p> <!--[-1--><!--]--></div> <div class="stepper svelte-191278w"><button aria-label="decrease heavy trimesters allowed" class="svelte-191278w">−</button> <input id="r-HEAVY_TRIMS_ALLOWED" type="number" min="0" max="12" value="2" class="svelte-191278w"/> <button aria-label="increase heavy trimesters allowed" class="svelte-191278w">+</button> <span class="unit svelte-191278w">trimesters</span></div></div><div class="rule svelte-191278w"><div class="r-text"><label for="r-AUDIT_LIMIT" class="svelte-191278w">audits allowed</label> <p class="svelte-191278w">audited courses allowed across the whole degree</p> <!--[-1--><!--]--></div> <div class="stepper svelte-191278w"><button aria-label="decrease audits allowed" class="svelte-191278w">−</button> <input id="r-AUDIT_LIMIT" type="number" min="0" max="12" value="2" class="svelte-191278w"/> <button aria-label="increase audits allowed" class="svelte-191278w">+</button> <span class="unit svelte-191278w">audits</span></div></div><div class="rule svelte-191278w"><div class="r-text"><label for="r-MAX_TOTAL_3YR" class="svelte-191278w">tenure ceiling, 3-year</label> <p class="svelte-191278w">the most credits a three-year student may register in total</p> <!--[-1--><!--]--></div> <div class="stepper svelte-191278w"><button aria-label="decrease tenure ceiling, 3-year" class="svelte-191278w">−</button> <input id="r-MAX_TOTAL_3YR" type="number" min="0" max="400" value="128" class="svelte-191278w"/> <button aria-label="increase tenure ceiling, 3-year" class="svelte-191278w">+</button> <span class="unit svelte-191278w">credits</span></div></div><div class="rule svelte-191278w"><div class="r-text"><label for="r-MAX_TOTAL_4YR" class="svelte-191278w">tenure ceiling, 4-year</label> <p class="svelte-191278w">the most credits a four-year student may register in total</p> <!--[-1--><!--]--></div> <div class="stepper svelte-191278w"><button aria-label="decrease tenure ceiling, 4-year" class="svelte-191278w">−</button> <input id="r-MAX_TOTAL_4YR" type="number" min="0" max="400" value="176" class="svelte-191278w"/> <button aria-label="increase tenure ceiling, 4-year" class="svelte-191278w">+</button> <span class="unit svelte-191278w">credits</span></div></div><!--]--></div></section><!--]--> <section class="group svelte-191278w"><h2 class="svelte-191278w">preview of one trimester</h2> <div class="scale svelte-191278w" aria-hidden="true"><!--[--><span class="svelte-191278w low">1</span><span class="svelte-191278w low">2</span><span class="svelte-191278w low">3</span><span class="svelte-191278w low">4</span><span class="svelte-191278w low">5</span><span class="svelte-191278w low">6</span><span class="svelte-191278w low">7</span><span class="svelte-191278w low">8</span><span class="svelte-191278w low">9</span><span class="svelte-191278w low">10</span><span class="svelte-191278w low">11</span><span class="svelte-191278w low">12</span><span class="svelte-191278w ok">13</span><span class="svelte-191278w ok">14</span><span class="svelte-191278w ok">15</span><span class="svelte-191278w ok">16</span><span class="svelte-191278w heavy">17</span><span class="svelte-191278w heavy">18</span><span class="svelte-191278w heavy">19</span><span class="svelte-191278w heavy">20</span><span class="svelte-191278w over">21</span><span class="svelte-191278w over">22</span><span class="svelte-191278w over">23</span><span class="svelte-191278w over">24</span><!--]--></div> <div class="legend svelte-191278w"><span class="svelte-191278w"><i class="low svelte-191278w"></i>under the minimum</span> <span class="svelte-191278w"><i class="ok svelte-191278w"></i>normal load</span> <span class="svelte-191278w"><i class="heavy svelte-191278w"></i>heavy (limited)</span> <span class="svelte-191278w"><i class="over svelte-191278w"></i>over the cap</span></div></section> <p class="foot svelte-191278w">Saved in this browser. Use <b>export</b> on the courses page to publish rule changes together with
+			course edits.</p></div></div><!--]--><!----></main><!--]--><!--]--><!----><!--]--><!--]--> <!--[-1--><!--]--><!--]-->
+			
+			<script>
+				{
+					__sveltekit_f69dit = {
+						base: new URL("..", location).pathname.slice(0, -1),
+						env: null
+					};
+
+					const element = document.currentScript.parentElement;
+
+					import("../_app/env.js").then(({ env }) => {
+						__sveltekit_f69dit.env = env;
+
+						Promise.all([
+							import("../_app/immutable/entry/start.BeEN88mj.js"),
+							import("../_app/immutable/entry/app.u4yfAZvj.js")
+						]).then(([kit, app]) => {
+							kit.start(app, element, {
+									node_ids: [0, 3, 14],
+									data: [null,null,null],
+									form: null,
+									error: null
+								});
+						});
+					});
+				}
+			</script>
+		</div>
+	</body>
+</html>

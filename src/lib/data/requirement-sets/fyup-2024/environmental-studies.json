@@ -1,0 +1,160 @@
+{
+	"subject": "environmental studies",
+	"source": "Environmental Studies graduation requirements (table supplied by the student)",
+	"notes": [
+		"ENVS201 is required only for the 2022–26 batch; see batch-rules.json."
+	],
+	"programmes": {
+		"single_major_4yr": {
+			"credits": {
+				"total": 80,
+				"required": 36,
+				"elective": 44
+			},
+			"required": [
+				"ENVS206",
+				"ENVS221",
+				"ENVS204",
+				"ENVS306",
+				"ENVS250",
+				"BIOS241",
+				"ENVS216",
+				"ECON332",
+				"ENVS235"
+			],
+			"choices": []
+		},
+		"double_major_4yr": {
+			"credits": {
+				"total": 64,
+				"required": 36,
+				"elective": 28
+			},
+			"required": [
+				"ENVS206",
+				"ENVS221",
+				"ENVS204",
+				"ENVS306",
+				"ENVS250",
+				"BIOS241",
+				"ENVS216",
+				"ECON332",
+				"ENVS235"
+			],
+			"choices": []
+		},
+		"single_major_3yr": {
+			"credits": {
+				"total": 60,
+				"required": 36,
+				"elective": 24
+			},
+			"required": [
+				"ENVS206",
+				"ENVS221",
+				"ENVS204",
+				"ENVS306",
+				"ENVS250",
+				"BIOS241",
+				"ENVS216",
+				"ECON332",
+				"ENVS235"
+			],
+			"choices": []
+		},
+		"double_major_3yr": {
+			"credits": {
+				"total": 48,
+				"required": 36,
+				"elective": 12
+			},
+			"required": [
+				"ENVS206",
+				"ENVS221",
+				"ENVS204",
+				"ENVS306",
+				"ENVS250",
+				"BIOS241",
+				"ENVS216",
+				"ECON332",
+				"ENVS235"
+			],
+			"choices": []
+		},
+		"minor_4yr": {
+			"credits": {
+				"total": 32,
+				"required": 32,
+				"elective": 0
+			},
+			"required": [],
+			"choices": [
+				{
+					"label": "Any eight of the required courses",
+					"pick": 8,
+					"from": [
+						"ENVS206",
+						"ENVS221",
+						"ENVS204",
+						"ENVS306",
+						"ENVS250",
+						"BIOS241",
+						"ENVS216",
+						"ECON332",
+						"ENVS235"
+					]
+				}
+			]
+		},
+		"minor_3yr": {
+			"credits": {
+				"total": 24,
+				"required": 24,
+				"elective": 0
+			},
+			"required": [],
+			"choices": [
+				{
+					"label": "Any six of the required courses",
+					"pick": 6,
+					"from": [
+						"ENVS206",
+						"ENVS221",
+						"ENVS204",
+						"ENVS306",
+						"ENVS250",
+						"BIOS241",
+						"ENVS216",
+						"ECON332",
+						"ENVS235"
+					]
+				}
+			]
+		},
+		"concentration": {
+			"credits": {
+				"total": 16,
+				"required": 16,
+				"elective": 0
+			},
+			"required": [],
+			"choices": [
+				{
+					"label": "Any four of the required courses",
+					"pick": 4,
+					"from": [
+						"ENVS206",
+						"ENVS221",
+						"ENVS204",
+						"ENVS306",
+						"ENVS250",
+						"BIOS241",
+						"ENVS216",
+						"ECON332",
+						"ENVS235"
+					]
+				}
+			]
+		}
+	}
+}

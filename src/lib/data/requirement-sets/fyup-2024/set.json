@@ -1,0 +1,9 @@
+{
+	"name": "FYUP graduation requirements",
+	"batches": [
+		2024,
+		2025,
+		2026
+	],
+	"about": "Transcribed from the departments' FYUP documents. A subject file states only what its document states; a programme or field it leaves out falls back to the website scrape (requirements.json)."
+}

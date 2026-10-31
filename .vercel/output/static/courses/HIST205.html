@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<title>kcal</title>
+		<!-- Preserve browser data from before the kcal rename (tracey → relay → kcal)
+		     before app modules load. Newest name first, so its data wins. -->
+		<script>
+			try {
+				var keys = Object.keys(localStorage);
+				for (var prefix of ['relay-', 'tracey-']) {
+					for (var key of keys) {
+						if (!key.startsWith(prefix)) continue;
+						var nextKey = 'kcal-' + key.slice(prefix.length);
+						if (localStorage.getItem(nextKey) === null) {
+							localStorage.setItem(nextKey, localStorage.getItem(key));
+						}
+					}
+				}
+			} catch (e) {
+				// Storage may be unavailable; the app still works for this session.
+			}
+		</script>
+		<!-- theme + text size applied before first paint, so a dark-mode
+		     reload never flashes the light palette. Mirrors the storage
+		     shape in $lib/settings.svelte.ts — change both together. -->
+		<script>
+			try {
+				var s = JSON.parse(localStorage.getItem('kcal-settings') || '{}');
+				var t = s.theme || 'light';
+				if (t === 'system') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+				document.documentElement.dataset.theme = t;
+				var scales = { small: 0.9, normal: 1, large: 1.1, huge: 1.2 };
+				document.documentElement.style.setProperty('--text-scale', scales[s.textSize] || 1);
+				document.documentElement.style.fontSize = 'calc(clamp(10px, 0.52vw, 11px) * var(--text-scale, 1))';
+			} catch (e) {
+				document.documentElement.dataset.theme = 'light';
+			}
+		</script>
+		<!--bbesdc--><meta name="description" content="HIST205 Sources of the Self: India in the Second Millennium A.D.: 4-credit course · runs in T1, T2 · history."/> <link rel="canonical" href="http://localhost:5173/courses/HIST205"/><!----><title>HIST205 Sources of the Self: India in the Second Millennium A.D. · kcal</title>
+		<link href="../_app/immutable/assets/app.DrowwiZI.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/2.BsnpgWsW.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/CourseList.CGnjhY89.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/6.QDdtBoMd.css" rel="stylesheet">
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<!-- Netlify reads forms out of the deployed HTML at build time, and the
+		     real feedback form lives inside a modal that isn't rendered until
+		     the student opens settings. This hidden twin is what gets detected;
+		     Settings.svelte posts to it by name. Keep the fields in step. -->
+		<form name="feedback" data-netlify="true" netlify-honeypot="bot-field" hidden>
+			<input type="hidden" name="form-name" value="feedback" />
+			<input type="text" name="bot-field" />
+			<textarea name="message"></textarea>
+			<input type="text" name="plan" />
+			<input type="text" name="credits" />
+		</form>
+		<div style="display: contents"><!--[--><!--[0--><!--[--><!--[0--><!--[--><div class="site svelte-1br2sqw"><header class="masthead svelte-1br2sqw"><a class="brand svelte-1br2sqw" href="/">kcal</a> <nav aria-label="site" class="svelte-1br2sqw"><!--[--><a href="/courses" aria-current="page" class="svelte-1br2sqw">courses</a><a href="/programmes" class="svelte-1br2sqw">programmes</a><a href="/lecturers" class="svelte-1br2sqw">lecturers</a><!--]--> <a class="plan svelte-1br2sqw" href="/">open the planner →</a></nav></header> <main class="svelte-1br2sqw"><!--[--><article><header class="svelte-bbesdc"><p class="codes svelte-bbesdc"><!--[--><a href="/programmes/history" title="history" class="svelte-bbesdc">HIST205</a><!--]--></p> <h1 class="svelte-bbesdc">Sources of the Self: India in the Second Millennium A.D.</h1> <p class="lede svelte-bbesdc">4-credit course · runs in T1, T2 · history</p> <a class="plan svelte-bbesdc" href="/?course=HIST205">plan this course →</a></header> <dl class="facts svelte-bbesdc"><div class="svelte-bbesdc"><dt class="svelte-bbesdc">credits</dt><dd class="svelte-bbesdc">4</dd></div> <div class="svelte-bbesdc"><dt class="svelte-bbesdc">runs in</dt><dd class="svelte-bbesdc">T1, T2</dd></div> <div class="svelte-bbesdc"><dt class="svelte-bbesdc">open to</dt><dd class="svelte-bbesdc">year 2, 3, 4</dd></div> <!--[0--><div class="svelte-bbesdc"><dt class="svelte-bbesdc">last taught</dt><dd class="svelte-bbesdc">2026 T2</dd></div><!--]--></dl> <!--[0--><section class="svelte-bbesdc"><h2 class="svelte-bbesdc">About</h2> <p class="prose svelte-bbesdc">This course explores the most significant developments of medieval and early modern India. Second Millennium is also the time period when regional cultures, linguistic and literary traditions as well as popular religions were produced. It is important to note that these constructs inform our social, cultural and religious lives today and in that sense constitute our sources of the self. In that sense, our goal is to examine the medieval in our contemporary world. 
+ We will study the following six themes in this course. 
+ First, the emergence of regions and regional cultures, which are often based on bhashas or regional languages. While some of these languages had already been in existence for several centuries, it is mostly towards the end of the first millennium AD that Indian bhashas emerge from the shadows of Sanskrit or Prakrit and begin to be used for political, literary, religious and discursive purposes. This moment also marks the emergence of regional political formations and regional cultures, primarily based on bhashas, across India. Our first objective is to explore the emergence of bhashas, their connection to political power and the new expressive possibilities available for their speakers. Note that such linguistic and regional cultures have been the basis for linguistic states in independent India. 
+ Second, we will consider the nature of state formation and imperialism across India by considering examples such as the Delhi Sultanate, Vijayanagara and Bahamani kingdoms as well as the Mughal empire. We will also study political and administrative innovations as well as the political culture produced in this period. Note that the political elites produced in this era continue to exercise their influence over South Asia until the present. 
+ Third, we will study the increasing complexity and diversity of Indian religious imaginations of this era, in which Islam and Christianity become an important part of Indian religiosity. Our specific focus will be on developments in popular Hinduism, specifically bhakti religiosity in different regional languages and cultures. Additionally, we will examine the presence and spread of Islam, particularly through Sufi traditions and the question of conversion to Islam.
+ Fourth, we will examine how the Indian landscape was transformed with new forms of monumental architecture, urbanism and water reservoirs, all of which were intimately connected to medieval political projects. Medieval monuments, be they temples, palaces, mosques, forts, mausoleums or water bodies, were built using enduring material and continue to be a part of the built environment. Medieval cities such as Delhi, Surat and Bangalore, though transformed during colonial and modern era, continue to inform Indian urban culture. 
+ Fifth, Our final major theme will be to look at the economic developments of the Second Millennium, specifically the expansion of agriculture, manufacturing, trade and commerce and urbanization. This is the period when Indian economy is integrated into the global economy and trading networks. 
+ Finally, we conclude the course by considering India’s engagement with the early modern world. Since modernity is seen as a European achievement, we want to end this course by asking whether other cultures, specifically India in our case, contributed to the making of European modernity or fashioned their own modernity. 
+ Note that in our exploration of the above mentioned six themes, we will foreground the movement of people, ideas, cultural practices within India and from places such as Central Asia, Arabia, Turkey, Persia, Africa and Afghanistan, all of which leads to the remaking of Indian landscape, demography and civilization.</p></section><!--]--> <section class="svelte-bbesdc"><h2 class="svelte-bbesdc">Before this</h2> <!--[-1--><p class="empty svelte-jjk1y5">No prerequisites.</p><!--]--><!----> <!--[-1--><!--]--></section> <!--[-1--><!--]--> <!--[0--><section class="svelte-bbesdc"><h2 class="svelte-bbesdc">In these programmes</h2> <p class="note svelte-bbesdc">For the 2024–2026 batches.</p> <ul class="programmes svelte-bbesdc"><!--[--><li class="svelte-bbesdc"><a href="/programmes/history" class="svelte-bbesdc">history</a> <!--[0--><span class="svelte-bbesdc"><b class="svelte-bbesdc">required</b> — 4-year major, 4-year double major, 3-year major, 3-year double major</span><!--]--> <!--[0--><span class="svelte-bbesdc"><b class="svelte-bbesdc">one of a choice</b> — 4-year minor, 3-year minor, concentration (4-year), concentration (3-year)</span><!--]--> <!--[-1--><!--]--></li><!--]--></ul></section><!--]--> <!--[0--><section class="svelte-bbesdc"><h2 class="svelte-bbesdc">Recently taught by</h2> <ul class="people svelte-bbesdc"><!--[--><li class="svelte-bbesdc"><a href="/lecturers/deepashree-dutta" class="svelte-bbesdc">Deepashree Dutta</a><!--[0--><span class="svelte-bbesdc">Assistant Professor, History</span><!--]--></li><!--]--></ul> <!--[0--><p class="note svelte-bbesdc">Taught in 2026 T2, 2025 T2, 2025 T1.</p><!--]--></section><!--]--></article><!--]--><!----></main> <footer class="svelte-1br2sqw"><p>Course data from Krea's term sheets (July 2026); programme rules from the departments' FYUP
+			documents. Check anything that matters with your department.</p></footer></div><!--]--><!--]--><!----><!--]--><!--]--> <!--[-1--><!--]--><!--]--></div>
+	</body>
+</html>

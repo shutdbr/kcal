@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<title>kcal</title>
+		<!-- Preserve browser data from before the kcal rename (tracey → relay → kcal)
+		     before app modules load. Newest name first, so its data wins. -->
+		<script>
+			try {
+				var keys = Object.keys(localStorage);
+				for (var prefix of ['relay-', 'tracey-']) {
+					for (var key of keys) {
+						if (!key.startsWith(prefix)) continue;
+						var nextKey = 'kcal-' + key.slice(prefix.length);
+						if (localStorage.getItem(nextKey) === null) {
+							localStorage.setItem(nextKey, localStorage.getItem(key));
+						}
+					}
+				}
+			} catch (e) {
+				// Storage may be unavailable; the app still works for this session.
+			}
+		</script>
+		<!-- theme + text size applied before first paint, so a dark-mode
+		     reload never flashes the light palette. Mirrors the storage
+		     shape in $lib/settings.svelte.ts — change both together. -->
+		<script>
+			try {
+				var s = JSON.parse(localStorage.getItem('kcal-settings') || '{}');
+				var t = s.theme || 'light';
+				if (t === 'system') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+				document.documentElement.dataset.theme = t;
+				var scales = { small: 0.9, normal: 1, large: 1.1, huge: 1.2 };
+				document.documentElement.style.setProperty('--text-scale', scales[s.textSize] || 1);
+				document.documentElement.style.fontSize = 'calc(clamp(10px, 0.52vw, 11px) * var(--text-scale, 1))';
+			} catch (e) {
+				document.documentElement.dataset.theme = 'light';
+			}
+		</script>
+		<!--bbesdc--><meta name="description" content="POLT327 Debating India: Key Deliberations in the Constituent Assembly of India: 4-credit course · runs in T1, T2 · political science."/> <link rel="canonical" href="http://localhost:5173/courses/POLT327"/><!----><title>POLT327 Debating India: Key Deliberations in the Constituent Assembly of India · kcal</title>
+		<link href="../_app/immutable/assets/app.DrowwiZI.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/2.BsnpgWsW.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/CourseList.CGnjhY89.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/6.QDdtBoMd.css" rel="stylesheet">
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<!-- Netlify reads forms out of the deployed HTML at build time, and the
+		     real feedback form lives inside a modal that isn't rendered until
+		     the student opens settings. This hidden twin is what gets detected;
+		     Settings.svelte posts to it by name. Keep the fields in step. -->
+		<form name="feedback" data-netlify="true" netlify-honeypot="bot-field" hidden>
+			<input type="hidden" name="form-name" value="feedback" />
+			<input type="text" name="bot-field" />
+			<textarea name="message"></textarea>
+			<input type="text" name="plan" />
+			<input type="text" name="credits" />
+		</form>
+		<div style="display: contents"><!--[--><!--[0--><!--[--><!--[0--><!--[--><div class="site svelte-1br2sqw"><header class="masthead svelte-1br2sqw"><a class="brand svelte-1br2sqw" href="/">kcal</a> <nav aria-label="site" class="svelte-1br2sqw"><!--[--><a href="/courses" aria-current="page" class="svelte-1br2sqw">courses</a><a href="/programmes" class="svelte-1br2sqw">programmes</a><a href="/lecturers" class="svelte-1br2sqw">lecturers</a><!--]--> <a class="plan svelte-1br2sqw" href="/">open the planner →</a></nav></header> <main class="svelte-1br2sqw"><!--[--><article><header class="svelte-bbesdc"><p class="codes svelte-bbesdc"><!--[--><a href="/programmes/history" title="history" class="svelte-bbesdc">HIST327</a><a href="/programmes/political-science" title="political science" class="svelte-bbesdc">POLT327</a><a href="/programmes/sociology" title="sociology" class="svelte-bbesdc">SOCL327</a><!--]--></p> <h1 class="svelte-bbesdc">Debating India: Key Deliberations in the Constituent Assembly of India</h1> <p class="lede svelte-bbesdc">4-credit course · runs in T1, T2 · political science</p> <a class="plan svelte-bbesdc" href="/?course=POLT327">plan this course →</a></header> <dl class="facts svelte-bbesdc"><div class="svelte-bbesdc"><dt class="svelte-bbesdc">credits</dt><dd class="svelte-bbesdc">4</dd></div> <div class="svelte-bbesdc"><dt class="svelte-bbesdc">runs in</dt><dd class="svelte-bbesdc">T1, T2</dd></div> <div class="svelte-bbesdc"><dt class="svelte-bbesdc">open to</dt><dd class="svelte-bbesdc">year 2, 3, 4</dd></div> <!--[0--><div class="svelte-bbesdc"><dt class="svelte-bbesdc">last taught</dt><dd class="svelte-bbesdc">2025 T2</dd></div><!--]--></dl> <!--[0--><section class="svelte-bbesdc"><h2 class="svelte-bbesdc">About</h2> <p class="prose svelte-bbesdc">The Constitution of India with 395 Articles that are organized into 25 Parts and 12 Schedules was the handiwork of the Constituent Assembly that comprised 389-members, who came from diverse social, economic and political backgrounds.  It was adopted on 26 November 1949 and came into effect on 26 January 1950. During its more than seven decades of existence the Constitution of India has so far been amended 105 times. Despite such a large number of amendments the Constitution’s Basic Structure and other essential features, such as Fundamental Rights, remained more or less the same. In a country of vast diversity, divisions around caste, religious and racial identities, and glaring economic inequities, such an endurance of the Constitution is an astounding achievement both of the members, who drafted the Constitution, and the vast Indian populace that took the vision of the former into their stride. But what is overwhelming is the way in which the Constitution came to be formulated in the Constituent Assembly, the arguments and counter-arguments put forward and the justifications made in the making of every Article of the Constitution. This is because prior to 1950 India never had any written Constitution. Of course, during the later phase of its rule in India the British regime had introduced a few administrative related Acts in the written-form. But then these Acts became concerns of the British rulers and the educated elite of the Indian. A vast majority of the Indian population, who were largely illiterates, remained unconcerned with those Acts of the colonial rulers. Besides this, the socio-cultural diversity; divisions around caste, religion, region and language questions, economic inequities and other divergences and differences that we experience in our times were also very much alive and present at the time of the making of the Constitution for the nascent independent India.  Therefore, two most pertinent questions to be asked are: despite all those divergences how did the members in the Constituent Assembly come to agree upon a constitutional framework for the future India; and what were the arguments and justifications made in the Constituent Assembly in the making of certain essential features of the Constitution? A critical exploration of these questions would help the students not only to understand the key debates in the Constituent Assembly, essentially it facilitates a critical thinking, a constitutional perspective and a democratic way of finding solutions to numerous problems that plague our current public life.</p></section><!--]--> <section class="svelte-bbesdc"><h2 class="svelte-bbesdc">Before this</h2> <!--[-1--><p class="empty svelte-jjk1y5">No prerequisites.</p><!--]--><!----> <!--[-1--><!--]--></section> <!--[-1--><!--]--> <!--[0--><section class="svelte-bbesdc"><h2 class="svelte-bbesdc">In these programmes</h2> <p class="note svelte-bbesdc">For the 2024–2026 batches.</p> <ul class="programmes svelte-bbesdc"><!--[--><li class="svelte-bbesdc"><a href="/programmes/political-science" class="svelte-bbesdc">political science</a> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[0--><span class="svelte-bbesdc"><b class="svelte-bbesdc">elective</b> — 4-year major, 4-year double major, 3-year major, 3-year double major, 4-year minor, 3-year minor, concentration (4-year), concentration (3-year)</span><!--]--></li><!--]--></ul></section><!--]--> <!--[0--><section class="svelte-bbesdc"><h2 class="svelte-bbesdc">Recently taught by</h2> <ul class="people svelte-bbesdc"><!--[--><li class="svelte-bbesdc"><a href="/lecturers/sambaiah-gundimeda" class="svelte-bbesdc">Sambaiah Gundimeda</a><!--[0--><span class="svelte-bbesdc">Associate Professor, Politics</span><!--]--></li><!--]--></ul> <!--[0--><p class="note svelte-bbesdc">Taught in 2025 T2, 2025 T1, 2024 T2.</p><!--]--></section><!--]--></article><!--]--><!----></main> <footer class="svelte-1br2sqw"><p>Course data from Krea's term sheets (July 2026); programme rules from the departments' FYUP
+			documents. Check anything that matters with your department.</p></footer></div><!--]--><!--]--><!----><!--]--><!--]--> <!--[-1--><!--]--><!--]--></div>
+	</body>
+</html>

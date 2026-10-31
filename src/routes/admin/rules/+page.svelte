@@ -30,7 +30,7 @@
 		{
 			title: 'across the whole degree',
 			note: 'limits counted over a student’s entire tenure.',
-			keys: ['HEAVY_TRIMS_ALLOWED', 'AUDIT_LIMIT', 'MAX_TOTAL_3YR', 'MAX_TOTAL_4YR']
+			keys: ['HEAVY_TRIMS_ALLOWED', 'AUDIT_LIMIT', 'MIN_TOTAL_3YR', 'MIN_TOTAL_4YR', 'MAX_TOTAL_3YR', 'MAX_TOTAL_4YR']
 		}
 	];
 

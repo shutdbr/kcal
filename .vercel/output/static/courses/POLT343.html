@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<title>kcal</title>
+		<!-- Preserve browser data from before the kcal rename (tracey → relay → kcal)
+		     before app modules load. Newest name first, so its data wins. -->
+		<script>
+			try {
+				var keys = Object.keys(localStorage);
+				for (var prefix of ['relay-', 'tracey-']) {
+					for (var key of keys) {
+						if (!key.startsWith(prefix)) continue;
+						var nextKey = 'kcal-' + key.slice(prefix.length);
+						if (localStorage.getItem(nextKey) === null) {
+							localStorage.setItem(nextKey, localStorage.getItem(key));
+						}
+					}
+				}
+			} catch (e) {
+				// Storage may be unavailable; the app still works for this session.
+			}
+		</script>
+		<!-- theme + text size applied before first paint, so a dark-mode
+		     reload never flashes the light palette. Mirrors the storage
+		     shape in $lib/settings.svelte.ts — change both together. -->
+		<script>
+			try {
+				var s = JSON.parse(localStorage.getItem('kcal-settings') || '{}');
+				var t = s.theme || 'light';
+				if (t === 'system') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+				document.documentElement.dataset.theme = t;
+				var scales = { small: 0.9, normal: 1, large: 1.1, huge: 1.2 };
+				document.documentElement.style.setProperty('--text-scale', scales[s.textSize] || 1);
+				document.documentElement.style.fontSize = 'calc(clamp(10px, 0.52vw, 11px) * var(--text-scale, 1))';
+			} catch (e) {
+				document.documentElement.dataset.theme = 'light';
+			}
+		</script>
+		<!--bbesdc--><meta name="description" content="POLT343 Faith, Freedom, and the Constitution: Religion and Law in India: 4-credit course · runs in T1 · political science."/> <link rel="canonical" href="http://localhost:5173/courses/POLT343"/><!----><title>POLT343 Faith, Freedom, and the Constitution: Religion and Law in India · kcal</title>
+		<link href="../_app/immutable/assets/app.DrowwiZI.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/2.BsnpgWsW.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/CourseList.CGnjhY89.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/6.QDdtBoMd.css" rel="stylesheet">
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<!-- Netlify reads forms out of the deployed HTML at build time, and the
+		     real feedback form lives inside a modal that isn't rendered until
+		     the student opens settings. This hidden twin is what gets detected;
+		     Settings.svelte posts to it by name. Keep the fields in step. -->
+		<form name="feedback" data-netlify="true" netlify-honeypot="bot-field" hidden>
+			<input type="hidden" name="form-name" value="feedback" />
+			<input type="text" name="bot-field" />
+			<textarea name="message"></textarea>
+			<input type="text" name="plan" />
+			<input type="text" name="credits" />
+		</form>
+		<div style="display: contents"><!--[--><!--[0--><!--[--><!--[0--><!--[--><div class="site svelte-1br2sqw"><header class="masthead svelte-1br2sqw"><a class="brand svelte-1br2sqw" href="/">kcal</a> <nav aria-label="site" class="svelte-1br2sqw"><!--[--><a href="/courses" aria-current="page" class="svelte-1br2sqw">courses</a><a href="/programmes" class="svelte-1br2sqw">programmes</a><a href="/lecturers" class="svelte-1br2sqw">lecturers</a><!--]--> <a class="plan svelte-1br2sqw" href="/">open the planner →</a></nav></header> <main class="svelte-1br2sqw"><!--[--><article><header class="svelte-bbesdc"><p class="codes svelte-bbesdc"><!--[--><a href="/programmes/political-science" title="political science" class="svelte-bbesdc">POLT343</a><!--]--></p> <h1 class="svelte-bbesdc">Faith, Freedom, and the Constitution: Religion and Law in India</h1> <p class="lede svelte-bbesdc">4-credit course · runs in T1 · political science</p> <a class="plan svelte-bbesdc" href="/?course=POLT343">plan this course →</a></header> <dl class="facts svelte-bbesdc"><div class="svelte-bbesdc"><dt class="svelte-bbesdc">credits</dt><dd class="svelte-bbesdc">4</dd></div> <div class="svelte-bbesdc"><dt class="svelte-bbesdc">runs in</dt><dd class="svelte-bbesdc">T1</dd></div> <div class="svelte-bbesdc"><dt class="svelte-bbesdc">open to</dt><dd class="svelte-bbesdc">year 2, 3, 4</dd></div> <!--[0--><div class="svelte-bbesdc"><dt class="svelte-bbesdc">last taught</dt><dd class="svelte-bbesdc">2026 T1</dd></div><!--]--></dl> <!--[0--><section class="svelte-bbesdc"><h2 class="svelte-bbesdc">About</h2> <p class="prose svelte-bbesdc">Faith, Freedom, and the Constitution: Religion and Law examines the relationship between religion and law in contemporary India through the constitutional governance of religious diversity. It explores how courts, legislatures, and administrative institutions define religion, protect religious freedom, regulate religious practices, and adjudicate conflicts involving equality, citizenship, caste, and religious identity. While centred on India, the course adopts a comparative perspective by engaging debates from the United States and Europe concerning secularism, religious liberty, legal pluralism, and minority rights.
+Organised around four foundational questions that have shaped some of the most significant constitutional controversies in modern India, the course first asks, under the theme of secularism: How should a constitutional state govern religion? It then examines, through the lens of religious freedom: What protections should individuals and communities enjoy? Turning to personal law and legal pluralism, it considers: Can religious diversity coexist with equal citizenship? Finally, through the study of caste and conversion, it investigates: How does law regulate religious identity and social hierarchy?
+Drawing on constitutional texts, judicial decisions, and interdisciplinary scholarship from law, political theory, history, sociology, and religious studies, the course encourages critical reflection on the challenges of governing religious diversity in democratic societies. Particular attention is paid to the ways in which constitutional commitments to liberty, equality, secularism, and minority protection intersect—and at times come into tension—in contemporary legal and political debates.</p></section><!--]--> <section class="svelte-bbesdc"><h2 class="svelte-bbesdc">Before this</h2> <!--[-1--><p class="empty svelte-jjk1y5">No prerequisites.</p><!--]--><!----> <!--[-1--><!--]--></section> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[0--><section class="svelte-bbesdc"><h2 class="svelte-bbesdc">Recently taught by</h2> <ul class="people svelte-bbesdc"><!--[--><li class="svelte-bbesdc"><a href="/lecturers/sambaiah-gundimeda" class="svelte-bbesdc">Sambaiah Gundimeda</a><!--[0--><span class="svelte-bbesdc">Associate Professor, Politics</span><!--]--></li><!--]--></ul> <!--[-1--><!--]--></section><!--]--></article><!--]--><!----></main> <footer class="svelte-1br2sqw"><p>Course data from Krea's term sheets (July 2026); programme rules from the departments' FYUP
+			documents. Check anything that matters with your department.</p></footer></div><!--]--><!--]--><!----><!--]--><!--]--> <!--[-1--><!--]--><!--]--></div>
+	</body>
+</html>

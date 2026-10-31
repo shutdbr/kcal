@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<title>kcal</title>
+		<!-- Preserve browser data from before the kcal rename (tracey → relay → kcal)
+		     before app modules load. Newest name first, so its data wins. -->
+		<script>
+			try {
+				var keys = Object.keys(localStorage);
+				for (var prefix of ['relay-', 'tracey-']) {
+					for (var key of keys) {
+						if (!key.startsWith(prefix)) continue;
+						var nextKey = 'kcal-' + key.slice(prefix.length);
+						if (localStorage.getItem(nextKey) === null) {
+							localStorage.setItem(nextKey, localStorage.getItem(key));
+						}
+					}
+				}
+			} catch (e) {
+				// Storage may be unavailable; the app still works for this session.
+			}
+		</script>
+		<!-- theme + text size applied before first paint, so a dark-mode
+		     reload never flashes the light palette. Mirrors the storage
+		     shape in $lib/settings.svelte.ts — change both together. -->
+		<script>
+			try {
+				var s = JSON.parse(localStorage.getItem('kcal-settings') || '{}');
+				var t = s.theme || 'light';
+				if (t === 'system') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+				document.documentElement.dataset.theme = t;
+				var scales = { small: 0.9, normal: 1, large: 1.1, huge: 1.2 };
+				document.documentElement.style.setProperty('--text-scale', scales[s.textSize] || 1);
+				document.documentElement.style.fontSize = 'calc(clamp(10px, 0.52vw, 11px) * var(--text-scale, 1))';
+			} catch (e) {
+				document.documentElement.dataset.theme = 'light';
+			}
+		</script>
+		<!--bbesdc--><meta name="description" content="BUSI318 Basics of Digital Marketing: 2-credit course · runs in T2, T3 · business studies."/> <link rel="canonical" href="http://localhost:5173/courses/BUSI318"/><!----><title>BUSI318 Basics of Digital Marketing · kcal</title>
+		<link href="../_app/immutable/assets/app.DrowwiZI.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/2.BsnpgWsW.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/CourseList.CGnjhY89.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/6.QDdtBoMd.css" rel="stylesheet">
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<!-- Netlify reads forms out of the deployed HTML at build time, and the
+		     real feedback form lives inside a modal that isn't rendered until
+		     the student opens settings. This hidden twin is what gets detected;
+		     Settings.svelte posts to it by name. Keep the fields in step. -->
+		<form name="feedback" data-netlify="true" netlify-honeypot="bot-field" hidden>
+			<input type="hidden" name="form-name" value="feedback" />
+			<input type="text" name="bot-field" />
+			<textarea name="message"></textarea>
+			<input type="text" name="plan" />
+			<input type="text" name="credits" />
+		</form>
+		<div style="display: contents"><!--[--><!--[0--><!--[--><!--[0--><!--[--><div class="site svelte-1br2sqw"><header class="masthead svelte-1br2sqw"><a class="brand svelte-1br2sqw" href="/">kcal</a> <nav aria-label="site" class="svelte-1br2sqw"><!--[--><a href="/courses" aria-current="page" class="svelte-1br2sqw">courses</a><a href="/programmes" class="svelte-1br2sqw">programmes</a><a href="/lecturers" class="svelte-1br2sqw">lecturers</a><!--]--> <a class="plan svelte-1br2sqw" href="/">open the planner →</a></nav></header> <main class="svelte-1br2sqw"><!--[--><article><header class="svelte-bbesdc"><p class="codes svelte-bbesdc"><!--[--><a href="/programmes/business-studies" title="business studies" class="svelte-bbesdc">BUSI318</a><!--]--></p> <h1 class="svelte-bbesdc">Basics of Digital Marketing</h1> <p class="lede svelte-bbesdc">2-credit course · runs in T2, T3 · business studies</p> <a class="plan svelte-bbesdc" href="/?course=BUSI318">plan this course →</a></header> <dl class="facts svelte-bbesdc"><div class="svelte-bbesdc"><dt class="svelte-bbesdc">credits</dt><dd class="svelte-bbesdc">2</dd></div> <div class="svelte-bbesdc"><dt class="svelte-bbesdc">runs in</dt><dd class="svelte-bbesdc">T2, T3</dd></div> <div class="svelte-bbesdc"><dt class="svelte-bbesdc">open to</dt><dd class="svelte-bbesdc">year 3, 4</dd></div> <!--[0--><div class="svelte-bbesdc"><dt class="svelte-bbesdc">last taught</dt><dd class="svelte-bbesdc">2026 T2</dd></div><!--]--></dl> <!--[0--><section class="svelte-bbesdc"><h2 class="svelte-bbesdc">About</h2> <p class="prose svelte-bbesdc">Hardly 25 years back, most of the technology that is in use today, did not exist. Personal computers in its rudimentary avatar entered our work spaces only with the economic liberalization of the early 1990s. Both mobile telephony and the Internet were born a few more years later in 1995. The turn of the millennium saw the market getting flooded with laptops with the early versions testing our weight lifting skills. Forget 25 years, just about 10 years back there were no smartphones, no Cloud Computing as we know it today, no connected intelligent devices and most importantly no Facebook! To be more generic, there was no social media space at all a decade ago. Linked In was launched in 2003; Facebook in 2004 and Tweets were born, thanks to Twitter in 2006. The first version of iPhone was launched in 2007. The iPad hit the market in 2010. Thus, what we consider as a technologyâ€“deluged world is a fairly nascent world. The overwhelming envelope of technology is affecting every sphere of our life. In the personal space, the way we communicate, interact and socialize has significantly altered with technology being the key harbinger of this change. In the business space, the way we produce, transport, sell and service in any business is all governed by some interesting facet of technology. This 10 Session module focuses on the all-pervading influence of technology in the realm of Marketing. The main objective of this course is to take the â€œBrickâ€ activities to the next level of â€œClickâ€ activities and leverage the power of the Web to the students of Marketing. This Course will give an overview of various digital marketing platforms that can be used for formatting Digital Strategies. It will give insights into the art and science of search engine marketing and social media marketing. It will cover facets of search advertising and search engine optimization. It will enable broad understanding of key social media such as Facebook, LinkedIn and Twitter. The Course will arm marketers with an understanding of web analytics and metrics with which they can measure the performance of their digital marketing campaigns. The Course will help students to understand web engagement, Lead Generation and Conversions. The Course will equip Students with the tools and techniques of digital marketing so that they can integrate digital into their marketing plan. Insights into digital marketing will enable marketing students to get enhanced performance. The course will give a holistic approach for students on the overall digital marketing platforms and strategi</p></section><!--]--> <section class="svelte-bbesdc"><h2 class="svelte-bbesdc">Before this</h2> <!--[-1--><p class="empty svelte-jjk1y5">No prerequisites.</p><!--]--><!----> <!--[-1--><!--]--></section> <!--[-1--><!--]--> <!--[0--><section class="svelte-bbesdc"><h2 class="svelte-bbesdc">In these programmes</h2> <p class="note svelte-bbesdc">For the 2024–2026 batches.</p> <ul class="programmes svelte-bbesdc"><!--[--><li class="svelte-bbesdc"><a href="/programmes/business-studies" class="svelte-bbesdc">business studies</a> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[0--><span class="svelte-bbesdc"><b class="svelte-bbesdc">elective</b> — 4-year minor, 3-year minor, concentration (4-year), concentration (3-year)</span><!--]--></li><!--]--></ul></section><!--]--> <!--[0--><section class="svelte-bbesdc"><h2 class="svelte-bbesdc">Recently taught by</h2> <ul class="people svelte-bbesdc"><!--[--><li class="svelte-bbesdc"><a href="/lecturers/sathya-saminadan" class="svelte-bbesdc">Sathya Saminadan</a><!--[-1--><!--]--></li><!--]--></ul> <!--[0--><p class="note svelte-bbesdc">Taught in 2026 T2, 2024 T3.</p><!--]--></section><!--]--></article><!--]--><!----></main> <footer class="svelte-1br2sqw"><p>Course data from Krea's term sheets (July 2026); programme rules from the departments' FYUP
+			documents. Check anything that matters with your department.</p></footer></div><!--]--><!--]--><!----><!--]--><!--]--> <!--[-1--><!--]--><!--]--></div>
+	</body>
+</html>

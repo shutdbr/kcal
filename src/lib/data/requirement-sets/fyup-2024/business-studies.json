@@ -1,0 +1,66 @@
+{
+	"subject": "business studies",
+	"source": "01 FYUP - Busines Studies.docx",
+	"notes": [
+		"Information Systems and Business Analysis is BUSI205 (Information Systems and Data Analytics, 2 credits); with Supply Chain Management (2 credits) the six required courses make the stated 20 credits."
+	],
+	"programmes": {
+		"minor_4yr": {
+			"credits": {
+				"total": 32,
+				"required": 20,
+				"elective": 12
+			},
+			"required": [
+				"BUSI201",
+				"BUSI202",
+				"BUSI203",
+				"BUSI211",
+				"BUSI205",
+				"BUSI206"
+			],
+			"choices": [],
+			"electives": "subject"
+		},
+		"minor_3yr": {
+			"credits": {
+				"total": 24,
+				"required": 20,
+				"elective": 4
+			},
+			"required": [
+				"BUSI201",
+				"BUSI202",
+				"BUSI203",
+				"BUSI211",
+				"BUSI205",
+				"BUSI206"
+			],
+			"choices": [],
+			"electives": "subject"
+		},
+		"concentration": {
+			"credits": {
+				"total": 16,
+				"required": 16,
+				"elective": 0
+			},
+			"required": [],
+			"choices": [
+				{
+					"label": "Any four of the required courses",
+					"pick": 4,
+					"from": [
+						"BUSI201",
+						"BUSI202",
+						"BUSI203",
+						"BUSI211",
+						"BUSI205",
+						"BUSI206"
+					]
+				}
+			],
+			"electives": "subject"
+		}
+	}
+}

@@ -116,3 +116,14 @@ The layout and catalogue code is split into small modules:
 Run `npm run test:browser` for mobile touch workflows, responsive layout checks,
 desktop dragging/resizing and Canvas import regressions. Set `KCAL_TEST_BROWSER`
 to a Chromium executable when using a system browser instead of Playwright's.
+
+## Krea Exam and Canvas import
+
+The extension supports [Krea Exam → My Mark List](https://oe.krea.edu.in/krea/my_mark/)
+and Canvas All Courses. It reads the selected page on click, without passwords,
+login tokens or background uploads. In **Settings → import courses & grades**,
+review and save every result locally, including repeated attempts, or copy selected
+courses and grades onto the board. The full mark list is excluded from cloud saves;
+board grades upload only when you explicitly save a cloud plan.
+
+See the [extension installation and privacy notes](extensions/canvas-import/README.md).

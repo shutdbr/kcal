@@ -1,0 +1,381 @@
+{
+	"subject": "history",
+	"source": "03 FYUP - History.docx",
+	"notes": [
+		"Courses named without a code are not in the catalogue yet."
+	],
+	"programmes": {
+		"single_major_4yr": {
+			"credits": {
+				"total": 80,
+				"required": 40,
+				"elective": 40
+			},
+			"required": [
+				"HIST337",
+				"HIST205",
+				"HIST206",
+				{
+					"title": "India and the World"
+				}
+			],
+			"choices": [
+				{
+					"label": "Any three methodology courses",
+					"pick": 3,
+					"from": [
+						{
+							"title": "The Historian's Craft: Primary Sources and their Interpretations"
+						},
+						"HIST303",
+						"HIST355",
+						{
+							"title": "The New Science"
+						},
+						{
+							"title": "Advanced Indian Historiography"
+						}
+					]
+				},
+				{
+					"label": "Any three world history courses",
+					"pick": 3,
+					"from": [
+						"HIST326",
+						"HIST209",
+						{
+							"title": "Winds of Change: Anticolonial Movements in the 19th and 20th Centuries"
+						},
+						{
+							"title": "Economic History: Humans as Planetary Pilots"
+						},
+						{
+							"title": "Urban Emergence"
+						}
+					]
+				}
+			]
+		},
+		"double_major_4yr": {
+			"credits": {
+				"total": 64,
+				"required": 40,
+				"elective": 24
+			},
+			"required": [
+				"HIST337",
+				"HIST205",
+				"HIST206",
+				{
+					"title": "India and the World"
+				}
+			],
+			"choices": [
+				{
+					"label": "Any three methodology courses",
+					"pick": 3,
+					"from": [
+						{
+							"title": "The Historian's Craft: Primary Sources and their Interpretations"
+						},
+						"HIST303",
+						"HIST355",
+						{
+							"title": "The New Science"
+						},
+						{
+							"title": "Advanced Indian Historiography"
+						}
+					]
+				},
+				{
+					"label": "Any three world history courses",
+					"pick": 3,
+					"from": [
+						"HIST326",
+						"HIST209",
+						{
+							"title": "Winds of Change: Anticolonial Movements in the 19th and 20th Centuries"
+						},
+						{
+							"title": "Economic History: Humans as Planetary Pilots"
+						},
+						{
+							"title": "Urban Emergence"
+						}
+					]
+				}
+			]
+		},
+		"single_major_3yr": {
+			"credits": {
+				"total": 60,
+				"required": 40,
+				"elective": 20
+			},
+			"required": [
+				"HIST337",
+				"HIST205",
+				"HIST206",
+				{
+					"title": "India and the World"
+				}
+			],
+			"choices": [
+				{
+					"label": "Any three methodology courses",
+					"pick": 3,
+					"from": [
+						{
+							"title": "The Historian's Craft: Primary Sources and their Interpretations"
+						},
+						"HIST303",
+						"HIST355",
+						{
+							"title": "The New Science"
+						},
+						{
+							"title": "Advanced Indian Historiography"
+						}
+					]
+				},
+				{
+					"label": "Any three world history courses",
+					"pick": 3,
+					"from": [
+						"HIST326",
+						"HIST209",
+						{
+							"title": "Winds of Change: Anticolonial Movements in the 19th and 20th Centuries"
+						},
+						{
+							"title": "Economic History: Humans as Planetary Pilots"
+						},
+						{
+							"title": "Urban Emergence"
+						}
+					]
+				}
+			]
+		},
+		"double_major_3yr": {
+			"credits": {
+				"total": 48,
+				"required": 40,
+				"elective": 8
+			},
+			"required": [
+				"HIST337",
+				"HIST205",
+				"HIST206",
+				{
+					"title": "India and the World"
+				}
+			],
+			"choices": [
+				{
+					"label": "Any three methodology courses",
+					"pick": 3,
+					"from": [
+						{
+							"title": "The Historian's Craft: Primary Sources and their Interpretations"
+						},
+						"HIST303",
+						"HIST355",
+						{
+							"title": "The New Science"
+						},
+						{
+							"title": "Advanced Indian Historiography"
+						}
+					]
+				},
+				{
+					"label": "Any three world history courses",
+					"pick": 3,
+					"from": [
+						"HIST326",
+						"HIST209",
+						{
+							"title": "Winds of Change: Anticolonial Movements in the 19th and 20th Centuries"
+						},
+						{
+							"title": "Economic History: Humans as Planetary Pilots"
+						},
+						{
+							"title": "Urban Emergence"
+						}
+					]
+				}
+			]
+		},
+		"minor_4yr": {
+			"credits": {
+				"total": 32,
+				"required": 20,
+				"elective": 12
+			},
+			"required": [],
+			"choices": [
+				{
+					"label": "Any one methodology course",
+					"pick": 1,
+					"from": [
+						{
+							"title": "The Historian's Craft: Primary Sources and their Interpretations"
+						},
+						"HIST303",
+						"HIST355",
+						{
+							"title": "The New Science"
+						},
+						{
+							"title": "Advanced Indian Historiography"
+						}
+					]
+				},
+				{
+					"label": "Any two world history courses",
+					"pick": 2,
+					"from": [
+						"HIST326",
+						"HIST209",
+						{
+							"title": "Winds of Change: Anticolonial Movements in the 19th and 20th Centuries"
+						},
+						{
+							"title": "Economic History: Humans as Planetary Pilots"
+						},
+						{
+							"title": "Urban Emergence"
+						}
+					]
+				},
+				{
+					"label": "Any two Indian history courses",
+					"pick": 2,
+					"from": [
+						"HIST337",
+						"HIST205",
+						"HIST206",
+						{
+							"title": "India and the World"
+						}
+					]
+				}
+			]
+		},
+		"minor_3yr": {
+			"credits": {
+				"total": 24,
+				"required": 20,
+				"elective": 4
+			},
+			"required": [],
+			"choices": [
+				{
+					"label": "Any one methodology course",
+					"pick": 1,
+					"from": [
+						{
+							"title": "The Historian's Craft: Primary Sources and their Interpretations"
+						},
+						"HIST303",
+						"HIST355",
+						{
+							"title": "The New Science"
+						},
+						{
+							"title": "Advanced Indian Historiography"
+						}
+					]
+				},
+				{
+					"label": "Any two world history courses",
+					"pick": 2,
+					"from": [
+						"HIST326",
+						"HIST209",
+						{
+							"title": "Winds of Change: Anticolonial Movements in the 19th and 20th Centuries"
+						},
+						{
+							"title": "Economic History: Humans as Planetary Pilots"
+						},
+						{
+							"title": "Urban Emergence"
+						}
+					]
+				},
+				{
+					"label": "Any two Indian history courses",
+					"pick": 2,
+					"from": [
+						"HIST337",
+						"HIST205",
+						"HIST206",
+						{
+							"title": "India and the World"
+						}
+					]
+				}
+			]
+		},
+		"concentration": {
+			"credits": {
+				"total": 16,
+				"required": 16,
+				"elective": 0
+			},
+			"required": [],
+			"choices": [
+				{
+					"label": "Any one methodology course",
+					"pick": 1,
+					"from": [
+						{
+							"title": "The Historian's Craft: Primary Sources and their Interpretations"
+						},
+						"HIST303",
+						"HIST355",
+						{
+							"title": "The New Science"
+						},
+						{
+							"title": "Advanced Indian Historiography"
+						}
+					]
+				},
+				{
+					"label": "Any one world history course",
+					"pick": 1,
+					"from": [
+						"HIST326",
+						"HIST209",
+						{
+							"title": "Winds of Change: Anticolonial Movements in the 19th and 20th Centuries"
+						},
+						{
+							"title": "Economic History: Humans as Planetary Pilots"
+						},
+						{
+							"title": "Urban Emergence"
+						}
+					]
+				},
+				{
+					"label": "Any two Indian history courses",
+					"pick": 2,
+					"from": [
+						"HIST337",
+						"HIST205",
+						"HIST206",
+						{
+							"title": "India and the World"
+						}
+					]
+				}
+			]
+		}
+	}
+}

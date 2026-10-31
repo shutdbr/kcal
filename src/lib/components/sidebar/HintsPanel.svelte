@@ -237,41 +237,46 @@
 
 		<div class="choices">
 			{#each plan.choices as prog (prog.role + prog.label)}
-				{#each prog.groups as group, gi (group.rule + gi)}
-					<div class="choice">
-						<div class="choice-rule">
-							<span>
-								choose {group.pick}{group.topic ? ` ${group.topic}` : ''}
-								<em class="counts" title="these picks count toward your {group.counts} credits">· {group.counts}{plan.choices.length > 1 ? ` · ${prog.label}` : ''}</em>
-							</span>
+				<!-- one block per programme; each pool says what to pick and how
+				     far along the plan is -->
+				<div class="choice-prog">
+					<div class="choice-prog-name">{prog.label} · {prog.role}</div>
+					{#each prog.groups as group, gi (group.rule + gi)}
+						{@const done = group.chosen >= group.pick}
+						<div class="choice" class:done>
+							<div class="choice-rule">
+								<span>{group.rule}</span>
+								<span class="choice-count">{done ? '✓ done' : `${group.chosen} of ${group.pick}`}</span>
+							</div>
+							{#if group.counts !== 'required'}
+								<div class="choice-note">counts toward {group.counts} credits</div>
+							{/if}
+							{#if group.courses.length}
+								<!-- courses you can take first; the ones not in the
+								     catalogue yet trail behind, dimmed -->
+								{@const courses = [...group.courses].sort((a, b) => Number(!a.code) - Number(!b.code))}
+								<ul class="choice-list">
+									{#each courses as course (course.title)}
+										<li
+											class:missing={!course.code}
+											class:done={course.code && plan.placedCodes.has(course.code)}
+											title={course.title}
+										>
+											<!-- labelled like the grid (the codes / titles switches); a
+											     click finds the course in the catalogue -->
+											{#if course.code}
+												{@const code = course.code}
+												<button class="choice-course" onclick={() => plan.revealCourse(code)}>
+													{#if plan.showCodes}<b>{plan.shownCode(code)}</b>{/if}{plan.showCodes && plan.showTitles ? ' ' : ''}{#if plan.showTitles}{course.title}{/if}
+												</button>
+											{:else}{course.title} <em>· not offered yet</em>{/if}
+										</li>
+									{/each}
+								</ul>
+							{/if}
 						</div>
-						{#if group.courses.length}
-							<!-- courses you can actually take first; the ones no term has
-							     taught yet trail behind, dimmed -->
-							{@const courses = [...group.courses].sort((a, b) => Number(!a.code) - Number(!b.code))}
-							<ul class="choice-list">
-								{#each courses as course (course.title)}
-									<li
-										class:missing={!course.code}
-										class:done={course.code && plan.placedCodes.has(course.code)}
-										title={course.title}
-									>
-										<!-- labelled like the grid (the codes / titles switches); a
-										     click finds the course in the catalogue -->
-										{#if course.code}
-											{@const code = course.code}
-											<button class="choice-course" onclick={() => plan.revealCourse(code)}>
-												{#if plan.showCodes}<b>{plan.shownCode(code)}</b>{/if}{plan.showCodes && plan.showTitles ? ' ' : ''}{#if plan.showTitles}{course.title}{/if}
-											</button>
-										{:else}{course.title}{/if}
-									</li>
-								{/each}
-							</ul>
-						{:else}
-							<div class="choice-note">{group.rule}</div>
-						{/if}
-					</div>
-				{/each}
+					{/each}
+				</div>
 			{/each}
 		</div>
 	</div>
@@ -522,10 +527,33 @@
 		padding: 1.2rem 1.6rem;
 	}
 
-	// each pool on its own dotted rule, like the programmes above
-	.choice + .choice {
-		padding-top: 1rem;
+	// each programme on its own dotted rule, like the programmes above
+	.choice-prog {
+		display: flex;
+		flex-direction: column;
+		gap: 1.2rem;
+	}
+
+	.choice-prog + .choice-prog {
+		padding-top: 1.2rem;
 		border-top: 1px dotted var(--color-border-light);
+	}
+
+	.choice-prog-name {
+		@include section-label;
+	}
+
+	// how far along a pool is, at the end of its rule
+	.choice-count {
+		flex: none;
+		font-size: 1.15rem;
+		font-weight: 700;
+		font-variant-numeric: tabular-nums;
+		color: var(--color-text-muted);
+
+		.done & {
+			color: var(--color-hint-good-deep);
+		}
 	}
 
 	.choice-rule {
@@ -537,12 +565,6 @@
 		font-size: var(--text-body);
 		font-weight: 700;
 		color: var(--color-text);
-
-		.counts {
-			font-style: normal;
-			font-weight: 400;
-			color: var(--color-text-muted);
-		}
 
 	}
 
@@ -607,6 +629,10 @@
 		// so it reads as "offered on paper, not on the plan"
 		li.missing {
 			color: var(--color-text-muted);
+
+			em {
+				font-size: 1.1rem;
+			}
 		}
 	}
 

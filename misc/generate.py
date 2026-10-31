@@ -16,6 +16,7 @@ Usage: python3 misc/generate.py
 """
 import csv
 import glob
+import sys
 import json
 import os
 import re
@@ -152,8 +153,18 @@ def build():
     courses = {}          # alias code -> dict
     prereq_rows = []      # (canon, ptext, ftext)
 
+    seen_sheets = {}      # file bytes -> the term that first had them
     for path in files:
         term = os.path.splitext(os.path.basename(path))[0]
+        # A sheet saved under two names would make every course in it look
+        # offered in both terms (25_T1.csv shipped as a copy of 25_T2.csv, so
+        # 114 T2-only courses looked like they also ran in T1). Skip copies.
+        with open(path, "rb") as fh:
+            content = fh.read()
+        if content in seen_sheets:
+            print(f"skipping {term}.csv: identical to {seen_sheets[content]}.csv, not a separate term", file=sys.stderr)
+            continue
+        seen_sheets[content] = term
         with open(path, encoding="utf-8", errors="replace") as fh:
             rows = list(csv.reader(fh))
         header = rows[0]

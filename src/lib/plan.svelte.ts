@@ -20,6 +20,8 @@ import {
 	HEAVY_TRIMS_ALLOWED,
 	MAX_TOTAL_3YR,
 	MAX_TOTAL_4YR,
+	MIN_TOTAL_3YR,
+	MIN_TOTAL_4YR,
 	TRIM_HARD_MAX,
 	TRIM_MIN,
 	TRIM_NORMAL_MAX,
@@ -355,12 +357,18 @@ export class Plan {
 	// actually requires (from programme.json), not a flat university-wide number —
 	// plus the foundation core every student completes on top
 	degreeTotal = $derived(
-		this.programmes.reduce((sum, p) => sum + creditsFor(p.subject, p.role, this.fourYear, this.isDouble), 0) +
+		this.programmes.reduce((sum, p) => sum + creditsFor(p.subject, p.role, this.fourYear, this.isDouble, this.batchStartYear), 0) +
 			CORE_CREDITS
 	);
 
 	creditCeiling = $derived(this.fourYear ? MAX_TOTAL_4YR : MAX_TOTAL_3YR);
-	creditTarget = $derived(this.creditTargetMode === 'maximum' ? this.creditCeiling : this.degreeTotal);
+	/** the fewest credits to graduate: the degree's own minimum (120 / 160),
+	 *  or what the chosen programmes add up to when that is more */
+	creditMinimum = $derived(Math.max(this.fourYear ? MIN_TOTAL_4YR : MIN_TOTAL_3YR, this.degreeTotal));
+	/** the programmes need more than the ceiling allows — only overlap between
+	 *  them (a course counting twice) can make the plan fit */
+	creditsConflict = $derived(this.creditMinimum > this.creditCeiling);
+	creditTarget = $derived(this.creditTargetMode === 'maximum' ? this.creditCeiling : this.creditMinimum);
 
 	// ── derived: placements ──
 	/** every placed course in a *visible* year, with its slot */
@@ -704,6 +712,13 @@ export class Plan {
 		this.yearCount = year - 1;
 	}
 
+	/** the trailing years past the degree's length that hold no course */
+	#dropEmptyYears() {
+		let last = this.years.length;
+		while (last > this.minYears && TRIMS.every((t) => !this.placements[slotKey(last, t)]?.length)) last--;
+		this.yearCount = last;
+	}
+
 	/** wipe everything back to the freshly-seeded recommended plan */
 	reset() {
 		this.audited = [];
@@ -746,10 +761,12 @@ export class Plan {
 	programmeChanged() {
 		quietRedraw();
 		this.ensureDistinctPicks();
-		// switching to 4 years brings year 4 back for good, so unticking it
-		// again can't hide whatever was placed there meanwhile
+		// switching to 4 years brings year 4 back; switching to 3 takes off the
+		// years past the third that hold nothing — one with courses stays, so
+		// nothing placed there is hidden or lost
 		if (this.yearCount < this.minYears) this.yearCount = this.minYears;
 		if (!this.touched) this.seedRecommended();
+		if (!this.fourYear) this.#dropEmptyYears();
 		const missing = this.missingRequiredCodes.length;
 		const strays = this.otherPlacedCodes.length;
 		if (missing || strays)
@@ -915,7 +932,7 @@ export class Plan {
 		// only for the courses that are actually required, so a pathway's
 		// recommended electives (maths Topology 1) aren't force-placed
 		for (const prog of this.programmes) {
-			for (const { year, trim, code } of recommendedFor(prog.subject, prog.role, this.fourYear, this.isDouble)) {
+			for (const { year, trim, code } of recommendedFor(prog.subject, prog.role, this.fourYear, this.isDouble, this.batchStartYear)) {
 				if (pos.has(code) || !requiredUnion.has(code)) continue;
 				// the published grid itself is not always feasible (it lists
 				// MATH427 alongside its prerequisite MATH303) — never place a
@@ -1576,10 +1593,10 @@ export class Plan {
 				text: `total credits exceed the ${tenureCap}-credit ceiling for the ${this.fourYear ? 'four' : 'three'}-year programme (${this.totalPlacedCredits}/${tenureCap})`,
 				codes: []
 			});
-		} else if (this.totalPlacedCredits > this.degreeTotal) {
+		} else if (this.totalPlacedCredits > this.creditMinimum) {
 			hints.push({
 				kind: 'caution',
-				text: `you will exceed the required total credits (${this.totalPlacedCredits}/${this.degreeTotal})`,
+				text: `you will exceed the required total credits (${this.totalPlacedCredits}/${this.creditMinimum})`,
 				codes: []
 			});
 		}
@@ -1742,7 +1759,7 @@ export class Plan {
 			if (mine.length) claimedBy.set(p.code, mine);
 		}
 		return this.programmes.map((prog, i) => {
-			const total = creditsFor(prog.subject, prog.role, this.fourYear, this.isDouble);
+			const total = creditsFor(prog.subject, prog.role, this.fourYear, this.isDouble, this.batchStartYear);
 			const sets = this.programmeSets[i];
 			// only the courses this programme has claimed (see above)
 			const mine = this.placed.filter((p) => claimedBy.get(p.code)?.includes(i)).map((p) => byCode(p.code));
@@ -1799,8 +1816,8 @@ export class Plan {
 	// for the student — shown in the sidebar so the choices are visible
 	// Each pool also says what its picks count toward — the programme's
 	// required credits (most pools), its electives, or either (literature's
-	// "from the required courses … and the elective courses") — and, when the
-	// site names one, what the pool is ("methodology", "world history").
+	// "from the required courses … and the elective courses") — and how many
+	// of it the plan already holds.
 	choices = $derived.by(() =>
 		this.programmes
 			.map((prog, i) => {
@@ -1822,10 +1839,12 @@ export class Plan {
 								: kinds.has('elective')
 									? 'elective'
 									: 'required'; // a pick pool fills required credits unless shown otherwise
-						// "any three of the methodology courses" names the pool;
-						// "of the following" / "of the 9 courses" don't
-						const topic = group.rule.match(/of the ([a-z][a-z ]*?) courses/i)?.[1];
-						return { ...group, counts, topic: topic && topic !== 'following' ? topic : undefined };
+						// how many of the pool are already on the plan, or satisfied by an
+						// interchangeable course
+						const placed = (code: string) =>
+							this.placedCodes.has(code) || satisfiedBy(code).some((sub) => this.placedCodes.has(sub));
+						const chosen = group.courses.filter((c) => c.code && hasCode(c.code) && placed(byCode(c.code).code)).length;
+						return { ...group, rule: group.rule.replace(/[\s:.]+$/, ''), counts, chosen };
 					}
 				);
 				return { role: prog.role, label: subjectById(prog.subject).label, groups };

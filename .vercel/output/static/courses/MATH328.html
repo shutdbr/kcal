@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<title>kcal</title>
+		<!-- Preserve browser data from before the kcal rename (tracey → relay → kcal)
+		     before app modules load. Newest name first, so its data wins. -->
+		<script>
+			try {
+				var keys = Object.keys(localStorage);
+				for (var prefix of ['relay-', 'tracey-']) {
+					for (var key of keys) {
+						if (!key.startsWith(prefix)) continue;
+						var nextKey = 'kcal-' + key.slice(prefix.length);
+						if (localStorage.getItem(nextKey) === null) {
+							localStorage.setItem(nextKey, localStorage.getItem(key));
+						}
+					}
+				}
+			} catch (e) {
+				// Storage may be unavailable; the app still works for this session.
+			}
+		</script>
+		<!-- theme + text size applied before first paint, so a dark-mode
+		     reload never flashes the light palette. Mirrors the storage
+		     shape in $lib/settings.svelte.ts — change both together. -->
+		<script>
+			try {
+				var s = JSON.parse(localStorage.getItem('kcal-settings') || '{}');
+				var t = s.theme || 'light';
+				if (t === 'system') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+				document.documentElement.dataset.theme = t;
+				var scales = { small: 0.9, normal: 1, large: 1.1, huge: 1.2 };
+				document.documentElement.style.setProperty('--text-scale', scales[s.textSize] || 1);
+				document.documentElement.style.fontSize = 'calc(clamp(10px, 0.52vw, 11px) * var(--text-scale, 1))';
+			} catch (e) {
+				document.documentElement.dataset.theme = 'light';
+			}
+		</script>
+		<!--bbesdc--><meta name="description" content="MATH328 Numerical Methods: 4-credit course · runs in T1, T2 · mathematics."/> <link rel="canonical" href="http://localhost:5173/courses/MATH328"/><!----><title>MATH328 Numerical Methods · kcal</title>
+		<link href="../_app/immutable/assets/app.DrowwiZI.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/2.BsnpgWsW.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/CourseList.CGnjhY89.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/6.QDdtBoMd.css" rel="stylesheet">
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<!-- Netlify reads forms out of the deployed HTML at build time, and the
+		     real feedback form lives inside a modal that isn't rendered until
+		     the student opens settings. This hidden twin is what gets detected;
+		     Settings.svelte posts to it by name. Keep the fields in step. -->
+		<form name="feedback" data-netlify="true" netlify-honeypot="bot-field" hidden>
+			<input type="hidden" name="form-name" value="feedback" />
+			<input type="text" name="bot-field" />
+			<textarea name="message"></textarea>
+			<input type="text" name="plan" />
+			<input type="text" name="credits" />
+		</form>
+		<div style="display: contents"><!--[--><!--[0--><!--[--><!--[0--><!--[--><div class="site svelte-1br2sqw"><header class="masthead svelte-1br2sqw"><a class="brand svelte-1br2sqw" href="/">kcal</a> <nav aria-label="site" class="svelte-1br2sqw"><!--[--><a href="/courses" aria-current="page" class="svelte-1br2sqw">courses</a><a href="/programmes" class="svelte-1br2sqw">programmes</a><a href="/lecturers" class="svelte-1br2sqw">lecturers</a><!--]--> <a class="plan svelte-1br2sqw" href="/">open the planner →</a></nav></header> <main class="svelte-1br2sqw"><!--[--><article><header class="svelte-bbesdc"><p class="codes svelte-bbesdc"><!--[--><a href="/programmes/computer-science" title="computer science" class="svelte-bbesdc">COMP328</a><a href="/programmes/mathematics" title="mathematics" class="svelte-bbesdc">MATH328</a><!--]--></p> <h1 class="svelte-bbesdc">Numerical Methods</h1> <p class="lede svelte-bbesdc">4-credit course · runs in T1, T2 · mathematics</p> <a class="plan svelte-bbesdc" href="/?course=MATH328">plan this course →</a></header> <dl class="facts svelte-bbesdc"><div class="svelte-bbesdc"><dt class="svelte-bbesdc">credits</dt><dd class="svelte-bbesdc">4</dd></div> <div class="svelte-bbesdc"><dt class="svelte-bbesdc">runs in</dt><dd class="svelte-bbesdc">T1, T2</dd></div> <div class="svelte-bbesdc"><dt class="svelte-bbesdc">open to</dt><dd class="svelte-bbesdc">year 3, 4</dd></div> <!--[0--><div class="svelte-bbesdc"><dt class="svelte-bbesdc">last taught</dt><dd class="svelte-bbesdc">2026 T2</dd></div><!--]--></dl> <!--[0--><section class="svelte-bbesdc"><h2 class="svelte-bbesdc">About</h2> <p class="prose svelte-bbesdc">This is a course in numerical analysis for mathematics students which means that the algorithms are motivated from mathematical theorems and the convergence analysis of these algorithms converts those theorems into quantitative estimates. For example, Taylor’s theorem serves as motivation for many algorithms for solving algebraic as well as differential equations. Broadly, this course will cover floating point arithmetic and errors they produce, numerical linear algebra, root-finding, polynomial interpolation, numerical integration and differentiation, numerical solutions of ordinary differential equations, and optimization. This course will have a computational component which will involve learning a programming language (Julia) to implement the algorithms of this course.
+ 
+ After this course, you will know a variety of standard numerical algorithms in linear algebra, root-finding, interpolation, integration, ODEs, optimization that are relevant in applications. You will also have learnt how to implement these algorithms on a computer and be wary of errors and artifacts.</p></section><!--]--> <section class="svelte-bbesdc"><h2 class="svelte-bbesdc">Before this</h2> <!--[0--><ul class="courses svelte-jjk1y5"><!--[--><li><!--[0--><a href="/courses/MATH202" class="svelte-jjk1y5"><span class="code svelte-jjk1y5">MATH202</span> <span class="title svelte-jjk1y5">Analysis 2: Single variable calculus</span> <!--[0--><span class="credits svelte-jjk1y5">4 cr</span><!--]--></a><!--]--></li><li><!--[0--><a href="/courses/MATH203" class="svelte-jjk1y5"><span class="code svelte-jjk1y5">MATH203</span> <span class="title svelte-jjk1y5">Multivariable Calculus</span> <!--[0--><span class="credits svelte-jjk1y5">4 cr</span><!--]--></a><!--]--></li><li><!--[0--><a href="/courses/MATH230" class="svelte-jjk1y5"><span class="code svelte-jjk1y5">MATH230</span> <span class="title svelte-jjk1y5">Linear Algebra</span> <!--[0--><span class="credits svelte-jjk1y5">4 cr</span><!--]--></a><!--]--></li><!--]--></ul><!--]--><!----> <!--[-1--><!--]--></section> <!--[-1--><!--]--> <!--[0--><section class="svelte-bbesdc"><h2 class="svelte-bbesdc">In these programmes</h2> <p class="note svelte-bbesdc">For the 2024–2026 batches.</p> <ul class="programmes svelte-bbesdc"><!--[--><li class="svelte-bbesdc"><a href="/programmes/computer-science" class="svelte-bbesdc">computer science</a> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[0--><span class="svelte-bbesdc"><b class="svelte-bbesdc">elective</b> — 4-year major, 4-year double major, 3-year major, 3-year double major, 4-year minor, 3-year minor</span><!--]--></li><li class="svelte-bbesdc"><a href="/programmes/mathematics" class="svelte-bbesdc">mathematics</a> <!--[-1--><!--]--> <!--[0--><span class="svelte-bbesdc"><b class="svelte-bbesdc">one of a choice</b> — 4-year major, 4-year double major, 3-year major, 3-year double major</span><!--]--> <!--[-1--><!--]--></li><!--]--></ul></section><!--]--> <!--[0--><section class="svelte-bbesdc"><h2 class="svelte-bbesdc">Recently taught by</h2> <ul class="people svelte-bbesdc"><!--[--><li class="svelte-bbesdc"><a href="/lecturers/vivek-tewary" class="svelte-bbesdc">Vivek Tewary</a><!--[0--><span class="svelte-bbesdc">Assistant Professor, Mathematics</span><!--]--></li><!--]--></ul> <!--[0--><p class="note svelte-bbesdc">Taught in 2026 T2, 2025 T2, 2025 T1, 2024 T2.</p><!--]--></section><!--]--></article><!--]--><!----></main> <footer class="svelte-1br2sqw"><p>Course data from Krea's term sheets (July 2026); programme rules from the departments' FYUP
+			documents. Check anything that matters with your department.</p></footer></div><!--]--><!--]--><!----><!--]--><!--]--> <!--[-1--><!--]--><!--]--></div>
+	</body>
+</html>

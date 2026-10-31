@@ -1,3 +1,14 @@
+import { parseExamImport, type ExamImport } from './features/plans/exam-import.ts';
+
+export type CourseImport = CanvasImport | ExamImport;
+export function parseCourseImport(text: string): CourseImport {
+	if (text.length > CANVAS_IMPORT_LIMIT) throw new Error('The course list is too large. Export it again.');
+	let value: unknown;
+	try { value = JSON.parse(text); } catch { throw new Error('This is not a valid course list. Export it using the kcal extension.'); }
+	if (value && typeof value === 'object' && 'version' in value && value.version === 3) return parseExamImport(value);
+	return parseCanvasImport(text);
+}
+
 export type CanvasEnrollment = 'past' | 'current' | 'future';
 export type CanvasCourse = { name: string; term: string; enrollment: CanvasEnrollment };
 export type CanvasImport = { version: 2; source: 'https://canvas.krea.edu.in'; courses: CanvasCourse[] };

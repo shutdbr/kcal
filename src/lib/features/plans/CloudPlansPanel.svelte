@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import { account } from '$lib/features/auth/account.svelte';
-	import { supabaseConfigured } from '$lib/infrastructure/supabase/client';
+	import { supabaseConfigured } from '$lib/infrastructure/supabase/config';
 	import type { Plan } from '$lib/plan.svelte';
 	import { CloudPlans } from './cloud-plans.svelte';
 	import { PLAN_NAME_LIMIT } from './document';
@@ -31,7 +31,7 @@
 
 <section aria-label="Cloud plans">
 	<h3>account & cloud plans</h3>
-	{#if !supabaseConfigured}
+	{#if !supabaseConfigured()}
 		<p>Cloud saves are not connected yet. Your board and saved copies stay in this browser.</p>
 	{:else if !account.ready}
 		<p role="status">Restoring your account…</p>

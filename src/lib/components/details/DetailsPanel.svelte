@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Plan } from '$lib/plan.svelte';
 	import CourseFaculty from './CourseFaculty.svelte';
-	import { canAudit, hasCode, isCore } from '$lib/data';
+	import { canAudit, hasCode, isCore, termsOffered } from '$lib/data';
 	import { descriptionOf, loadDescriptions } from '$lib/descriptions.svelte';
 	import { GRADE_SCALE, OTHER_MARKS, type GradeMark } from '$lib/grades';
 
@@ -64,6 +64,7 @@
 </header>
 {#if plan.selected}
 	{@const c = plan.selected}
+	{@const ran = termsOffered(c.code)}
 	{@const desc = descriptionOf(c.code)}
 	<div class="details">
 		<div class="d-head">
@@ -88,6 +89,7 @@
 			<div class="d-stat">
 				<span class="d-stat-label">offered</span>
 				<span class="d-stat-value">{c.offered.map((t) => `t${t}`).join(' ') || '—'}</span>
+				{#if ran.length}<span class="d-stat-sub" title="every term it ran: {ran.join(', ')}">last {ran[0]}</span>{/if}
 			</div>
 			<div class="d-stat">
 				<span class="d-stat-label">type</span>
@@ -465,6 +467,13 @@
 			font-size: 1.5rem;
 			font-weight: 700;
 			white-space: nowrap; // "t1 t2 t3" / "elective" never wrap to a 2nd line
+		}
+
+		// when it last ran, under the trimesters it runs in
+		.d-stat-sub {
+			font-size: 1.05rem;
+			color: var(--color-text-muted);
+			white-space: nowrap;
 		}
 	}
 

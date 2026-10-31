@@ -1,0 +1,179 @@
+{
+	"subject": "economics",
+	"source": "02 FYUP - Economics.docx",
+	"notes": [
+		"Elective credits may also be earned with additional required courses of the majors."
+	],
+	"programmes": {
+		"single_major_4yr": {
+			"credits": {
+				"total": 80,
+				"required": 60,
+				"elective": 20
+			},
+			"required": [
+				"ECON201",
+				"ECON211",
+				"ECON212",
+				"ECON223",
+				"ECON202",
+				"ECON203",
+				"ECON204",
+				"ECON210",
+				"ECON209",
+				"ECON207",
+				"ECON206",
+				"ECON334",
+				"ECON313",
+				"ECON310",
+				"ECON309"
+			],
+			"choices": []
+		},
+		"double_major_4yr": {
+			"credits": {
+				"total": 64,
+				"required": 52,
+				"elective": 12
+			},
+			"required": [
+				"ECON201",
+				"ECON211",
+				"ECON212",
+				"ECON223",
+				"ECON202",
+				"ECON203",
+				"ECON204",
+				"ECON210",
+				"ECON209",
+				"ECON207",
+				"ECON206"
+			],
+			"choices": [
+				{
+					"label": "Any two of the following courses",
+					"pick": 2,
+					"from": [
+						"ECON334",
+						"ECON313",
+						"ECON310",
+						"ECON309"
+					]
+				}
+			]
+		},
+		"single_major_3yr": {
+			"credits": {
+				"total": 60,
+				"required": 44,
+				"elective": 16
+			},
+			"required": [
+				"ECON201",
+				"ECON211",
+				"ECON212",
+				"ECON223",
+				"ECON202",
+				"ECON203",
+				"ECON204",
+				"ECON210",
+				"ECON209",
+				"ECON207",
+				"ECON206"
+			],
+			"choices": []
+		},
+		"double_major_3yr": {
+			"credits": {
+				"total": 48,
+				"required": 40,
+				"elective": 8
+			},
+			"required": [
+				"ECON201",
+				"ECON211",
+				"ECON212",
+				"ECON223",
+				"ECON202",
+				"ECON203",
+				"ECON204",
+				"ECON210",
+				"ECON209"
+			],
+			"choices": [
+				{
+					"label": "Indian Economy or History of Economic Thought",
+					"pick": 1,
+					"from": [
+						"ECON207",
+						"ECON206"
+					]
+				}
+			]
+		},
+		"minor_4yr": {
+			"credits": {
+				"total": 32,
+				"required": 32,
+				"elective": 0
+			},
+			"required": [
+				"ECON201",
+				"ECON211",
+				"ECON212",
+				"ECON202",
+				"ECON203",
+				"ECON210",
+				"ECON209"
+			],
+			"choices": [
+				{
+					"label": "Indian Economy or History of Economic Thought",
+					"pick": 1,
+					"from": [
+						"ECON207",
+						"ECON206"
+					]
+				}
+			]
+		},
+		"minor_3yr": {
+			"credits": {
+				"total": 24,
+				"required": 24,
+				"elective": 0
+			},
+			"required": [
+				"ECON201",
+				"ECON211",
+				"ECON212",
+				"ECON202",
+				"ECON203"
+			],
+			"choices": [
+				{
+					"label": "Indian Economy or History of Economic Thought",
+					"pick": 1,
+					"from": [
+						"ECON207",
+						"ECON206"
+					]
+				}
+			]
+		},
+		"concentration": {
+			"credits": {
+				"total": 16,
+				"required": 16,
+				"elective": 0
+			},
+			"required": [
+				"ECON201",
+				"ECON211",
+				"ECON202",
+				"ECON203"
+			],
+			"choices": []
+		}
+	}
+}

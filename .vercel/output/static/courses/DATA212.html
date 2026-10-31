@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<title>kcal</title>
+		<!-- Preserve browser data from before the kcal rename (tracey → relay → kcal)
+		     before app modules load. Newest name first, so its data wins. -->
+		<script>
+			try {
+				var keys = Object.keys(localStorage);
+				for (var prefix of ['relay-', 'tracey-']) {
+					for (var key of keys) {
+						if (!key.startsWith(prefix)) continue;
+						var nextKey = 'kcal-' + key.slice(prefix.length);
+						if (localStorage.getItem(nextKey) === null) {
+							localStorage.setItem(nextKey, localStorage.getItem(key));
+						}
+					}
+				}
+			} catch (e) {
+				// Storage may be unavailable; the app still works for this session.
+			}
+		</script>
+		<!-- theme + text size applied before first paint, so a dark-mode
+		     reload never flashes the light palette. Mirrors the storage
+		     shape in $lib/settings.svelte.ts — change both together. -->
+		<script>
+			try {
+				var s = JSON.parse(localStorage.getItem('kcal-settings') || '{}');
+				var t = s.theme || 'light';
+				if (t === 'system') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+				document.documentElement.dataset.theme = t;
+				var scales = { small: 0.9, normal: 1, large: 1.1, huge: 1.2 };
+				document.documentElement.style.setProperty('--text-scale', scales[s.textSize] || 1);
+				document.documentElement.style.fontSize = 'calc(clamp(10px, 0.52vw, 11px) * var(--text-scale, 1))';
+			} catch (e) {
+				document.documentElement.dataset.theme = 'light';
+			}
+		</script>
+		<!--bbesdc--><meta name="description" content="ECON212 Statistics for Economics: 4-credit course · runs in T1 · economics."/> <link rel="canonical" href="http://localhost:5173/courses/ECON212"/><!----><title>ECON212 Statistics for Economics · kcal</title>
+		<link href="../_app/immutable/assets/app.DrowwiZI.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/2.BsnpgWsW.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/CourseList.CGnjhY89.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/6.QDdtBoMd.css" rel="stylesheet">
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<!-- Netlify reads forms out of the deployed HTML at build time, and the
+		     real feedback form lives inside a modal that isn't rendered until
+		     the student opens settings. This hidden twin is what gets detected;
+		     Settings.svelte posts to it by name. Keep the fields in step. -->
+		<form name="feedback" data-netlify="true" netlify-honeypot="bot-field" hidden>
+			<input type="hidden" name="form-name" value="feedback" />
+			<input type="text" name="bot-field" />
+			<textarea name="message"></textarea>
+			<input type="text" name="plan" />
+			<input type="text" name="credits" />
+		</form>
+		<div style="display: contents"><!--[--><!--[0--><!--[--><!--[0--><!--[--><div class="site svelte-1br2sqw"><header class="masthead svelte-1br2sqw"><a class="brand svelte-1br2sqw" href="/">kcal</a> <nav aria-label="site" class="svelte-1br2sqw"><!--[--><a href="/courses" aria-current="page" class="svelte-1br2sqw">courses</a><a href="/programmes" class="svelte-1br2sqw">programmes</a><a href="/lecturers" class="svelte-1br2sqw">lecturers</a><!--]--> <a class="plan svelte-1br2sqw" href="/">open the planner →</a></nav></header> <main class="svelte-1br2sqw"><!--[--><article><header class="svelte-bbesdc"><p class="codes svelte-bbesdc"><!--[--><a href="/programmes/data-science" title="data science" class="svelte-bbesdc">DATA212</a><a href="/programmes/economics" title="economics" class="svelte-bbesdc">ECON212</a><!--]--></p> <h1 class="svelte-bbesdc">Statistics for Economics</h1> <p class="lede svelte-bbesdc">4-credit course · runs in T1 · economics</p> <a class="plan svelte-bbesdc" href="/?course=ECON212">plan this course →</a></header> <dl class="facts svelte-bbesdc"><div class="svelte-bbesdc"><dt class="svelte-bbesdc">credits</dt><dd class="svelte-bbesdc">4</dd></div> <div class="svelte-bbesdc"><dt class="svelte-bbesdc">runs in</dt><dd class="svelte-bbesdc">T1</dd></div> <div class="svelte-bbesdc"><dt class="svelte-bbesdc">open to</dt><dd class="svelte-bbesdc">year 2, 3, 4</dd></div> <!--[0--><div class="svelte-bbesdc"><dt class="svelte-bbesdc">last taught</dt><dd class="svelte-bbesdc">2026 T1</dd></div><!--]--></dl> <!--[0--><section class="svelte-bbesdc"><h2 class="svelte-bbesdc">About</h2> <p class="prose svelte-bbesdc">This course has a dual focus: First, to introduce you to probability theory and the basic statistical concepts that are used to explore and understand economic phenomena. Second, to show you how this statistical knowledge can be applied to real world data using widely available spreadsheet tools like Microsoft Excel. Therefore, this course has been designed very much from a practitioner’s point of view. You will find that the material that you learn in this course will have direct application in your jobs and further studies. Sound grasp of material from this course will also be essential for your further coursework in econometrics and advanced microeconomics.
+ 
+ The topics covered in this course fall into three broad categories: descriptive statistics, probability &amp; distributions, and hypothesis testing. Descriptive statistics deals with the visualization and summarization of statistical data. You will learn simple tools for visualizing data on one and two variables, as well as statistical concepts for summarizing the central location and dispersion of your data. In the probability &amp; distributions section, you will learn about probability and surrounding concepts like sample spaces, random variables, and combinatorics. You will also learn about some common discrete and continuous probability distributions. Hypothesis testing deals with questions of statistical inference: when are our conditions supported by the data and when are they not? You will learn about samples, and populations, point and interval estimates, and the apparatus of hypothesis testing about one or two variables.</p></section><!--]--> <section class="svelte-bbesdc"><h2 class="svelte-bbesdc">Before this</h2> <!--[-1--><p class="empty svelte-jjk1y5">No prerequisites.</p><!--]--><!----> <!--[-1--><!--]--></section> <!--[0--><section class="svelte-bbesdc"><h2 class="svelte-bbesdc">Leads on to</h2> <!--[0--><ul class="courses svelte-jjk1y5"><!--[--><li><!--[0--><a href="/courses/ECON204" class="svelte-jjk1y5"><span class="code svelte-jjk1y5">ECON204</span> <span class="title svelte-jjk1y5">Econometrics I</span> <!--[0--><span class="credits svelte-jjk1y5">4 cr</span><!--]--></a><!--]--></li><li><!--[0--><a href="/courses/BUSI435" class="svelte-jjk1y5"><span class="code svelte-jjk1y5">BUSI435</span> <span class="title svelte-jjk1y5">Introduction to Financial Time Series Forecasting</span> <!--[0--><span class="credits svelte-jjk1y5">4 cr</span><!--]--></a><!--]--></li><li><!--[0--><a href="/courses/ECON223" class="svelte-jjk1y5"><span class="code svelte-jjk1y5">ECON223</span> <span class="title svelte-jjk1y5">Introduction to Statistical Programming</span> <!--[0--><span class="credits svelte-jjk1y5">4 cr</span><!--]--></a><!--]--></li><li><!--[0--><a href="/courses/ECON334" class="svelte-jjk1y5"><span class="code svelte-jjk1y5">ECON334</span> <span class="title svelte-jjk1y5">Mathematical Methods for Economics II</span> <!--[0--><span class="credits svelte-jjk1y5">4 cr</span><!--]--></a><!--]--></li><!--]--></ul><!--]--><!----></section><!--]--> <!--[0--><section class="svelte-bbesdc"><h2 class="svelte-bbesdc">In these programmes</h2> <p class="note svelte-bbesdc">For the 2024–2026 batches.</p> <ul class="programmes svelte-bbesdc"><!--[--><li class="svelte-bbesdc"><a href="/programmes/economics" class="svelte-bbesdc">economics</a> <!--[0--><span class="svelte-bbesdc"><b class="svelte-bbesdc">required</b> — 4-year major, 4-year double major, 3-year major, 3-year double major, 4-year minor, 3-year minor</span><!--]--> <!--[-1--><!--]--> <!--[-1--><!--]--></li><!--]--></ul></section><!--]--> <!--[0--><section class="svelte-bbesdc"><h2 class="svelte-bbesdc">Recently taught by</h2> <ul class="people svelte-bbesdc"><!--[--><li class="svelte-bbesdc"><a href="/lecturers/suchika-chopra" class="svelte-bbesdc">Suchika Chopra</a><!--[0--><span class="svelte-bbesdc">Assistant Professor, Economics</span><!--]--></li><li class="svelte-bbesdc"><a href="/lecturers/soumya-pal" class="svelte-bbesdc">Soumya Pal</a><!--[-1--><!--]--></li><!--]--></ul> <!--[0--><p class="note svelte-bbesdc">Taught in 2026 T1, 2024 T1.</p><!--]--></section><!--]--></article><!--]--><!----></main> <footer class="svelte-1br2sqw"><p>Course data from Krea's term sheets (July 2026); programme rules from the departments' FYUP
+			documents. Check anything that matters with your department.</p></footer></div><!--]--><!--]--><!----><!--]--><!--]--> <!--[-1--><!--]--><!--]--></div>
+	</body>
+</html>

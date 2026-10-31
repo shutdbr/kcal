@@ -7,16 +7,24 @@ const initial = {
 	snapshot: { version: 1, placements: { '2-1': ['MATH201'] }, picks: {}, touched: true }
 };
 
-test.beforeEach(async ({ page }) => {
-	await page.addInitScript((id) => {
+// The session lives in a cookie (@supabase/ssr), shared by the browser client
+// and server routes — encoded the way the library writes it.
+const session = {
+	access_token: 'test-token', refresh_token: 'test-refresh', token_type: 'bearer',
+	expires_at: Math.floor(Date.now() / 1000) + 3600,
+	user: { id: userId, email: 'student@example.com', aud: 'authenticated', role: 'authenticated', app_metadata: {}, user_metadata: {}, created_at: '2026-10-31T00:00:00Z' }
+};
+
+test.beforeEach(async ({ page, baseURL }) => {
+	await page.context().addCookies([{
+		name: 'sb-kcal-test-auth-token',
+		value: `base64-${Buffer.from(JSON.stringify(session)).toString('base64url')}`,
+		url: baseURL!
+	}]);
+	await page.addInitScript(() => {
 		localStorage.setItem('kcal-intro-seen', '1');
 		localStorage.setItem('kcal-plan', JSON.stringify({ version: 1, placements: {}, picks: {}, touched: true }));
-		localStorage.setItem('sb-kcal-test-auth-token', JSON.stringify({
-			access_token: 'test-token', refresh_token: 'test-refresh', token_type: 'bearer',
-			expires_at: Math.floor(Date.now() / 1000) + 3600,
-			user: { id, email: 'student@example.com', aud: 'authenticated', role: 'authenticated', app_metadata: {}, user_metadata: {}, created_at: '2026-10-31T00:00:00Z' }
-		}));
-	}, userId);
+	});
 	await page.route('https://kcal-test.supabase.co/auth/v1/**', (route) => route.fulfill({ status: 204 }));
 });
 

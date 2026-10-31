@@ -1,0 +1,147 @@
+{
+	"subject": "biology",
+	"source": "09 FYUP - Biology.docx",
+	"notes": [
+		"Biochemistry and Microbiology Lab is BIOS207 (LAB I, 2 credits, taught alongside Biochemistry and Microbiology); Genetics and Cell Biology Lab is BIOS228.",
+		"Chemistry for Biologists (BIOS229) may be replaced by General Chemistry (CHEM213), and Physics for Biologists (BIOS230) by Physics for Chemists and Biologists (CHEM210) — credit for one of each pair only.",
+		"Chemistry and physics majors may have those two waived, making up the credits with a biology elective; the planner does not apply waivers."
+	],
+	"programmes": {
+		"single_major_4yr": {
+			"credits": {
+				"total": 80,
+				"required": 48,
+				"elective": 32
+			},
+			"required": [
+				"BIOS229",
+				"BIOS230",
+				"BIOS201",
+				"BIOS218",
+				"BIOS241",
+				"BIOS227",
+				"BIOS226",
+				"BIOS221",
+				"BIOS224",
+				"BIOS205",
+				"BIOS217",
+				"BIOS207",
+				"BIOS228"
+			],
+			"choices": []
+		},
+		"double_major_4yr": {
+			"credits": {
+				"total": 64,
+				"required": 48,
+				"elective": 16
+			},
+			"required": [
+				"BIOS229",
+				"BIOS230",
+				"BIOS201",
+				"BIOS218",
+				"BIOS241",
+				"BIOS227",
+				"BIOS226",
+				"BIOS221",
+				"BIOS224",
+				"BIOS205",
+				"BIOS217",
+				"BIOS207",
+				"BIOS228"
+			],
+			"choices": []
+		},
+		"single_major_3yr": {
+			"credits": {
+				"total": 64,
+				"required": 48,
+				"elective": 16
+			},
+			"required": [
+				"BIOS229",
+				"BIOS230",
+				"BIOS201",
+				"BIOS218",
+				"BIOS241",
+				"BIOS227",
+				"BIOS226",
+				"BIOS221",
+				"BIOS224",
+				"BIOS205",
+				"BIOS217",
+				"BIOS207",
+				"BIOS228"
+			],
+			"choices": []
+		},
+		"double_major_3yr": {
+			"credits": {
+				"total": 48,
+				"required": 48,
+				"elective": 0
+			},
+			"required": [
+				"BIOS229",
+				"BIOS230",
+				"BIOS201",
+				"BIOS218",
+				"BIOS241",
+				"BIOS227",
+				"BIOS226",
+				"BIOS221",
+				"BIOS224",
+				"BIOS205",
+				"BIOS217",
+				"BIOS207",
+				"BIOS228"
+			],
+			"choices": []
+		},
+		"minor_4yr": {
+			"credits": {
+				"total": 32,
+				"required": 28,
+				"elective": 4
+			},
+			"required": [
+				"BIOS229",
+				"BIOS230",
+				"BIOS201",
+				"BIOS218",
+				"BIOS226",
+				"BIOS221",
+				"BIOS224"
+			],
+			"choices": []
+		},
+		"minor_3yr": {
+			"credits": {
+				"total": 24,
+				"required": 20,
+				"elective": 4
+			},
+			"required": [
+				"BIOS201",
+				"BIOS218",
+				"BIOS226",
+				"BIOS221",
+				"BIOS224"
+			],
+			"choices": []
+		},
+		"concentration": {
+			"credits": {
+				"total": 16,
+				"required": 8,
+				"elective": 8
+			},
+			"required": [
+				"BIOS201",
+				"BIOS218"
+			],
+			"choices": []
+		}
+	}
+}

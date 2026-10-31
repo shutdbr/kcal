@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<title>kcal</title>
+		<!-- Preserve browser data from before the kcal rename (tracey → relay → kcal)
+		     before app modules load. Newest name first, so its data wins. -->
+		<script>
+			try {
+				var keys = Object.keys(localStorage);
+				for (var prefix of ['relay-', 'tracey-']) {
+					for (var key of keys) {
+						if (!key.startsWith(prefix)) continue;
+						var nextKey = 'kcal-' + key.slice(prefix.length);
+						if (localStorage.getItem(nextKey) === null) {
+							localStorage.setItem(nextKey, localStorage.getItem(key));
+						}
+					}
+				}
+			} catch (e) {
+				// Storage may be unavailable; the app still works for this session.
+			}
+		</script>
+		<!-- theme + text size applied before first paint, so a dark-mode
+		     reload never flashes the light palette. Mirrors the storage
+		     shape in $lib/settings.svelte.ts — change both together. -->
+		<script>
+			try {
+				var s = JSON.parse(localStorage.getItem('kcal-settings') || '{}');
+				var t = s.theme || 'light';
+				if (t === 'system') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+				document.documentElement.dataset.theme = t;
+				var scales = { small: 0.9, normal: 1, large: 1.1, huge: 1.2 };
+				document.documentElement.style.setProperty('--text-scale', scales[s.textSize] || 1);
+				document.documentElement.style.fontSize = 'calc(clamp(10px, 0.52vw, 11px) * var(--text-scale, 1))';
+			} catch (e) {
+				document.documentElement.dataset.theme = 'light';
+			}
+		</script>
+		<link href="../_app/immutable/entry/start.BeEN88mj.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/ctknpyVT.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/C1wP5KpI.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/DY9tnzTg.js" rel="modulepreload">
+		<link href="../_app/immutable/entry/app.u4yfAZvj.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/Dp1pzeXC.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/B2MZDb4N.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/CP_9IreJ.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/DgtMFaEQ.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/Dcljb8oa.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/DSE3SGGY.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/B28cTREK.js" rel="modulepreload">
+		<link href="../_app/immutable/nodes/0.CctFXu5R.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/CRW4MkPi.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/DmrPtzQ2.js" rel="modulepreload">
+		<link href="../_app/immutable/nodes/3.D41zS5K6.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/CIhgymcQ.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/r_fJudLb.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/DKB4Pb6C.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/B79LgCJy.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/998eQ_Vy.js" rel="modulepreload">
+		<link href="../_app/immutable/nodes/15.BJj2hp8U.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/C3TdtmO_.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/LUgs8n4i.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/Y7PwUQ_q.js" rel="modulepreload">
+		<link href="../_app/immutable/chunks/7-EDNEG4.js" rel="modulepreload">
+		<link href="../_app/env.js" rel="modulepreload">
+		<!--1qg5d05--><meta name="robots" content="noindex"/><!----><title>kcal admin</title>
+		<link href="../_app/immutable/assets/app.DrowwiZI.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/3.BF-s6LUI.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/15.Dedm7lE9.css" rel="stylesheet">
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<!-- Netlify reads forms out of the deployed HTML at build time, and the
+		     real feedback form lives inside a modal that isn't rendered until
+		     the student opens settings. This hidden twin is what gets detected;
+		     Settings.svelte posts to it by name. Keep the fields in step. -->
+		<form name="feedback" data-netlify="true" netlify-honeypot="bot-field" hidden>
+			<input type="hidden" name="form-name" value="feedback" />
+			<input type="text" name="bot-field" />
+			<textarea name="message"></textarea>
+			<input type="text" name="plan" />
+			<input type="text" name="credits" />
+		</form>
+		<div style="display: contents"><!--[--><!--[0--><!--[--><!--[0--><!--[--><header class="admin-bar svelte-1qg5d05"><div class="brand svelte-1qg5d05"><span class="logo svelte-1qg5d05">kcal</span> <span class="badge svelte-1qg5d05">admin</span></div> <nav class="svelte-1qg5d05"><!--[--><a href="/admin" class="svelte-1qg5d05">courses</a><a href="/admin/crosslist" class="svelte-1qg5d05">cross-listing</a><a href="/admin/rules" class="svelte-1qg5d05">rules</a><a href="/admin/batches" class="svelte-1qg5d05">batches</a><a href="/admin/tree" class="svelte-1qg5d05 active">tree</a><!--]--></nav> <a class="to-planner svelte-1qg5d05" href="/" data-sveltekit-reload="">open planner ↗</a></header> <main class="admin-body adm svelte-1qg5d05"><!--[--><div class="tree-page svelte-1x9o3h1"><div class="controls svelte-1x9o3h1"><label class="svelte-1x9o3h1"><span>programme</span> <select class="svelte-1x9o3h1"><option value="major" selected="">major</option><option value="minor">minor</option><option value="concentration">concentration</option></select></label> <label class="svelte-1x9o3h1"><span>subject</span> <select class="svelte-1x9o3h1"><!--[--><option value="biology">biology</option><option value="chemistry">chemistry</option><option value="computer science">computer science</option><option value="data science">data science</option><option value="economics">economics</option><option value="environmental studies">environmental studies</option><option value="history">history</option><option value="literature">literature</option><option value="mathematics" selected="">mathematics</option><option value="physics">physics</option><option value="political science">political science</option><option value="psychology">psychology</option><option value="sociology">sociology</option><!--]--></select></label> <label class="tick-row svelte-1x9o3h1"><input type="checkbox" checked=""/> <span>4-year</span></label> <label class="tick-row svelte-1x9o3h1"><input type="checkbox"/> <span>include electives</span></label> <label class="svelte-1x9o3h1"><span>columns</span> <select class="svelte-1x9o3h1"><option value="prereq" selected="">prerequisite depth</option><option value="level">course level</option></select></label> <div class="stats svelte-1x9o3h1"><span><b class="svelte-1x9o3h1">21</b> courses</span> <span><b class="svelte-1x9o3h1">30</b> edges</span> <span><b class="svelte-1x9o3h1">7</b> deep</span></div> <div class="legend svelte-1x9o3h1"><span class="key svelte-1x9o3h1"><i class="k-core svelte-1x9o3h1"></i>required</span> <!--[-1--><!--]--> <span class="key svelte-1x9o3h1"><i class="k-external svelte-1x9o3h1"></i>other dept.</span></div></div> <div class="canvas-scroll svelte-1x9o3h1"><!--[-1--><!--[-1--><!--]--> <div class="rulers svelte-1x9o3h1" style="width:1680px"><!--[--><div class="ruler svelte-1x9o3h1" style="left:0px; width:168px">start <em class="svelte-1x9o3h1">3</em></div><div class="ruler svelte-1x9o3h1" style="left:252px; width:168px">after 1 <em class="svelte-1x9o3h1">3</em></div><div class="ruler svelte-1x9o3h1" style="left:504px; width:168px">after 2 <em class="svelte-1x9o3h1">3</em></div><div class="ruler svelte-1x9o3h1" style="left:756px; width:168px">after 3 <em class="svelte-1x9o3h1">5</em></div><div class="ruler svelte-1x9o3h1" style="left:1008px; width:168px">after 4 <em class="svelte-1x9o3h1">4</em></div><div class="ruler svelte-1x9o3h1" style="left:1260px; width:168px">after 5 <em class="svelte-1x9o3h1">2</em></div><div class="ruler svelte-1x9o3h1" style="left:1512px; width:168px">after 6 <em class="svelte-1x9o3h1">1</em></div><!--]--></div> <div class="canvas svelte-1x9o3h1" style="width:1680px; height:336px"><svg width="1680" height="336" aria-hidden="true" class="svelte-1x9o3h1"><!--[--><path d="M168,28 C210,28 210,28 252,28" class="svelte-1x9o3h1"></path><path d="M420,28 C462,28 462,28 504,28" class="svelte-1x9o3h1"></path><path d="M672,28 C714,28 714,98 756,98" class="svelte-1x9o3h1"></path><path d="M168,168 C462,168 462,98 756,98" class="svelte-1x9o3h1"></path><path d="M168,28 C210,28 210,98 252,98" class="svelte-1x9o3h1"></path><path d="M168,168 C210,168 210,98 252,98" class="svelte-1x9o3h1"></path><path d="M672,28 C714,28 714,28 756,28" class="svelte-1x9o3h1"></path><path d="M924,28 C966,28 966,28 1008,28" class="svelte-1x9o3h1"></path><path d="M168,168 C588,168 588,98 1008,98" class="svelte-1x9o3h1"></path><path d="M924,28 C966,28 966,98 1008,98" class="svelte-1x9o3h1"></path><path d="M420,28 C462,28 462,98 504,98" class="svelte-1x9o3h1"></path><path d="M168,168 C336,168 336,168 504,168" class="svelte-1x9o3h1"></path><path d="M420,98 C462,98 462,168 504,168" class="svelte-1x9o3h1"></path><path d="M672,168 C714,168 714,308 756,308" class="svelte-1x9o3h1"></path><path d="M924,28 C1092,28 1092,28 1260,28" class="svelte-1x9o3h1"></path><path d="M1176,28 C1218,28 1218,28 1260,28" class="svelte-1x9o3h1"></path><path d="M924,308 C966,308 966,238 1008,238" class="svelte-1x9o3h1"></path><path d="M1428,28 C1470,28 1470,28 1512,28" class="svelte-1x9o3h1"></path><path d="M168,98 C588,98 588,168 1008,168" class="svelte-1x9o3h1"></path><path d="M168,168 C588,168 588,168 1008,168" class="svelte-1x9o3h1"></path><path d="M924,28 C966,28 966,168 1008,168" class="svelte-1x9o3h1"></path><path d="M672,28 C714,28 714,168 756,168" class="svelte-1x9o3h1"></path><path d="M168,98 C462,98 462,168 756,168" class="svelte-1x9o3h1"></path><path d="M168,168 C462,168 462,168 756,168" class="svelte-1x9o3h1"></path><path d="M672,98 C714,98 714,238 756,238" class="svelte-1x9o3h1"></path><path d="M168,98 C210,98 210,168 252,168" class="svelte-1x9o3h1"></path><path d="M168,168 C210,168 210,168 252,168" class="svelte-1x9o3h1"></path><path d="M168,168 C714,168 714,98 1260,98" class="svelte-1x9o3h1"></path><path d="M924,28 C1092,28 1092,98 1260,98" class="svelte-1x9o3h1"></path><path d="M1176,98 C1218,98 1218,98 1260,98" class="svelte-1x9o3h1"></path><!--]--></svg> <!--[--><div class="node core svelte-1x9o3h1" style="left:0px; top:0px; width:168px; height:56px" role="listitem"><span class="n-code svelte-1x9o3h1">MATH191</span> <span class="n-title svelte-1x9o3h1">Proofs and Ideas: An Introduction to Mathematical Thinking</span></div><div class="node core svelte-1x9o3h1" style="left:252px; top:0px; width:168px; height:56px" role="listitem"><span class="n-code svelte-1x9o3h1">MATH201</span> <span class="n-title svelte-1x9o3h1">Analysis I</span></div><div class="node core svelte-1x9o3h1" style="left:504px; top:0px; width:168px; height:56px" role="listitem"><span class="n-code svelte-1x9o3h1">MATH202</span> <span class="n-title svelte-1x9o3h1">Analysis 2: Single variable calculus</span></div><div class="node core svelte-1x9o3h1" style="left:0px; top:70px; width:168px; height:56px" role="listitem"><span class="n-code svelte-1x9o3h1">MATH203</span> <span class="n-title svelte-1x9o3h1">Multivariable Calculus</span></div><div class="node core svelte-1x9o3h1" style="left:756px; top:70px; width:168px; height:56px" role="listitem"><span class="n-code svelte-1x9o3h1">MATH226</span> <span class="n-title svelte-1x9o3h1">Ordinary Differential Equations</span></div><div class="node core svelte-1x9o3h1" style="left:0px; top:140px; width:168px; height:56px" role="listitem"><span class="n-code svelte-1x9o3h1">MATH230</span> <span class="n-title svelte-1x9o3h1">Linear Algebra</span></div><div class="node core svelte-1x9o3h1" style="left:252px; top:70px; width:168px; height:56px" role="listitem"><span class="n-code svelte-1x9o3h1">MATH231</span> <span class="n-title svelte-1x9o3h1">Algebra 1</span></div><div class="node core svelte-1x9o3h1" style="left:756px; top:0px; width:168px; height:56px" role="listitem"><span class="n-code svelte-1x9o3h1">MATH303</span> <span class="n-title svelte-1x9o3h1">Analysis 3</span></div><div class="node core svelte-1x9o3h1" style="left:1008px; top:0px; width:168px; height:56px" role="listitem"><span class="n-code svelte-1x9o3h1">MATH304</span> <span class="n-title svelte-1x9o3h1">Analysis 4</span></div><div class="node core svelte-1x9o3h1" style="left:1008px; top:70px; width:168px; height:56px" role="listitem"><span class="n-code svelte-1x9o3h1">MATH305</span> <span class="n-title svelte-1x9o3h1">Complex Analysis</span></div><div class="node core svelte-1x9o3h1" style="left:504px; top:70px; width:168px; height:56px" role="listitem"><span class="n-code svelte-1x9o3h1">MATH313</span> <span class="n-title svelte-1x9o3h1">Probability</span></div><div class="node core svelte-1x9o3h1" style="left:504px; top:140px; width:168px; height:56px" role="listitem"><span class="n-code svelte-1x9o3h1">MATH332</span> <span class="n-title svelte-1x9o3h1">Algebra 2</span></div><div class="node core svelte-1x9o3h1" style="left:756px; top:280px; width:168px; height:56px" role="listitem"><span class="n-code svelte-1x9o3h1">MATH333</span> <span class="n-title svelte-1x9o3h1">Algebra 3</span></div><div class="node core svelte-1x9o3h1" style="left:1260px; top:0px; width:168px; height:56px" role="listitem"><span class="n-code svelte-1x9o3h1">MATH341</span> <span class="n-title svelte-1x9o3h1">Topology 1</span></div><div class="node core svelte-1x9o3h1" style="left:1008px; top:210px; width:168px; height:56px" role="listitem"><span class="n-code svelte-1x9o3h1">MATH434</span> <span class="n-title svelte-1x9o3h1">Algebra 4</span></div><div class="node core svelte-1x9o3h1" style="left:1512px; top:0px; width:168px; height:56px" role="listitem"><span class="n-code svelte-1x9o3h1">MATH442</span> <span class="n-title svelte-1x9o3h1">Topology 2</span></div><div class="node core svelte-1x9o3h1" style="left:1008px; top:140px; width:168px; height:56px" role="listitem"><span class="n-code svelte-1x9o3h1">MATH427</span> <span class="n-title svelte-1x9o3h1">Partial Differential Equations</span></div><div class="node core svelte-1x9o3h1" style="left:756px; top:140px; width:168px; height:56px" role="listitem"><span class="n-code svelte-1x9o3h1">MATH328</span> <span class="n-title svelte-1x9o3h1">Numerical Methods</span></div><div class="node core svelte-1x9o3h1" style="left:756px; top:210px; width:168px; height:56px" role="listitem"><span class="n-code svelte-1x9o3h1">MATH414</span> <span class="n-title svelte-1x9o3h1">Statistics</span></div><div class="node core svelte-1x9o3h1" style="left:252px; top:140px; width:168px; height:56px" role="listitem"><span class="n-code svelte-1x9o3h1">MATH344</span> <span class="n-title svelte-1x9o3h1">Geometry of Curves and Surfaces</span></div><div class="node core svelte-1x9o3h1" style="left:1260px; top:70px; width:168px; height:56px" role="listitem"><span class="n-code svelte-1x9o3h1">MATH405</span> <span class="n-title svelte-1x9o3h1">Measure theory and integration</span></div><!--]--></div><!--]--></div></div><!--]--><!----></main><!--]--><!--]--><!----><!--]--><!--]--> <!--[-1--><!--]--><!--]-->
+			
+			<script>
+				{
+					__sveltekit_f69dit = {
+						base: new URL("..", location).pathname.slice(0, -1),
+						env: null
+					};
+
+					const element = document.currentScript.parentElement;
+
+					import("../_app/env.js").then(({ env }) => {
+						__sveltekit_f69dit.env = env;
+
+						Promise.all([
+							import("../_app/immutable/entry/start.BeEN88mj.js"),
+							import("../_app/immutable/entry/app.u4yfAZvj.js")
+						]).then(([kit, app]) => {
+							kit.start(app, element, {
+									node_ids: [0, 3, 15],
+									data: [null,null,null],
+									form: null,
+									error: null
+								});
+						});
+					});
+				}
+			</script>
+		</div>
+	</body>
+</html>

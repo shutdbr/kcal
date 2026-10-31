@@ -41,7 +41,7 @@
 	let over = $derived(loads.filter((s) => s.credits > TRIM_HARD_MAX).length);
 	let audits = $derived(plan.placed.filter((p) => plan.isAudit(p.code)).length);
 	let ceiling = $derived(plan.fourYear ? MAX_TOTAL_4YR : MAX_TOTAL_3YR);
-	let left = $derived(Math.max(0, plan.degreeTotal - plan.totalPlacedCredits));
+	let left = $derived(Math.max(0, plan.creditMinimum - plan.totalPlacedCredits));
 
 	const LOADS = [12, 14, 16, 18, 20];
 
@@ -280,9 +280,9 @@
 			<span class="v">{left}</span>
 			<span class="l">still to place</span>
 		</div>
-		<div class="stat">
-			<span class="v">{plan.degreeTotal}</span>
-			<span class="l">your degree</span>
+		<div class="stat" title="the most of the degree's own minimum and what your programmes add up to">
+			<span class="v">{plan.creditMinimum}</span>
+			<span class="l">to graduate</span>
 		</div>
 		<div class="stat" title="the most credits you may register for across your whole degree">
 			<span class="v">{ceiling}</span>

@@ -13,8 +13,8 @@ export default defineConfig({
 		url: 'http://127.0.0.1:4174',
 		reuseExistingServer: false,
 		env: {
-			VITE_SUPABASE_URL: 'https://kcal-test.supabase.co',
-			VITE_SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_test'
+			PUBLIC_SUPABASE_URL: 'https://kcal-test.supabase.co',
+			PUBLIC_SUPABASE_PUBLISHABLE_KEY: 'sb_publishable_test'
 		}
 	}
 });

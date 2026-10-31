@@ -179,6 +179,8 @@
     font-size: 1.2rem;
   }
   .d-taught {
+    margin-inline: -1.4rem;
+    padding-inline: 1.4rem;
     grid-column: 1 / -1;
     margin-top: 1.2rem;
     border-top: 1px solid var(--color-border-divider);

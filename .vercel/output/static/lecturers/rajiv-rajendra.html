@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<title>kcal</title>
+		<!-- Preserve browser data from before the kcal rename (tracey → relay → kcal)
+		     before app modules load. Newest name first, so its data wins. -->
+		<script>
+			try {
+				var keys = Object.keys(localStorage);
+				for (var prefix of ['relay-', 'tracey-']) {
+					for (var key of keys) {
+						if (!key.startsWith(prefix)) continue;
+						var nextKey = 'kcal-' + key.slice(prefix.length);
+						if (localStorage.getItem(nextKey) === null) {
+							localStorage.setItem(nextKey, localStorage.getItem(key));
+						}
+					}
+				}
+			} catch (e) {
+				// Storage may be unavailable; the app still works for this session.
+			}
+		</script>
+		<!-- theme + text size applied before first paint, so a dark-mode
+		     reload never flashes the light palette. Mirrors the storage
+		     shape in $lib/settings.svelte.ts — change both together. -->
+		<script>
+			try {
+				var s = JSON.parse(localStorage.getItem('kcal-settings') || '{}');
+				var t = s.theme || 'light';
+				if (t === 'system') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+				document.documentElement.dataset.theme = t;
+				var scales = { small: 0.9, normal: 1, large: 1.1, huge: 1.2 };
+				document.documentElement.style.setProperty('--text-scale', scales[s.textSize] || 1);
+				document.documentElement.style.fontSize = 'calc(clamp(10px, 0.52vw, 11px) * var(--text-scale, 1))';
+			} catch (e) {
+				document.documentElement.dataset.theme = 'light';
+			}
+		</script>
+		<!--188t3l--><meta name="description" content="Rajiv Rajendra at Krea: office hours and courses taught."/> <link rel="canonical" href="http://localhost:5173/lecturers/rajiv-rajendra"/><!----><title>Rajiv Rajendra · kcal</title>
+		<link href="../_app/immutable/assets/app.DrowwiZI.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/2.BsnpgWsW.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/CourseList.CGnjhY89.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/8.B4dMF0C4.css" rel="stylesheet">
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<!-- Netlify reads forms out of the deployed HTML at build time, and the
+		     real feedback form lives inside a modal that isn't rendered until
+		     the student opens settings. This hidden twin is what gets detected;
+		     Settings.svelte posts to it by name. Keep the fields in step. -->
+		<form name="feedback" data-netlify="true" netlify-honeypot="bot-field" hidden>
+			<input type="hidden" name="form-name" value="feedback" />
+			<input type="text" name="bot-field" />
+			<textarea name="message"></textarea>
+			<input type="text" name="plan" />
+			<input type="text" name="credits" />
+		</form>
+		<div style="display: contents"><!--[--><!--[0--><!--[--><!--[0--><!--[--><div class="site svelte-1br2sqw"><header class="masthead svelte-1br2sqw"><a class="brand svelte-1br2sqw" href="/">kcal</a> <nav aria-label="site" class="svelte-1br2sqw"><!--[--><a href="/courses" class="svelte-1br2sqw">courses</a><a href="/programmes" class="svelte-1br2sqw">programmes</a><a href="/lecturers" aria-current="page" class="svelte-1br2sqw">lecturers</a><!--]--> <a class="plan svelte-1br2sqw" href="/">open the planner →</a></nav></header> <main class="svelte-1br2sqw"><!--[--><a class="up svelte-188t3l" href="/lecturers">← all lecturers</a> <header class="svelte-188t3l"><!--[-1--><span class="initials svelte-188t3l" aria-hidden="true">RR</span><!--]--> <div><h1 class="svelte-188t3l">Rajiv Rajendra</h1> <!--[-1--><!--]--> <p class="links svelte-188t3l"><!--[0--><a href="mailto:rajiv.rajendra@krea.edu.in" class="svelte-188t3l">rajiv.rajendra@krea.edu.in</a><!--]--> <!--[-1--><!--]--></p></div></header> <!--[-1--><!--]--> <!--[0--><section class="svelte-188t3l"><h2 class="svelte-188t3l">Recently taught</h2> <!--[--><h3 class="svelte-188t3l">2026 T1</h3> <!--[0--><ul class="courses svelte-jjk1y5"><!--[--><li><!--[0--><a href="/courses/BUSI436" class="svelte-jjk1y5"><span class="code svelte-jjk1y5">BUSI436</span> <span class="title svelte-jjk1y5">Capital Markets - Trading, Analysis and Investment Strategy</span> <!--[0--><span class="credits svelte-jjk1y5">4 cr</span><!--]--></a><!--]--></li><!--]--></ul><!--]--><!----><h3 class="svelte-188t3l">2025 T3</h3> <!--[0--><ul class="courses svelte-jjk1y5"><!--[--><li><!--[0--><a href="/courses/BUSI341" class="svelte-jjk1y5"><span class="code svelte-jjk1y5">BUSI341</span> <span class="title svelte-jjk1y5">Business Readiness Bootcamp</span> <!--[0--><span class="credits svelte-jjk1y5">4 cr</span><!--]--></a><!--]--></li><!--]--></ul><!--]--><!----><h3 class="svelte-188t3l">2025 T2</h3> <!--[0--><ul class="courses svelte-jjk1y5"><!--[--><li><!--[0--><a href="/courses/BUSI334" class="svelte-jjk1y5"><span class="code svelte-jjk1y5">BUSI334</span> <span class="title svelte-jjk1y5">Entrepreneurship</span> <!--[0--><span class="credits svelte-jjk1y5">4 cr</span><!--]--></a><!--]--></li><!--]--></ul><!--]--><!----><h3 class="svelte-188t3l">2025 T1</h3> <!--[0--><ul class="courses svelte-jjk1y5"><!--[--><li><!--[0--><a href="/courses/BUSI334" class="svelte-jjk1y5"><span class="code svelte-jjk1y5">BUSI334</span> <span class="title svelte-jjk1y5">Entrepreneurship</span> <!--[0--><span class="credits svelte-jjk1y5">4 cr</span><!--]--></a><!--]--></li><!--]--></ul><!--]--><!----><!--]--></section><!--]--> <!--[0--><section class="svelte-188t3l"><h2 class="svelte-188t3l">All their courses</h2> <!--[0--><ul class="courses svelte-jjk1y5"><!--[--><li><!--[0--><a href="/courses/BUSI341" class="svelte-jjk1y5"><span class="code svelte-jjk1y5">BUSI341</span> <span class="title svelte-jjk1y5">Business Readiness Bootcamp</span> <!--[0--><span class="credits svelte-jjk1y5">4 cr</span><!--]--></a><!--]--></li><li><!--[0--><a href="/courses/BUSI436" class="svelte-jjk1y5"><span class="code svelte-jjk1y5">BUSI436</span> <span class="title svelte-jjk1y5">Capital Markets - Trading, Analysis and Investment Strategy</span> <!--[0--><span class="credits svelte-jjk1y5">4 cr</span><!--]--></a><!--]--></li><li><!--[0--><a href="/courses/BUSI334" class="svelte-jjk1y5"><span class="code svelte-jjk1y5">BUSI334</span> <span class="title svelte-jjk1y5">Entrepreneurship</span> <!--[0--><span class="credits svelte-jjk1y5">4 cr</span><!--]--></a><!--]--></li><!--]--></ul><!--]--><!----></section><!--]--><!--]--><!----></main> <footer class="svelte-1br2sqw"><p>Course data from Krea's term sheets (July 2026); programme rules from the departments' FYUP
+			documents. Check anything that matters with your department.</p></footer></div><!--]--><!--]--><!----><!--]--><!--]--> <!--[-1--><!--]--><!--]--></div>
+	</body>
+</html>

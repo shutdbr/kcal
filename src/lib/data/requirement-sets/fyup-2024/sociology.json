@@ -1,0 +1,228 @@
+{
+	"subject": "sociology",
+	"source": "06 FYUP - Social Studies.docx",
+	"notes": [
+		"Research Methodology (Qualitative) is SOCL304 and (Quantitative) SOCL355; Caste and Tribes in Contemporary India is SOCL335.",
+		"Courses taken under earlier titles count as their renamed versions."
+	],
+	"programmes": {
+		"single_major_4yr": {
+			"credits": {
+				"total": 80,
+				"required": 40,
+				"elective": 40
+			},
+			"required": [
+				"SOCL306",
+				"SOCL305",
+				"SOCL304",
+				"SOCL355",
+				"SOCL211",
+				"SOCL206",
+				"SOCL328",
+				"SOCL201",
+				"SOCL406",
+				"SOCL335"
+			],
+			"choices": []
+		},
+		"double_major_4yr": {
+			"credits": {
+				"total": 64,
+				"required": 36,
+				"elective": 28
+			},
+			"required": [
+				"SOCL306",
+				"SOCL305",
+				"SOCL304",
+				"SOCL355",
+				"SOCL211",
+				"SOCL206",
+				"SOCL328",
+				"SOCL201"
+			],
+			"choices": [
+				{
+					"label": "Either of the following courses",
+					"pick": 1,
+					"from": [
+						"SOCL406",
+						"SOCL335"
+					]
+				}
+			]
+		},
+		"single_major_3yr": {
+			"credits": {
+				"total": 60,
+				"required": 36,
+				"elective": 24
+			},
+			"required": [
+				"SOCL306",
+				"SOCL305",
+				"SOCL304",
+				"SOCL355",
+				"SOCL211",
+				"SOCL206",
+				"SOCL328",
+				"SOCL201"
+			],
+			"choices": [
+				{
+					"label": "Either of the following courses",
+					"pick": 1,
+					"from": [
+						"SOCL406",
+						"SOCL335"
+					]
+				}
+			]
+		},
+		"double_major_3yr": {
+			"credits": {
+				"total": 48,
+				"required": 32,
+				"elective": 16
+			},
+			"required": [
+				"SOCL306",
+				"SOCL305",
+				"SOCL304",
+				"SOCL355",
+				"SOCL211",
+				"SOCL206",
+				"SOCL328"
+			],
+			"choices": [
+				{
+					"label": "Any one of the following courses",
+					"pick": 1,
+					"from": [
+						"SOCL201",
+						"SOCL406",
+						"SOCL335"
+					]
+				}
+			]
+		},
+		"minor_4yr": {
+			"credits": {
+				"total": 32,
+				"required": 16,
+				"elective": 16
+			},
+			"required": [
+				"SOCL306"
+			],
+			"choices": [
+				{
+					"label": "Either research methods course",
+					"pick": 1,
+					"from": [
+						"SOCL304",
+						"SOCL355"
+					]
+				},
+				{
+					"label": "Any one of the following courses",
+					"pick": 1,
+					"from": [
+						"SOCL305",
+						"SOCL211",
+						"SOCL328"
+					]
+				},
+				{
+					"label": "Any one of the following courses",
+					"pick": 1,
+					"from": [
+						"SOCL206",
+						"SOCL201",
+						"SOCL406",
+						"SOCL335"
+					]
+				}
+			]
+		},
+		"minor_3yr": {
+			"credits": {
+				"total": 24,
+				"required": 16,
+				"elective": 8
+			},
+			"required": [
+				"SOCL306"
+			],
+			"choices": [
+				{
+					"label": "Either research methods course",
+					"pick": 1,
+					"from": [
+						"SOCL304",
+						"SOCL355"
+					]
+				},
+				{
+					"label": "Any one of the following courses",
+					"pick": 1,
+					"from": [
+						"SOCL305",
+						"SOCL211",
+						"SOCL328"
+					]
+				},
+				{
+					"label": "Any one of the following courses",
+					"pick": 1,
+					"from": [
+						"SOCL206",
+						"SOCL201",
+						"SOCL406",
+						"SOCL335"
+					]
+				}
+			]
+		},
+		"concentration": {
+			"credits": {
+				"total": 16,
+				"required": 16,
+				"elective": 0
+			},
+			"required": [
+				"SOCL306"
+			],
+			"choices": [
+				{
+					"label": "Either research methods course",
+					"pick": 1,
+					"from": [
+						"SOCL304",
+						"SOCL355"
+					]
+				},
+				{
+					"label": "Any one of the following courses",
+					"pick": 1,
+					"from": [
+						"SOCL305",
+						"SOCL211",
+						"SOCL328"
+					]
+				},
+				{
+					"label": "Any one of the following courses",
+					"pick": 1,
+					"from": [
+						"SOCL206",
+						"SOCL201",
+						"SOCL406",
+						"SOCL335"
+					]
+				}
+			]
+		}
+	}
+}

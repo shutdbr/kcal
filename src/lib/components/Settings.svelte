@@ -164,9 +164,9 @@
 	</section>
 
 	<section>
-		<h3>import from Canvas</h3>
+		<h3>import courses & grades</h3>
 		<div class="actions">
-			<button onclick={onimport}>import from Canvas</button>
+			<button onclick={onimport}>import courses & grades</button>
 		</div>
 		<details class="more">
 			<summary>read more</summary>
@@ -180,10 +180,10 @@
 					about:debugging → this firefox → load temporary add-on → manifest.json.
 				</li>
 				<li>
-					on Canvas, open courses → all courses. click the extension, then “read my courses” and
+					on Krea Exam, open My Mark List. click the extension, then “Read this page locally” and
 					“review in kcal”.
 				</li>
-				<li>check each course's match and each term's trimester, then add.</li>
+				<li>review your terms, grades and catalogue matches before saving. Canvas All Courses is also supported.</li>
 			</ol>
 		</details>
 	</section>

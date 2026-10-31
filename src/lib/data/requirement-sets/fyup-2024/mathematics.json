@@ -1,0 +1,286 @@
+{
+	"subject": "mathematics",
+	"source": "13 FYUP - Mathemetics.docx.pdf",
+	"notes": [
+		"Analysis 3 is MATH303 (the 4-year list misprints MATH301); Analysis 4 is MATH304 (listed as MATH404).",
+		"Probability is MATH313 (listed as MATH213); Geometry: Curves and Surfaces is MATH344 (listed as MATH444/445); Numerical Methods is MATH328.",
+		"Pathways are the primary (recommended) ones, required courses only; the bold choices are left to the student.",
+		"The minor and concentration required courses are not named in the document; the website list stays.",
+		"COMP201 taken in T1 of 2023-24 or 2024-25 counts as MATH191 (they are interchangeable in the planner)."
+	],
+	"programmes": {
+		"single_major_4yr": {
+			"credits": {
+				"total": 80,
+				"required": 68,
+				"elective": 12
+			},
+			"required": [
+				"MATH191",
+				"MATH201",
+				"MATH202",
+				"MATH203",
+				"MATH303",
+				"MATH226",
+				"MATH230",
+				"MATH231",
+				"MATH332",
+				"MATH305",
+				"MATH333",
+				"MATH341",
+				"MATH313",
+				"MATH304"
+			],
+			"choices": [
+				{
+					"label": "Any three of the following courses",
+					"pick": 3,
+					"from": [
+						"MATH434",
+						"MATH442",
+						"MATH427",
+						"MATH328",
+						"MATH414",
+						"MATH344",
+						"MATH405"
+					]
+				}
+			],
+			"pathway": {
+				"1": {
+					"3": [
+						"MATH191"
+					]
+				},
+				"2": {
+					"1": [
+						"MATH201",
+						"MATH230"
+					],
+					"2": [
+						"MATH202",
+						"MATH231"
+					],
+					"3": [
+						"MATH203",
+						"MATH226"
+					]
+				},
+				"3": {
+					"1": [
+						"MATH303",
+						"MATH332"
+					],
+					"2": [
+						"MATH341",
+						"MATH313"
+					],
+					"3": [
+						"MATH305",
+						"MATH333"
+					]
+				},
+				"4": {
+					"1": [
+						"MATH304"
+					]
+				}
+			}
+		},
+		"double_major_4yr": {
+			"credits": {
+				"total": 64,
+				"required": 52,
+				"elective": 12
+			},
+			"required": [
+				"MATH191",
+				"MATH201",
+				"MATH202",
+				"MATH203",
+				"MATH303",
+				"MATH226",
+				"MATH230",
+				"MATH231",
+				"MATH332"
+			],
+			"choices": [
+				{
+					"label": "Any four of the following courses",
+					"pick": 4,
+					"from": [
+						"MATH341",
+						"MATH305",
+						"MATH333",
+						"MATH313",
+						"MATH328"
+					]
+				}
+			],
+			"pathway": {
+				"1": {
+					"3": [
+						"MATH191"
+					]
+				},
+				"2": {
+					"1": [
+						"MATH201",
+						"MATH230"
+					],
+					"2": [
+						"MATH202",
+						"MATH231"
+					],
+					"3": [
+						"MATH203",
+						"MATH226"
+					]
+				},
+				"3": {
+					"1": [
+						"MATH303",
+						"MATH332"
+					]
+				}
+			}
+		},
+		"single_major_3yr": {
+			"credits": {
+				"total": 60,
+				"required": 52,
+				"elective": 8
+			},
+			"required": [
+				"MATH191",
+				"MATH201",
+				"MATH202",
+				"MATH203",
+				"MATH303",
+				"MATH226",
+				"MATH230",
+				"MATH231",
+				"MATH332"
+			],
+			"choices": [
+				{
+					"label": "Any four of the following courses",
+					"pick": 4,
+					"from": [
+						"MATH341",
+						"MATH305",
+						"MATH333",
+						"MATH313",
+						"MATH328"
+					]
+				}
+			],
+			"pathway": {
+				"1": {
+					"3": [
+						"MATH191"
+					]
+				},
+				"2": {
+					"1": [
+						"MATH201",
+						"MATH230"
+					],
+					"2": [
+						"MATH202",
+						"MATH231"
+					],
+					"3": [
+						"MATH203",
+						"MATH226"
+					]
+				},
+				"3": {
+					"1": [
+						"MATH303",
+						"MATH332"
+					]
+				}
+			}
+		},
+		"double_major_3yr": {
+			"credits": {
+				"total": 48,
+				"required": 48,
+				"elective": 0
+			},
+			"required": [
+				"MATH191",
+				"MATH201",
+				"MATH202",
+				"MATH203",
+				"MATH303",
+				"MATH226",
+				"MATH230",
+				"MATH231",
+				"MATH332"
+			],
+			"choices": [
+				{
+					"label": "Any three of the following courses",
+					"pick": 3,
+					"from": [
+						"MATH341",
+						"MATH305",
+						"MATH333",
+						"MATH313",
+						"MATH328"
+					]
+				}
+			],
+			"pathway": {
+				"1": {
+					"3": [
+						"MATH191"
+					]
+				},
+				"2": {
+					"1": [
+						"MATH201",
+						"MATH230"
+					],
+					"2": [
+						"MATH202",
+						"MATH231"
+					],
+					"3": [
+						"MATH203",
+						"MATH226"
+					]
+				},
+				"3": {
+					"1": [
+						"MATH303",
+						"MATH332"
+					]
+				}
+			}
+		},
+		"minor_4yr": {
+			"credits": {
+				"total": 32,
+				"required": 16,
+				"elective": 16
+			}
+		},
+		"minor_3yr": {
+			"credits": {
+				"total": 24,
+				"required": 16,
+				"elective": 8
+			}
+		},
+		"concentration": {
+			"credits": {
+				"total": 16,
+				"required": 16,
+				"elective": 0
+			}
+		}
+	}
+}

@@ -1,0 +1,261 @@
+{
+	"subject": "computer science",
+	"source": "Computer Science course structure — batch entering the major in 2024 (text supplied by the student)",
+	"notes": [
+		"Calculus for Computer Science is MATH203 Multivariable Calculus, cross-listed as COMP212; the catalogue has no separate course.",
+		"Table 1 numbers the courses 1–13 in reading order. The 3-year double major (1–8, 10–12) leaves out Software Design Practical (9) and Models of Computation (13).",
+		"CS electives are any CS or cross-listed course.",
+		"The concentration is not in the document; the website rules stay.",
+		"The 2022 bridge curriculum is not encoded: most of its courses (COMP203/206/207/215/345) are not in the catalogue."
+	],
+	"programmes": {
+		"single_major_4yr": {
+			"credits": {
+				"total": 80,
+				"required": 52,
+				"elective": 28
+			},
+			"required": [
+				"COMP204",
+				"COMP201",
+				"COMP205",
+				"COMP208",
+				"MATH203",
+				"COMP210",
+				"COMP217",
+				"COMP305",
+				"COMP350",
+				"COMP312",
+				"COMP313",
+				"COMP308",
+				"COMP321"
+			],
+			"choices": [],
+			"electives": "subject",
+			"pathway": {
+				"2": {
+					"1": [
+						"COMP204",
+						"COMP201"
+					],
+					"2": [
+						"COMP205",
+						"COMP208"
+					],
+					"3": [
+						"MATH203",
+						"COMP210",
+						"COMP217"
+					]
+				},
+				"3": {
+					"1": [
+						"COMP305",
+						"COMP350"
+					],
+					"2": [
+						"COMP312",
+						"COMP313"
+					],
+					"3": [
+						"COMP308",
+						"COMP321"
+					]
+				}
+			}
+		},
+		"double_major_4yr": {
+			"credits": {
+				"total": 68,
+				"required": 52,
+				"elective": 16
+			},
+			"required": [
+				"COMP204",
+				"COMP201",
+				"COMP205",
+				"COMP208",
+				"MATH203",
+				"COMP210",
+				"COMP217",
+				"COMP305",
+				"COMP350",
+				"COMP312",
+				"COMP313",
+				"COMP308",
+				"COMP321"
+			],
+			"choices": [],
+			"electives": "subject",
+			"pathway": {
+				"2": {
+					"1": [
+						"COMP204",
+						"COMP201"
+					],
+					"2": [
+						"COMP205",
+						"COMP208"
+					],
+					"3": [
+						"MATH203",
+						"COMP210",
+						"COMP217"
+					]
+				},
+				"3": {
+					"1": [
+						"COMP305",
+						"COMP350"
+					],
+					"2": [
+						"COMP312",
+						"COMP313"
+					],
+					"3": [
+						"COMP308",
+						"COMP321"
+					]
+				}
+			}
+		},
+		"single_major_3yr": {
+			"credits": {
+				"total": 60,
+				"required": 52,
+				"elective": 8
+			},
+			"required": [
+				"COMP204",
+				"COMP201",
+				"COMP205",
+				"COMP208",
+				"MATH203",
+				"COMP210",
+				"COMP217",
+				"COMP305",
+				"COMP350",
+				"COMP312",
+				"COMP313",
+				"COMP308",
+				"COMP321"
+			],
+			"choices": [],
+			"electives": "subject",
+			"pathway": {
+				"2": {
+					"1": [
+						"COMP204",
+						"COMP201"
+					],
+					"2": [
+						"COMP205",
+						"COMP208"
+					],
+					"3": [
+						"MATH203",
+						"COMP210",
+						"COMP217"
+					]
+				},
+				"3": {
+					"1": [
+						"COMP305",
+						"COMP350"
+					],
+					"2": [
+						"COMP312",
+						"COMP313"
+					],
+					"3": [
+						"COMP308",
+						"COMP321"
+					]
+				}
+			}
+		},
+		"double_major_3yr": {
+			"credits": {
+				"total": 48,
+				"required": 44,
+				"elective": 4
+			},
+			"required": [
+				"COMP204",
+				"COMP201",
+				"COMP205",
+				"COMP208",
+				"MATH203",
+				"COMP210",
+				"COMP217",
+				"COMP305",
+				"COMP312",
+				"COMP313",
+				"COMP308"
+			],
+			"choices": [],
+			"electives": "subject",
+			"pathway": {
+				"2": {
+					"1": [
+						"COMP204",
+						"COMP201"
+					],
+					"2": [
+						"COMP205",
+						"COMP208"
+					],
+					"3": [
+						"MATH203",
+						"COMP210",
+						"COMP217"
+					]
+				},
+				"3": {
+					"1": [
+						"COMP305"
+					],
+					"2": [
+						"COMP312",
+						"COMP313"
+					],
+					"3": [
+						"COMP308"
+					]
+				}
+			}
+		},
+		"minor_4yr": {
+			"credits": {
+				"total": 32,
+				"required": 24,
+				"elective": 8
+			},
+			"required": [
+				"COMP204",
+				"COMP201",
+				"COMP205",
+				"COMP208",
+				"COMP210",
+				"COMP217"
+			],
+			"choices": [],
+			"electives": "subject"
+		},
+		"minor_3yr": {
+			"credits": {
+				"total": 24,
+				"required": 16,
+				"elective": 8
+			},
+			"required": [
+				"COMP204",
+				"COMP201",
+				"COMP205",
+				"COMP210"
+			],
+			"choices": [],
+			"electives": "subject"
+		}
+	}
+}

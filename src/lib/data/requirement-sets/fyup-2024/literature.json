@@ -1,0 +1,134 @@
+{
+	"subject": "literature",
+	"source": "08 FYUP - Literature.docx",
+	"notes": [
+		"Translation is LITT308, not LITT316 Introduction to Translation.",
+		"The concentration is any four literature courses."
+	],
+	"programmes": {
+		"single_major_4yr": {
+			"credits": {
+				"total": 80,
+				"required": 28,
+				"elective": 52
+			},
+			"required": [
+				"LITT201",
+				"LITT206",
+				"LITT208",
+				"LITT212",
+				"LITT301",
+				"LITT308",
+				"LITT241"
+			],
+			"choices": []
+		},
+		"double_major_4yr": {
+			"credits": {
+				"total": 64,
+				"required": 28,
+				"elective": 36
+			},
+			"required": [
+				"LITT201",
+				"LITT206",
+				"LITT208",
+				"LITT212",
+				"LITT301",
+				"LITT308",
+				"LITT241"
+			],
+			"choices": []
+		},
+		"single_major_3yr": {
+			"credits": {
+				"total": 60,
+				"required": 28,
+				"elective": 32
+			},
+			"required": [
+				"LITT201",
+				"LITT206",
+				"LITT208",
+				"LITT212",
+				"LITT301",
+				"LITT308",
+				"LITT241"
+			],
+			"choices": []
+		},
+		"double_major_3yr": {
+			"credits": {
+				"total": 48,
+				"required": 28,
+				"elective": 20
+			},
+			"required": [
+				"LITT201",
+				"LITT206",
+				"LITT208",
+				"LITT212",
+				"LITT301",
+				"LITT308",
+				"LITT241"
+			],
+			"choices": []
+		},
+		"minor_4yr": {
+			"credits": {
+				"total": 32,
+				"required": 16,
+				"elective": 16
+			},
+			"required": [],
+			"choices": [
+				{
+					"label": "Any four of the required courses",
+					"pick": 4,
+					"from": [
+						"LITT201",
+						"LITT206",
+						"LITT208",
+						"LITT212",
+						"LITT301",
+						"LITT308",
+						"LITT241"
+					]
+				}
+			]
+		},
+		"minor_3yr": {
+			"credits": {
+				"total": 24,
+				"required": 16,
+				"elective": 8
+			},
+			"required": [],
+			"choices": [
+				{
+					"label": "Any four of the required courses",
+					"pick": 4,
+					"from": [
+						"LITT201",
+						"LITT206",
+						"LITT208",
+						"LITT212",
+						"LITT301",
+						"LITT308",
+						"LITT241"
+					]
+				}
+			]
+		},
+		"concentration": {
+			"credits": {
+				"total": 16,
+				"required": 0,
+				"elective": 16
+			},
+			"required": [],
+			"choices": [],
+			"electives": "subject"
+		}
+	}
+}

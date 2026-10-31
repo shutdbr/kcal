@@ -1,0 +1,1075 @@
+// ─────────────────────────────────────────────
+// The curriculum compiler: reconciles the scrape (courses.json, department
+// .json, manual-offerings.json, programme.json, requirements.json) with the
+// departments' documents (data/requirement-sets/**, batch-rules.json) into
+// one CurriculumSnapshot. Build-time only — `npm run curriculum:build` runs it
+// through Vite and writes src/lib/data/curriculum.json; the app never imports
+// it. Every correction to the source data lives here, documented where made.
+// ─────────────────────────────────────────────
+
+import type { BatchRule } from '$lib/batchEdits';
+import type { Course, ProgrammeRole, Subject, TrimNum } from '$lib/types';
+import type { CurriculumSnapshot, ProgrammeRequirements, RequirementSet as SnapshotSet, Variant } from './snapshot';
+import { RULE_DEFAULTS } from '$lib/courseEdits';
+import coursesData from '$lib/data/courses.json';
+import departmentData from '$lib/data/department.json';
+import manualOfferings from '$lib/data/manual-offerings.json';
+import programmeData from '$lib/data/programme.json';
+import websiteRequirements from '$lib/data/requirements.json';
+import batchRulesData from '$lib/data/batch-rules.json';
+
+// Rules for a single batch that a department document states (EVS: ENVS201
+// for the 2022 batch).
+type BatchRuleFile = { batches: Record<string, Record<string, Record<string, BatchRule['courses']>>> };
+const batchEdits: Record<string, BatchRule> = Object.fromEntries(
+	Object.entries((batchRulesData as BatchRuleFile).batches).flatMap(([year, subjects]) =>
+		Object.entries(subjects).flatMap(([subject, variants]) =>
+			Object.entries(variants).flatMap(([variant, courses]) => {
+				const [role, length] = variant.split('_') as [ProgrammeRole, string];
+				const doubles = role === 'major' ? [false, true] : [false];
+				return doubles.map((double) => [JSON.stringify([Number(year), subject, role, length === '4yr', role === 'major' && double]), { courses }] as const);
+			})
+		)
+	)
+);
+export function batchRuleFor(subject: string, role: ProgrammeRole, fourYear: boolean, isDouble: boolean, batch?: number) {
+	return batch === undefined ? undefined : batchEdits[JSON.stringify([batch, subject, role, fourYear, role === 'major' && isDouble])];
+}
+
+type RawCourse = {
+	code: string;
+	codes: string[];
+	codes_by_subject?: Record<string, string>;
+	title: string;
+	subject: string;
+	subjects?: string[];
+	credits: number;
+	pendingCredits?: boolean;
+	type: string;
+	faculty: { email: string; name: string; id: string | null }[];
+	terms: string[];
+	eligible_years: number[];
+	prereqs: string[];
+	unlocks: string[];
+	description?: string;
+};
+
+type RawProgramme = {
+	name: string;
+	total_credits?: number;
+	required: string[];
+	elective_pool?: string[];
+	additional?: string;
+	pathways?: {
+		label: string;
+		grid: { year: number; t1: string[]; t2: string[]; t3: string[] }[];
+	}[];
+};
+
+// arts, business studies and philosophy are only offered as minors/concentrations.
+// 'core' is the KCCS foundation curriculum — a pseudo-subject so its courses
+// can be browsed and placed; never a major/minor (see PROGRAMME_SUBJECTS).
+// 'open' is the open minor — no declared subject, any courses the other
+// programmes don't claim count toward it.
+// Each programme subject wears one fixed hue wherever it's a major, minor or
+// concentration, so maths always looks like maths. Sixteen hues can't all be
+// told apart, so they're spread so the pairs people actually take together
+// (CS + maths, history + literature, econ + polsci …) sit at least 60° apart;
+// the yellow/khaki arc is skipped (muted, it reads as beige) and so is the
+// arc round the KCCS blush. The depths they're worn at live in _variables.
+export const SUBJECTS: Subject[] = [
+	{ id: 'arts', label: 'arts', short: 'arts', majorable: false, hue: 220 },
+	{ id: 'core', label: 'foundation core', short: 'kccs', majorable: false },
+	{ id: 'open', label: 'open minor', short: 'open', majorable: false },
+	{ id: 'biology', label: 'biology', short: 'bios', majorable: true, hue: 130 },
+	{ id: 'business studies', label: 'business studies', short: 'busi', majorable: false, hue: 265 },
+	{ id: 'chemistry', label: 'chemistry', short: 'chem', majorable: true, hue: 310 },
+	{ id: 'computer science', label: 'computer science', short: 'comp', majorable: true, hue: 325 },
+	{ id: 'data science', label: 'data science', short: 'data', majorable: true, hue: 190 },
+	{ id: 'economics', label: 'economics', short: 'econ', majorable: true, hue: 115 },
+	{ id: 'environmental studies', label: 'environmental studies', short: 'envs', majorable: true, hue: 235 },
+	{ id: 'history', label: 'history', short: 'hist', majorable: true, hue: 145 },
+	{ id: 'literature', label: 'literature', short: 'litt', majorable: true, hue: 340 },
+	{ id: 'mathematics', label: 'mathematics', short: 'math', majorable: true, hue: 250 },
+	{ id: 'philosophy', label: 'philosophy', short: 'phil', majorable: false, hue: 160 },
+	{ id: 'physics', label: 'physics', short: 'phys', majorable: true, hue: 175 },
+	{ id: 'political science', label: 'political science', short: 'polt', majorable: true, hue: 295 },
+	{ id: 'psychology', label: 'psychology', short: 'psyc', majorable: true, hue: 280 },
+	{ id: 'sociology', label: 'sociology', short: 'socl', majorable: true, hue: 205 }
+];
+
+export const MAJOR_SUBJECTS: Subject[] = SUBJECTS.filter((s) => s.majorable);
+
+// what the minor/concentration pickers offer — every real subject, but not
+// the foundation-core pseudo-subject or the open minor (the sidebar offers
+// that separately, for the minor slot only)
+export const PROGRAMME_SUBJECTS: Subject[] = SUBJECTS.filter((s) => s.id !== 'core' && s.id !== 'open');
+export const OPEN_MINOR: Subject = SUBJECTS.find((s) => s.id === 'open')!;
+export const OPEN_MINOR_CREDITS = 24; // nominal minor-sized allowance of free courses
+
+// ── The laws' numbers — straight from the ERP Course Drop Form
+//    guidelines; university-wide, not per-subject. ──
+const RULES = RULE_DEFAULTS;
+export const TRIM_MIN = RULES.TRIM_MIN; // minimum credits per trimester (full-time status)
+export const TRIM_NORMAL_MAX = RULES.TRIM_NORMAL_MAX; // recommended registration — four 4-credit courses
+export const TRIM_HARD_MAX = RULES.TRIM_HARD_MAX; // absolute cap (a fifth course / additional load) …
+export const HEAVY_TRIMS_ALLOWED = RULES.HEAVY_TRIMS_ALLOWED; // … allowed only this many terms in the whole tenure
+export const AUDIT_LIMIT = RULES.AUDIT_LIMIT; // audits allowed over the whole degree
+export const MAX_TOTAL_3YR = RULES.MAX_TOTAL_3YR; // total-credit ceiling, three-year programme
+export const MAX_TOTAL_4YR = RULES.MAX_TOTAL_4YR; // total-credit ceiling, four-year programme
+
+/** when the course catalogue was last rebuilt from the term CSVs — shown to
+ *  students so they can judge how current an offering or prerequisite is.
+ *  Date part only (the stamp carries microseconds, which not every Date
+ *  parser takes); null if the build didn't carry one. */
+const stamp = (coursesData as { generated_at?: string }).generated_at;
+export const DATA_UPDATED = stamp ? new Date(stamp.slice(0, 10)) : null;
+
+// ── Catalogue, derived from courses.json ──
+const rawCourses: Record<string, RawCourse> = { ...(coursesData as { courses: Record<string, RawCourse> }).courses };
+// A separate supplement survives regeneration of the original CSV catalogue.
+for (const entry of manualOfferings.courses) {
+	const existing = rawCourses[entry.code];
+	const codes = [...new Set([...(existing?.codes ?? []), ...entry.codes])];
+	const subjects = [...new Set([...(existing?.subjects ?? []), ...entry.subjects])];
+	const codesBySubject: Record<string, string> = { ...(existing?.codes_by_subject ?? {}) };
+	for (const [subject, alias] of Object.entries(entry.codesBySubject)) {
+		if (typeof alias === 'string') codesBySubject[subject] ??= alias;
+	}
+	rawCourses[entry.code] = {
+		...(existing ?? { code: entry.code, title: entry.title, subject: entry.subject,
+			credits: 0, pendingCredits: true, type: 'Elective', eligible_years: [1,2,3,4], prereqs: [], unlocks: [] }),
+		codes, subjects, codes_by_subject: codesBySubject,
+		terms: [...new Set([...(existing?.terms ?? []), 'manual_T2'])],
+		faculty: entry.faculty
+	};
+}
+
+const termToTrim = (term: string): TrimNum | undefined => {
+	const m = term.match(/_T(\d)$/i);
+	if (!m) return undefined;
+	const t = Number(m[1]);
+	return t === 1 || t === 2 || t === 3 ? (t as TrimNum) : undefined;
+};
+
+// 5xx/6xx are MSc/PhD courses — they'd otherwise drag anywhere, since
+// they carry no undergrad year eligibility
+const courseLevel = (code: string) => Number(code.match(/\d+/)?.[0] ?? 0);
+
+const ALL_COURSES: Course[] = Object.values(rawCourses)
+	.filter((c) => c.subject) // drop courses whose discipline prefix isn't mapped to a subject yet
+	.filter((c) => courseLevel(c.code) < 500)
+	.map((c) => ({
+		code: c.code,
+		title: c.title,
+		faculty: c.faculty.map((f) => f.name).join(', '),
+		subject: c.subject,
+		subjects: c.subjects?.length ? c.subjects : [c.subject],
+		codes: c.codes?.length ? c.codes : [c.code],
+		codesBySubject: c.codes_by_subject ?? { [c.subject]: c.code },
+		credits: c.credits,
+		pendingCredits: c.pendingCredits,
+		// the source strings are messy ("Required|Elective", "ELECTIVE (PHILOSOPHY…)").
+		// Rule: elective only when it says so and never says required — otherwise required.
+		required: /required/i.test(c.type) || !/elective/i.test(c.type),
+		// the year-1 foundation core runs sections every term (the CSVs' per-term
+		// rows are too spotty to trust) — treat those as offered in all trimesters.
+		// KCCS190 ("Engaging with the Environment") is the exception: a year-3
+		// course that genuinely only runs in t3, so honour its real term.
+		offered:
+			c.subject === 'core' && c.eligible_years?.includes(1)
+				? ([1, 2, 3] as TrimNum[])
+				: [...new Set(c.terms.map(termToTrim).filter((t): t is TrimNum => t !== undefined))].sort(),
+		eligibleYears: c.eligible_years,
+		prereqs: c.prereqs,
+		unlocks: c.unlocks
+		// the catalogue description is deliberately NOT here — it is 60% of the
+		// course data for one paragraph in one panel, so it loads separately
+		// (see descriptions.svelte.ts).
+		// note: cross-listed aliases (e.g. "COMP341|DATA341") are the SAME course
+		// under two department codes, not two interchangeable courses — they're
+		// not separate placeable catalog entries, so `crosslist` stays unset here
+	}));
+
+/** the live catalogue — everything the planner can show and place */
+export const COURSES: Course[] = ALL_COURSES;
+
+const index = new Map(COURSES.map((c) => [c.code, c]));
+const aliases = new Map(COURSES.flatMap((c) => c.codes.map((code) => [code, c] as const)));
+
+// Groups of distinct courses the departments accept in lieu of one another —
+// unlike cross-listed codes (one course, many codes), these are SEPARATE
+// courses, one per department, teaching the same core; any one satisfies a
+// requirement or prerequisite that names another. Law 2 treats the group as
+// interchangeable on the plan, and the seeder never places two from a group.
+const SUBSTITUTE_GROUPS: string[][] = [
+	// The discrete-maths core, taught three times under three codes: Proofs and
+	// Ideas (maths), Discrete Mathematics (computer science), and Mathematical
+	// Foundations of Data Science (data science). Equivalent, not cross-listed.
+	['MATH191', 'COMP201', 'DATA203'],
+	// Biology's own document: Chemistry for Biologists or General Chemistry,
+	// Physics for Biologists or Physics for Chemists and Biologists — credit
+	// for one of each pair only
+	['BIOS229', 'CHEM213'],
+	['BIOS230', 'CHEM210']
+	// NOTE: linear algebra (MATH230 / COMP208) used to sit here as a symmetric
+	// pair. It isn't symmetric — maths' Linear Algebra clears the applied one,
+	// but not the reverse — so it moved to MATHS_COVERS below. A pair must
+	// never appear in both lists: this one would re-open the direction that
+	// one closes.
+];
+
+/**
+ * Courses the maths department teaches in full that another department also
+ * teaches an applied version of. The substitution runs ONE WAY: the maths
+ * course is accepted in place of the applied one, but the applied one does
+ * not clear the maths requirement — so a maths + computer-science student
+ * takes the maths course once instead of sitting both.
+ *
+ * Kept separate from SUBSTITUTE_GROUPS above, which is symmetric (either
+ * course satisfies the other). Only used to surface the hint; it does not
+ * (yet) drive prereq checking or the seeder.
+ *
+ * Departmental practice reported by students, not stated on the subject pages.
+ */
+export const MATHS_COVERS: { maths: string; applied: string }[] = [
+	// COMP208 is cross-listed DATA208, so this one pair covers both the
+	// computer-science and the data-science requirement
+	{ maths: 'MATH230', applied: 'COMP208' }, // Linear Algebra / Introduction to Linear Algebra
+	{ maths: 'MATH313', applied: 'COMP305' }, // Probability / Applied Probability and Statistics (cs)
+	{ maths: 'MATH313', applied: 'DATA204' } // Probability / Applied Statistics (data science)
+];
+for (const group of SUBSTITUTE_GROUPS) {
+	const present = group.filter((code) => index.has(code));
+	for (const code of present) {
+		index.get(code)!.substitutes = present.filter((other) => other !== code);
+	}
+}
+// the one-way edges, in both directions so either end can be asked. A pair
+// listed here must NOT also be a symmetric substitute above — that would
+// re-open the direction this is meant to close.
+for (const { maths, applied } of MATHS_COVERS) {
+	const m = index.get(maths);
+	const a = index.get(applied);
+	if (!m || !a) continue;
+	m.covers = [...new Set([...(m.covers ?? []), applied])];
+	a.coveredBy = [...new Set([...(a.coveredBy ?? []), maths])];
+}
+
+/** codes accepted in place of `code` — its symmetric substitutes plus, for an
+ *  applied course, the fuller maths course that clears it. Ask this wherever a
+ *  requirement or prerequisite needs "is this already satisfied?". */
+export const satisfiedBy = (code: string): string[] => {
+	const c = index.get(code);
+	if (!c) return [];
+	return [...new Set([...(c.substitutes ?? []), ...(c.coveredBy ?? [])])];
+};
+
+// Prereq edges the term CSVs over-state. The krea subject pages list these as
+// *recommended*, not hard prerequisites — the real enrolment gates are
+// common-curriculum courses (Scientific Reasoning, Data Analytics) this
+// planner doesn't model. Dropping the edge keeps the course off the plan as a
+// forced support requirement while leaving it free to choose. Pairs are
+// [prerequisite, dependent] by canonical code; mirror any change in
+// misc/generate.py so a data regen doesn't reintroduce them.
+const SOFT_PREREQS: [string, string][] = [
+	// Ecology & Conservation Biology (BIOS241 / ENVS231): "Life at Different
+	// Scales" (BIOS201) is recommended, not required — so it isn't pulled onto
+	// an environmental-studies plan as a biology support course.
+	['BIOS201', 'BIOS241'],
+	// Backwards source row: "Political Theory II" (POLT317) is listed as a
+	// prerequisite FOR the intro course POLT313 — drop the inverted edge.
+	['POLT317', 'POLT313']
+];
+for (const [pre, code] of SOFT_PREREQS) {
+	const dependent = index.get(code);
+	if (dependent) dependent.prereqs = dependent.prereqs.filter((p) => p !== pre);
+	const prereq = index.get(pre);
+	if (prereq) prereq.unlocks = prereq.unlocks.filter((u) => u !== code);
+}
+
+// Edges the term CSVs state but lose in transit. Both of these are the second
+// half of a numbered sequence whose own row left the prerequisite column
+// blank — the chain is stated on the OTHER course's "prerequisite for any
+// future course" cell, in a record whose multi-line description spills across
+// lines and takes the column with it.
+//
+// Deliberately only the two the source actually supports. A numbered sequence
+// is NOT on its own grounds to add an edge: this planner enforces order —
+// drops bounce, hints go red, the seeder schedules around it — so an invented
+// prerequisite tells a student they can't take a course they can. Every other
+// consecutive pair in the catalogue already carries its edge (checked across
+// all sixteen numbered families), and the departments with no prerequisites at
+// all — history, sociology, arts, the foundation core — genuinely declare none.
+// Mirror any change in misc/generate.py so a data regen keeps them.
+const SEQUENCE_PREREQS: [string, string][] = [
+	// MATH341 Topology 1's forward cell reads "Analysis 4, Topology II". The
+	// first half is a backwards row (MATH341 already lists MATH304 as its own
+	// prerequisite) and is correctly dropped; the second half is real and was
+	// dropped with it.
+	['MATH341', 'MATH442'],
+	// Analysis 4 leaves its own prerequisite column blank, but MATH341 requires
+	// Analysis 3 AND Analysis 4 together, and MATH304 is years 3-4 against
+	// MATH303's 2-4 — the sequence 1 → 2 → 3 → 4 is the only reading left.
+	['MATH303', 'MATH304']
+];
+for (const [pre, code] of SEQUENCE_PREREQS) {
+	const dependent = index.get(code);
+	const prereq = index.get(pre);
+	if (!dependent || !prereq) continue;
+	if (!dependent.prereqs.includes(pre)) dependent.prereqs = [...dependent.prereqs, pre];
+	if (!prereq.unlocks.includes(code)) prereq.unlocks = [...prereq.unlocks, code];
+}
+
+export const hasCode = (code: string): boolean => index.has(code) || aliases.has(code);
+
+// ── The KCCS foundation (common core) curriculum ──
+// Every student does all of these: 3 credits each, taken in years 1-2 —
+// except Engaging with the Environment (KCCS190), a year-3 course. Year 1
+// t1/t2 take ONLY foundation courses, at most Y1_CORE_MAX per trimester.
+export const CORE_COURSES: Course[] = COURSES.filter((c) => c.subject === 'core');
+export const CORE_CREDITS = CORE_COURSES.reduce((sum, c) => sum + c.credits, 0);
+export const Y1_CORE_MAX = 4;
+export const isCore = (code: string): boolean => index.get(code)?.subject === 'core';
+
+// Courses that go on the transcript but count toward no programme's
+// requirements or credits — the calculus tools course is preparation, not
+// part of any major. Matched on the canonical code, so every cross-listed
+// alias (COMP066, ENVS066, …) is caught too.
+const TRANSCRIPT_ONLY = new Set(['MATH066']);
+export const isTranscriptOnly = (code: string): boolean => TRANSCRIPT_ONLY.has(index.get(code)?.code ?? code);
+
+// The drop form's audit rules: an audit must be a 2- or 4-credit course,
+// and KCCS / 391 / 490 / 491 courses can never be audited.
+const AUDIT_EXCLUDED_RE = /(?:391|490|491)$/;
+export const canAudit = (code: string): boolean => {
+	const c = index.get(code);
+	if (!c || c.subject === 'core') return false;
+	if (c.codes.some((x) => AUDIT_EXCLUDED_RE.test(x))) return false;
+	return c.credits === 2 || c.credits === 4;
+};
+
+export const byCode = (code: string): Course => {
+	const c = index.get(code) ?? aliases.get(code);
+	if (!c) throw new Error(`unknown course code: ${code}`);
+	return c;
+};
+
+// ── Faculty, from kreabot's department.json ──
+/** a member of faculty as the department lists them */
+export type Professor = {
+	id: string;
+	name: string;
+	email: string;
+	position: string;
+	office_hours: string;
+	image_url: string;
+	url: string;
+	date_of_joining?: string; // "01-Jan-19"
+	location?: string;
+	education?: string[];
+	role?: string;
+};
+
+/** Full directory, including lecturers without a linked catalogue course. */
+export const departmentFaculty = departmentData as Record<string, Professor[]>;
+
+// a name with its parts in any order and without the dots, so the term
+// sheets' "T.V.H. Prathamesh" finds the directory's "Prathamesh T V H"
+const nameKey = (name: string) => (name.toLowerCase().match(/[a-z]+/g) ?? []).sort().join(' ');
+
+// The same people under another email or spelling in the term sheets and the
+// T2 timetable, checked by hand: matching on shared name parts alone pairs
+// strangers (Rakesh Nigam with Rakesh Sengupta, Shilpi Sarkar with Shilpi Singh).
+// Each maps to the name they go by — the directory's, typos and all, where
+// it lists them.
+const FACULTY_ALIASES: Record<string, string> = {
+	'prathamesh.turaga@krea.edu.in': 'Prathamesh T V H',
+	'meesum.syed@krea.edu.in': 'Syed Mohammad Meesum',
+	'jonathanandrew.jarrett@krea.edu.in': 'Jonathan Andrew Jarrett',
+	'vidyabharathi.rajkumar@krea.edu.in': 'Vidya Bharathi Rajkumar',
+	'raghavan.komaranapuram@krea.edu.in': 'Raghavan K N',
+	'annu.jalais@krea.edu.in': 'Annu Jalaias',
+	'Annu Jalais': 'Annu Jalaias',
+	Ksviswanathan: 'Viswanathan K S',
+	'K Vishwanath': 'Viswanathan K S',
+	'K. Vishwanathan': 'Viswanathan K S',
+	'KS. Vishwanathan': 'Viswanathan K S',
+	'Shyam Sudhakar': 'Shyam Kumar Sudhakar',
+	'Shyamkumar Sudhakar': 'Shyam Kumar Sudhakar',
+	'Ravi Prakash G Iyer': 'Ravi Prakash Iyer',
+	'Subha Venkatraman': 'Subha V',
+	'sankara.subramanian@krea.edu.in': 'Shankar Subramanian',
+	// not in the directory
+	'arindam.chatterjee@krea.edu.in': 'Arindam Chatterjee',
+	'easwaran.kv@krea.edu.in': 'Eeswaran K V',
+	'Easwaran KV': 'Eeswaran K V',
+	'aishwarya.krishnaswamy@krea.edu.in': 'Aishwarya Krishnaswami',
+	'Aishwarya K': 'Aishwarya Krishnaswami',
+	Arindham: 'Arindam Chatterjee',
+	'Aswin Sai Narain Seshasayee': 'Aswin Seshasayee'
+};
+const facultyAliases = new Map(
+	Object.entries(FACULTY_ALIASES).map(([alias, name]) => [alias.includes('@') ? alias : nameKey(alias), name])
+);
+
+const professors = new Map<string, Professor>();
+for (const list of Object.values(departmentData as Record<string, Professor[]>)) {
+	for (const p of list) {
+		professors.set(p.id, p);
+		if (p.email) professors.set(p.email.toLowerCase(), p);
+		// the catalogue reaches the bundle with its lecturers' names only
+		// (vite.config.ts drops the emails), so most are found by name
+		professors.set(nameKey(p.name), p);
+	}
+}
+
+// a URL-safe id like the directory's own ("ruchir-joshi"), never one taken
+const takenSlugs = new Set(Object.values(departmentData as Record<string, Professor[]>).flat().map((p) => p.id));
+function lecturerSlug(name: string): string {
+	const base = name.toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'lecturer';
+	let slug = base;
+	for (let n = 2; takenSlugs.has(slug); n++) slug = `${base}-${n}`;
+	takenSlugs.add(slug);
+	return slug;
+}
+
+// someone the directory doesn't list, once per name: the T2 timetable knows
+// Rakesh Nigam by email, the catalogue only by name
+const strangers = new Map<string, Professor>();
+
+// a lecturer on a course: the department's record where there is one,
+// just the name and email otherwise
+const resolveFaculty = (f: RawCourse['faculty'][number]): Professor => {
+	const email = f.email?.toLowerCase() ?? '';
+	const name = facultyAliases.get(email) ?? facultyAliases.get(nameKey(f.name)) ?? f.name;
+	const known =
+		(f.id ? professors.get(f.id) : undefined) ?? professors.get(email || '-') ?? professors.get(nameKey(name));
+	if (known) return known;
+	// the T2 timetable names those it can't place by email alone
+	const key = name.includes('@') ? name.toLowerCase() : nameKey(name);
+	let p = strangers.get(key);
+	if (!p) {
+		// the timetable names some only by email: "debankur.saha@…" → "Debankur Saha"
+		const shown = name.includes('@')
+			? name.split('@')[0].split(/[._-]+/).filter(Boolean).map((w) => w[0].toUpperCase() + w.slice(1)).join(' ')
+			: name;
+		p = { id: lecturerSlug(shown), name: shown, email: f.email || (name.includes('@') ? name : ''), position: '', office_hours: '', image_url: '', url: '' };
+		strangers.set(key, p);
+	}
+	p.email ||= f.email;
+	return p;
+};
+
+/** who has taught a course — position, office hours, photo where known */
+export function facultyOf(code: string): Professor[] {
+	return [...new Set((rawCourses[byCode(code).code]?.faculty ?? []).map(resolveFaculty))];
+}
+
+/** who teaches a course, as the search bar reads it: the names lecturers go
+ *  by and the spellings the term sheets used, so "Subha V" and "Venkatraman"
+ *  both find DATA238 */
+export const facultySearchText = (c: Course): string =>
+	[c.faculty, ...facultyOf(c.code).map((p) => p.name)].join(' ').toLowerCase();
+
+// the hand-entered T2 timetable carries no year: it's the T2 after the
+// newest term in the spreadsheets
+const latestYear =
+	Object.values(rawCourses)
+		.flatMap((c) => c.terms)
+		.map((t) => t.match(/^(\d{2})_T\d$/)?.[1])
+		.filter((y): y is string => !!y)
+		.sort()
+		.at(-1) ?? '26';
+const realTerm = (term: string) => (term === 'manual_T2' ? `${latestYear}_T2` : term);
+
+/** "24_T1" → "2024 T1", the way kreabot shows terms */
+export const termLabel = (term: string): string => {
+	const [year, trim] = realTerm(term).split('_');
+	return year && trim ? `20${year} ${trim.toUpperCase()}` : term;
+};
+
+// Like kreabot's department pages, a lecturer is credited with every term a
+// course of theirs ran. The data keeps only each course's latest lecturers,
+// so an older term may have been a colleague's — close enough to show what
+// someone teaches and how recently.
+const taught = new Map<string, string[]>(); // lecturer id → canonical codes
+for (const c of Object.values(rawCourses)) {
+	if (!index.has(c.code)) continue;
+	for (const f of c.faculty ?? []) {
+		const id = resolveFaculty(f).id;
+		if (!taught.has(id)) taught.set(id, []);
+		taught.get(id)!.push(c.code);
+	}
+}
+
+/** a lecturer's courses by term, newest first — the latest three terms */
+export function taughtBy(prof: Professor, terms = 3): { term: string; codes: string[] }[] {
+	const byTerm = new Map<string, string[]>();
+	for (const code of taught.get(prof.id) ?? []) {
+		for (const term of new Set(rawCourses[code].terms.map(realTerm))) {
+			if (!byTerm.has(term)) byTerm.set(term, []);
+			byTerm.get(term)!.push(code);
+		}
+	}
+	return [...byTerm]
+		.sort(([a], [b]) => b.localeCompare(a))
+		.slice(0, terms)
+		.map(([term, codes]) => ({ term, codes }));
+}
+
+/** Course associations in the imported directory; not a promise of future teaching. */
+export function facultyCourses(prof: Professor): Course[] {
+	return [...new Set(taught.get(prof.id) ?? [])].map(byCode).sort((a, b) => a.title.localeCompare(b.title));
+}
+
+/** the code a course is shown under when browsing a given subject
+ *  (HIST235 under history) — falls back to the canonical code */
+export const codeFor = (course: Course, subject?: string): string =>
+	(subject && course.codesBySubject[subject]) || course.code;
+
+// ── Required/elective per subject, straight from the scraped website
+//    programme structure (requirements.json) — the term CSVs' own
+//    Required/Elective flag is per-batch and noisy, so we don't trust it.
+type CreditCell = { total?: number; required?: number; elective?: number };
+// one course line inside a scraped track group — either a single course or a
+// set of interchangeable alternatives ("A or B"); `code` is null when the
+// website lists a course no CSV term has taught yet
+type RawTrackCourse = {
+	title: string;
+	code?: string | null;
+	one_of?: { title: string; code?: string | null }[];
+};
+type RawTrack = {
+	groups: { rule: string | null; pick: number | null; courses: RawTrackCourse[] }[];
+};
+type ReqSubject = {
+	// keyed by programme type: single_major_3yr, double_major_4yr, minor_3yr,
+	// concentration, …  required = fixed core, pick = 'choose N from' pools
+	// (count toward required credits), elective = the Elective-courses tab
+	required_codes?: Record<string, string[]>;
+	pick_codes?: Record<string, string[]>;
+	elective_codes?: Record<string, string[]>;
+	credits?: Record<string, Record<string, CreditCell>>;
+	// the website's programme-structure tabs, verbatim — keyed by track name
+	// ("4 Year Single Major", "3-Year Minor", …) so the exact 'choose N from'
+	// groups can be shown to the student
+	tracks?: Record<string, RawTrack>;
+	// from a department document, per programme variant: its 'choose N'
+	// groups (overriding the website tracks) and its suggested pathway
+	choice_groups?: Record<string, RawTrack['groups']>;
+	pathways?: Record<string, { year: number; trim: TrimNum; code: string }[]>;
+};
+// ── Requirement sets: the department documents, one file per subject ──
+// requirement-sets/<set>/set.json names the batches a set governs; each
+// <subject>.json states only what its document states. A programme, or a
+// field of one, it leaves out falls back to the website scrape.
+
+/** a course a document names: its code, or only a title when the catalogue
+ *  doesn't have it yet */
+type StatedCourse = string | { title: string };
+type StatedProgramme = {
+	credits?: Required<CreditCell>;
+	required?: StatedCourse[];
+	choices?: { label: string; pick: number; from: StatedCourse[] }[];
+	/** a list of codes, or 'subject': any course of the subject */
+	electives?: string[] | 'subject';
+	/** year → trimester → codes, required courses only */
+	pathway?: Record<string, Record<string, string[]>>;
+};
+type StatedSubject = { subject: string; source: string; notes?: string[]; programmes: Record<string, StatedProgramme> };
+type RequirementSet = { id: string; name: string; batches: number[]; subjects: Record<string, StatedSubject> };
+
+const REQUIREMENT_SETS: RequirementSet[] = (() => {
+	const files = import.meta.glob<{ default: unknown }>('/src/lib/data/requirement-sets/*/*.json', { eager: true });
+	const sets = new Map<string, RequirementSet>();
+	for (const [path, file] of Object.entries(files)) {
+		const [, dir, name] = path.match(/requirement-sets\/([^/]+)\/([^/]+)\.json$/)!;
+		const set = sets.get(dir) ?? { id: dir, name: dir, batches: [], subjects: {} };
+		if (name === 'set') Object.assign(set, file.default as Pick<RequirementSet, 'name' | 'batches'>);
+		else {
+			const stated = file.default as StatedSubject;
+			set.subjects[stated.subject] = stated;
+		}
+		sets.set(dir, set);
+	}
+	return [...sets.values()].sort((a, b) => Math.min(...a.batches) - Math.min(...b.batches));
+})();
+
+/** One batch's rules, resolved once: the website scrape with a document's
+ *  statements laid over it, plus the per-subject unions the fallbacks use. */
+type Requirements = {
+	subjects: Record<string, ReqSubject>;
+	stated: Record<string, StatedSubject>;
+	requiredBySubject: Map<string, Set<string>>;
+	electiveBySubject: Map<string, Set<string>>;
+};
+
+/** "single_major_4yr" → its cell in the credit table */
+const creditCells = (variant: string): [string, '3yr' | '4yr'][] =>
+	variant === 'concentration'
+		? [['concentration', '3yr'], ['concentration', '4yr']]
+		: [[variant.replace(/_[34]yr$/, ''), variant.endsWith('4yr') ? '4yr' : '3yr']];
+
+function applyStated(web: ReqSubject, stated: StatedSubject): ReqSubject {
+	const out: ReqSubject = {
+		...web,
+		credits: Object.fromEntries(Object.entries(web.credits ?? {}).map(([k, v]) => [k, { ...v }])),
+		required_codes: { ...web.required_codes },
+		pick_codes: { ...web.pick_codes },
+		elective_codes: { ...web.elective_codes },
+		choice_groups: {},
+		pathways: {}
+	};
+	const codesOf = (list: StatedCourse[]) => list.filter((c): c is string => typeof c === 'string');
+	const courseOf = (c: StatedCourse) =>
+		typeof c === 'string' ? { title: index.get(c)?.title ?? c, code: c } : { title: c.title, code: null };
+	for (const [variant, p] of Object.entries(stated.programmes)) {
+		if (p.credits) for (const [ptype, dur] of creditCells(variant)) (out.credits![ptype] ??= {})[dur] = p.credits;
+		// a required course the catalogue lacks still has to be shown — as a
+		// group the student completes once it's offered
+		const uncatalogued = (p.required ?? []).filter((c) => typeof c !== 'string');
+		if (p.required) out.required_codes![variant] = codesOf(p.required);
+		if (p.choices || uncatalogued.length) {
+			const groups = (p.choices ?? []).map((c) => ({ rule: c.label, pick: c.pick, courses: c.from.map(courseOf) }));
+			if (uncatalogued.length)
+				groups.push({ rule: 'Also required — not in the catalogue yet', pick: uncatalogued.length, courses: uncatalogued.map(courseOf) });
+			out.choice_groups![variant] = groups;
+			out.pick_codes![variant] = codesOf((p.choices ?? []).flatMap((c) => c.from));
+		}
+		if (p.electives) {
+			const taken = new Set([...(out.required_codes![variant] ?? []), ...(out.pick_codes![variant] ?? [])]);
+			out.elective_codes![variant] =
+				p.electives === 'subject'
+					? COURSES.filter((c) => c.subjects.includes(stated.subject) && !taken.has(c.code)).map((c) => c.code)
+					: p.electives;
+		}
+		if (p.pathway)
+			out.pathways![variant] = Object.entries(p.pathway).flatMap(([year, trims]) =>
+				Object.entries(trims).flatMap(([trim, codes]) => codes.map((code) => ({ year: Number(year), trim: Number(trim) as TrimNum, code })))
+			);
+	}
+	return out;
+}
+
+function compileRequirements(set: RequirementSet | undefined): Requirements {
+	const subjects: Record<string, ReqSubject> = { ...(websiteRequirements as { subjects: Record<string, ReqSubject> }).subjects };
+	for (const [subject, stated] of Object.entries(set?.subjects ?? {})) subjects[subject] = applyStated(subjects[subject] ?? {}, stated);
+	// union across programme types — only a fallback for variants with no
+	// list of their own (e.g. chemistry's 4-year single major)
+	const union = (lists: Record<string, string[]> | undefined) => new Set(Object.values(lists ?? {}).flat());
+	return {
+		subjects,
+		stated: set?.subjects ?? {},
+		requiredBySubject: new Map(Object.entries(subjects).map(([id, d]) => [id, union(d.required_codes)])),
+		electiveBySubject: new Map(Object.entries(subjects).map(([id, d]) => [id, union(d.elective_codes)]))
+	};
+}
+const compiled = new Map<RequirementSet | undefined, Requirements>();
+/** The rules a batch graduates under: the documents covering it, else the
+ *  website. With no batch given, the newest documents. */
+function rulesFor(batch: number | undefined): Requirements {
+	const set = batch === undefined ? REQUIREMENT_SETS.at(-1) : REQUIREMENT_SETS.find((s) => s.batches.includes(batch));
+	let rules = compiled.get(set);
+	if (!rules) compiled.set(set, (rules = compileRequirements(set)));
+	return rules;
+}
+
+const PTYPE_KEY: Record<ProgrammeRole, string> = {
+	major: 'single_major', // overridden to double_major below when needed
+	minor: 'minor',
+	concentration: 'concentration'
+};
+
+/** a cell of the scraped Graduation Requirements credit table —
+ *  undefined if the page didn't state it */
+function webCreditsFor(
+	subject: string,
+	role: ProgrammeRole,
+	fourYear: boolean,
+	isDouble: boolean,
+	batch: number | undefined,
+	metric: keyof CreditCell = 'total'
+): number | undefined {
+	const ptype = role === 'major' ? (isDouble ? 'double_major' : 'single_major') : PTYPE_KEY[role];
+	return rulesFor(batch).subjects[subject]?.credits?.[ptype]?.[fourYear ? '4yr' : '3yr']?.[metric];
+}
+
+/** how many credits of required courses the degree demands, per the site's
+ *  own table — the honest denominator when the required list is choice
+ *  pools (history: "any three of the methodology courses" = 40 required) */
+export const requiredCreditsFor = (subject: string, role: ProgrammeRole, fourYear: boolean, isDouble: boolean, batch?: number) =>
+	batchRuleFor(subject, role, fourYear, isDouble, batch)?.requiredCredits ?? webCreditsFor(subject, role, fourYear, isDouble, batch, 'required');
+
+/** the requirements.json key for the exact programme variant on the plan:
+ *  single_major_3yr, double_major_4yr, minor_3yr, …, concentration */
+const reqKey = (role: ProgrammeRole, fourYear: boolean, isDouble: boolean): string =>
+	role === 'major'
+		? `${isDouble ? 'double' : 'single'}_major_${fourYear ? '4' : '3'}yr`
+		: role === 'minor'
+			? `minor_${fourYear ? '4' : '3'}yr`
+			: 'concentration';
+
+export const subjectById = (id: string): Subject => {
+	const s = SUBJECTS.find((s) => s.id === id);
+	if (!s) throw new Error(`unknown subject: ${id}`);
+	return s;
+};
+
+// ── Degree requirements, derived from programme.json ──
+// programme.json lists codes with a space ("MATH 191"); courses.json
+// never has one — normalize before comparing/returning.
+const stripSpace = (code: string) => code.replace(/\s+/g, '').toUpperCase();
+
+const programmesBySubject = programmeData as Record<string, RawProgramme[]>;
+
+function findProgramme(subject: string, role: ProgrammeRole, fourYear: boolean, isDouble: boolean): RawProgramme | undefined {
+	const list = programmesBySubject[subject] ?? [];
+	if (role === 'concentration') return list.find((p) => p.name === 'Concentration');
+	if (role === 'minor') return list.find((p) => p.name === `Minor (${fourYear ? '4' : '3'} Year)`);
+	const arity = isDouble ? 'Double' : 'Single';
+	return list.find((p) => p.name === `${fourYear ? '4' : '3'} Year ${arity} Major`);
+}
+
+const ADDITIONAL_CREDITS_RE = /(\d+)\s*additional/i;
+
+export function requiredFor(subject: string, role: ProgrammeRole, fourYear: boolean, isDouble: boolean): string[] {
+	const prog = findProgramme(subject, role, fourYear, isDouble);
+	return (prog?.required ?? []).map(stripSpace);
+}
+
+/** can this course be taken at all within a 3-/4-year plan? The site
+ *  repeats one course list across its 3- and 4-year tabs, so a year-4-only
+ *  course (CHEM413) shows up "required" for a 3-year degree it can never
+ *  be part of — filter those out of the plan's required set. */
+export const reachableIn = (code: string, fourYear: boolean): boolean => {
+	const c = index.get(code);
+	if (!c || (c.pendingCredits && c.credits === 0)) return false;
+	return !c.eligibleYears.length || c.eligibleYears.some((y) => y <= (fourYear ? 4 : 3));
+};
+
+/**
+ * The required-course set for the exact programme variant — used for the
+ * chip colours, the stats and the seeding alike, so they can never
+ * disagree. The scraped website list (requirements.json) is the source
+ * of truth; programme.json is only trusted when every code it lists
+ * resolves; for majors the last resort is the university's own
+ * required/elective flag on each course of the subject.
+ */
+function defaultRequiredSetFor(subject: string, role: ProgrammeRole, fourYear: boolean, isDouble: boolean, batch: number | undefined): string[] {
+	const rules = rulesFor(batch);
+	const pick = (): string[] => {
+		const key = reqKey(role, fourYear, isDouble);
+		const exact = (rules.subjects[subject]?.required_codes?.[key] ?? []).filter((code) => index.has(code));
+		// a department document that names no fixed course here (EVS minors:
+		// "any eight of the required courses") means none — no fallback list
+		if (exact.length || rules.stated[subject]?.programmes[key]?.required) return exact;
+		const listed = requiredFor(subject, role, fourYear, isDouble);
+		const resolvable = listed.filter((code) => index.has(code));
+		if (listed.length && resolvable.length === listed.length) return resolvable;
+		if (role === 'major') {
+			// the page didn't publish this variant's list (e.g. chemistry's
+			// 4-year single major) — the union of the variants it did publish
+			const union = [...(rules.requiredBySubject.get(subject) ?? [])].filter((code) => index.has(code));
+			if (union.length) return union;
+			return COURSES.filter((c) => c.subjects.includes(subject) && c.required).map((c) => c.code);
+		}
+		return resolvable;
+	};
+	const list = pick().filter((code) => reachableIn(code, fourYear));
+	// The Programme-Structure course list routinely OVER-lists what the
+	// degree actually requires: maths lists 14 "required" courses (56 cr)
+	// while its own Graduation-Requirements table says required = 52. Trust
+	// the table — keep the foundational courses (lowest-numbered) up to that
+	// credit figure; the tail (Topology 1, …) is really a pick-your-own
+	// elective. This is what leaves 8 credits of elective room, not 0.
+	const cap = webCreditsFor(subject, role, fourYear, isDouble, batch, 'required');
+	if (cap === undefined) return list;
+	const out: string[] = [];
+	let sum = 0;
+	for (const code of [...list].sort((a, b) => courseLevel(a) - courseLevel(b) || a.localeCompare(b))) {
+		if (sum + byCode(code).credits > cap) continue;
+		out.push(code);
+		sum += byCode(code).credits;
+	}
+	return out.length ? out : list;
+}
+
+/** required courses the credit-table cap pushed out of requiredSetFor —
+ *  they still count for the subject, just as electives you choose */
+function requiredOverflowFor(subject: string, role: ProgrammeRole, fourYear: boolean, isDouble: boolean, batch: number | undefined): string[] {
+	if (webCreditsFor(subject, role, fourYear, isDouble, batch, 'required') === undefined) return [];
+	const kept = new Set(defaultRequiredSetFor(subject, role, fourYear, isDouble, batch));
+	const exact = (rulesFor(batch).subjects[subject]?.required_codes?.[reqKey(role, fourYear, isDouble)] ?? []).filter((code) =>
+		index.has(code)
+	);
+	return exact.filter((code) => !kept.has(code) && reachableIn(code, fourYear));
+}
+
+/** the 'choose N from' pools for the exact programme variant — these
+ *  count toward the degree's *required* credits (history's methodology /
+ *  world-history groups), they are not free electives */
+function defaultPickSetFor(subject: string, role: ProgrammeRole, fourYear: boolean, isDouble: boolean, batch: number | undefined): string[] {
+	const picks = rulesFor(batch).subjects[subject]?.pick_codes;
+	const exact = (picks?.[reqKey(role, fourYear, isDouble)] ?? []).filter((code) =>
+		index.has(code)
+	);
+	// a variant with no list of its own borrows only from its own kind — a
+	// 3-year maths minor must not inherit the majors' pools and turn
+	// Topology 1, Algebra 3, … into requirements
+	const sameRole = Object.entries(picks ?? {})
+		.filter(([key]) => (role === 'major' ? key.includes('_major_') : key.startsWith(role)))
+		.flatMap(([, codes]) => codes);
+	const list = picks && Object.hasOwn(picks, reqKey(role, fourYear, isDouble)) ? exact : [...new Set(sameRole)].filter((code) => index.has(code));
+	return list.filter((code) => reachableIn(code, fourYear));
+}
+
+export type ChoiceCourse = { code: string | null; title: string };
+export type ChoiceGroup = { rule: string; pick: number; courses: ChoiceCourse[] };
+
+/** the website track ("4 Year Single Major", "3-Year Minor", …) whose lists
+ *  apply to a given programme variant — matched by kind + duration, tolerating
+ *  the page's inconsistent "4 Year" / "3-Year" / "3/4 -Year" spellings */
+function trackGroupsFor(subject: string, role: ProgrammeRole, fourYear: boolean, isDouble: boolean, batch: number | undefined): RawTrack['groups'] {
+	const own = rulesFor(batch).subjects[subject];
+	const stated = own?.choice_groups?.[reqKey(role, fourYear, isDouble)];
+	if (stated) return stated;
+	const tracks = own?.tracks ?? {};
+	const dur = fourYear ? '4' : '3';
+	const entries = Object.entries(tracks);
+	const find = (test: (name: string) => boolean) => entries.find(([n]) => test(n.toLowerCase()))?.[1]?.groups ?? [];
+	if (role === 'concentration') return find((n) => n.includes('concentration'));
+	if (role === 'minor') return find((n) => n.includes('minor') && n.includes(dur));
+	if (isDouble) return find((n) => n.includes('double') && n.includes(dur));
+	return find(
+		(n) =>
+			(n.includes('single') || n.includes('major')) &&
+			!n.includes('double') &&
+			!n.includes('minor') &&
+			!n.includes('concentration') &&
+			n.includes(dur)
+	);
+}
+
+/** the 'choose N from …' groups the website states for this exact variant,
+ *  with the courses in each — so the sidebar can spell out the choices the
+ *  seeded required core doesn't make for the student (history's methodology /
+ *  world-history pools, literature's elective allowance) */
+function defaultChoiceGroupsFor(subject: string, role: ProgrammeRole, fourYear: boolean, isDouble: boolean, batch: number | undefined): ChoiceGroup[] {
+	const out: ChoiceGroup[] = [];
+	for (const g of trackGroupsFor(subject, role, fourYear, isDouble, batch)) {
+		// only a group that lists SPECIFIC courses to choose among (history's
+		// "any three of these five methodology courses"). A generic "any 13
+		// elective courses" pool has no list — it's just the elective budget the
+		// sidebar already tracks, so showing it as a "choice" is noise.
+		if (!g.pick || !g.rule || !g.courses?.length) continue;
+		const courses: ChoiceCourse[] = g.courses.map((c) =>
+			c.one_of?.length ? { code: c.one_of[0].code ?? null, title: c.title } : { code: c.code ?? null, title: c.title }
+		);
+		out.push({ rule: g.rule, pick: g.pick, courses });
+	}
+	return out;
+}
+
+/** the elective pool for the exact programme variant, same sourcing as
+ *  requiredSetFor — the all-variants union when the page has no exact list */
+function defaultElectiveSetFor(subject: string, role: ProgrammeRole, fourYear: boolean, isDouble: boolean, batch: number | undefined): string[] {
+	const rules = rulesFor(batch);
+	// the required courses the cap moved out (maths Topology 1) join the pool
+	const overflow = requiredOverflowFor(subject, role, fourYear, isDouble, batch);
+	const exact = (rules.subjects[subject]?.elective_codes?.[reqKey(role, fourYear, isDouble)] ?? []).filter((code) =>
+		index.has(code)
+	);
+	if (exact.length) return [...new Set([...overflow, ...exact])];
+	return [...new Set([...overflow, ...[...(rules.electiveBySubject.get(subject) ?? [])].filter((code) => index.has(code))])];
+}
+
+/**
+ * The department's published "recommended pathway", flattened to
+ * { year, trim, code } placements. Empty when the programme has none
+ * (only some majors publish one) — callers fall back to scheduling
+ * the required courses themselves.
+ */
+export function recommendedFor(
+	subject: string,
+	role: ProgrammeRole,
+	fourYear: boolean,
+	isDouble: boolean,
+	batch?: number
+): { year: number; trim: TrimNum; code: string }[] {
+	const stated = rulesFor(batch).subjects[subject]?.pathways?.[reqKey(role, fourYear, isDouble)];
+	if (stated) return stated.filter(({ code }) => index.has(code));
+	const prog = findProgramme(subject, role, fourYear, isDouble);
+	const grid = prog?.pathways?.[0]?.grid;
+	if (!grid) return [];
+	const out: { year: number; trim: TrimNum; code: string }[] = [];
+	for (const row of grid) {
+		for (const trim of [1, 2, 3] as TrimNum[]) {
+			for (const raw of row[`t${trim}` as 't1' | 't2' | 't3'] ?? []) {
+				const code = stripSpace(raw);
+				// skips compound entries like "MATH 328/428" that aren't real codes
+				if (index.has(code)) out.push({ year: row.year, trim, code });
+			}
+		}
+	}
+	return out;
+}
+
+// safe against a programme.json code that isn't (yet) in the catalog
+export const creditsOfCodes = (codes: string[]): number =>
+	codes.reduce((sum, code) => sum + (index.get(code)?.credits ?? 0), 0);
+
+export function creditsFor(subject: string, role: ProgrammeRole, fourYear: boolean, isDouble: boolean, batch?: number): number {
+	// the open minor has no subject page — it's a fixed-size basket of free courses
+	if (subject === 'open') return role === 'minor' ? OPEN_MINOR_CREDITS : 0;
+	// prefer the subject's real total from the scraped credit table
+	// (chemistry's single major is 58, not a flat 60)
+	const stated = webCreditsFor(subject, role, fourYear, isDouble, batch);
+	if (stated) return stated;
+	const prog = findProgramme(subject, role, fourYear, isDouble);
+	if (!prog) return 0;
+	if (prog.total_credits) return prog.total_credits;
+	// minors/concentrations don't carry a flat total in the source data —
+	// approximate it as required-course credits + any "N additional credits" text
+	const requiredCredits = creditsOfCodes((prog.required ?? []).map(stripSpace));
+	const additionalMatch = prog.additional?.match(ADDITIONAL_CREDITS_RE);
+	return requiredCredits + (additionalMatch ? Number(additionalMatch[1]) : 0);
+}
+
+// Missing batch entries inherit the shared curriculum exactly.
+export function requiredSetFor(subject: string, role: ProgrammeRole, fourYear: boolean, isDouble: boolean, batch?: number): string[] {
+	const base = defaultRequiredSetFor(subject, role, fourYear, isDouble, batch);
+	if (!batchRuleFor(subject, role, fourYear, isDouble, batch)) return base;
+	const edits = batchRuleFor(subject, role, fourYear, isDouble, batch)?.courses ?? {};
+	const result = new Set(base.map((code) => byCode(code).code));
+	for (const [alias, type] of Object.entries(edits)) {
+		if (!hasCode(alias)) continue;
+		const code = byCode(alias).code;
+		if (type === 'required' && reachableIn(code, fourYear)) result.add(code);
+		else result.delete(code);
+	}
+	return [...result];
+}
+export function electiveSetFor(subject: string, role: ProgrammeRole, fourYear: boolean, isDouble: boolean, batch?: number): string[] {
+	const result = new Set(defaultElectiveSetFor(subject, role, fourYear, isDouble, batch));
+	for (const [alias, type] of Object.entries(batchRuleFor(subject, role, fourYear, isDouble, batch)?.courses ?? {})) {
+		if (!hasCode(alias)) continue;
+		const code = byCode(alias).code;
+		if (type === 'elective') result.add(code); else result.delete(code);
+	}
+	return [...result];
+}
+export function pickSetFor(subject: string, role: ProgrammeRole, fourYear: boolean, isDouble: boolean, batch?: number): string[] {
+	const edits = batchRuleFor(subject, role, fourYear, isDouble, batch)?.courses ?? {};
+	return defaultPickSetFor(subject, role, fourYear, isDouble, batch).filter((code) => !edits[byCode(code).code]);
+}
+export function choiceGroupsFor(subject: string, role: ProgrammeRole, fourYear: boolean, isDouble: boolean, batch?: number): ChoiceGroup[] {
+	const edits = batchRuleFor(subject, role, fourYear, isDouble, batch)?.courses ?? {};
+	return defaultChoiceGroupsFor(subject, role, fourYear, isDouble, batch).map((group) => {
+		const type = (c: ChoiceCourse) => c.code && hasCode(c.code) ? edits[byCode(c.code).code] : undefined;
+		const pick = Math.max(0, group.pick - group.courses.filter((c) => type(c) === 'required').length);
+		return { ...group, pick, courses: group.courses.filter((c) => !type(c)) };
+	}).filter((g) => g.pick > 0);
+}
+
+// ── The snapshot ──
+
+const VARIANTS: [Variant, ProgrammeRole, boolean, boolean][] = [
+	['single_major_4yr', 'major', true, false],
+	['double_major_4yr', 'major', true, true],
+	['single_major_3yr', 'major', false, false],
+	['double_major_3yr', 'major', false, true],
+	['minor_4yr', 'minor', true, false],
+	['minor_3yr', 'minor', false, false],
+	['concentration_4yr', 'concentration', true, false],
+	['concentration_3yr', 'concentration', false, false]
+];
+
+/** Every programme variant, resolved under the rules `batch` follows. */
+function programmesFor(batch: number): ProgrammeRequirements[] {
+	const out: ProgrammeRequirements[] = [];
+	for (const { id: subject, majorable } of SUBJECTS) {
+		if (subject === 'core') continue;
+		for (const [variant, role, fourYear, isDouble] of VARIANTS) {
+			if (role === 'major' && !majorable) continue;
+			if (subject === 'open' && role !== 'minor') continue;
+			out.push({
+				subject,
+				variant,
+				credits: {
+					total: creditsFor(subject, role, fourYear, isDouble, batch),
+					required: webCreditsFor(subject, role, fourYear, isDouble, batch, 'required') ?? null,
+					elective: webCreditsFor(subject, role, fourYear, isDouble, batch, 'elective') ?? null
+				},
+				required: defaultRequiredSetFor(subject, role, fourYear, isDouble, batch),
+				picks: defaultPickSetFor(subject, role, fourYear, isDouble, batch),
+				electives: defaultElectiveSetFor(subject, role, fourYear, isDouble, batch),
+				choices: defaultChoiceGroupsFor(subject, role, fourYear, isDouble, batch),
+				pathway: recommendedFor(subject, role, fourYear, isDouble, batch)
+			});
+		}
+	}
+	return out;
+}
+
+/** The whole curriculum, reconciled. `release` is left to the caller, which
+ *  hashes the serialised result. */
+export function compileCurriculum(): Omit<CurriculumSnapshot, 'release'> {
+	const courses = COURSES.map(({ unlocks: _u, substitutes: _s, covers: _c, coveredBy: _b, added: _a, ...course }) => {
+		const raw = rawCourses[course.code];
+		return {
+			...course,
+			terms: [...new Set(raw.terms.map(realTerm))].sort().reverse(),
+			lecturers: [...new Set(raw.faculty.map((f) => resolveFaculty(f).id))]
+		};
+	});
+	// the directory, plus anyone the term sheets name that it doesn't list
+	const lecturers = new Map<string, Professor>();
+	for (const p of [...Object.values(departmentFaculty).flat(), ...strangers.values()]) if (!lecturers.has(p.id)) lecturers.set(p.id, p);
+
+	const variantsOf = (key: string): Variant[] => {
+		const [role, length] = key.split('_');
+		return role === 'major' ? [`single_major_${length}`, `double_major_${length}`] as Variant[] : [key as Variant];
+	};
+	const batchRules = Object.entries((batchRulesData as BatchRuleFile).batches).flatMap(([batch, subjects]) =>
+		Object.entries(subjects).flatMap(([subject, variants]) =>
+			Object.entries(variants).flatMap(([key, courses]) => variantsOf(key).map((variant) => ({ batch: Number(batch), subject, variant, courses })))
+		)
+	);
+	// one canonical order, the same the database assembles in
+	const byteOrder = (a: string, b: string) => (a < b ? -1 : a > b ? 1 : 0);
+	batchRules.sort((a, b) => a.batch - b.batch || byteOrder(a.subject, b.subject) || byteOrder(a.variant, b.variant));
+
+	const requirementSets: SnapshotSet[] = [
+		// no batch number any set claims → the website's rules
+		{ id: 'website', name: 'University website', batches: null, programmes: programmesFor(0) },
+		...REQUIREMENT_SETS.map((set) => ({ id: set.id, name: set.name, batches: set.batches, programmes: programmesFor(set.batches[0]) }))
+	];
+
+	return {
+		format: 1,
+		updatedOn: stamp ? stamp.slice(0, 10) : null,
+		subjects: SUBJECTS,
+		rules: { ...RULES },
+		courses,
+		lecturers: [...lecturers.values()].map(({ id, name, email, position, office_hours, image_url, url, date_of_joining }) => ({
+			id, name, email: email ?? '', position: position ?? '', office_hours: office_hours ?? '', image_url: image_url ?? '', url: url ?? '',
+			...(date_of_joining ? { date_of_joining } : {})
+		})),
+		equivalences: {
+			substitutes: SUBSTITUTE_GROUPS.map((group) => group.filter((code) => index.has(code))).filter((group) => group.length > 1),
+			covers: MATHS_COVERS.filter(({ maths, applied }) => index.has(maths) && index.has(applied)),
+			transcriptOnly: [...TRANSCRIPT_ONLY]
+		},
+		requirementSets,
+		batchRules
+	};
+}
+
+/** The catalogue prose, kept out of the snapshot: one paragraph in one panel,
+ *  most of the bytes — the app loads it lazily (see descriptions.svelte.ts). */
+export function compileDescriptions(): Record<string, string> {
+	return Object.fromEntries(
+		COURSES.flatMap((c) => (rawCourses[c.code].description ? [[c.code, rawCourses[c.code].description!.trim()]] : []))
+	);
+}

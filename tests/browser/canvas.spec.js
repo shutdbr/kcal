@@ -64,7 +64,7 @@ test('import previews escaped content, places each term in its own trimester, pr
     { name: 'KCCS101 again', term: '25_T3', enrollment: 'past' }
   ] };
   await page.goto(importUrl('http://127.0.0.1:4173/', payload));
-  const dialog = page.getByRole('dialog', { name: 'import from Canvas' });
+  const dialog = page.getByRole('dialog', { name: 'import courses & grades' });
   await expect(dialog).toBeVisible();
   await expect(page).toHaveURL('http://127.0.0.1:4173/');
   await expect(dialog.getByText('<img src=x onerror=alert(1)> Unknown course', { exact: true })).toBeVisible();
@@ -85,9 +85,9 @@ test('the Canvas import opens from settings', async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('kcal-intro-seen', '1'));
   await page.goto('/');
   await page.getByRole('button', { name: 'settings' }).click();
-  await page.getByRole('dialog', { name: 'settings' }).getByRole('button', { name: 'import from Canvas' }).click();
+  await page.getByRole('dialog', { name: 'settings' }).getByRole('button', { name: 'import courses & grades' }).click();
   await expect(page.getByRole('dialog', { name: 'settings' })).toHaveCount(0);
-  await expect(page.getByRole('dialog', { name: 'import from Canvas' })).toBeVisible();
+  await expect(page.getByRole('dialog', { name: 'import courses & grades' })).toBeVisible();
 });
 
 test('invalid transfer reports an error without changing the plan', async ({ page }) => {

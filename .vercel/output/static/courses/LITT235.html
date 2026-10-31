@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<title>kcal</title>
+		<!-- Preserve browser data from before the kcal rename (tracey → relay → kcal)
+		     before app modules load. Newest name first, so its data wins. -->
+		<script>
+			try {
+				var keys = Object.keys(localStorage);
+				for (var prefix of ['relay-', 'tracey-']) {
+					for (var key of keys) {
+						if (!key.startsWith(prefix)) continue;
+						var nextKey = 'kcal-' + key.slice(prefix.length);
+						if (localStorage.getItem(nextKey) === null) {
+							localStorage.setItem(nextKey, localStorage.getItem(key));
+						}
+					}
+				}
+			} catch (e) {
+				// Storage may be unavailable; the app still works for this session.
+			}
+		</script>
+		<!-- theme + text size applied before first paint, so a dark-mode
+		     reload never flashes the light palette. Mirrors the storage
+		     shape in $lib/settings.svelte.ts — change both together. -->
+		<script>
+			try {
+				var s = JSON.parse(localStorage.getItem('kcal-settings') || '{}');
+				var t = s.theme || 'light';
+				if (t === 'system') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+				document.documentElement.dataset.theme = t;
+				var scales = { small: 0.9, normal: 1, large: 1.1, huge: 1.2 };
+				document.documentElement.style.setProperty('--text-scale', scales[s.textSize] || 1);
+				document.documentElement.style.fontSize = 'calc(clamp(10px, 0.52vw, 11px) * var(--text-scale, 1))';
+			} catch (e) {
+				document.documentElement.dataset.theme = 'light';
+			}
+		</script>
+		<!--bbesdc--><meta name="description" content="ARTS229 Arts of the Deccan: The Early Modern Epoch from Vijayanagara to the Marathas: 4-credit course · runs in T1, T2 · arts."/> <link rel="canonical" href="http://localhost:5173/courses/ARTS229"/><!----><title>ARTS229 Arts of the Deccan: The Early Modern Epoch from Vijayanagara to the Marathas · kcal</title>
+		<link href="../_app/immutable/assets/app.DrowwiZI.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/2.BsnpgWsW.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/CourseList.CGnjhY89.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/6.QDdtBoMd.css" rel="stylesheet">
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<!-- Netlify reads forms out of the deployed HTML at build time, and the
+		     real feedback form lives inside a modal that isn't rendered until
+		     the student opens settings. This hidden twin is what gets detected;
+		     Settings.svelte posts to it by name. Keep the fields in step. -->
+		<form name="feedback" data-netlify="true" netlify-honeypot="bot-field" hidden>
+			<input type="hidden" name="form-name" value="feedback" />
+			<input type="text" name="bot-field" />
+			<textarea name="message"></textarea>
+			<input type="text" name="plan" />
+			<input type="text" name="credits" />
+		</form>
+		<div style="display: contents"><!--[--><!--[0--><!--[--><!--[0--><!--[--><div class="site svelte-1br2sqw"><header class="masthead svelte-1br2sqw"><a class="brand svelte-1br2sqw" href="/">kcal</a> <nav aria-label="site" class="svelte-1br2sqw"><!--[--><a href="/courses" aria-current="page" class="svelte-1br2sqw">courses</a><a href="/programmes" class="svelte-1br2sqw">programmes</a><a href="/lecturers" class="svelte-1br2sqw">lecturers</a><!--]--> <a class="plan svelte-1br2sqw" href="/">open the planner →</a></nav></header> <main class="svelte-1br2sqw"><!--[--><article><header class="svelte-bbesdc"><p class="codes svelte-bbesdc"><!--[--><a href="/programmes/arts" title="arts" class="svelte-bbesdc">ARTS229</a><a href="/programmes/history" title="history" class="svelte-bbesdc">HIST235</a><a href="/programmes/literature" title="literature" class="svelte-bbesdc">LITT235</a><!--]--></p> <h1 class="svelte-bbesdc">Arts of the Deccan: The Early Modern Epoch from Vijayanagara to the Marathas</h1> <p class="lede svelte-bbesdc">4-credit course · runs in T1, T2 · arts</p> <a class="plan svelte-bbesdc" href="/?course=ARTS229">plan this course →</a></header> <dl class="facts svelte-bbesdc"><div class="svelte-bbesdc"><dt class="svelte-bbesdc">credits</dt><dd class="svelte-bbesdc">4</dd></div> <div class="svelte-bbesdc"><dt class="svelte-bbesdc">runs in</dt><dd class="svelte-bbesdc">T1, T2</dd></div> <div class="svelte-bbesdc"><dt class="svelte-bbesdc">open to</dt><dd class="svelte-bbesdc">year 2, 3, 4</dd></div> <!--[0--><div class="svelte-bbesdc"><dt class="svelte-bbesdc">last taught</dt><dd class="svelte-bbesdc">2026 T1</dd></div><!--]--></dl> <!--[0--><section class="svelte-bbesdc"><h2 class="svelte-bbesdc">About</h2> <p class="prose svelte-bbesdc">In understanding the history of Indian arts, knowing the Deccan, its place and role, is crucial. In this course we will travel the triangular realm of “Dachinabades” as named in the first-century Periplus of Erythraean Sea, exploring its contours through the lens of its artistic traditions,literatures and cultures. Since this exploration will become very ambitious if we were to cover all aspects of Dakhina (Prakrit) arts, we narrow it down to the Early Modern Period (fifteenth-century onwards), a momentous time of which we have an immediate cultural memory, making the study of artistic heritages a traceable historicity. We will study the Deccan’s unique art forms and cultural practices through music, dance, literature, architecture, paintings, food and fabric that reflect the multicultural and cosmopolitan socio-political ambience in which rulers such as
+Krishnadevaraya, Adil Shah, Raghunatha Nayaka, and  Serfoji each played significant roles.
+Through readings, viewings and other detailed digital archival material we will learn to close- watch performative arts of the early modern era as milestones in the cultural history of India. The aim of the course is to enable students identify the distinct features of each of historical period such as the Vijayanagara, Sultanate, Nayaka and Maratha as well as to have a panoptic view of early modern era’s artistic legacies whose essence manifests in diverse cultural encounters. The course will prod us to think of deliberate omissions and censoring when the nation-state regrouped its artistic heritages. Coursework will include readings, class discussions-seminars and presentation style disseminations requiring high level of class participation, interactive assignments and some writing work. While the course does not demand any art practice background, those who are practitioners of any genre will be encouraged.
+Course Objectives / Learning Outcomes:
+To introduce some artistic traditions across genres from the early modern era and help
+students learn/read the movement of art through its socio-political legacy
+To work on some aspects of embodiment, wherever possible to add value and inspiration
+to the course work
+To interweave with the domain of history bringing a multi-perspective approach to
+learning the arts, history, and society.
+
+Course Objectives / Learning Outcomes:
+To introduce some artistic traditions across genres from the early modern era and help
+students learn/read the movement of art through its socio-political legacy
+To work on some aspects of embodiment, wherever possible to add value and inspiration
+to the course work
+To interweave with the domain of history bringing a multi-perspective approach to
+learning the arts, history, and society.</p></section><!--]--> <section class="svelte-bbesdc"><h2 class="svelte-bbesdc">Before this</h2> <!--[-1--><p class="empty svelte-jjk1y5">No prerequisites.</p><!--]--><!----> <!--[-1--><!--]--></section> <!--[-1--><!--]--> <!--[0--><section class="svelte-bbesdc"><h2 class="svelte-bbesdc">In these programmes</h2> <p class="note svelte-bbesdc">For the 2024–2026 batches.</p> <ul class="programmes svelte-bbesdc"><!--[--><li class="svelte-bbesdc"><a href="/programmes/arts" class="svelte-bbesdc">arts</a> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[0--><span class="svelte-bbesdc"><b class="svelte-bbesdc">elective</b> — 4-year minor, 3-year minor, concentration (4-year), concentration (3-year)</span><!--]--></li><li class="svelte-bbesdc"><a href="/programmes/literature" class="svelte-bbesdc">literature</a> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[0--><span class="svelte-bbesdc"><b class="svelte-bbesdc">elective</b> — concentration (4-year), concentration (3-year)</span><!--]--></li><!--]--></ul></section><!--]--> <!--[0--><section class="svelte-bbesdc"><h2 class="svelte-bbesdc">Recently taught by</h2> <ul class="people svelte-bbesdc"><!--[--><li class="svelte-bbesdc"><a href="/lecturers/swarnamalya-ganesh" class="svelte-bbesdc">Swarnamalya Ganesh</a><!--[0--><span class="svelte-bbesdc">Associate Professor of Practice, Literature and Global Arts</span><!--]--></li><!--]--></ul> <!--[0--><p class="note svelte-bbesdc">Taught in 2026 T1, 2024 T2.</p><!--]--></section><!--]--></article><!--]--><!----></main> <footer class="svelte-1br2sqw"><p>Course data from Krea's term sheets (July 2026); programme rules from the departments' FYUP
+			documents. Check anything that matters with your department.</p></footer></div><!--]--><!--]--><!----><!--]--><!--]--> <!--[-1--><!--]--><!--]--></div>
+	</body>
+</html>

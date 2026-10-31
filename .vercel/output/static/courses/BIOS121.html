@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<title>kcal</title>
+		<!-- Preserve browser data from before the kcal rename (tracey → relay → kcal)
+		     before app modules load. Newest name first, so its data wins. -->
+		<script>
+			try {
+				var keys = Object.keys(localStorage);
+				for (var prefix of ['relay-', 'tracey-']) {
+					for (var key of keys) {
+						if (!key.startsWith(prefix)) continue;
+						var nextKey = 'kcal-' + key.slice(prefix.length);
+						if (localStorage.getItem(nextKey) === null) {
+							localStorage.setItem(nextKey, localStorage.getItem(key));
+						}
+					}
+				}
+			} catch (e) {
+				// Storage may be unavailable; the app still works for this session.
+			}
+		</script>
+		<!-- theme + text size applied before first paint, so a dark-mode
+		     reload never flashes the light palette. Mirrors the storage
+		     shape in $lib/settings.svelte.ts — change both together. -->
+		<script>
+			try {
+				var s = JSON.parse(localStorage.getItem('kcal-settings') || '{}');
+				var t = s.theme || 'light';
+				if (t === 'system') t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+				document.documentElement.dataset.theme = t;
+				var scales = { small: 0.9, normal: 1, large: 1.1, huge: 1.2 };
+				document.documentElement.style.setProperty('--text-scale', scales[s.textSize] || 1);
+				document.documentElement.style.fontSize = 'calc(clamp(10px, 0.52vw, 11px) * var(--text-scale, 1))';
+			} catch (e) {
+				document.documentElement.dataset.theme = 'light';
+			}
+		</script>
+		<!--bbesdc--><meta name="description" content="BIOS121 Bio-X: The Interconnectedness of Life: 2-credit course · runs in T3 · biology."/> <link rel="canonical" href="http://localhost:5173/courses/BIOS121"/><!----><title>BIOS121 Bio-X: The Interconnectedness of Life · kcal</title>
+		<link href="../_app/immutable/assets/app.DrowwiZI.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/2.BsnpgWsW.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/CourseList.CGnjhY89.css" rel="stylesheet">
+		<link href="../_app/immutable/assets/6.QDdtBoMd.css" rel="stylesheet">
+	</head>
+	<body data-sveltekit-preload-data="hover">
+		<!-- Netlify reads forms out of the deployed HTML at build time, and the
+		     real feedback form lives inside a modal that isn't rendered until
+		     the student opens settings. This hidden twin is what gets detected;
+		     Settings.svelte posts to it by name. Keep the fields in step. -->
+		<form name="feedback" data-netlify="true" netlify-honeypot="bot-field" hidden>
+			<input type="hidden" name="form-name" value="feedback" />
+			<input type="text" name="bot-field" />
+			<textarea name="message"></textarea>
+			<input type="text" name="plan" />
+			<input type="text" name="credits" />
+		</form>
+		<div style="display: contents"><!--[--><!--[0--><!--[--><!--[0--><!--[--><div class="site svelte-1br2sqw"><header class="masthead svelte-1br2sqw"><a class="brand svelte-1br2sqw" href="/">kcal</a> <nav aria-label="site" class="svelte-1br2sqw"><!--[--><a href="/courses" aria-current="page" class="svelte-1br2sqw">courses</a><a href="/programmes" class="svelte-1br2sqw">programmes</a><a href="/lecturers" class="svelte-1br2sqw">lecturers</a><!--]--> <a class="plan svelte-1br2sqw" href="/">open the planner →</a></nav></header> <main class="svelte-1br2sqw"><!--[--><article><header class="svelte-bbesdc"><p class="codes svelte-bbesdc"><!--[--><a href="/programmes/biology" title="biology" class="svelte-bbesdc">BIOS121</a><!--]--></p> <h1 class="svelte-bbesdc">Bio-X: The Interconnectedness of Life</h1> <p class="lede svelte-bbesdc">2-credit course · runs in T3 · biology</p> <a class="plan svelte-bbesdc" href="/?course=BIOS121">plan this course →</a></header> <dl class="facts svelte-bbesdc"><div class="svelte-bbesdc"><dt class="svelte-bbesdc">credits</dt><dd class="svelte-bbesdc">2</dd></div> <div class="svelte-bbesdc"><dt class="svelte-bbesdc">runs in</dt><dd class="svelte-bbesdc">T3</dd></div> <div class="svelte-bbesdc"><dt class="svelte-bbesdc">open to</dt><dd class="svelte-bbesdc">year 1</dd></div> <!--[0--><div class="svelte-bbesdc"><dt class="svelte-bbesdc">last taught</dt><dd class="svelte-bbesdc">2025 T3</dd></div><!--]--></dl> <!--[0--><section class="svelte-bbesdc"><h2 class="svelte-bbesdc">About</h2> <p class="prose svelte-bbesdc">Welcome to an exhilarating journey through modern biology—a discipline that sits at the intersection of every major field of human inquiry. This course will take you on a dynamic exploration of life's interconnectedness and the innovative ways we study it. Beginning with life's origins and evolutionary foundations, we'll traverse scales from molecules to ecosystems, discovering how biology interfaces with various fields ranging from physics and chemistry to psychology and data science. Each module showcases cutting-edge research and real-world applications, such as CRISPR gene editing, AI-powered drug design and pandemic preparedness. Focusing on interdisciplinary thinking, through this course you will see how physics has helped decode photosynthesis at quantum scales, how machine learning revolutionizes protein structure prediction, and how systems biology integrates vast datasets to understand complex diseases. A hands-on laboratory tour midway through the course brings these concepts to life, while modules on global change biology and epidemiology demonstrate biology's critical role in addressing humanity's most pressing challenges. The course culminates in collaborative presentations where you'll envision "Biology X"—the next frontier of biological discovery that excites you most.
+Whether you're considering biology as a major, exploring it as a complement to another discipline, or simply curious about how life works, this course reveals the extraordinary career possibilities at biology's rapidly expanding frontiers. From biotechnology startups to conservation initiatives, from computational biology to public health—the skills and perspectives you'll gain in biology are increasingly valuable across sectors.</p></section><!--]--> <section class="svelte-bbesdc"><h2 class="svelte-bbesdc">Before this</h2> <!--[-1--><p class="empty svelte-jjk1y5">No prerequisites.</p><!--]--><!----> <!--[-1--><!--]--></section> <!--[-1--><!--]--> <!--[-1--><!--]--> <!--[0--><section class="svelte-bbesdc"><h2 class="svelte-bbesdc">Recently taught by</h2> <ul class="people svelte-bbesdc"><!--[--><li class="svelte-bbesdc"><a href="/lecturers/guha-dharmarajan" class="svelte-bbesdc">Guha Dharmarajan</a><!--[0--><span class="svelte-bbesdc">Professor, Biology</span><!--]--></li><li class="svelte-bbesdc"><a href="/lecturers/gautam-banerjee" class="svelte-bbesdc">Gautam Banerjee</a><!--[0--><span class="svelte-bbesdc">Visiting Professor, Biological Sciences</span><!--]--></li><li class="svelte-bbesdc"><a href="/lecturers/kalyan-chakrabarti" class="svelte-bbesdc">Kalyan Chakrabarti</a><!--[0--><span class="svelte-bbesdc">Associate Professor, Biological Sciences and Chemistry</span><!--]--></li><li class="svelte-bbesdc"><a href="/lecturers/lakshman-varanasi" class="svelte-bbesdc">Lakshman Varanasi</a><!--[0--><span class="svelte-bbesdc">Assistant Professor, Biological Sciences</span><!--]--></li><li class="svelte-bbesdc"><a href="/lecturers/shivani-jadeja" class="svelte-bbesdc">Shivani Jadeja</a><!--[0--><span class="svelte-bbesdc">Assistant Professor, Biological Sciences</span><!--]--></li><li class="svelte-bbesdc"><a href="/lecturers/shyam-kumar-sudhakar" class="svelte-bbesdc">Shyam Kumar Sudhakar</a><!--[0--><span class="svelte-bbesdc">Associate Professor, Biological Sciences</span><!--]--></li><li class="svelte-bbesdc"><a href="/lecturers/sivakumar-srinivasan" class="svelte-bbesdc">Sivakumar Srinivasan</a><!--[0--><span class="svelte-bbesdc">Professor, Physics &amp;amp; Dean - Research</span><!--]--></li><li class="svelte-bbesdc"><a href="/lecturers/vaishali-sharma" class="svelte-bbesdc">Vaishali Sharma</a><!--[0--><span class="svelte-bbesdc">Scientific Officer - Bio-Sciences</span><!--]--></li><li class="svelte-bbesdc"><a href="/lecturers/yadugiri-tiruvaimozhi" class="svelte-bbesdc">Yadugiri Tiruvaimozhi</a><!--[0--><span class="svelte-bbesdc">Assistant Professor, Biology</span><!--]--></li><!--]--></ul> <!--[-1--><!--]--></section><!--]--></article><!--]--><!----></main> <footer class="svelte-1br2sqw"><p>Course data from Krea's term sheets (July 2026); programme rules from the departments' FYUP
+			documents. Check anything that matters with your department.</p></footer></div><!--]--><!--]--><!----><!--]--><!--]--> <!--[-1--><!--]--><!--]--></div>
+	</body>
+</html>

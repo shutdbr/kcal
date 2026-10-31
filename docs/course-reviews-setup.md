@@ -53,8 +53,8 @@ and [redirect URLs](https://supabase.com/docs/guides/auth/redirect-urls).
 Copy `.env.example` to `.env` and set:
 
 ```dotenv
-VITE_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
-VITE_SUPABASE_PUBLISHABLE_KEY=YOUR_PUBLIC_PUBLISHABLE_KEY
+PUBLIC_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
+PUBLIC_SUPABASE_PUBLISHABLE_KEY=YOUR_PUBLIC_PUBLISHABLE_KEY
 ```
 
 Use the project's **publishable** key (or legacy `anon` key), never `service_role`

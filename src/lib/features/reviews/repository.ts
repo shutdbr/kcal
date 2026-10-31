@@ -1,4 +1,4 @@
-import { getSupabase } from '$lib/infrastructure/supabase/client';
+import { getSupabase } from '$lib/infrastructure/supabase/browser';
 import { validateReview, type CourseReview } from './model';
 
 export async function canReview() {

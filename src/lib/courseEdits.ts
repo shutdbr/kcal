@@ -87,7 +87,11 @@ export function parseCourseEdits(raw: unknown): CourseEdits {
 	return out;
 }
 
-// ── university-wide rules (the ERP drop form's numbers) ──
+// ── university-wide rules ──
+// Trimester loads and audits from the ERP drop form. Graduation minimums from
+// the FYUP documents (120 / 160 — the CS and Maths documents); the 4-year
+// ceiling of 176 from the FYUP overview (Politics document); the 3-year
+// ceiling is the drop form's — no FYUP document states one.
 
 export const RULE_DEFAULTS = {
 	TRIM_MIN: 12,
@@ -95,6 +99,8 @@ export const RULE_DEFAULTS = {
 	TRIM_HARD_MAX: 20,
 	HEAVY_TRIMS_ALLOWED: 2,
 	AUDIT_LIMIT: 2,
+	MIN_TOTAL_3YR: 120,
+	MIN_TOTAL_4YR: 160,
 	MAX_TOTAL_3YR: 128,
 	MAX_TOTAL_4YR: 176
 };
@@ -141,6 +147,20 @@ export const RULE_INFO: Record<RuleKey, { label: string; help: string; unit: str
 		min: 0,
 		max: 12
 	},
+	MIN_TOTAL_3YR: {
+		label: 'credits to graduate, 3-year',
+		help: 'the fewest credits a three-year degree is awarded with',
+		unit: 'credits',
+		min: 0,
+		max: 400
+	},
+	MIN_TOTAL_4YR: {
+		label: 'credits to graduate, 4-year',
+		help: 'the fewest credits a four-year degree is awarded with',
+		unit: 'credits',
+		min: 0,
+		max: 400
+	},
 	MAX_TOTAL_3YR: {
 		label: 'tenure ceiling, 3-year',
 		help: 'the most credits a three-year student may register in total',
@@ -180,6 +200,8 @@ export function ruleProblems(edits: RuleEdits): string[] {
 	if (r.TRIM_MIN > r.TRIM_NORMAL_MAX) out.push('the minimum is above the recommended load');
 	if (r.TRIM_NORMAL_MAX > r.TRIM_HARD_MAX) out.push('the recommended load is above the hard cap');
 	if (r.MAX_TOTAL_3YR > r.MAX_TOTAL_4YR) out.push('the 3-year ceiling is above the 4-year one');
+	if (r.MIN_TOTAL_3YR > r.MAX_TOTAL_3YR) out.push('the 3-year graduation minimum is above its ceiling');
+	if (r.MIN_TOTAL_4YR > r.MAX_TOTAL_4YR) out.push('the 4-year graduation minimum is above its ceiling');
 	return out;
 }
 

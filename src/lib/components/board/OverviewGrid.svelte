@@ -347,9 +347,10 @@
 			<button
 				class="placed-total"
 				class:over={plan.totalPlacedCredits > plan.creditTarget}
-				title="{plan.totalPlacedCredits} placed of the {plan.creditTarget} {plan.creditTargetMode === 'minimum'
-					? 'your degree needs'
-					: 'you may register at most'} — click for the credit rules"
+				class:conflict={plan.creditsConflict}
+				title={plan.creditsConflict
+					? `your programmes need ${plan.creditMinimum} credits, more than the ${plan.creditCeiling} a ${plan.fourYear ? 'four' : 'three'}-year degree allows — only courses counting for two programmes can make it fit. Click for the credit rules`
+					: `${plan.totalPlacedCredits} placed of the ${plan.creditTarget} ${plan.creditTargetMode === 'minimum' ? 'you need to graduate' : 'you may register at most'} — click for the credit rules`}
 				onclick={() => (showCredits = true)}
 			>
 				{plan.totalPlacedCredits}<em>/</em>{plan.creditTarget} cr
@@ -359,7 +360,7 @@
 				class="goal-seg"
 				class:maximum={plan.creditTargetMode === 'maximum'}
 				title={plan.creditTargetMode === 'minimum'
-					? `counting against the credits your degree needs (${plan.degreeTotal}) — click for the maximum`
+					? `counting against the credits you need to graduate (${plan.creditMinimum}) — click for the maximum`
 					: `counting against the most you may register over your tenure (${plan.creditCeiling}) — click for the minimum`}
 				aria-label="count credits against the {plan.creditTargetMode} — click to switch"
 				onclick={() =>
@@ -468,6 +469,7 @@
 				class:drop-target={plan.dragging !== null && dropTarget === `${y}-${t}`}
 				class:problem={plan.slotHasProblem(y, t)}
 				class:can-drop={plan.dragging !== null && plan.canDrop(plan.dragging, y, t)}
+				class:no-fit={plan.dragging !== null && !plan.canDrop(plan.dragging, y, t)}
 				data-year={y}
 				data-trim={t}
 				data-core-only={coreSlot || undefined}
@@ -809,14 +811,19 @@
 			outline-color: var(--color-hint-warn-deep);
 		}
 
-		// while dragging: mint, ringed in dots, where the course fits cleanly.
-		// Still, not pulsing — the whole grid breathing at once was noise. A
-		// course CAN be dropped anywhere unlocked (the hints flag a bad
-		// trimester) — so a slot it doesn't fit is left looking normal, not
-		// forbidden.
+		// while dragging: mint, ringed solid, where the course fits cleanly,
+		// and every trimester it doesn't fit (not offered then, wrong year,
+		// prerequisite after it) fades back. Still, not pulsing — the whole
+		// grid breathing at once was noise. A faded slot still takes the drop;
+		// the hints flag it.
 		&.can-drop {
 			background: var(--color-drop-ok);
-			outline: 2px dotted var(--color-drop-ok-edge);
+			outline: 2px solid var(--color-drop-ok-edge);
+		}
+
+		&.no-fit {
+			opacity: 0.4;
+			filter: saturate(0.4);
 		}
 	}
 
@@ -1660,6 +1667,13 @@
 	}
 
 	.placed-total {
+		// the programmes can't fit under the ceiling at all
+		&.conflict {
+			color: var(--color-danger);
+			border-color: var(--color-danger);
+			border-style: dashed;
+		}
+
 		&.over {
 			color: var(--color-danger);
 			border-color: var(--color-danger);

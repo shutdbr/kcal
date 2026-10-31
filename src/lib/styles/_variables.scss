@@ -144,14 +144,16 @@
 	// a step paler. Each depth is one lightness + one muted chroma shared by
 	// every hue (OKLCH), so no subject reads brighter or darker than another.
 	// -ink is the required dot and the progress-bar fill.
-	--tone-required-l: 0.882;
-	--tone-required-c: 0.035;
-	--tone-required-deep-l: 0.74;
-	--tone-required-deep-c: 0.052;
-	--tone-elective-l: 0.944;
-	--tone-elective-c: 0.019;
-	--tone-elective-deep-l: 0.85;
-	--tone-elective-deep-c: 0.028;
+	// required reads a clear step deeper than elective — the fill alone has to
+	// tell them apart at a glance
+	--tone-required-l: 0.85;
+	--tone-required-c: 0.058;
+	--tone-required-deep-l: 0.68;
+	--tone-required-deep-c: 0.08;
+	--tone-elective-l: 0.965;
+	--tone-elective-c: 0.014;
+	--tone-elective-deep-l: 0.86;
+	--tone-elective-deep-c: 0.034;
 	--tone-ink-l: 0.55;
 	--tone-ink-c: 0.068;
 	// a trimester cell tinted by the courses in it — only a hint of the hue,
@@ -288,14 +290,14 @@
 
 	// the same hues at depths flipped for a dark board: required is the
 	// brighter step and elective sits nearer the background
-	--tone-required-l: 0.39;
-	--tone-required-c: 0.038;
-	--tone-required-deep-l: 0.56;
-	--tone-required-deep-c: 0.05;
-	--tone-elective-l: 0.33;
-	--tone-elective-c: 0.024;
-	--tone-elective-deep-l: 0.45;
-	--tone-elective-deep-c: 0.032;
+	--tone-required-l: 0.43;
+	--tone-required-c: 0.06;
+	--tone-required-deep-l: 0.6;
+	--tone-required-deep-c: 0.075;
+	--tone-elective-l: 0.3;
+	--tone-elective-c: 0.016;
+	--tone-elective-deep-l: 0.42;
+	--tone-elective-deep-c: 0.03;
 	--tone-ink-l: 0.74;
 	--tone-ink-c: 0.065;
 	--tone-cell-l: 0.26;

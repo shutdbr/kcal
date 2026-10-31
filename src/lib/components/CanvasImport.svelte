@@ -1,16 +1,20 @@
 <script lang="ts">
 	import { ALL_COURSES, byCode, isCore } from '$lib/data';
-	import { CANVAS_IMPORT_LIMIT, groupCanvasCourses, matchCanvasCourse, parseCanvasImport, type CanvasImport } from '$lib/canvasImport';
+	import { CANVAS_IMPORT_LIMIT, groupCanvasCourses, matchCanvasCourse, parseCourseImport, type CanvasImport, type CourseImport } from '$lib/canvasImport';
 	import type { Plan } from '$lib/plan.svelte';
 	import type { TrimNum } from '$lib/types';
 	import Modal from './Modal.svelte';
+	import ExamImportPanel from '$lib/features/plans/ExamImportPanel.svelte';
+	import { examRecord } from '$lib/features/plans/exam-record.svelte';
+	import type { ExamImport } from '$lib/features/plans/exam-import';
 
 	// opened from settings, or straight away when the extension hands a course
 	// list over in the URL fragment
 	let { plan, open = $bindable(false), initial = null, initialError = '' }: {
-		plan: Plan; open?: boolean; initial?: CanvasImport | null; initialError?: string;
+		plan: Plan; open?: boolean; initial?: CourseImport | null; initialError?: string;
 	} = $props();
 	let payload = $state<CanvasImport | null>(null);
+	let examPayload = $state<ExamImport | null>(null);
 	let choices = $state<string[]>([]);
 	// one target trimester per Canvas term, as "year-trim" ('' = not added)
 	let slots = $state<string[]>([]);
@@ -51,7 +55,9 @@
 		return plan.years.includes(year) ? `${year}-${parsed.trim}` : '';
 	}
 
-	function load(data: CanvasImport) {
+	function load(data: CourseImport) {
+		if (data.version === 3) { examPayload = data; payload = null; error = result = ''; open = true; return; }
+		examPayload = null;
 		payload = data;
 		choices = data.courses.map((row) => {
 			const matches = matchCanvasCourse(row, catalogue);
@@ -70,7 +76,7 @@
 		if (!file) return;
 		try {
 			if (file.size > CANVAS_IMPORT_LIMIT) throw new Error('The course list file is too large.');
-			load(parseCanvasImport(await file.text()));
+			load(parseCourseImport(await file.text()));
 		} catch (e) { error = e instanceof Error ? e.message : 'Could not open that file.'; }
 		input.value = '';
 	}
@@ -86,17 +92,22 @@
 	}
 </script>
 
-{#if open}
-	<Modal title="import from Canvas" width="76rem" onclose={() => (open = false)}>
+{#if open && examPayload}
+	<ExamImportPanel {plan} data={examPayload} onclose={() => open = false} onback={() => examPayload = null} />
+{:else if open}
+	<Modal title="import courses & grades" width="76rem" onclose={() => (open = false)}>
 		<div class="importer">
+			<p><strong>Local import. No automatic uploads.</strong> The extension runs only when clicked and reads no passwords, login tokens or student profile. Imported data is saved in this browser. Saving a plan to your account is a separate, explicit action.</p>
+			{#if examRecord.data}<button class="primary" onclick={() => examPayload = examRecord.data}>View saved mark list on this device</button>{/if}
+			{#if examRecord.error}<p role="alert">{examRecord.error}</p>{/if}
 			<details open={!payload}>
 				<summary>Get the browser extension</summary>
 				<ol>
 					<li><a href="/downloads/kcal-canvas-extension.zip" download>Download the extension</a> and unzip it.</li>
 					<li>Chrome / Edge: open Extensions, enable Developer mode, choose Load unpacked, and select the unzipped folder. Firefox: use about:debugging → This Firefox → Load Temporary Add-on → manifest.json.</li>
-					<li>Sign in at <a href="https://canvas.krea.edu.in/courses" target="_blank" rel="noreferrer">Canvas → All Courses</a>. Click the extension, read your courses, then choose Review in kcal.</li>
+					<li>Open <a href="https://oe.krea.edu.in/krea/my_mark/" target="_blank" rel="noreferrer">Krea Exam → My Mark List</a>, click the extension, then Read this page locally → Review in kcal. <a href="https://canvas.krea.edu.in/courses" target="_blank" rel="noreferrer">Canvas → All Courses</a> is also supported.</li>
 				</ol>
-				<p>The extension reads course names and terms on that page. It does not collect your password or grades. Firefox temporary installs last until you restart the browser. An extension downloaded before November 2026 reads the current trimester only; download it again.</p>
+				<p>Version 0.3.0 reads course codes, titles, terms, grades and credits from Krea Exam, or course names and terms from Canvas. Reload the extension after updating. Firefox temporary installs last until you restart the browser.</p>
 			</details>
 			<label class="file">Or open a course list saved by the extension
 				<input type="file" accept=".json,application/json" onchange={readFile} />

@@ -6,12 +6,15 @@
 2. Apply both files in `supabase/migrations/`, in filename order, using the SQL
    editor or the Supabase CLI. If the reviews migration is already applied, run
    only the new private-plans migration. Never rerun an applied migration.
-3. Copy `.env.example` to `.env`. Set `VITE_SUPABASE_URL` and
-   `VITE_SUPABASE_PUBLISHABLE_KEY` to the project's URL and public publishable key.
-   Do not use a service-role or secret key in the frontend.
+3. Copy `.env.example` to `.env`. Set `PUBLIC_SUPABASE_URL` and
+   `PUBLIC_SUPABASE_PUBLISHABLE_KEY` to the project's URL and public publishable key.
+   They are read at runtime, so one build serves every environment. Do not use a
+   service-role or secret key here.
 4. Configure Google sign-in using [the OAuth setup guide](course-reviews-setup.md).
-   Allow the exact planner root URL (including localhost for development) as well
-   as the review redirect URLs described there. Account sign-in returns to `/`.
+   Add `https://YOUR_SITE/auth/callback` (and `http://localhost:5173/auth/callback`
+   for development) to the Supabase redirect allow-list. Google returns there; the
+   server exchanges the code for session cookies and sends the student back to the
+   page they signed in from.
 5. Set the same public environment values on your hosting provider and rebuild.
 
 Without configuration, the planner and local saves work; cloud controls explain
