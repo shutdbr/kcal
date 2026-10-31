@@ -13,9 +13,9 @@
 		return yy ? `20${yy}` : '';
 	};
 
-	// lecturers whose "courses taught" is unfolded — kept while moving between
+	// lecturers whose "more info" is unfolded — kept while moving between
 	// courses, so someone you opened stays open
-	let openTaught = $state<string[]>([]);
+	let openMore = $state<string[]>([]);
 </script>
 
 <!-- profs rotate every year, so this is context, not a promise — but
@@ -49,37 +49,38 @@
 							>{p.position}{#if joinedYear(p.date_of_joining)}
 								· at Krea since {joinedYear(p.date_of_joining)}{/if}</span
 						>{/if}
-					{#if p.office_hours}<span><span class="d-muted">office hours</span> {p.office_hours}</span
-						>{/if}
-					<span class="d-prof-links">
-						{#if p.email}<a href="mailto:{p.email}">email</a>{/if}
-						{#if p.url}<a href={p.url} target="_blank" rel="noopener">profile ↗</a>{/if}
-					</span>
-					<!-- what they've taught lately, term by term (as kreabot lists it) —
-							     each another course to jump to. Folded to a count until asked
-							     for: it's the longest part of the card and the least asked about. -->
-					{#if terms.length}
-						{@const taughtOpen = openTaught.includes(p.id)}
-						<div class="d-taught" class:open={taughtOpen}>
+					<!-- office hours, how to reach them and what they've taught lately
+					     wait behind one fold: the card itself stays a name and a role -->
+					{#if p.office_hours || p.email || p.url || terms.length}
+						{@const moreOpen = openMore.includes(p.id)}
+						<div class="d-taught" class:open={moreOpen}>
 							<button
 								class="d-taught-head"
-								aria-expanded={taughtOpen}
-								aria-controls="d-taught-{pi}"
+								aria-expanded={moreOpen}
+								aria-controls="d-more-{pi}"
 								onclick={() =>
-									(openTaught = taughtOpen
-										? openTaught.filter((id) => id !== p.id)
-										: [...openTaught, p.id])}
+									(openMore = moreOpen
+										? openMore.filter((id) => id !== p.id)
+										: [...openMore, p.id])}
 							>
-								<span class="d-muted">courses taught</span>
-								<span class="d-taught-count">{new Set(terms.flatMap((t) => t.codes)).size}</span>
+								<span class="d-muted">more info</span>
 								<span class="chev" aria-hidden="true"></span>
 							</button>
-							{#if taughtOpen}
+							{#if moreOpen}
 								<div
 									class="d-taught-list"
-									id="d-taught-{pi}"
+									id="d-more-{pi}"
 									transition:slide={{ duration: reducedMotion() ? 0 : 210, easing: cubicOut }}
 								>
+									{#if p.office_hours}<span><span class="d-muted">office hours</span> {p.office_hours}</span>{/if}
+									{#if p.email || p.url}
+										<span class="d-prof-links">
+											{#if p.email}<a href="mailto:{p.email}">email</a>{/if}
+											{#if p.url}<a href={p.url} target="_blank" rel="noopener">profile ↗</a>{/if}
+										</span>
+									{/if}
+									<!-- what they've taught lately, term by term (as kreabot
+									     lists it) — each another course to jump to -->
 									{#each terms as t (t.term)}
 										<span class="d-term">{termLabel(t.term)}</span>
 										<ul>
@@ -185,12 +186,6 @@
 		}
 	}
 
-	.d-taught-count {
-		font-size: 1.1rem;
-		font-weight: 700;
-		color: var(--color-text-muted);
-	}
-
 	.d-taught-list {
 		display: flex;
 		flex-direction: column;
@@ -207,7 +202,8 @@
 			list-style: none;
 		}
 
-		ul + .d-term {
+		ul + .d-term,
+		.d-prof-links + .d-term {
 			margin-top: 0.3rem;
 		}
 	}
