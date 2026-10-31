@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { DETAILS_OVERLAY_QUERY, RAIL_OVERLAY_QUERY } from '$lib/layout';
 	// The side columns can be dragged wider or narrower by their inner edges.
 	// Widths are this viewer's own, in rem so they follow the text size, and
 	// always leave the board room; double-clicking an edge puts it back.
@@ -27,9 +28,14 @@
 
 	const widthOf = (id: Panel) => panelWidths[id] ?? PANELS.find((p) => p.id === id)!.base;
 
+	// a panel that slides in over the board takes no room from it
+	const docked = (id: Panel) =>
+		!(id === 'details' && matchMedia(DETAILS_OVERLAY_QUERY).matches) &&
+		!(id === 'rail' && matchMedia(RAIL_OVERLAY_QUERY).matches);
+
 	function setWidth(id: Panel, rem: number, rootPx: number) {
 		const p = PANELS.find((q) => q.id === id)!;
-		const others = PANELS.filter((q) => q.id !== id).reduce((sum, q) => sum + widthOf(q.id), 0);
+		const others = PANELS.filter((q) => q.id !== id && docked(q.id)).reduce((sum, q) => sum + widthOf(q.id), 0);
 		const roomy = window.innerWidth / rootPx - BOARD_MIN - others;
 		panelWidths[id] = Math.round(Math.max(p.min, Math.min(p.max, roomy, rem)) * 10) / 10;
 	}
@@ -161,6 +167,35 @@
 	@include mobile {
 		.resizer {
 			display: none;
+		}
+	}
+
+	// a panel that slides in over the board has no edge to drag
+	@include details-overlay {
+		.resizer-details {
+			display: none;
+		}
+	}
+
+	// the sidebar shrinks to its strip, so the catalogue's edge moves in
+	@include rail-overlay {
+		.resizer-rail {
+			display: none;
+		}
+
+		.resizer-catalogue {
+			left: calc(var(--rail-strip-w) + var(--catalogue-w));
+		}
+	}
+
+	// a fingertip-wide strip on a touch screen
+	@include touch {
+		.resizer {
+			width: 20px;
+
+			&::after {
+				left: 8px;
+			}
 		}
 	}
 </style>

@@ -2,7 +2,7 @@
 	import PixelIcon from '../PixelIcon.svelte';
 	import { tick } from 'svelte';
 	import type { Plan } from '$lib/plan.svelte';
-	import { SUBJECTS, subjectById } from '$lib/data';
+	import { COURSES, SUBJECTS, subjectById } from '$lib/data';
 	import CatalogueCard from './CatalogueCard.svelte';
 
 	let { plan, mobile = false }: { plan: Plan; mobile?: boolean } = $props();
@@ -71,8 +71,10 @@
 			<h2>catalogue</h2>
 			<p class="mobile-intro">find your next course</p>
 		</div>
+		<!-- how many the search and filters leave, out of the whole catalogue
+		     (kccs foundation courses included) -->
 		<span class="result-count" role="status"
-			>{plan.catalogue.length} course{plan.catalogue.length === 1 ? '' : 's'}</span
+			>{plan.catalogue.length}/{COURSES.length} course{COURSES.length === 1 ? '' : 's'}</span
 		>
 	</header>
 
@@ -432,6 +434,22 @@
 		border-radius: 6px;
 		background: var(--color-bg-light);
 		cursor: pointer;
+	}
+	// by finger: a taller search field and filters, and ticks you can hit
+	@include touch {
+		.search {
+			min-height: 4.4rem;
+		}
+		.clear-search {
+			width: 4rem;
+		}
+		.filter {
+			min-height: 4rem;
+		}
+		.tick {
+			width: 2rem;
+			height: 2rem;
+		}
 	}
 	@include mobile {
 		.catalogue {

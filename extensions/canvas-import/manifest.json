@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "kcal · Import from Krea Canvas",
-  "version": "0.1.0",
+  "version": "0.2.1",
   "description": "Bring the courses on your Krea Canvas Courses page into kcal, with a preview before changing your plan.",
   "permissions": ["activeTab", "scripting", "storage"],
   "action": {

@@ -156,8 +156,11 @@
 	// (board-actions: the fill-in / clean-up row, which is absent once there's
 	// nothing left to fill in or strip out). Walking past those instead of
 	// stopping on them keeps the tour from spotlighting nothing.
+	// The same goes for one that's there but out of sight, like the course
+	// details while they're slid away on a tablet.
 	function hasTarget(i: number): boolean {
-		return !!document.querySelector(`[data-tour="${steps[i].target}"]`);
+		const el = document.querySelector<HTMLElement>(`[data-tour="${steps[i].target}"]`);
+		return !!el && (el.checkVisibility?.({ visibilityProperty: true }) ?? true);
 	}
 
 	function nextValidIndex(from: number, direction: number): number | null {

@@ -12,24 +12,34 @@
 	let { plan }: { plan: Plan } = $props();
 
 	let showPath = $state(false);
+	// one programme's breakdown open at a time
+	let openProg = $state<string | null>(null);
+	const left = (done: number, needed: number) => (done >= needed ? '✓ done' : `${needed - done} cr left`);
 	// one hint open at a time — opening another folds the last
 	let openKey = $state<string | null>(null);
 	function toggle(key: string) {
 		openKey = openKey === key ? null : key;
 	}
+	// a few plain words per row; the full sentence is one click away
 	function heading(hint: Hint) {
 		const text = hint.text.toLowerCase();
-		if (/earlier|prerequisite|before/.test(text)) return 'prerequisite order';
-		if (/usually open|not year|only.*year/.test(text)) return 'year eligibility';
+		if (/applied version/.test(text)) return 'maths covers the applied one';
+		if (/earlier|prerequisite|before/.test(text)) return 'prerequisites first';
+		if (/usually open|not year|only.*year/.test(text)) return 'wrong year';
 		if (/required courses.*place/.test(text)) return 'required courses missing';
-		if (/credit.*minimum|under.*credit/.test(text)) return 'below the credit minimum';
-		if (/credit.*max|over.*credit|ceiling/.test(text)) return 'credit limit';
-		if (/interchangeable|you can switch/.test(text)) return 'equivalent courses';
+		if (/credit.*minimum|under.*credit/.test(text)) return 'too few credits';
+		if (/credit.*max|over.*credit|ceiling|exceed/.test(text)) return 'too many credits';
+		if (/interchangeable|you can switch/.test(text)) return 'you only need one';
 		if (/foundation/.test(text)) return 'foundation courses';
-		if (/audit/.test(text)) return 'audit allowance';
-		if (/transcript/.test(text)) return 'transcript only';
-		if (/offered|trimester/.test(text)) return 'trimester availability';
-		return hint.text.length > 48 ? hint.text.slice(0, 45) + '…' : hint.text;
+		if (/audit/.test(text)) return 'audits';
+		if (/transcript/.test(text)) return "doesn't count";
+		if (/offered|trimester/.test(text)) return 'wrong trimester';
+		if (/cgpa/.test(text)) return 'CGPA too low';
+		if (/merit list/.test(text)) return "dean's list";
+		if (/\(fail\)|incomplete|d\/e/.test(text)) return 'grades to sort out';
+		if (hint.text.length <= 32) return hint.text;
+		const cut = hint.text.slice(0, 30);
+		return cut.slice(0, Math.max(cut.lastIndexOf(' '), 16)) + '…';
 	}
 
 	// a hint that names a real course can jump to it in the details panel
@@ -43,7 +53,9 @@
 	// things to fix, and — quieter, below them — notes that are just facts
 	// ("2 audits left"); the badge counts only the first, so it matches
 	let issues = $derived(sorted.filter((h) => h.kind === 'warn' || h.kind === 'caution'));
-	let notes = $derived(sorted.filter((h) => h.kind === 'info' || h.kind === 'good'));
+	// "all foundation courses placed" and "3 audits left" were noise — only
+	// notes that change a decision are listed
+	let notes = $derived(sorted.filter((h) => h.kind === 'info'));
 	let problems = $derived(issues.length);
 
 	// hints with the same heading fold into one row — three "prerequisite
@@ -72,6 +84,18 @@
 		!!code && hint.codes.some((c) => hasCode(c) && byCode(c).code === code);
 	let warns = $derived(issues.filter((h) => h.kind === 'warn').length);
 	let cautions = $derived(problems - warns);
+
+	// the ▲ and ■ badges work like checkboxes: each shows or hides its own
+	// kind, so both, either one, or neither can be on (neither: empty list)
+	type IssueKind = 'warn' | 'caution';
+	let showKind = $state<Record<IssueKind, boolean>>({ warn: true, caution: true });
+	let tally = $derived(
+		([{ kind: 'warn', n: warns, what: 'problem' }, { kind: 'caution', n: cautions, what: 'warning' }] as const).filter(
+			(t) => t.n > 0
+		)
+	);
+	const shown = (group: Group) =>
+		(group.kind !== 'warn' && group.kind !== 'caution') || showKind[group.kind];
 
 	// picking a course a hint names (the ▲ on its chip) unfolds its first —
 	// worst — group and brings it into view — only on the pick itself, so a
@@ -112,7 +136,6 @@
 			<span class="hint-main">
 				<span class="hint-title">
 					<i class="tone-dot" data-kind={group.kind} aria-hidden="true"></i>{group.title}
-					{#if group.hints.length > 1}<span class="g-count">{group.hints.length}</span>{/if}
 				</span>
 				<!-- the courses it's about, as small chips in their own colours -->
 				{#if group.courses.length}
@@ -166,20 +189,43 @@
 		<!-- the whole degree as one plain count; the bars below break it down -->
 		<div class="total">
 			<span>total</span>
-			<b>{plan.totalPlacedCredits}<em>/</em>{plan.degreeTotal} cr</b>
+			<b>{plan.totalPlacedCredits}<em>/</em>{plan.creditTarget} cr</b>
 		</div>
 
 		{#each plan.stats as s (s.role + s.subject)}
-			<div class="prog">
-				<div class="prog-name"><span>{s.label}</span><span class="muted">{s.role}</span></div>
-				<!-- required and elective credits on one bar, split where one
-				     hands over to the other -->
-				<Progress
-					required={{ done: s.requiredDone, needed: s.requiredNeeded }}
-					elective={{ done: s.electiveDone, needed: s.electiveNeeded }}
-					electiveLabel={s.subject === 'open' ? 'free courses' : 'electives'}
-					hue={subjectById(s.subject).hue}
-				/>
+			{@const key = s.role + s.subject}
+			{@const open = openProg === key}
+			<div class="prog" class:open>
+				<!-- a click opens what's left: required courses by name, and the
+				     credits still owed to each part -->
+				<button class="prog-toggle" aria-expanded={open} onclick={() => (openProg = open ? null : key)}>
+					<span class="prog-name"><span>{s.label}</span><span class="muted">{s.role}<span class="chev" aria-hidden="true"></span></span></span>
+					<!-- required and elective credits on one bar, split where one
+					     hands over to the other -->
+					<Progress
+						required={{ done: s.requiredDone, needed: s.requiredNeeded }}
+						elective={{ done: s.electiveDone, needed: s.electiveNeeded }}
+						electiveLabel={s.subject === 'open' ? 'free courses' : 'electives'}
+						hue={subjectById(s.subject).hue}
+					/>
+				</button>
+				{#if open}
+					<div class="prog-detail" transition:slide={{ duration: reducedMotion() ? 0 : 210, easing: cubicOut }}>
+						{#if s.requiredNeeded > 0}
+							<div class="pd-row"><span>required</span><b>{left(s.requiredDone, s.requiredNeeded)}</b></div>
+							{#if s.requiredLeft.length}
+								<div class="pd-tags">
+									{#each s.requiredLeft as code (code)}
+										<button class="tag" data-type={plan.courseType(code)} style:--hue={plan.hueOf(code)} title="show {plan.courseLabel(code)}" onclick={() => plan.revealCourse(code)}>{plan.shownCode(code)}</button>
+									{/each}
+								</div>
+							{/if}
+						{/if}
+						{#if s.electiveNeeded > 0}
+							<div class="pd-row"><span>{s.subject === 'open' ? 'free courses' : 'electives'}</span><b>{left(s.electiveDone, s.electiveNeeded)}</b></div>
+						{/if}
+					</div>
+				{/if}
 			</div>
 		{/each}
 	</div>
@@ -236,9 +282,18 @@
 		hints
 		<!-- what's waiting, by severity — the same marks as the rows below -->
 		{#if problems}
-			<span class="tally" title="{problems} thing{problems === 1 ? '' : 's'} to fix">
-				{#each [['warn', warns], ['caution', cautions]] as [kind, n] (kind)}
-					{#if n}<span class="tally-item" data-kind={kind}><i class="tally-mark" data-kind={kind}></i>{n}</span>{/if}
+			<span class="tally">
+				{#each tally as t (t.kind)}
+					<button
+						class="tally-item"
+						class:off={!showKind[t.kind]}
+						data-kind={t.kind}
+						role="checkbox"
+						aria-checked={showKind[t.kind]}
+						aria-label="show {t.n} {t.what}{t.n === 1 ? '' : 's'}"
+						title="{showKind[t.kind] ? 'hide' : 'show'} {t.what}s"
+						onclick={() => (showKind[t.kind] = !showKind[t.kind])}
+					><i class="tally-mark" data-kind={t.kind}></i>{t.n}</button>
 				{/each}
 			</span>
 		{/if}
@@ -250,15 +305,14 @@
 	     board mode — see ReferencePath. -->
 	<div class="ref">
 		<button class="ref-btn" onclick={() => (showPath = true)}>
-			<span>see the suggested path <span aria-hidden="true">→</span></span>
-			{#if plan.suggestionCount}<em>{plan.suggestionCount} missing</em>{/if}
+			<span>suggested path <span aria-hidden="true">→</span></span>
 		</button>
 	</div>
 
 	{#if issueGroups.length}
 		<div class="chips">
 			{#each issueGroups as group, gi (group.key)}
-				{@render hintGroup(group, gi)}
+				{#if shown(group)}{@render hintGroup(group, gi)}{/if}
 			{/each}
 		</div>
 	{:else}
@@ -266,7 +320,6 @@
 	{/if}
 
 	{#if noteGroups.length}
-		<div class="notes-head">notes</div>
 		<div class="chips notes">
 			{#each noteGroups as group, gi (group.key)}
 				{@render hintGroup(group, issueGroups.length + gi)}
@@ -274,23 +327,19 @@
 		</div>
 	{/if}
 
+	<!-- crossed-off rules: one quiet line of struck codes; a click brings
+	     the hint back -->
 	{#if plan.waivedHints.length}
 		<div class="waived">
-			<div class="waived-head">
-				crossed off ({plan.waivedHints.length}) — not counted against the plan
-			</div>
+			<span class="waived-head">crossed off</span>
 			{#each plan.waivedHints as hint (hint.id)}
-				<button class="wv" title="bring this hint back" onclick={() => plan.unwaiveHint(hint.id!)}>
-					<s>{hint.text}</s>
-					<span class="wv-undo">undo</span>
+				{@const target = targetOf(hint.codes)}
+				<button class="wv" title="{hint.text} — click to bring it back" onclick={() => plan.unwaiveHint(hint.id!)}>
+					<s>{target ? plan.shownCode(target) : heading(hint)}</s>
 				</button>
 			{/each}
 		</div>
 	{/if}
-
-	<!-- the checker is only as right as its data — one quiet line at the
-	     foot of the list to say a hint is off, not one under every hint -->
-	<button class="wrong" onclick={() => (plan.feedbackDraft = 'A hint looks wrong: ')}>a hint looks wrong? tell me</button>
 </div>
 
 {#if showPath}
@@ -326,8 +375,15 @@
 			font-size: 1.15rem;
 			font-weight: 700;
 			letter-spacing: 0;
+			font-family: inherit;
 			border-radius: var(--rail-radius, 4px);
 			box-shadow: var(--shadow-inset);
+			cursor: pointer;
+			transition: opacity 0.15s ease, filter 0.15s ease;
+
+			&:hover {
+				filter: brightness(0.97);
+			}
 
 			&[data-kind='warn'] {
 				color: var(--color-danger-deep);
@@ -339,6 +395,12 @@
 				color: color-mix(in srgb, var(--color-hint-caution-deep) 55%, var(--color-text));
 				background-color: var(--color-hint-caution);
 				border: 1px solid color-mix(in srgb, var(--color-hint-caution-deep) 60%, transparent);
+			}
+
+			// filtered out of the list: the badge goes pale and flat
+			&.off {
+				opacity: 0.45;
+				box-shadow: none;
 			}
 		}
 
@@ -377,6 +439,18 @@
 			border-top: 1px dotted var(--color-border-light);
 		}
 
+		.prog-toggle {
+			display: block;
+			width: 100%;
+			padding: 0;
+			font: inherit;
+			text-align: left;
+			color: inherit;
+			background: none;
+			border: 0;
+			cursor: pointer;
+		}
+
 		// subject on the left, its role pushed to the right edge
 		.prog-name {
 			display: flex;
@@ -384,6 +458,55 @@
 			justify-content: space-between;
 			gap: 0.8rem;
 			font-weight: 700;
+
+			.muted {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.6rem;
+			}
+
+			.chev {
+				margin: -0.2rem 0 0;
+			}
+		}
+
+		.prog-toggle:hover .prog-name > span:first-child {
+			text-decoration: underline;
+			text-underline-offset: 0.2em;
+		}
+
+		// what's left, under the bar: one line per part, required courses by name
+		.prog-detail {
+			display: flex;
+			flex-direction: column;
+			gap: 0.4rem;
+			padding-top: 0.8rem;
+			font-size: 1.25rem;
+		}
+
+		.pd-row {
+			display: flex;
+			justify-content: space-between;
+			color: var(--color-text-muted);
+
+			b {
+				font-weight: 600;
+				color: var(--color-text);
+				font-variant-numeric: tabular-nums;
+			}
+		}
+
+		.pd-tags {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 0.4rem;
+			margin-bottom: 0.2rem;
+
+			.tag {
+				font-family: inherit;
+				border: 0;
+				cursor: pointer;
+			}
 		}
 
 		.muted {
@@ -529,20 +652,6 @@
 		text-indent: -1.6rem;
 	}
 
-	// how many hints the row stands for
-	.g-count {
-		display: inline-block;
-		margin-left: 0.5rem;
-		padding: 0 0.5rem;
-		font-size: 1.05rem;
-		font-weight: 700;
-		line-height: 1.6rem;
-		text-indent: 0;
-		color: var(--color-text-muted);
-		background: var(--color-subtle);
-		border-radius: 999px;
-	}
-
 	// the courses a row is about, as tiny chips in their own colours —
 	// the same fill they wear on the grid
 	.tags {
@@ -591,8 +700,7 @@
 		}
 
 		li + li {
-			padding-top: 0.5rem;
-			border-top: 1px dotted var(--color-border-light);
+			padding-top: 0.4rem;
 		}
 
 		// the hint about the course open on the right
@@ -627,10 +735,6 @@
 		text-align: left;
 		color: var(--color-text);
 		user-select: none; // quick clicks were selecting the text instead
-
-		& + .chip {
-			border-top: 1px dotted var(--color-border-light);
-		}
 
 		// the text fills the row beside the cross-off ×
 		// (a button can't nest inside a button)
@@ -673,14 +777,8 @@
 
 	// the notes under the issues: facts, not problems — quieter, so they
 	// never read as a second wall of warnings
-	.notes-head {
-		@include section-label;
-		padding: 0 1.6rem;
-		font-size: 1.05rem;
-	}
-
 	.chips.notes {
-		padding-top: 0.2rem;
+		padding-top: 0;
 
 		.chip {
 			color: var(--color-text-muted);
@@ -693,29 +791,8 @@
 		color: var(--color-text-muted);
 	}
 
-	.wrong {
-		display: block;
-		margin: 0 1.6rem 1.4rem;
-		padding: 0;
-		font: inherit;
-		font-size: var(--text-body);
-		color: var(--color-text-muted);
-		background: none;
-		border: 0;
-		cursor: pointer;
-		text-decoration: underline;
-		text-underline-offset: 0.2em;
-
-		&:hover {
-			color: var(--color-text);
-		}
-	}
-
-	// set off from the heading by a dotted rule, like the programmes above
 	.ref {
 		margin: 1rem 1.6rem 0;
-		padding-top: 1.2rem;
-		border-top: 1px dotted var(--color-border-light);
 	}
 
 	.ref-btn {
@@ -742,21 +819,6 @@
 			min-width: 0;
 			overflow-wrap: anywhere;
 		}
-
-		// Wrap onto a new line when the label and badge cannot fit together.
-		em {
-			flex: 0 1 auto;
-			max-width: 100%;
-			overflow-wrap: anywhere;
-			padding: 0 0.6rem;
-			font-style: normal;
-			font-size: 1.1rem;
-			font-weight: 600;
-			line-height: 1.8rem;
-			color: var(--color-text-muted);
-			background: var(--color-subtle);
-			border-radius: 999px;
-		}
 	}
 
 	// crossed-off rules live below the live hints, quiet and struck through —
@@ -764,46 +826,32 @@
 	// not a hint that silently vanished
 	.waived {
 		display: flex;
-		flex-direction: column;
-		gap: 0.4rem;
-		padding: 0 1.2rem 1.2rem;
-	}
-
-	.waived-head {
-		@include section-label;
-		padding-bottom: 0.2rem;
+		flex-wrap: wrap;
+		align-items: baseline;
+		gap: 0.2rem 0.8rem;
+		padding: 0 1.6rem 1.4rem;
+		font-size: 1.2rem;
+		color: var(--color-text-muted);
 	}
 
 	.wv {
-		display: flex;
-		align-items: baseline;
-		justify-content: space-between;
-		gap: 0.8rem;
-		width: 100%;
-		padding: 0.4rem 0;
-		font-size: var(--text-body);
-		line-height: 1.55;
-		text-align: left;
-		color: var(--color-text-muted);
+		padding: 0;
+		font: inherit;
+		color: inherit;
 		background: none;
 		border: 0;
 		cursor: pointer;
 
-		.wv-undo {
-			flex: none;
-			font-weight: 700;
-			text-transform: uppercase;
-			font-size: 1rem;
-			letter-spacing: 0.04em;
-			opacity: 0;
-		}
-
 		&:hover {
 			color: var(--color-text);
+		}
+	}
 
-			.wv-undo {
-				opacity: 1;
-			}
+	// by finger: each hint row a fingertip tall
+	@include touch {
+		.hint-heading {
+			padding-top: 1.1rem;
+			padding-bottom: 1.1rem;
 		}
 	}
 </style>

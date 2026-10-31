@@ -1,11 +1,15 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { reviewAccount, reviewClient, reviewsConfigured } from '$lib/reviewAccount.svelte';
-	import { DIFFICULTY_LABELS, summarizeReviews, validateReview, type CourseReview } from '$lib/reviews';
+	import { account } from '$lib/features/auth/account.svelte';
+	import { supabaseConfigured as reviewsConfigured } from '$lib/infrastructure/supabase/client';
+	import { canReview, listReviews, saveReview, deleteReview } from '$lib/features/reviews/repository';
+	import { DIFFICULTY_LABELS, summarizeReviews, validateReview, type CourseReview } from '$lib/features/reviews/model';
 
 	let { code }: { code: string } = $props();
 	let reviews = $state<CourseReview[]>([]);
 	let loaded = $state(false);
+	let eligible = $state(false);
+	let accessError = $state('');
 	let error = $state('');
 	let notice = $state('');
 	let busy = $state(false);
@@ -18,34 +22,37 @@
 	let alive = true;
 	let request = 0;
 	const summary = $derived(summarizeReviews(reviews));
-	const own = $derived(reviews.find((review) => review.user_id === reviewAccount.user?.id));
+	const own = $derived(reviews.find((review) => review.user_id === account.user?.id));
 	const visible = $derived(reviews.slice(0, page * 10));
 
 	onMount(() => {
-		void reviewAccount.init();
+		void account.init();
 		if (reviewsConfigured) void load();
 		return () => { alive = false; request++; };
 	});
 	// This component is keyed by canonical course code at its call site.
-	$effect(() => { if (!reviewAccount.user) { editing = false; confirmingDelete = false; } });
+	$effect(() => { if (!account.user) { editing = false; confirmingDelete = false; } });
+
+	$effect(() => {
+		const userId = account.user?.id;
+		let current = true;
+		eligible = false;
+		accessError = '';
+		if (userId) void canReview().then((allowed) => {
+			if (current) eligible = allowed;
+		}).catch(() => {
+			if (current) accessError = 'Could not verify review access. Refresh to retry.';
+		});
+		return () => { current = false; };
+	});
 
 	async function load() {
 		const sequence = ++request;
 		error = '';
 		try {
-			const client = await reviewClient();
-			// Page through the API so the average includes every review, not just its first page.
-			const all: CourseReview[] = [];
-			for (let offset = 0; ; offset += 500) {
-				const { data, error: problem } = await client.from('course_reviews')
-					.select('course_code,user_id,display_name,difficulty,comment,updated_at')
-					.eq('course_code', code).order('user_id').range(offset, offset + 499);
-				if (problem) throw problem;
-				if (!alive || sequence !== request) return;
-				all.push(...(data as CourseReview[]));
-				if (data.length < 500) break;
-			}
-			reviews = all.sort((a, b) => b.updated_at.localeCompare(a.updated_at));
+			const result = await listReviews(code);
+			if (!alive || sequence !== request) return;
+			reviews = result;
 			loaded = true;
 		} catch {
 			if (alive && sequence === request) error = 'Could not load reviews. Please retry.';
@@ -53,7 +60,7 @@
 	}
 
 	function edit() {
-		displayName = own?.display_name || String(reviewAccount.user?.user_metadata?.given_name || '').slice(0, 60);
+		displayName = own?.display_name || String(account.user?.user_metadata?.given_name || '').slice(0, 60);
 		difficulty = own?.difficulty || 0;
 		comment = own?.comment || '';
 		editing = true;
@@ -62,18 +69,16 @@
 	}
 
 	async function save() {
-		const user = reviewAccount.user;
-		if (!user || !reviewAccount.eligible || busy) return;
+		const user = account.user;
+		if (!user || !eligible || busy) return;
 		error = validateReview(displayName, Number(difficulty), comment) || '';
 		if (error) return;
 		busy = true;
 		try {
-			const client = await reviewClient();
-			const { error: problem } = await client.from('course_reviews').upsert({
-				course_code: code, user_id: user.id, display_name: displayName.trim(),
-				difficulty: Number(difficulty), comment: comment.trim()
-			}, { onConflict: 'course_code,user_id' });
-			if (problem) throw problem;
+			await saveReview({
+				course_code: code, user_id: user.id, display_name: displayName,
+				difficulty: Number(difficulty), comment
+			});
 			if (!alive) return;
 			editing = false;
 			notice = 'Your review is published.';
@@ -83,14 +88,11 @@
 	}
 
 	async function remove() {
-		if (!own || !reviewAccount.user || busy) return;
+		if (!own || !account.user || busy) return;
 		busy = true;
 		error = '';
 		try {
-			const client = await reviewClient();
-			const { error: problem } = await client.from('course_reviews').delete()
-				.eq('course_code', code).eq('user_id', reviewAccount.user.id);
-			if (problem) throw problem;
+			await deleteReview(code, account.user.id);
 			if (!alive) return;
 			confirmingDelete = false;
 			editing = false;
@@ -114,20 +116,21 @@
 		{:else if !error}<p role="status">Loading reviews…</p>{/if}
 
 		{#if error}<p role="alert">{error} <button disabled={busy} onclick={load}>Retry loading</button></p>{/if}
-		{#if reviewAccount.error}<p role="alert">{reviewAccount.error}</p>{/if}
+		{#if accessError}<p role="alert">{accessError}</p>{/if}
+		{#if account.error}<p role="alert">{account.error}</p>{/if}
 		{#if notice}<p role="status">{notice}</p>{/if}
 
-		{#if reviewAccount.ready && !reviewAccount.user}
-			<button class="signin" onclick={() => reviewAccount.signIn(code)}>Sign in with Google to review</button>
+		{#if account.ready && !account.user}
+			<button class="signin" onclick={() => account.signIn(code)}>Sign in with Google to review</button>
 			<p class="muted">Use your Krea account. Reviews and your chosen public name are visible to everyone.</p>
-		{:else if reviewAccount.user}
-			<div class="account"><span>Signed in</span><button onclick={() => reviewAccount.signOut()}>Sign out</button></div>
-			{#if reviewAccount.eligible}
+		{:else if account.user}
+			<div class="account"><span>Signed in</span><button onclick={() => account.signOut()}>Sign out</button></div>
+			{#if eligible}
 				{#if !editing && loaded}<button onclick={edit}>{own ? 'Edit your review' : 'Write a review'}</button>{/if}
 			{:else}<p class="muted">Posting requires an eligible Krea Google account. If this is yours, review access may still be awaiting setup.</p>{/if}
 		{/if}
 
-		{#if editing && reviewAccount.eligible}
+		{#if editing && eligible}
 			<form onsubmit={(event) => { event.preventDefault(); void save(); }}>
 				<label>Public name<input bind:value={displayName} maxlength="60" required autocomplete="nickname" /></label>
 				<label>How difficult was this course?
@@ -155,7 +158,7 @@
 			<article>
 				<header><strong>{review.display_name}</strong><span>{review.difficulty}/5 · {DIFFICULTY_LABELS[review.difficulty - 1]}</span></header>
 				{#if review.comment}<p class="comment">{review.comment}</p>{/if}
-				<small>{new Date(review.updated_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}{review.user_id === reviewAccount.user?.id ? ' · your review' : ''}</small>
+				<small>{new Date(review.updated_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}{review.user_id === account.user?.id ? ' · your review' : ''}</small>
 			</article>
 		{/each}
 		{#if reviews.length > visible.length}<button onclick={() => page++}>Show more reviews</button>{/if}

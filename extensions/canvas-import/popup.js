@@ -1,5 +1,5 @@
 import { extractCourses } from './extract.js';
-import { importUrl, destinationUrl } from './transfer.js';
+import { importUrl, destinationUrl, CANVAS_ORIGINS } from './transfer.js';
 
 const api = globalThis.browser || globalThis.chrome;
 const read = document.querySelector('#read');
@@ -23,20 +23,21 @@ read.addEventListener('click', async () => {
   send.disabled = download.disabled = true;
   read.disabled = true;
   document.querySelector('#courses').replaceChildren();
-  message('Reading the current Courses table…');
+  message('Reading your Courses page…');
   try {
     const [tab] = await api.tabs.query({ active: true, currentWindow: true });
     const url = new URL(tab?.url || 'about:blank');
-    if (url.origin !== 'https://canvas.krea.edu.in' || !/^\/courses\/?$/.test(url.pathname)) {
+    if (!CANVAS_ORIGINS.includes(url.origin) || !/^\/courses\/?$/.test(url.pathname)) {
       throw new Error('Open Krea Canvas → Courses → All Courses, then click the extension again.');
     }
     const [result] = await api.scripting.executeScript({ target: { tabId: tab.id }, func: extractCourses });
-    if (result.error) throw new Error(result.error.message || 'Could not read the Courses page.');
-    if (!result.result?.courses?.length) throw new Error('No courses returned. Reload Canvas Courses and try again.');
+    if (result?.error) throw new Error(result.error.message || 'Could not read the Courses page.');
+    if (result?.result?.error) throw new Error(result.result.error);
+    if (!result?.result?.courses?.length) throw new Error('No courses returned. Reload Canvas Courses and try again.');
     payload = result.result;
     for (const course of payload.courses) {
       const li = document.createElement('li');
-      li.textContent = `${course.name}${course.term ? ` · ${course.term}` : ''}`;
+      li.textContent = `${course.name}${course.term ? ` · ${course.term}` : ''}${course.enrollment === 'current' ? '' : ` · ${course.enrollment}`}`;
       document.querySelector('#courses').append(li);
     }
     message(`${payload.courses.length} courses found. Review the list and your kcal address below.`);

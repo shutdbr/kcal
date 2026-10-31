@@ -1,13 +1,19 @@
 <script lang="ts">
+	import CloudPlansPanel from '$lib/features/plans/CloudPlansPanel.svelte';
 	import type { Plan } from '$lib/plan.svelte';
 	import { settings, TEXT_SIZES, type ThemeChoice } from '$lib/settings.svelte';
-	import { savedPlans, MAX_SAVES } from '$lib/savedPlans.svelte';
+	import { savedPlans, MAX_SAVES } from '$lib/features/plans/local-plans.svelte';
 	import { byCode, subjectById } from '$lib/data';
 	import Modal from './Modal.svelte';
 	import FeedbackForm from './FeedbackForm.svelte';
 	import PixelIcon from './PixelIcon.svelte';
 
-	let { plan, onclose, ontour }: { plan: Plan; onclose: () => void; ontour: () => void } = $props();
+	let {
+		plan,
+		onclose,
+		ontour,
+		onimport
+	}: { plan: Plan; onclose: () => void; ontour: () => void; onimport: () => void } = $props();
 
 	const THEMES: { id: ThemeChoice; label: string }[] = [
 		{ id: 'light', label: 'light' },
@@ -117,6 +123,7 @@
 </script>
 
 <Modal title="settings" {onclose}>
+	<CloudPlansPanel {plan} {suggestedName} />
 	<section>
 		<h3>appearance</h3>
 
@@ -154,6 +161,31 @@
 	<section>
 		<h3>feedback</h3>
 		<FeedbackForm {plan} />
+	</section>
+
+	<section>
+		<h3>import from Canvas</h3>
+		<div class="actions">
+			<button onclick={onimport}>import from Canvas</button>
+		</div>
+		<details class="more">
+			<summary>read more</summary>
+			<ol>
+				<li>
+					<a href="/downloads/kcal-canvas-extension.zip" download>download the extension</a> and
+					unzip it.
+				</li>
+				<li>
+					chrome / edge: extensions → developer mode → load unpacked → pick the folder. firefox:
+					about:debugging → this firefox → load temporary add-on → manifest.json.
+				</li>
+				<li>
+					on Canvas, open courses → all courses. click the extension, then “read my courses” and
+					“review in kcal”.
+				</li>
+				<li>check each course's match and each term's trimester, then add.</li>
+			</ol>
+		</details>
 	</section>
 
 	<section>
@@ -310,6 +342,32 @@
 
 	.note.warn {
 		color: var(--color-danger);
+	}
+
+	.more {
+		margin-top: 1rem;
+		font-size: 1.2rem;
+		line-height: 1.45;
+		color: var(--color-text-muted);
+
+		summary {
+			cursor: pointer;
+			width: fit-content;
+		}
+
+		ol {
+			margin-top: 0.6rem;
+			padding-left: 1.8rem;
+		}
+
+		li + li {
+			margin-top: 0.4rem;
+		}
+
+		a {
+			color: var(--color-accent);
+			text-decoration: underline;
+		}
 	}
 
 	.note.empty {

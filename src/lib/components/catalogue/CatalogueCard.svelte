@@ -36,9 +36,6 @@
 	// title or crosslist row without clipping; clamp the title to two lines.
 	let pending = $derived(course.pendingCredits && course.credits === 0);
 	let compact = $derived(!mobile && !pending && course.credits <= 1);
-	// a card with the whole catalogue row to itself (see Catalogue's spans) —
-	// the only width with room for a worded "on plan" button
-	let fullRow = $derived(mobile || pending || course.credits >= 3);
 	// the fill alone doesn't say "required" to someone who hasn't read the
 	// legend, so required courses also lead with a dot (no room on a chip)
 	let showReq = $derived(type === 'required' && !compact);
@@ -70,18 +67,13 @@
 		</button>
 		<button
 			class="unplace"
-			class:icon={!fullRow}
 			aria-label="take {label} back off the grid"
 			title="take {label} back off the grid"
 			onclick={(e) => {
 				e.stopPropagation();
 				plan.remove(course.code);
 			}}
-		>
-			<!-- says what it is ("on plan") and, under the cursor, what it does -->
-			{#if fullRow}<span class="state">on plan ↩</span><span class="act">remove ↩</span
-				>{:else}↩{/if}
-		</button>
+		>↩</button>
 	</div>
 {:else}
 	<button
@@ -281,7 +273,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		padding: 0 0.5rem;
+		padding: 0;
 		font-size: 1.1rem;
 		line-height: 1;
 		color: var(--color-text-muted);
@@ -296,25 +288,6 @@
 			color: var(--color-text);
 			transform: scale(1.06);
 		}
-
-		.act {
-			display: none;
-		}
-
-		&:hover,
-		&:focus-visible {
-			.state {
-				display: none;
-			}
-
-			.act {
-				display: inline;
-			}
-		}
-	}
-
-	.unplace.icon {
-		padding: 0;
 	}
 	.placed-open {
 		display: flex;
@@ -338,6 +311,13 @@
 		border-top: 1px solid var(--color-border-divider);
 		font-size: 1.2rem;
 		color: var(--color-text-muted);
+	}
+	// by finger: the ↩ that lifts a placed course off has a fingertip's reach
+	@include touch {
+		.unplace {
+			min-width: 3.6rem;
+			height: 3.2rem;
+		}
 	}
 	@include mobile {
 		.card {

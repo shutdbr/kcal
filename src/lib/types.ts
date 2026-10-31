@@ -86,6 +86,7 @@ export type ProgrammeStat = {
 	requiredNeeded: number; // credits of required courses in total
 	electiveDone: number;
 	electiveNeeded: number;
+	requiredLeft: string[]; // required courses not on the grid yet (nor a substitute)
 };
 
 /** "year-trim" e.g. "3-1" for Year 3, Trimester 1 */

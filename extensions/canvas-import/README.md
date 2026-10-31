@@ -1,9 +1,12 @@
 # kcal Canvas importer
 
-A user-triggered browser extension for **https://canvas.krea.edu.in/courses**.
-Reads the current Courses table, including unstarred and unlinked courses.
-Past/future enrollment tables and dashboard favourites are deliberately excluded.
-Canvas can leave old courses in the current table; students review what to import.
+A user-triggered browser extension for Krea Canvas's **All Courses** page, at
+**https://canvas.krea.edu.in/courses** or **https://krea.instructure.com/courses**
+(the same Canvas under two addresses).
+Reads the current, past and future enrollment tables, including unstarred and
+unlinked courses. Dashboard favourites are deliberately excluded. Each course
+keeps its Canvas term, and kcal suggests a year and trimester per term; students
+review the matches and the placement before anything is added.
 
 ## Install locally
 
@@ -16,7 +19,7 @@ Canvas can leave old courses in the current table; students review what to impor
 
 To share the development build, run `npm run extension:package` in kcal and send
 `static/downloads/kcal-canvas-extension.zip`. Recipients unzip it and follow the
-steps above. The same download is available in kcal's **import from Canvas** dialog.
+steps above. The same download is available in kcal under **settings → import from Canvas**.
 
 ## Use
 
@@ -25,8 +28,9 @@ steps above. The same download is available in kcal's **import from Canvas** dia
 3. Enter the kcal website address where your plan lives. For a local development
    server the usual address is `http://localhost:5173/`. Use the actual port Vite prints.
 4. Click **Review in kcal**. Only do this for a kcal website you trust.
-5. Review the matches, skip old/unmatched courses, choose a year and trimester,
-   and add the courses. Existing placements are kept; duplicate imports add nothing.
+5. Review the matches, skip unmatched courses, check the year and trimester
+   chosen for each Canvas term, and add the courses. Existing placements are
+   kept; duplicate imports add nothing.
 
 You can instead **Save course list as a file**, then open that JSON in kcal's
 import dialog. This also works when moving the list to another browser.
@@ -39,19 +43,24 @@ import dialog. This also works when moving the list to another browser.
   memory and disappear when the popup closes.
 - No cookies permission, permanent host access, password collection, Canvas API
   tokens, Google credentials, grades, student profile data, or background requests.
-- Reads course names and term labels from `#my_courses_table`. No Canvas API calls.
+- Reads course names and term labels from `#my_courses_table`,
+  `#past_enrollments_table` and `#future_enrollments_table`. No Canvas API calls.
 - Sending opens the destination with the course list in the **URL fragment**,
   never the query string. Fragments are not sent in HTTP requests. kcal clears it
   on arrival and validates before displaying; course data is not added to the plan
   until the student confirms. The destination page can read the fragment, so the
   student must choose their trusted kcal site. This is not an authentication channel.
 - Saved exports contain only the format version, Krea Canvas origin, course
-  names, and terms. Treat the file as a personal course list.
+  names, terms, and whether each was a past, current or future enrollment.
+  Treat the file as a personal course list.
 
 ## Maintenance
 
-The DOM selectors follow Canvas's Courses table. If Canvas changes its layout,
-the extension reports a missing table instead of scraping arbitrary links.
+The DOM selectors follow Canvas's Courses table. If the table ids disappear, it
+falls back to tables headed Course … Term (skipping My Groups); if neither is
+there, it reports a missing table instead of scraping arbitrary links. Errors
+are returned as `{ error }` rather than thrown, because Chrome drops exceptions
+from `scripting.executeScript`.
 Test fixture: `tests/fixtures/canvas-courses.html`. The public fixture covers the
 upstream layout; a signed-in Krea page still needs a live smoke test.
 

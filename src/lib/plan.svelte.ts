@@ -4,6 +4,7 @@
 // ─────────────────────────────────────────────
 
 import { browser } from '$app/environment';
+import { restoreBoard, saveBoard } from './features/plans/autosave';
 // the board's motion is a plan concern: only the plan knows when a change is
 // one course moving (worth watching fly) and when it is a whole-board redraw
 import { quietRedraw } from './transitions';
@@ -69,9 +70,6 @@ import {
 
 const TRIMS: TrimNum[] = [1, 2, 3];
 
-const STORAGE_KEY = 'kcal-plan';
-// the previous save, kept so a torn or rejected write can't lose the plan
-const BACKUP_KEY = 'kcal-plan-backup';
 // bump only when the saved shape changes in a way applySave can't read
 const SAVE_VERSION = 1;
 // the most years the grid can run to: a 4-year degree plus one
@@ -79,6 +77,7 @@ export const MAX_YEARS = 5;
 
 
 export class Plan {
+	storageError = $state('');
 	// ── raw state ──
 	fourYear = $state(true);
 	// how far the grid runs — see `years` below
@@ -141,6 +140,7 @@ export class Plan {
 
 	filters = $state<string[]>([]); // checked catalogue subject filters
 	selected = $state<Course | null>(null); // course shown in the details bar
+	railOpen = $state(false); // the sidebar slid in, where it doesn't fit as a column
 	dragging = $state<string | null>(null); // code mid-drag → grid shows where it fits
 	flash = $state<string | null>(null); // transient "not offered" style message
 	#flashTimer: ReturnType<typeof setTimeout> | undefined;
@@ -150,41 +150,13 @@ export class Plan {
 		// a saved plan (below) replaces it
 		this.seedRecommended();
 		if (!browser) return;
-		// The plan lives in this browser and nowhere else, so it has to survive
-		// a redeploy: a new build must never look like a fresh visit. It does,
-		// because localStorage is keyed by ORIGIN, not by build — the deploy
-		// that replaces the app's code leaves the stored plan untouched. What
-		// could still lose it is THIS restore giving up, so it doesn't:
-		//   • the newest readable save wins (the backup covers a write torn by
-		//     a mid-save reload, or a quota failure that truncated the primary),
-		//   • applySave validates field by field, so one field the new build
-		//     no longer understands drops that field, never the whole plan,
-		//   • an unreadable save is left on disk rather than cleared, so a
-		//     later build with a fixed reader can still recover it.
-		for (const key of [STORAGE_KEY, BACKUP_KEY]) {
-			try {
-				const raw = localStorage.getItem(key);
-				if (!raw) continue;
-				this.applySave(JSON.parse(raw));
-				break;
-			} catch {
-				// unreadable → fall through to the backup, then to the seed
-			}
-		}
+		try { restoreBoard(localStorage, (value) => this.applySave(value)); }
+		catch { /* Browser storage can be blocked; the current session still works. */ }
 
 		$effect(() => {
 			const json = JSON.stringify(this.snapshot());
-			try {
-				// keep the last good save as a backup before overwriting, so a
-				// write that fails halfway can't take the plan down with it
-				const prev = localStorage.getItem(STORAGE_KEY);
-				if (prev && prev !== json) localStorage.setItem(BACKUP_KEY, prev);
-				localStorage.setItem(STORAGE_KEY, json);
-			} catch {
-				// storage full, or blocked (Safari private browsing). The plan
-				// still works for this session — it just can't be saved, and
-				// throwing here would take the whole reactive update with it.
-			}
+			try { this.storageError = saveBoard(localStorage, json) ? '' : 'Your browser could not save the latest changes.'; }
+			catch { this.storageError = 'Browser storage is unavailable. Save a cloud copy before closing.'; }
 		});
 	}
 
@@ -644,18 +616,26 @@ export class Plan {
 
 	// ── actions ──
 	/** Canvas imports are additive: existing placements, grades and audits stay put. */
-	importCanvasCourses(codes: string[], year: number, trim: TrimNum) {
-		if (!this.years.includes(year) || !TRIMS.includes(trim)) return [];
-		const accepted = codes.filter((code) => hasCode(code) &&
-			!(byCode(code).pendingCredits && byCode(code).credits === 0) &&
-			(!this.coreOnly(year, trim) || isCore(code))).map((code) => byCode(code).code);
-		const result = mergeCanvasCourses(this.placements, accepted, slotKey(year, trim));
-		if (result.added.length) {
+	/** each group's courses into its own slot, in one change; a course already
+	 *  placed (or placed by an earlier group) keeps where it is */
+	importCanvasCourses(groups: { codes: string[]; year: number; trim: TrimNum }[]) {
+		let placements = this.placements;
+		const added: { code: string; year: number; trim: TrimNum }[] = [];
+		for (const { codes, year, trim } of groups) {
+			if (!this.years.includes(year) || !TRIMS.includes(trim)) continue;
+			const accepted = codes.filter((code) => hasCode(code) &&
+				!(byCode(code).pendingCredits && byCode(code).credits === 0) &&
+				(!this.coreOnly(year, trim) || isCore(code))).map((code) => byCode(code).code);
+			const result = mergeCanvasCourses(placements, accepted, slotKey(year, trim));
+			placements = result.placements;
+			for (const code of result.added) added.push({ code, year, trim });
+		}
+		if (added.length) {
 			quietRedraw();
 			this.#touch();
-			this.placements = result.placements;
+			this.placements = placements;
 		}
-		return result.added;
+		return added;
 	}
 
 	/** put a course in a slot — at position `at` among the slot's other
@@ -1164,18 +1144,21 @@ export class Plan {
 	// ── the required courses of every chosen programme not yet on the grid ──
 	// a placed substitute satisfies a requirement (MATH191 for COMP201)
 	missingRequiredCodes: string[] = $derived.by(() => {
-		const out = new Set<string>();
-		this.programmes.forEach((prog, i) => {
-			if (prog.subject === 'open') return;
-			for (const code of this.programmeSets[i].required) {
-				if (!hasCode(code) || this.placedCodes.has(code)) continue;
-				if (satisfiedBy(code).some((sub) => this.placedCodes.has(sub))) continue;
-				out.add(code);
-			}
-		});
+		const out = new Set(this.programmes.flatMap((_, i) => this.requiredLeftFor(i)));
 		for (const c of CORE_COURSES) if (!this.placedCodes.has(c.code)) out.add(c.code);
 		return [...out];
 	});
+
+	/** one programme's required courses still to place */
+	requiredLeftFor(i: number): string[] {
+		if (this.programmes[i].subject === 'open') return [];
+		return [...this.programmeSets[i].required].filter(
+			(code) =>
+				hasCode(code) &&
+				!this.placedCodes.has(code) &&
+				!satisfiedBy(code).some((sub) => this.placedCodes.has(sub))
+		);
+	}
 
 	/**
 	 * Put every missing required course on the grid in one go. Each lands
@@ -1776,7 +1759,8 @@ export class Plan {
 					requiredDone: 0,
 					requiredNeeded: 0,
 					electiveDone: Math.min(total, placedCredits),
-					electiveNeeded: total
+					electiveNeeded: total,
+					requiredLeft: []
 				};
 			}
 			// everything that satisfies the required structure — the fixed
@@ -1804,7 +1788,8 @@ export class Plan {
 				requiredDone,
 				requiredNeeded,
 				electiveDone: Math.min(Math.max(0, total - requiredNeeded), Math.max(0, placedCredits - requiredDone)),
-				electiveNeeded: Math.max(0, total - requiredNeeded)
+				electiveNeeded: Math.max(0, total - requiredNeeded),
+				requiredLeft: this.requiredLeftFor(i)
 			};
 		});
 	});

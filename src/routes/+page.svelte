@@ -1,9 +1,11 @@
 <script lang="ts">
 	import PanelResizers from '$lib/components/layout/PanelResizers.svelte';
 	import MobileNavigation from '$lib/components/layout/MobileNavigation.svelte';
-	import { COMPACT_LAYOUT_QUERY, TABLET_WIDTH_QUERY } from '$lib/layout';
+	import { COMPACT_LAYOUT_QUERY, DETAILS_OVERLAY_QUERY, RAIL_OVERLAY_QUERY } from '$lib/layout';
 	import { focusScope } from '$lib/focusScope';
 	import { dragMotion } from '$lib/dragMotion';
+	import { touchDrag } from '$lib/touchDrag';
+	import PixelIcon from '$lib/components/PixelIcon.svelte';
 	import { Plan } from '$lib/plan.svelte';
 	import CanvasImportPanel from '$lib/components/CanvasImport.svelte';
 	import { parseCanvasImport, type CanvasImport } from '$lib/canvasImport';
@@ -18,24 +20,38 @@
 	import Modal from '$lib/components/Modal.svelte';
 	import FeedbackForm from '$lib/components/FeedbackForm.svelte';
 	import { DATA_UPDATED, hasCode } from '$lib/data';
-	import { fly } from 'svelte/transition';
+	import { fade, fly } from 'svelte/transition';
 	import { loadDescriptions } from '$lib/descriptions.svelte';
 	import { onMount } from 'svelte';
 
 	const plan = new Plan();
 	const INTRO_KEY = 'kcal-intro-seen';
+	const PHONE_NOTE_KEY = 'kcal-phone-note-seen';
 	let tourRequested = $state(false);
+	// a phone's first visit says, once, that kcal is roomier on a laptop
+	let phoneNote = $state(false);
 	// a first visit opens on the welcome card (your degree), then the tour
 	let welcomeOpen = $state(false);
 	let desktop = $state(false);
-	let tablet = $state(false);
-	let overlayDetails = $derived(!desktop && !tablet && !!plan.selected);
+	// on a tablet the desktop columns stay, but these slide in over the board
+	let detailsSlide = $state(false);
+	let railSlide = $state(false);
+	// a panel slid in over the others holds the focus until it's closed
+	let overlayDetails = $derived((!desktop || detailsSlide) && !!plan.selected);
+	let overlayRail = $derived(desktop && railSlide && plan.railOpen);
 	let ready = $state(false);
 	let mobileView = $state<'catalogue' | 'board' | 'rail'>('catalogue');
 	let detailsEl: HTMLElement;
 	$effect(() => {
-		if (!desktop && plan.selected?.code) detailsEl?.scrollTo({ top: 0 });
+		if ((!desktop || detailsSlide) && plan.selected?.code) detailsEl?.scrollTo({ top: 0 });
 	});
+	// opening a course's details puts the sidebar away
+	$effect(() => {
+		if (plan.selected) plan.railOpen = false;
+	});
+	// the Canvas import opens from settings, or by itself when the extension
+	// hands a course list over in the URL fragment
+	let canvasOpen = $state(false);
 	let canvasTransfer = $state<CanvasImport | null>(null);
 	let canvasError = $state('');
 
@@ -54,25 +70,37 @@
 		}
 		// Keep the desktop walkthrough available after a phone visit.
 		const media = window.matchMedia(COMPACT_LAYOUT_QUERY);
-		const tabletWidth = window.matchMedia(TABLET_WIDTH_QUERY);
+		const detailsMedia = window.matchMedia(DETAILS_OVERLAY_QUERY);
+		const railMedia = window.matchMedia(RAIL_OVERLAY_QUERY);
 		const update = () => {
 			desktop = !media.matches;
-			tablet = media.matches && tabletWidth.matches;
+			detailsSlide = desktop && detailsMedia.matches;
+			railSlide = desktop && railMedia.matches;
+			if (!railSlide) plan.railOpen = false;
 		};
 		update();
 		ready = true;
-		media.addEventListener('change', update);
-		tabletWidth.addEventListener('change', update);
+		for (const m of [media, detailsMedia, railMedia]) m.addEventListener('change', update);
 		try {
 			welcomeOpen = !importing && !reviewCode && !localStorage.getItem(INTRO_KEY);
+			phoneNote = welcomeOpen && !localStorage.getItem(PHONE_NOTE_KEY);
 		} catch {
-			welcomeOpen = !importing && !reviewCode;
+			welcomeOpen = phoneNote = !importing && !reviewCode;
 		}
 		return () => {
-			media.removeEventListener('change', update);
-			tabletWidth.removeEventListener('change', update);
+			for (const m of [media, detailsMedia, railMedia]) m.removeEventListener('change', update);
 		};
 	});
+
+	// its own key, so a laptop later in the same browser still gets the welcome
+	function dismissPhoneNote() {
+		phoneNote = false;
+		try {
+			localStorage.setItem(PHONE_NOTE_KEY, '1');
+		} catch {
+			// Dismissal still works when browser storage is unavailable.
+		}
+	}
 
 	function dismissTour() {
 		tourRequested = false;
@@ -100,6 +128,15 @@
 		return () => clearTimeout(id);
 	});
 </script>
+
+{#if phoneNote && !desktop}
+	<Modal title="better on a laptop" onclose={dismissPhoneNote}>
+		<div class="phone-note">
+			<p>kcal is better used on a laptop.</p>
+			<button onclick={dismissPhoneNote}>continue on phone</button>
+		</div>
+	</Modal>
+{/if}
 
 {#if welcomeOpen && desktop}
 	<Welcome
@@ -139,15 +176,19 @@
 	<title>kcal</title>
 </svelte:head>
 
+<svelte:window onkeydown={(e) => e.key === 'Escape' && plan.railOpen && (plan.railOpen = false)} />
+
 <div
 	class="app"
 	data-ready={ready}
-	data-layout={desktop ? 'desktop' : tablet ? 'tablet' : 'phone'}
+	data-layout={desktop ? 'desktop' : 'phone'}
 	inert={!ready}
 	class:resizing
 	data-mobile-view={mobileView}
 	class:details-open={!!plan.selected}
+	class:rail-open={plan.railOpen}
 	use:dragMotion
+	use:touchDrag
 	style:--rail-w={panelWidths.rail && `${panelWidths.rail}rem`}
 	style:--catalogue-w={panelWidths.catalogue && `${panelWidths.catalogue}rem`}
 	style:--details-w={panelWidths.details && `${panelWidths.details}rem`}
@@ -155,17 +196,52 @@
 	<MobileNavigation bind:view={mobileView} credits={plan.totalPlacedCredits} />
 	<PanelResizers bind:panelWidths bind:resizing />
 
-	<aside class="rail" inert={!desktop && (mobileView !== 'rail' || overlayDetails)}>
-		<Sidebar {plan} ontour={() => (tourRequested = true)} />
-		<CanvasImportPanel {plan} initial={canvasTransfer} initialError={canvasError} />
+	<!-- where the sidebar doesn't fit (an iPad held upright) it folds to this
+	     strip at the left edge, and slides back in over the catalogue -->
+	<div class="rail-strip">
+		<button aria-expanded={plan.railOpen} aria-controls="rail" onclick={() => (plan.railOpen = !plan.railOpen)}>
+			<PixelIcon name="gear" />
+			<span>your degree</span>
+		</button>
+	</div>
+
+	<!-- a tap beside a slid-in panel puts it away -->
+	{#if desktop && (overlayDetails || overlayRail)}
+		<button
+			class="scrim"
+			tabindex="-1"
+			aria-label="close"
+			onclick={() => {
+				plan.selected = null;
+				plan.railOpen = false;
+			}}
+			transition:fade={{ duration: 160 }}
+		></button>
+	{/if}
+
+	<aside
+		id="rail"
+		class="rail"
+		use:focusScope={overlayRail}
+		inert={desktop
+			? overlayDetails || (railSlide && !plan.railOpen)
+			: mobileView !== 'rail' || overlayDetails}
+	>
+		<Sidebar {plan} ontour={() => (tourRequested = true)} onimport={() => (canvasOpen = true)} />
 		<HintsPanel {plan} />
 	</aside>
 
-	<div class="catalogue-panel" inert={!desktop && (mobileView !== 'catalogue' || overlayDetails)}>
+	<div
+		class="catalogue-panel"
+		inert={desktop ? overlayDetails || overlayRail : mobileView !== 'catalogue' || overlayDetails}
+	>
 		<Catalogue {plan} mobile={!desktop} />
 	</div>
 
-	<main class="board" inert={!desktop && (mobileView !== 'board' || overlayDetails)}>
+	<main
+		class="board"
+		inert={desktop ? overlayDetails || overlayRail : mobileView !== 'board' || overlayDetails}
+	>
 		<!-- wrapped so the footer below can be pushed to the bottom of the column
 		     on a short plan, and stay pinned there while a long one scrolls -->
 		<div class="board-main" data-tour="board">
@@ -205,7 +281,7 @@
 		data-tour="details"
 		bind:this={detailsEl}
 		use:focusScope={overlayDetails}
-		inert={!desktop && !plan.selected}
+		inert={(!desktop || detailsSlide) && !plan.selected}
 		aria-label="course details"
 	>
 		<DetailsPanel {plan} />
@@ -221,6 +297,10 @@
 		<FeedbackForm {plan} prefill={plan.feedbackDraft} onsent={() => (plan.feedbackDraft = null)} />
 	</Modal>
 {/if}
+
+{#if plan.storageError}<p class="flash" role="alert">{plan.storageError}</p>{/if}
+
+<CanvasImportPanel {plan} bind:open={canvasOpen} initial={canvasTransfer} initialError={canvasError} />
 
 <style lang="scss">
 	@use '$lib/styles/mixins' as *;
@@ -287,6 +367,7 @@
 		--rail-w: 24rem;
 		--catalogue-w: 30rem;
 		--details-w: 32rem;
+		--rail-strip-w: 5.2rem;
 		position: relative;
 		display: grid;
 		grid-template-columns: var(--rail-w) var(--catalogue-w) minmax(0, 1fr) var(--details-w);
@@ -338,6 +419,25 @@
 		overflow-y: auto;
 		background: linear-gradient(to bottom, var(--color-bg-sidebar), var(--color-bg-sidebar-end));
 		border-left: 1px solid var(--color-border-warm);
+	}
+	.phone-note {
+		display: grid;
+		gap: 2rem;
+		font-size: 1.6rem;
+		line-height: 1.6;
+
+		button {
+			padding: 1rem 1.6rem;
+			font: inherit;
+			font-size: 1.5rem;
+			font-weight: 700;
+			color: var(--color-on-accent);
+			background-color: var(--color-accent);
+			border: 1px solid var(--color-control-deep);
+			border-radius: 6px;
+			cursor: pointer;
+			@include glossy-accent;
+		}
 	}
 	.mobile-help {
 		display: grid;
@@ -393,16 +493,113 @@
 			font-size: 1.5rem;
 		}
 	}
-	@include tablet {
-		.app.details-open { grid-template-columns: minmax(0, 1fr) clamp(32rem, 40vw, 48rem); }
-		.rightbar {
-			position: static;
-			grid-area: 2 / 2;
-			min-width: 0;
-			padding: 0 env(safe-area-inset-right) 0 0;
-			border-left: 1px solid var(--color-border-warm);
-			z-index: auto;
+	// the folded sidebar's strip — only where the sidebar doesn't fit
+	.rail-strip {
+		display: none;
+		min-height: 0;
+		background: linear-gradient(to bottom, var(--color-bg-sidebar), var(--color-bg-sidebar-end));
+		border-right: 1px solid var(--color-border-warm);
+
+		button {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			gap: 1rem;
+			width: 100%;
+			padding: 1.6rem 0;
+			font: inherit;
+			font-size: 1.3rem;
+			font-weight: 600;
+			color: var(--color-text-muted);
+			background: none;
+			border: 0;
+			cursor: pointer;
+
+			&:hover,
+			&[aria-expanded='true'] {
+				color: var(--color-accent);
+			}
+
+			span {
+				writing-mode: vertical-rl;
+				transform: rotate(180deg);
+			}
 		}
-		.flash { left: auto; max-width: min(46rem, calc(100vw - 3.2rem)); }
+	}
+
+	// behind a slid-in panel: a faint dim to tap on to put it away
+	.scrim {
+		position: fixed;
+		inset: 0;
+		z-index: 29;
+		padding: 0;
+		background: rgba(20, 30, 50, 0.14);
+		border: 0;
+		cursor: default;
+	}
+
+	// Tablets: the desktop columns, less the details — they slide in from the
+	// right over the board when a course is picked, and back out after
+	@include details-overlay {
+		.app {
+			grid-template-columns: var(--rail-w) var(--catalogue-w) minmax(0, 1fr);
+		}
+
+		.rightbar {
+			position: fixed;
+			top: 0;
+			right: 0;
+			bottom: 0;
+			z-index: 30;
+			width: min(var(--details-w), 90vw);
+			padding-right: env(safe-area-inset-right);
+			box-shadow: -10px 0 30px rgba(20, 30, 50, 0.18);
+			transform: translateX(100%);
+			visibility: hidden;
+			transition:
+				transform 0.3s var(--ease-out),
+				visibility 0s 0.3s;
+		}
+
+		.details-open .rightbar {
+			transform: none;
+			visibility: visible;
+			transition: transform 0.34s var(--ease-out);
+		}
+	}
+
+	// …and an iPad held upright: the sidebar folds to its strip and slides in
+	// from the left the same way
+	@include rail-overlay {
+		.app {
+			grid-template-columns: var(--rail-strip-w) var(--catalogue-w) minmax(0, 1fr);
+		}
+
+		.rail-strip {
+			display: block;
+		}
+
+		.rail {
+			position: fixed;
+			top: 0;
+			left: 0;
+			bottom: 0;
+			z-index: 30;
+			width: min(calc(var(--rail-w) + 4rem), 90vw);
+			padding-left: env(safe-area-inset-left);
+			background: var(--color-bg);
+			box-shadow: 10px 0 30px rgba(20, 30, 50, 0.18);
+			transform: translateX(-100%);
+			visibility: hidden;
+			transition:
+				transform 0.3s var(--ease-out),
+				visibility 0s 0.3s;
+		}
+
+		.rail-open .rail {
+			transform: none;
+			visibility: visible;
+			transition: transform 0.34s var(--ease-out);
+		}
 	}
 </style>

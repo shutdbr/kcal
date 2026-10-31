@@ -1,3 +1,6 @@
+/** Krea's Canvas answers at both addresses. */
+export const CANVAS_ORIGINS = ['https://canvas.krea.edu.in', 'https://krea.instructure.com'];
+
 /** @param {string} value */
 export function destinationUrl(value) {
   let url;
@@ -6,7 +9,7 @@ export function destinationUrl(value) {
   if ((url.protocol !== 'https:' && !(local && url.protocol === 'http:')) || url.username || url.password) {
     throw new Error('Use an HTTPS kcal address, or HTTP on localhost for development.');
   }
-  if (url.hostname === 'canvas.krea.edu.in') throw new Error('Enter the kcal address here, not the Canvas address.');
+  if (CANVAS_ORIGINS.some((origin) => new URL(origin).hostname === url.hostname)) throw new Error('Enter the kcal address here, not the Canvas address.');
   url.search = '';
   url.hash = '';
   return url;

@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { Plan } from '$lib/plan.svelte';
-	import CourseReviews from '$lib/components/CourseReviews.svelte';
 	import CourseFaculty from './CourseFaculty.svelte';
 	import { canAudit, hasCode, isCore } from '$lib/data';
 	import { descriptionOf, loadDescriptions } from '$lib/descriptions.svelte';
@@ -215,16 +214,6 @@
 				{/each}
 			</div>
 		{/if}
-
-		<!-- the data is scraped and hand-kept, so the course itself is where
-		     a wrong offering or prerequisite gets reported -->
-		<button
-			class="d-report"
-			onclick={() => (plan.feedbackDraft = `About ${c.code} (${c.title}): `)}
-		>
-			something wrong with this course? tell me
-		</button>
-		{#key c.code}<CourseReviews code={c.code} />{/key}
 	</div>
 {:else}
 	<!-- the column a first-timer sees empty: how the planner works, and what
@@ -403,24 +392,6 @@
 		font: inherit;
 		font-size: 1.3rem;
 		@include store-button;
-	}
-
-	.d-report {
-		align-self: flex-start;
-		margin-top: 1rem;
-		padding: 0;
-		font: inherit;
-		font-size: 1.25rem;
-		color: var(--color-accent);
-		background: none;
-		border: 0;
-		cursor: pointer;
-		text-decoration: underline;
-		text-underline-offset: 0.2em;
-
-		&:hover {
-			color: var(--color-text);
-		}
 	}
 
 	.details {
@@ -617,6 +588,24 @@
 			color: var(--color-text);
 		}
 	}
+	// by finger (a tablet's slid-in details too): the close and placing
+	// controls a fingertip tall
+	@include touch {
+		.close {
+			width: 4.4rem;
+			height: 4.4rem;
+			font-size: 2.6rem;
+		}
+		.d-place-go,
+		.d-place-remove,
+		.d-place-row select {
+			min-height: 4.4rem;
+		}
+		.d-more {
+			padding-top: 1rem;
+			padding-bottom: 1rem;
+		}
+	}
 	@include mobile {
 		.col-header {
 			position: sticky;
@@ -657,8 +646,7 @@
 		.d-place-remove {
 			padding: 0.8rem 1.6rem;
 		}
-		.d-more,
-		.d-report {
+		.d-more {
 			padding-top: 1rem;
 			padding-bottom: 1rem;
 		}

@@ -81,9 +81,6 @@ test.describe('phone planner', () => {
 		await page.goto('/?review=MATH201');
 		await expect(page.locator('.rightbar .d-place')).toBeVisible();
 		await expect(page.locator('.rightbar')).toBeVisible();
-		await expect(
-			page.getByText('Course reviews are coming soon. Sign-in is not available yet.')
-		).toBeVisible();
 		await page.goto('/#canvas-import=%7Bbad');
 		await expect(page.getByRole('dialog', { name: 'import from Canvas' })).toBeVisible();
 		await expect(page.getByRole('alert')).toContainText('not a valid course list');
@@ -112,7 +109,8 @@ test.describe('phone planner', () => {
 		).toBeLessThanOrEqual(1);
 	});
 
-	for (const width of [320, 390, 768, 1024]) {
+	// phones only — from 768px a tablet keeps the desktop columns (below)
+	for (const width of [320, 390, 767]) {
 		test(`fits catalogue, plan, degree and details at ${width}px`, async ({ page }) => {
 			await page.setViewportSize({ width, height: 844 });
 			await page.goto('/');
@@ -172,4 +170,95 @@ test('desktop retains resizers, catalogue and drag placement', async ({ page }) 
 	await expect(page.locator('.chip[data-code="MATH201"]')).toBeVisible();
 	await page.locator('.chip[data-code="MATH201"] .chip-open').click();
 	await expect(page.locator('.d-place-where')).toContainText('year 2, t1');
+	// a course's padding opens the course, and a press that slips off the chip
+	// onto its trimester doesn't open the trimester zoom
+	const chip = page.locator('.chip[data-code="MATH201"]');
+	await chip.click({ position: { x: 3, y: 3 } });
+	await expect(page.getByRole('button', { name: '← back' })).toHaveCount(0);
+	const box = await chip.boundingBox();
+	if (!box) throw new Error('chip not laid out');
+	await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+	await page.mouse.down();
+	await page.mouse.move(box.x + box.width / 2, box.y + box.height + 6);
+	await page.mouse.up();
+	await expect(page.getByRole('button', { name: '← back' })).toHaveCount(0);
+	await page.locator('.overview .cell[data-year="2"][data-trim="1"]').click({ position: { x: 8, y: 80 } });
+	await expect(page.getByRole('button', { name: '← back' })).toBeVisible();
+});
+
+test.describe('tablet planner', () => {
+	test.use({ hasTouch: true });
+	test.beforeEach(async ({ page }) => {
+		await page.addInitScript(() => {
+			localStorage.setItem('kcal-intro-seen', '1');
+			localStorage.setItem(
+				'kcal-plan',
+				JSON.stringify({ version: 1, placements: {}, touched: true })
+			);
+		});
+	});
+
+	test('landscape keeps the columns and slides the details in', async ({ page }) => {
+		await page.setViewportSize({ width: 1180, height: 820 });
+		await page.goto('/');
+		await expect(page.locator('.app')).toHaveAttribute('data-ready', 'true');
+		await expect(page.getByRole('navigation', { name: 'main navigation' })).not.toBeVisible();
+		for (const panel of ['.rail', '.catalogue-panel', '.board']) await expect(page.locator(panel)).toBeVisible();
+		await expect(page.locator('.rightbar')).not.toBeVisible();
+		await page.getByRole('searchbox').fill('MATH201');
+		await page.locator('[data-course="MATH201"] button.card').tap();
+		await expect(page.locator('.rightbar .d-place')).toBeVisible();
+		await page.locator('.scrim').click({ position: { x: 400, y: 400 } });
+		await expect(page.locator('.rightbar')).not.toBeVisible();
+	});
+
+	test('upright folds the sidebar to a strip that slides it in', async ({ page }) => {
+		await page.setViewportSize({ width: 820, height: 1180 });
+		await page.goto('/');
+		await expect(page.locator('.app')).toHaveAttribute('data-ready', 'true');
+		await expect(page.locator('.rail')).not.toBeVisible();
+		await page.getByRole('button', { name: 'your degree' }).tap();
+		await expect(page.locator('.rail')).toBeVisible();
+		await page.keyboard.press('Escape');
+		await expect(page.locator('.rail')).not.toBeVisible();
+	});
+
+	test('a long press drags a course onto the grid', async ({ page }) => {
+		await page.setViewportSize({ width: 1180, height: 820 });
+		await page.goto('/');
+		await expect(page.locator('.app')).toHaveAttribute('data-ready', 'true');
+		await page.getByRole('searchbox').fill('MATH201');
+		const card = await page.locator('[data-course="MATH201"] button.card').boundingBox();
+		const cell = await page.locator('.overview .cell[data-year="2"][data-trim="1"]').boundingBox();
+		if (!card || !cell) throw new Error('card or cell not laid out');
+		const touch = (type: string, x: number, y: number) =>
+			page.locator('[data-course="MATH201"] button.card').dispatchEvent(type, {
+				touches: type === 'touchend' ? [] : [{ identifier: 1, clientX: x, clientY: y }],
+				changedTouches: [{ identifier: 1, clientX: x, clientY: y }]
+			});
+		const from = { x: card.x + card.width / 2, y: card.y + card.height / 2 };
+		const to = { x: cell.x + cell.width / 2, y: cell.y + cell.height / 2 };
+		await touch('touchstart', from.x, from.y);
+		await page.waitForTimeout(400);
+		for (let i = 1; i <= 5; i++)
+			await touch('touchmove', from.x + ((to.x - from.x) * i) / 5, from.y + ((to.y - from.y) * i) / 5);
+		await touch('touchend', to.x, to.y);
+		await expect(page.locator('.overview .cell[data-year="2"][data-trim="1"] .chip[data-code="MATH201"]')).toBeVisible();
+	});
+});
+
+test('a phone first visit says once that kcal is better on a laptop', async ({ page }) => {
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.goto('/');
+	const note = page.getByRole('dialog', { name: 'better on a laptop' });
+	await expect(note).toContainText('kcal is better used on a laptop.');
+	await note.getByRole('button', { name: 'continue on phone' }).click();
+	await expect(note).toHaveCount(0);
+	await page.reload();
+	await expect(page.locator('.app')).toHaveAttribute('data-ready', 'true');
+	await expect(note).toHaveCount(0);
+	// a laptop in the same browser still gets its welcome
+	await page.setViewportSize({ width: 1440, height: 1000 });
+	await page.reload();
+	await expect(page.getByRole('dialog', { name: 'better on a laptop' })).toHaveCount(0);
 });

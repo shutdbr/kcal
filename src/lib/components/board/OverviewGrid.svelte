@@ -185,6 +185,11 @@
 		plan.zoom = { year, trim };
 	}
 
+	// a press that starts on a course, a suggestion or a clear button is about
+	// that thing: if the pointer slips off it before release (the chip shrinks
+	// under the press), the click lands on the cell — it mustn't zoom
+	let pressOnItem = false;
+
 	// a cell takes on the colours of the courses in it, weighted by how many
 	// of each (4 psychology + 2 environmental studies → ⅔ psych, ⅓ env).
 	// KCCS brings its blush; other-department courses the plain cell grey.
@@ -469,7 +474,8 @@
 				role="button"
 				tabindex="0"
 				aria-label="open year {y} trimester {t}"
-				onclick={() => open(y, t)}
+				onpointerdown={(e) => (pressOnItem = !!(e.target as Element).closest('.chip, .ghost, .cell-credits'))}
+				onclick={() => !pressOnItem && open(y, t)}
 				onkeydown={(e) => {
 					if (e.target === e.currentTarget && (e.key === 'Enter' || e.key === ' ')) {
 						e.preventDefault(); open(y, t);
@@ -616,19 +622,17 @@
      the new recommendation shows as dotted ghosts, and these are how the
      student brings the grid in line with it, all at once or not at all.
      Each shows only while it has something to do and says what it will move
-     in plain words — greyed-out buttons reading "0" confused people. Clearing
-     sits apart at the far end. -->
+     in plain words — greyed-out buttons reading "0" confused people. Adding
+     first, taking away after; clearing sits apart at the far end. -->
 {#if !plan.gradeMode}
 	<div class="acts-row" data-tour="board-actions">
 		{#if plan.missingRequiredCodes.length}
 			<button
 				class="fill"
-				title="place every required course of your programmes that is not on the grid yet"
+				title="place each required course of your programmes in its usual trimester"
 				onclick={() => plan.addRequiredCourses()}
 				transition:fade={{ duration: reducedMotion() ? 0 : 150 }}
-			>
-				+ add {count(plan.missingRequiredCodes.length, 'required course')}
-			</button>
+			>+ add {count(plan.missingRequiredCodes.length, 'required course')}</button>
 		{/if}
 
 		{#if plan.suggestionCount}
@@ -637,32 +641,26 @@
 				title="take every dotted suggestion on the grid"
 				onclick={() => plan.acceptAllSuggestions()}
 				transition:fade={{ duration: reducedMotion() ? 0 : 150 }}
-			>
-				+ add {count(plan.suggestionCount, 'suggested course')}
-			</button>
+			>+ accept {count(plan.suggestionCount, 'suggestion')}</button>
 		{/if}
 
 		{#if plan.otherPlacedCodes.length}
 			<button
 				class="strip"
-				title="drop every course that counts toward none of your major / minor / concentration"
+				title="take off every course that counts toward none of your major, minor or concentration"
 				onclick={() => plan.removeOtherCourses()}
 				transition:fade={{ duration: reducedMotion() ? 0 : 150 }}
-			>
-				− remove {count(plan.otherPlacedCodes.length, 'course')} outside your programmes
-			</button>
+			>− drop {plan.otherPlacedCodes.length} that {plan.otherPlacedCodes.length === 1 ? 'doesn’t' : 'don’t'} count</button>
 		{/if}
 
 		{#if plan.placed.length}
 			<button
-				class="strip danger clear"
+				class="strip clear"
 				class:confirming={clearing}
 				title="take every course off the grid"
 				onclick={clearGrid}
 				transition:fade={{ duration: reducedMotion() ? 0 : 150 }}
-			>
-				{clearing ? 'click again to clear everything' : '− clear grid'}
-			</button>
+			>{clearing ? 'sure? click again' : 'empty the grid'}</button>
 		{/if}
 	</div>
 {/if}
@@ -846,6 +844,7 @@
 			color: var(--color-text-muted);
 			opacity: 0;
 			cursor: pointer;
+			-webkit-tap-highlight-color: transparent;
 			transition:
 				opacity 0.2s ease,
 				color 0.2s ease;
@@ -989,12 +988,15 @@
 			color: var(--color-text-muted);
 			opacity: 0.35; // always there, so removing a course isn't a secret
 			cursor: pointer;
+			-webkit-tap-highlight-color: transparent;
 			transition:
 				opacity 0.15s ease,
-				color 0.15s ease;
+				color 0.15s ease,
+				transform 0.2s var(--spring);
 
 			&:hover {
 				color: var(--color-text);
+				transform: translateY(-50%) scale(1.1);
 			}
 		}
 
@@ -1006,13 +1008,13 @@
 		// a course a hint is about, while that hint is pointed at
 		&.lit {
 			transform: translateY(-1px);
-			box-shadow: 0 0 0 2px var(--color-accent), var(--shadow-card);
+			box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-accent) 80%, transparent), var(--shadow-card);
 		}
 	}
 
 	// the trimester holding a pointed-at hint's courses
 	.cell.lit {
-		outline: 2px solid color-mix(in srgb, var(--color-accent) 55%, transparent);
+		outline: 2px solid color-mix(in srgb, var(--color-accent) 60%, transparent);
 		outline-offset: -3px;
 	}
 
@@ -1209,12 +1211,6 @@
 			&.active + button {
 				border-left-color: var(--bar-key-on-edge);
 			}
-
-			// under the finger: sunk in like a selected segment, a shade darker
-			&:active {
-				box-shadow: inset 0 2px 4px rgba(60, 10, 35, 0.45);
-				transition-duration: 60ms;
-			}
 		}
 	}
 
@@ -1361,12 +1357,10 @@
 			}
 		}
 
-		// on hover it firms up into the chip it is about to become
+		// on hover only the edge firms up: a solid line, a shade deeper
 		&:hover {
-			color: var(--color-text);
-			background: var(--color-bg-light);
 			border-style: solid;
-			border-color: var(--color-control);
+			border-color: color-mix(in srgb, var(--ghost-edge) 60%, var(--color-text));
 		}
 
 		&:active {
@@ -1479,27 +1473,32 @@
 		}
 	}
 
-	// the bulk actions sit together at the left edge of the grid, in one row,
-	// at identical size — they are the same KIND of thing, so only the fill
-	// colour separates the one that matters most from the tidy-ups
+	// the bulk actions: one quiet row with room above and below, so it
+	// doesn't crowd the grid or the footer. Only the fill colour marks the
+	// one that matters most.
 	.acts-row {
 		display: flex;
 		flex-wrap: wrap;
+		align-items: center;
 		gap: 0.8rem;
+		margin: 1.6rem 0 2.4rem;
 		padding: 0 8.2rem;
 	}
 
 	.fill,
 	.strip {
-		display: inline-flex;
-		align-items: baseline;
-		gap: 0.6rem;
+		min-height: 3.6rem;
 		padding: 0.7rem 1.6rem;
 		font: inherit;
 		font-size: 1.3rem;
 		border: 1px solid var(--color-border-card);
 		border-radius: 6px;
 		cursor: pointer;
+	}
+
+	// wiping the grid is a different kind of thing — off at the far end
+	.clear {
+		margin-left: auto;
 	}
 
 	// the one that fills the board in — accent, so it reads as the primary
@@ -1522,11 +1521,6 @@
 		@include store-button($armable: true);
 	}
 
-	// wiping the grid is a different kind of thing — off at the far end
-	.clear {
-		margin-left: auto;
-	}
-
 	.fill {
 		transition:
 			background-color 140ms ease,
@@ -1535,7 +1529,6 @@
 
 		&:active:not(:disabled) {
 			transform: translateY(1px) scale(0.98);
-			box-shadow: var(--shadow-well);
 			transition-duration: 70ms;
 		}
 	}
@@ -1728,6 +1721,63 @@
 		padding: 0;
 		font: inherit;
 		cursor: pointer;
+
+		// the whole chip opens the course, padding and all — a click there
+		// used to fall through to the cell and open the trimester instead
+		&::before {
+			content: '';
+			position: absolute;
+			inset: 0;
+		}
+	}
+
+	// …the × stays on top of that
+	.chip .x {
+		z-index: 1;
+	}
+
+	// a tablet's desktop columns, worked by finger: everything a fingertip
+	// tall, and nothing waiting on a hover that never comes
+	@include touch {
+		.keys button,
+		.placed-total,
+		.cgpa-btn {
+			min-height: 4rem;
+		}
+
+		.goal-seg span {
+			padding: 0.8rem 1.1rem;
+		}
+
+		.fill,
+		.strip,
+		.add-year,
+		.drop-year {
+			min-height: 4.4rem;
+		}
+
+		.legend .key {
+			padding: 1rem 1.4rem 1rem 0.8rem;
+		}
+
+		// the × stays visible; pinned in the chip's corner on the desktop
+		// columns, its touch area reaches past its glyph (a phone's row has
+		// room for a full-size one instead)
+		.chip .x {
+			opacity: 0.7;
+		}
+
+		@media (min-width: 768px) {
+			.chip .x::before {
+				content: '';
+				position: absolute;
+				inset: -0.9rem -0.5rem;
+			}
+		}
+
+		.cell-credits .clear {
+			opacity: 0.7;
+		}
 	}
 	@include mobile {
 		.board-bar {

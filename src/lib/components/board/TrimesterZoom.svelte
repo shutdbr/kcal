@@ -399,9 +399,12 @@
 			line-height: 1;
 			color: var(--color-text-muted);
 			cursor: pointer;
+			-webkit-tap-highlight-color: transparent;
+			transition: transform 0.2s var(--spring);
 
 			&:hover {
 				color: var(--color-text);
+				transform: scale(1.1);
 			}
 		}
 

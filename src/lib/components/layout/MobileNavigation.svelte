@@ -113,16 +113,4 @@
 			}
 		}
 	}
-	@include tablet {
-		.mobile-header {
-			grid-column: 1 / -1;
-			padding-top: calc(1rem + env(safe-area-inset-top));
-			padding-bottom: 1rem;
-			a { display: flex; align-items: baseline; gap: 1.6rem; }
-		}
-		nav {
-			grid-column: 1 / -1;
-			button { flex-direction: row; gap: 1rem; font-size: 1.4rem; min-height: 4.8rem; }
-		}
-	}
 </style>

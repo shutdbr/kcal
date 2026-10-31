@@ -8,13 +8,14 @@
 @use '$lib/styles/reset';
 @use '$lib/styles/mixins' as *;
 
-// Shared interaction language: crisp focus, recessed presses, quiet motion.
+// Shared interaction language: crisp focus, quiet motion. A press doesn't
+// draw a recessed box: on a bare text or glyph button it read as a stray
+// rectangle around the label.
 :where(button, input, select, textarea, [tabindex]):focus-visible {
 	outline: 2px solid var(--color-accent);
 	outline-offset: 3px;
 }
 :where(button):not(:disabled) { transition: background-color 140ms ease, box-shadow 140ms ease; }
-:where(button):not(:disabled):active { box-shadow: var(--shadow-well); }
 // the tick box's pixel checkmark drawing itself in, a column of blocks at a
 // time (see the tick mixin) — global so every component's tick shares it
 @keyframes kcal-tick-draw {
@@ -34,13 +35,23 @@
 	}
 }
 
-// A 16px input avoids automatic zoom in iOS. Keep touch controls usable even
-// when the desktop text-size preference is small.
-@include mobile {
-	:root { --text-body: 1.5rem; -webkit-tap-highlight-color: rgba(137, 74, 109, 0.12); }
+// Any touch screen: a 16px input avoids automatic zoom in iOS, taps don't
+// wait to see if they're a double-tap, and a long press on a course lifts it
+// (lib/touchDrag) rather than selecting its text or opening a callout.
+@include touch {
+	:root { -webkit-tap-highlight-color: rgba(137, 74, 109, 0.12); }
 	input:not([type='checkbox']):not([type='radio']), select, textarea { font-size: max(16px, 1.6rem) !important; }
+	button, a, input, select, textarea { touch-action: manipulation; }
+	[draggable='true'] { -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+}
+
+// Phones, one panel at a time: every control a full fingertip, even when
+// the desktop text-size preference is small. The desktop columns on a
+// tablet size theirs one by one instead — a 44px floor on every button
+// would burst the course chips.
+@include mobile {
+	:root { --text-body: 1.5rem; }
 	button, select, input:not([type='checkbox']):not([type='radio']) { min-height: 44px; }
 	button { min-width: 44px; }
 	label:has(input[type='checkbox']), label:has(input[type='radio']) { min-height: 44px; }
-	button, a, input, select, textarea { touch-action: manipulation; }
 }

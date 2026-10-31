@@ -506,6 +506,10 @@ const FACULTY_ALIASES: Record<string, string> = {
 	'sankara.subramanian@krea.edu.in': 'Shankar Subramanian',
 	// not in the directory
 	'arindam.chatterjee@krea.edu.in': 'Arindam Chatterjee',
+	'easwaran.kv@krea.edu.in': 'Eeswaran K V',
+	'Easwaran KV': 'Eeswaran K V',
+	'aishwarya.krishnaswamy@krea.edu.in': 'Aishwarya Krishnaswami',
+	'Aishwarya K': 'Aishwarya Krishnaswami',
 	Arindham: 'Arindam Chatterjee',
 	'Aswin Sai Narain Seshasayee': 'Aswin Seshasayee'
 };

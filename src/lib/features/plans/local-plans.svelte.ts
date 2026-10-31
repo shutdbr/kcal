@@ -77,20 +77,25 @@ class SavedPlans {
 	/** keep a snapshot under a name. Newest first, since that is the one you
 	 *  are most likely to want back. */
 	save(name: string, data: unknown) {
+		if (this.full) {
+			this.error = 'Delete a saved copy before adding another.';
+			return;
+		}
 		const entry: SavedPlan = {
 			id: `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`,
 			name: name.trim() || 'untitled plan',
 			savedAt: Date.now(),
-			data
+			data: JSON.parse(JSON.stringify(data))
 		};
-		this.items = [entry, ...this.items].slice(0, MAX_SAVES);
+		this.items = [entry, ...this.items];
 		this.#write();
 		return entry;
 	}
 
 	/** overwrite an existing save in place, keeping its name and position */
 	update(id: string, data: unknown) {
-		this.items = this.items.map((p) => (p.id === id ? { ...p, data, savedAt: Date.now() } : p));
+		const copy: unknown = JSON.parse(JSON.stringify(data));
+		this.items = this.items.map((p) => (p.id === id ? { ...p, data: copy, savedAt: Date.now() } : p));
 		this.#write();
 	}
 

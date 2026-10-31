@@ -264,6 +264,15 @@
 		@include section-label;
 		margin-top: 0.6rem;
 	}
+	@include touch {
+		.d-taught-head {
+			padding-top: 1rem;
+			padding-bottom: 1rem;
+		}
+		.d-taught-course {
+			padding: 0.4rem 0;
+		}
+	}
 	@include mobile {
 		.d-prof {
 			font-size: 1.5rem;

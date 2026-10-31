@@ -29,10 +29,9 @@
 		@include card-shine-hover;
 	}
 
-	// pressed: the face dims and sinks into its own shadow
+	// pressed: the face nudges down under the finger
 	&:active {
 		transform: translateY(1px);
-		box-shadow: var(--shadow-well);
 	}
 }
 
@@ -43,7 +42,6 @@
 
 	&:active {
 		transform: translateY(1px);
-		box-shadow: var(--shadow-well);
 	}
 }
 
@@ -122,7 +120,6 @@
 
 	&:active:not(:disabled) {
 		transform: translateY(1px);
-		box-shadow: var(--shadow-well);
 		transition-duration: 0.07s;
 	}
 
@@ -387,18 +384,36 @@ $shape-circle: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'
 	}
 }
 
-// Compact controls also apply to large touchscreens, including tablets in landscape.
-// Keep these queries aligned with lib/layout.ts.
+// The layouts — keep these queries aligned with lib/layout.ts.
+// Phones get one panel at a time, behind tabs.
 @mixin mobile {
-	@media (max-width: 1100px), (any-pointer: coarse) {
+	@media (max-width: 767px) {
 		@content;
 	}
 }
 
-@mixin tablet {
-	@include mobile {
-		@media (min-width: 768px) {
-			@content;
-		}
+// Tablets and narrow windows keep the desktop columns, but the course details
+// slide in over the board instead of docking beside it (a touch screen wants
+// the board roomier, so an iPad switches over sooner)…
+@mixin details-overlay {
+	@media (min-width: 768px) and (max-width: 1279px),
+		(min-width: 768px) and (max-width: 1400px) and (any-pointer: coarse) {
+		@content;
+	}
+}
+
+// …and narrower still (an iPad held upright), the sidebar slides in too
+@mixin rail-overlay {
+	@media (min-width: 768px) and (max-width: 1099px) {
+		@content;
+	}
+}
+
+// A finger rather than a mouse, whatever the layout: bigger targets, and
+// nothing that only shows on hover. any-pointer keeps these with a tablet's
+// trackpad attached.
+@mixin touch {
+	@media (any-pointer: coarse) {
+		@content;
 	}
 }
